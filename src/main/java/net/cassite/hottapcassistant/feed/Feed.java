@@ -1,11 +1,12 @@
 package net.cassite.hottapcassistant.feed;
 
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.image.Image;
 
 import java.time.ZonedDateTime;
 
 public class Feed {
-    static Feed feed = new Feed();
+    static final Feed feed = new Feed();
 
     public static Feed get() {
         return feed;
@@ -22,6 +23,8 @@ public class Feed {
 
     public String latestVersion;
     public ZonedDateTime latestVersionReleaseTime;
+    public String pmpDownloadUrl;
+    public Image introBg;
 
     public ZonedDateTime feedTime;
 }

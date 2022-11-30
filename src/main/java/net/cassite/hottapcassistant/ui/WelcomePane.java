@@ -18,13 +18,14 @@ import javafx.stage.FileChooser;
 import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.component.ImageButton;
 import net.cassite.hottapcassistant.component.VPadding;
+import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.FontManager;
 import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.SimpleAlert;
 import net.cassite.hottapcassistant.util.Utils;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
@@ -42,6 +43,8 @@ public class WelcomePane extends StackPane {
             BackgroundPosition.CENTER,
             BackgroundSize.DEFAULT
         )));
+        Feed.updated.addListener((ob, old, now) -> updateBg());
+        updateBg();
         setAlignment(Pos.CENTER);
 
         var vbox = new VBox();
@@ -169,7 +172,10 @@ public class WelcomePane extends StackPane {
 
         {
             EventHandler<ActionEvent> handler = e -> {
-                final String url = "https://pmpcdn1.wmupd.com/pmp/client/PMP_1.0.7.0125.exe";
+                var url = Feed.get().pmpDownloadUrl;
+                if (url == null) {
+                    url = "https://pmpcdn1.wmupd.com/pmp/client/PMP_1.0.7.0125.exe";
+                }
                 try {
                     Desktop.getDesktop().browse(new URL(url).toURI());
                 } catch (Throwable t) {
@@ -224,6 +230,20 @@ public class WelcomePane extends StackPane {
             autoSearchGamePath(false);
             autoSearchSavedPath(false);
         });
+    }
+
+    private void updateBg() {
+        var bg = Feed.get().introBg;
+        if (bg == null) {
+            return;
+        }
+        setBackground(new Background(new BackgroundImage(
+            bg,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            BackgroundSize.DEFAULT
+        )));
     }
 
     private void autoSearchGamePath(boolean alert) {

@@ -1,8 +1,10 @@
 package net.cassite.hottapcassistant.feed;
 
 import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.Utils;
+import vjson.CharStream;
 import vjson.JSON;
+import vjson.deserializer.rule.*;
+import vjson.parser.ParserOptions;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,6 +12,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FeedThread extends Thread {
     private static final FeedThread thread = new FeedThread();
@@ -22,7 +26,7 @@ public class FeedThread extends Thread {
     }
 
     private volatile boolean needToStop = false;
-    private final HttpClient client;
+    final HttpClient client;
 
     private FeedThread() {
         client = HttpClient.newBuilder().connectTimeout(
@@ -61,37 +65,40 @@ public class FeedThread extends Thread {
         var resp = client.send(req, HttpResponse.BodyHandlers.ofString());
         var httpBody = resp.body();
         Logger.info("calling github for issue 1 comments, retrieved http body: " + httpBody);
-        var arr = JSON.parse(httpBody);
-        if (!(arr instanceof JSON.Array)) {
-            Logger.error("github issue 1 comments not responding json array: " + arr);
-            return;
-        }
-        for (var i = 0; i < ((JSON.Array) arr).length(); ++i) {
-            handleIssue1(i, ((JSON.Array) arr).get(i));
+        var arr = JSON.deserialize(CharStream.from(httpBody),
+            new ArrayRule<List<GithubIssueComment>, GithubIssueComment>(
+                ArrayList::new, List::add, GithubIssueComment.rule
+            ));
+        for (var i = 0; i < arr.size(); ++i) {
+            handleIssue1(i, arr.get(i));
         }
         Feed.feed.feedTime = ZonedDateTime.now();
         Feed.alert();
     }
 
-    private void handleIssue1(int index, JSON.Instance<?> instance) {
-        if (!(instance instanceof JSON.Object)) {
-            Logger.error("github issue 1 comments[" + index + "] is not json object: " + instance.stringify());
+    private void handleIssue1(int index, GithubIssueComment comment) {
+        if (comment == null) {
+            Logger.error("github issue 1 comments[" + index + "] is null");
             return;
         }
-        if (!((JSON.Object) instance).containsKey("body")) {
-            Logger.error("github issue 1 comments[" + index + "] does not contain field 'body': " + instance.stringify());
+        if (comment.user == null) {
+            Logger.error("github issue 1 comments[" + index + "] does not contain field 'user': " + comment);
             return;
         }
-        var body = ((JSON.Object) instance).get("body");
-        if (!(body instanceof JSON.String)) {
-            Logger.error("github issue 1 comments[" + index + "].body is not json string: " + body.stringify());
+        var userId = comment.user.id;
+        if (userId != 10825968) {
+            Logger.debug("retrieved comment not produced by trusted user, the retrieved userId is " + userId + ", skipping...");
             return;
         }
-        var bodyStr = (String) body.toJavaObject();
+        if (comment.body == null) {
+            Logger.error("github issue 1 comments[" + index + "] does not contain field 'body': " + comment);
+            return;
+        }
+        var bodyStr = comment.body;
         bodyStr = bodyStr.trim();
         var split = bodyStr.split("\n");
         if (split.length == 0) {
-            Logger.error("github issue 1 comments[" + index + "].body does not contain metadata: " + body.stringify());
+            Logger.error("github issue 1 comments[" + index + "].body does not contain metadata: " + bodyStr);
             return;
         }
         var line0 = split[0];
@@ -101,13 +108,13 @@ public class FeedThread extends Thread {
         }
         bodyStr = bodyStr.trim();
         if (!line0.startsWith("```")) {
-            Logger.error("github issue 1 comments[" + index + "].body does not contain metadata, not starting with '```': " + body.stringify());
+            Logger.error("github issue 1 comments[" + index + "].body does not contain metadata, not starting with '```': " + bodyStr);
             return;
         }
         line0 = line0.substring("```".length());
         Metadata metadata;
         try {
-            metadata = Utils.deserializeWithAllFeatures(line0, Metadata.rule);
+            metadata = JSON.deserialize(CharStream.from(line0), Metadata.rule, ParserOptions.allFeatures());
         } catch (Exception e) {
             Logger.error("github issue 1 comments[" + index + "].body does not contain metadata, not valid json or unable to deserialize: " + line0, e);
             return;
@@ -130,6 +137,37 @@ public class FeedThread extends Thread {
             Logger.error("handling github issue 1 comments[" + index + "].body failed, version: " + metadata.version + " ,body: " + bodyStr, e);
             //noinspection UnnecessaryReturnStatement
             return;
+        }
+    }
+
+    private static class GithubIssueComment {
+        GithubUserRef user;
+        String body;
+
+        static final Rule<GithubIssueComment> rule = new ObjectRule<>(GithubIssueComment::new)
+            .put("user", (o, it) -> o.user = it, GithubUserRef.rule)
+            .put("body", (o, it) -> o.body = it, StringRule.get());
+
+        @Override
+        public String toString() {
+            return "GithubIssueComment{" +
+                "user=" + user +
+                ", body='" + body + '\'' +
+                '}';
+        }
+    }
+
+    private static class GithubUserRef {
+        int id;
+
+        static final Rule<GithubUserRef> rule = new ObjectRule<>(GithubUserRef::new)
+            .put("id", (o, it) -> o.id = it, IntRule.get());
+
+        @Override
+        public String toString() {
+            return "GithubUserRef{" +
+                "id=" + id +
+                '}';
         }
     }
 }

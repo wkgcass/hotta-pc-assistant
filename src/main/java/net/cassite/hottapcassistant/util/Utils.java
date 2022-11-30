@@ -9,12 +9,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import net.cassite.hottapcassistant.i18n.I18n;
-import vjson.CharStream;
-import vjson.deserializer.DeserializeParserListener;
-import vjson.deserializer.rule.Rule;
-import vjson.parser.ParserMode;
-import vjson.parser.ParserOptions;
-import vjson.parser.ParserUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -232,16 +226,5 @@ public class Utils {
         float[] ff = new float[3];
         java.awt.Color.RGBtoHSB((int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255), ff);
         return ff;
-    }
-
-    public static <T> T deserializeWithAllFeatures(String s, Rule<T> rule) {
-        var listener = new DeserializeParserListener<>(rule);
-        ParserUtils.buildFrom(
-            CharStream.from(s), ParserOptions.allFeatures()
-                .setListener(listener)
-                .setMode(ParserMode.JAVA_OBJECT)
-                .setNullArraysAndObjects(true)
-        );
-        return listener.get();
     }
 }
