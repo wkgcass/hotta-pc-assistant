@@ -1,15 +1,19 @@
 package net.cassite.hottapcassistant.feed;
 
 import net.cassite.hottapcassistant.util.Logger;
+import net.cassite.hottapcassistant.util.Utils;
 import vjson.CharStream;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
 import vjson.parser.ParserOptions;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -41,6 +45,11 @@ public class FeedThread extends Thread {
 
     @Override
     public void run() {
+        try {
+            loadCache();
+        } catch (Throwable t) {
+            Logger.error("failed loading cache", t);
+        }
         while (!needToStop) {
             try {
                 exec();
@@ -55,16 +64,52 @@ public class FeedThread extends Thread {
         }
     }
 
+    private void loadCache() throws IOException {
+        var tmpdir = System.getProperty("java.io.tmpdir");
+        var path = Path.of(tmpdir, "hotta-pc-assistant", "req-1");
+        var file = path.toFile();
+        if (!file.exists()) {
+            Logger.warn(file.getAbsolutePath() + " does not exist, skip loading from cache");
+            return;
+        }
+        if (!file.isFile()) {
+            Logger.warn(file.getAbsolutePath() + " is not a valid file, skip loading from cache");
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            } catch (Throwable ignore) {
+            }
+            return;
+        }
+        var httpBody = Files.readString(path);
+        Logger.info("using cached github issue 1 comments: " + httpBody);
+        handleIssue1(httpBody);
+    }
+
     private void exec() throws Exception {
         var req = HttpRequest.newBuilder(
-                URI.create("https://api.github.com/repos/wkgcass/hotta-pc-assistant/issues/1/comments")
+                URI.create("https://api.github.com/repos/wkgcass/hotta-pc-assistant/issues/1/comments?page=1&per_page=100")
             )
             .GET()
             .timeout(Duration.ofSeconds(10))
             .build();
         var resp = client.send(req, HttpResponse.BodyHandlers.ofString());
         var httpBody = resp.body();
+        if (resp.statusCode() != 200) {
+            Logger.error("calling github for issue 1 comments failed, status: " + resp.statusCode() + ", body: " + httpBody);
+            return;
+        }
         Logger.info("calling github for issue 1 comments, retrieved http body: " + httpBody);
+        try {
+            Utils.writeFile(Path.of(System.getProperty("java.io.tmpdir"), "hotta-pc-assistant", "req-1"), httpBody);
+        } catch (Throwable t) {
+            Logger.error("failed storing github issue 1 comments response to file", t);
+            // fallthrough
+        }
+        handleIssue1(httpBody);
+    }
+
+    private void handleIssue1(String httpBody) {
         var arr = JSON.deserialize(CharStream.from(httpBody),
             new ArrayRule<List<GithubIssueComment>, GithubIssueComment>(
                 ArrayList::new, List::add, GithubIssueComment.rule

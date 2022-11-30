@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public class InputSettingsPane extends WithConfirmPane {
-    private InputConfig inputConfig = null;
     private final UIKeyBindingList ls;
 
     public InputSettingsPane() {
@@ -58,10 +57,7 @@ public class InputSettingsPane extends WithConfirmPane {
     }
 
     private InputConfig getInputConfig() {
-        if (inputConfig == null) {
-            inputConfig = new InputConfig(Path.of(GlobalValues.SavedPath, "Config", "WindowsNoEditor", "Input.ini").toString());
-        }
-        return inputConfig;
+        return InputConfig.ofSaved(Path.of(GlobalValues.savedPath.get(), "Config", "WindowsNoEditor", "Input.ini").toString());
     }
 
     @Override

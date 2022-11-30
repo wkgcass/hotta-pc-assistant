@@ -15,11 +15,19 @@ import java.util.function.Function;
 
 public class SettingConfig {
     public final String settingsPath;
-    public final String configPath;
+    public final String configPath; // nullable
 
-    public SettingConfig(String settingsPath, String configPath) {
+    private SettingConfig(String settingsPath, String configPath) {
         this.settingsPath = settingsPath;
         this.configPath = configPath;
+    }
+
+    public static SettingConfig ofSaved(String settingsPath) {
+        return new SettingConfig(settingsPath, null);
+    }
+
+    public static SettingConfig ofSavedAndWmgp(String settingsPath, String configPath) {
+        return new SettingConfig(settingsPath, configPath);
     }
 
     private static final LinkedHashMap<String, SettingType> availableSettings = new LinkedHashMap<>() {{
@@ -70,6 +78,9 @@ public class SettingConfig {
     }
 
     private void readConfigFrom(List<Setting> settings, String path) throws IOException {
+        if (path == null) {
+            return;
+        }
         var lines = Files.readAllLines(Path.of(path));
         for (int i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
@@ -104,10 +115,12 @@ public class SettingConfig {
     }
 
     public void write(List<Setting> settings) throws IOException {
-        Path configPath = Path.of(this.configPath);
         Path settingsPath = Path.of(this.settingsPath);
-        var configsFile = Files.readAllLines(configPath);
         var settingsFile = Files.readAllLines(settingsPath);
+
+        Path configPath = this.configPath == null ? null : Path.of(this.configPath);
+        var configsFile = configPath == null ? null : Files.readAllLines(configPath);
+
         for (var s : settings) {
             if (s.lineIndex == -1 || s.source == null) {
                 continue;
@@ -124,7 +137,9 @@ public class SettingConfig {
                 settingsFile.set(s.lineIndex, s.toString());
             }
         }
-        Utils.writeFile(configPath, String.join("\n", configsFile));
+        if (configPath != null) {
+            Utils.writeFile(configPath, String.join("\n", configsFile));
+        }
         Utils.writeFile(settingsPath, String.join("\n", settingsFile));
     }
 }

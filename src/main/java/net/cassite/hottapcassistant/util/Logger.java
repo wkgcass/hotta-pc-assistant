@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
 
 public class Logger {
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger("hotta-pc-assistance");
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger("hotta-pc-assistant");
 
     static {
         // %1:date, %2:source, %3:logger, %4:level, %5:message, %6:thrown

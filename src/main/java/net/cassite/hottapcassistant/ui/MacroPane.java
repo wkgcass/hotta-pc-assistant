@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.component.macro.UIMacroList;
+import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.entity.Assistant;
 import net.cassite.hottapcassistant.entity.AssistantMacroData;
 import net.cassite.hottapcassistant.entity.KeyCode;
@@ -98,7 +99,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
             FontManager.setFont(this);
         }};
         editMacro.setOnAction(e -> {
-            var file = new File(GlobalValues.getAssistantConfig().path);
+            var file = new File(GlobalValues.getGameAssistantConfig().path);
             if (!file.exists()) {
                 try {
                     //noinspection ResultOfMethodCallIgnored
@@ -202,16 +203,13 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
 
     @Override
     public boolean enterCheck() {
-        if (!Utils.checkGamePath()) {
-            return false;
-        }
         return reloadMacro();
     }
 
     private boolean reloadMacro() {
         Assistant a;
         try {
-            a = GlobalValues.getAssistantConfig().read();
+            a = AssistantConfig.readAssistant();
         } catch (Throwable t) {
             new StackTraceAlert(t).show();
             return false;
@@ -226,9 +224,9 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
 
     private void flushConfig() {
         try {
-            var config = GlobalValues.getAssistantConfig().read();
+            var config = AssistantConfig.readAssistant();
             config.macro.macros = macros;
-            GlobalValues.getAssistantConfig().write(config);
+            AssistantConfig.writeAssistant(config);
         } catch (Throwable t) {
             new StackTraceAlert(t).show();
         }

@@ -19,14 +19,6 @@ public abstract class I18n {
 
     abstract public String id();
 
-    public boolean supportImageDownloadGameButton() {
-        return false;
-    }
-
-    public boolean supportImageLaunchGameButton() {
-        return false;
-    }
-
     abstract public String levelInformation();
 
     abstract public String levelError();
@@ -51,21 +43,25 @@ public abstract class I18n {
 
     abstract public String toolNameAbout();
 
-    abstract public String downloadHottaPC();
-
     abstract public String selectGameLocation();
+
+    abstract public String selectGlobalServerGameLocation();
 
     abstract public String selectButton();
 
     abstract public String autoSearchButton();
 
-    abstract public String autoSearchGameLocationFailed();
-
-    abstract public String autoSearchSavedLocationFailed();
+    abstract public String autoSearchFailed();
 
     abstract public String selectGameLocationDescription();
 
+    abstract public String selectGlobalServerGameLocationDescription();
+
     abstract public String chosenWrongGameFile();
+
+    abstract public String chosenWrongGlobalServerGameFile();
+
+    abstract public String chosenWrongGlobalServerGameFileNoParentDir();
 
     public abstract String selectSavedLocationDescription();
 
@@ -127,12 +123,6 @@ public abstract class I18n {
 
     abstract public String openBrowserForDownloadingFailed(String url);
 
-    abstract public String useModifierLeft();
-
-    abstract public String useModifierRight();
-
-    abstract public String useLeftOrRightModifier();
-
     abstract public String invalidResolutionValue();
 
     abstract public String invalidResolutionIntegerValue();
@@ -164,8 +154,6 @@ public abstract class I18n {
     public abstract String detailAboutEmptyTableOrMissingFields();
 
     public abstract String openFileFailed();
-
-    public abstract String launchGame();
 
     public abstract String launchGameFailed();
 
@@ -242,4 +230,30 @@ public abstract class I18n {
     public abstract String lastSyncTime();
 
     public abstract String contributor();
+
+    public abstract String serverListColumnNameRegion();
+
+    public abstract String serverListColumnNameName();
+
+    public abstract String enableHostsFileModificationForGlobalServer();
+
+    public abstract String failedReadingTofServerList();
+
+    public abstract String failedWritingHostsFile();
+
+    public abstract String swapConfigFailed();
+
+    public abstract String swapConfigFailedMissingVersionInConfig();
+
+    public abstract String swapConfigFailedTargetFileIsNotDir();
+
+    public abstract String swapConfigFailedPathToMoveToIsOccupied();
+
+    public abstract String swapConfigFailedCreatingSavedDirFailed();
+
+    public abstract String chooseGameVersionDesc();
+
+    public abstract String chooseCNVersion();
+
+    public abstract String chooseGlobalVersion();
 }

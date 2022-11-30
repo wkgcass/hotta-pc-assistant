@@ -7,16 +7,6 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public boolean supportImageDownloadGameButton() {
-        return true;
-    }
-
-    @Override
-    public boolean supportImageLaunchGameButton() {
-        return true;
-    }
-
-    @Override
     public String levelInformation() {
         return "信息";
     }
@@ -77,13 +67,13 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String downloadHottaPC() {
-        return "下载幻塔PC端";
+    public String selectGameLocation() {
+        return "选择游戏路径";
     }
 
     @Override
-    public String selectGameLocation() {
-        return "选择游戏路径";
+    public String selectGlobalServerGameLocation() {
+        return "选择国际服游戏路径";
     }
 
     @Override
@@ -97,12 +87,7 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String autoSearchGameLocationFailed() {
-        return "自动查找失败，请手动选择路径";
-    }
-
-    @Override
-    public String autoSearchSavedLocationFailed() {
+    public String autoSearchFailed() {
         return "自动查找失败，请手动选择路径";
     }
 
@@ -112,8 +97,23 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String selectGlobalServerGameLocationDescription() {
+        return "请选择国际服游戏路径，可以手动选择tof_launcher.exe所在路径，也可以点击\"自动查找\"";
+    }
+
+    @Override
     public String chosenWrongGameFile() {
         return "选择文件错误，请选择gameLauncher.exe";
+    }
+
+    @Override
+    public String chosenWrongGlobalServerGameFile() {
+        return "选择文件错误，请选择tof_launcher.exe";
+    }
+
+    @Override
+    public String chosenWrongGlobalServerGameFileNoParentDir() {
+        return "选择文件错误，没有找到父级目录";
     }
 
     @Override
@@ -300,21 +300,6 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String useModifierLeft() {
-        return "使用左侧修饰键";
-    }
-
-    @Override
-    public String useModifierRight() {
-        return "使用右侧修饰键";
-    }
-
-    @Override
-    public String useLeftOrRightModifier() {
-        return "请选择使用左侧修饰键还是右侧修饰键";
-    }
-
-    @Override
     public String invalidResolutionValue() {
         return "分辨率格式错误，格式为NxN";
     }
@@ -396,11 +381,6 @@ public class ZhCn extends I18n {
     @Override
     public String openFileFailed() {
         return "打开文件失败";
-    }
-
-    @Override
-    public String launchGame() {
-        return "开始游戏";
     }
 
     @Override
@@ -616,5 +596,70 @@ public class ZhCn extends I18n {
     @Override
     public String contributor() {
         return "本工具代码贡献者";
+    }
+
+    @Override
+    public String serverListColumnNameRegion() {
+        return "地区";
+    }
+
+    @Override
+    public String serverListColumnNameName() {
+        return "服务器名称";
+    }
+
+    @Override
+    public String enableHostsFileModificationForGlobalServer() {
+        return "修改hosts文件";
+    }
+
+    @Override
+    public String failedReadingTofServerList() {
+        return "读取Tower of Fantasy服务器列表失败";
+    }
+
+    @Override
+    public String failedWritingHostsFile() {
+        return "写入hosts文件失败";
+    }
+
+    @Override
+    public String swapConfigFailed() {
+        return "切换国服和国际服配置文件失败";
+    }
+
+    @Override
+    public String swapConfigFailedMissingVersionInConfig() {
+        return "当前配置文件中没有指定游戏版本（国服/国际服），游戏配置文件目录无法自动切换";
+    }
+
+    @Override
+    public String swapConfigFailedTargetFileIsNotDir() {
+        return "待切换的配置文件路径不是文件夹";
+    }
+
+    @Override
+    public String swapConfigFailedPathToMoveToIsOccupied() {
+        return "切换后的配置文件路径已被占用";
+    }
+
+    @Override
+    public String swapConfigFailedCreatingSavedDirFailed() {
+        return "创建配置文件保存目录失败";
+    }
+
+    @Override
+    public String chooseGameVersionDesc() {
+        return "由于幻塔国服和国际服使用相同的配置文件目录，为了后续能够自动切换国服和国际服，请选择当前配置文件目录对应的游戏版本";
+    }
+
+    @Override
+    public String chooseCNVersion() {
+        return "国服";
+    }
+
+    @Override
+    public String chooseGlobalVersion() {
+        return "国际服";
     }
 }

@@ -20,6 +20,7 @@ import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.component.keybinding.UIKeyChooser;
 import net.cassite.hottapcassistant.component.shapes.MovablePoint;
 import net.cassite.hottapcassistant.component.shapes.MovableRect;
+import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.entity.AssistantFishing;
 import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.fish.FishRobot;
@@ -247,11 +248,8 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
     @Override
     public boolean enterCheck() {
-        if (!Utils.checkGamePath()) {
-            return false;
-        }
         try {
-            var a = GlobalValues.getAssistantConfig().read();
+            var a = AssistantConfig.readAssistant();
             fishing = a.fishing;
         } catch (Throwable t) {
             new StackTraceAlert(t).show();
@@ -317,9 +315,9 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
     private void flushConfig() {
         try {
-            var config = GlobalValues.getAssistantConfig().read();
+            var config = AssistantConfig.readAssistant();
             config.fishing = fishing;
-            GlobalValues.getAssistantConfig().write(config);
+            AssistantConfig.writeAssistant(config);
         } catch (Throwable t) {
             new StackTraceAlert(t).show();
         }

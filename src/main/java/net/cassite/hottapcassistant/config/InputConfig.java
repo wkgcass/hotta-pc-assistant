@@ -17,8 +17,12 @@ import java.util.List;
 public class InputConfig {
     public final String path;
 
-    public InputConfig(String path) {
+    private InputConfig(String path) {
         this.path = path;
+    }
+
+    public static InputConfig ofSaved(String path) {
+        return new InputConfig(path);
     }
 
     private static final List<String> availableActions = List.of(

@@ -41,17 +41,9 @@ public class Version1FeedParser implements FeedParser {
                 if (resource.image != null) {
                     var image = resource.image;
                     if (image.introBg != null) {
-                        var req = HttpRequest.newBuilder(URI.create(image.introBg))
-                            .timeout(Duration.ofSeconds(10))
-                            .build();
-                        HttpResponse<byte[]> resp = null;
-                        try {
-                            resp = FeedThread.get().client.send(req, HttpResponse.BodyHandlers.ofByteArray());
-                        } catch (Throwable t) {
-                            Logger.error("failed to retrieve introBg from feed: " + image.introBg, t);
-                        }
-                        if (resp != null) {
-                            var img = new Image(new ByteArrayInputStream(resp.body()));
+                        var body = httpGet(image.introBg, "image.introBg");
+                        if (body != null) {
+                            var img = new Image(new ByteArrayInputStream(body));
                             if (img.isError()) {
                                 Logger.error("failed to load introBg from feed: " + image.introBg);
                             } else {
@@ -76,15 +68,57 @@ public class Version1FeedParser implements FeedParser {
                 }
             }
         }
+        if (entity.config != null) {
+            var config = entity.config;
+            if (config.tofServer != null) {
+                var tofServer = config.tofServer;
+                if (tofServer.hosts != null) {
+                    var body = httpGet(tofServer.hosts, "tofServer.hosts");
+                    if (body != null) {
+                        Feed.feed.tofServerHosts = new String(body);
+                        Logger.info("feed: tofServerHosts updated: line count: " + Feed.feed.tofServerHosts.split("\n").length);
+                    }
+                }
+                if (tofServer.names != null) {
+                    var body = httpGet(tofServer.names, "tofServer.names");
+                    if (body != null) {
+                        Feed.feed.tofServerNames = new String(body);
+                        Logger.info("feed: tofServerNames updated: line count: " + Feed.feed.tofServerNames.split("\n").length);
+                    }
+                }
+            }
+        }
+    }
+
+    private byte[] httpGet(String url, String resourceName) {
+        var req = HttpRequest.newBuilder(URI.create(url))
+            .timeout(Duration.ofSeconds(10))
+            .build();
+        HttpResponse<byte[]> resp = null;
+        try {
+            resp = FeedThread.get().client.send(req, HttpResponse.BodyHandlers.ofByteArray());
+        } catch (Throwable t) {
+            Logger.error("failed to retrieve " + resourceName + " from feed: " + url, t);
+        }
+        if (resp == null) {
+            return null;
+        }
+        if (resp.statusCode() != 200) {
+            Logger.error("failed to retrieve " + resourceName + " from feed: " + url + ", status: " + resp.statusCode());
+            return null;
+        }
+        return resp.body();
     }
 
     private static class Entity {
         EntityProgram program;
         EntityGame game;
+        EntityConfig config;
 
         static Rule<Entity> rule = new ObjectRule<>(Entity::new)
             .put("program", (o, it) -> o.program = it, EntityProgram.rule)
-            .put("game", (o, it) -> o.game = it, EntityGame.rule);
+            .put("game", (o, it) -> o.game = it, EntityGame.rule)
+            .put("config", (o, it) -> o.config = it, EntityConfig.rule);
     }
 
     private static class EntityProgram {
@@ -138,5 +172,19 @@ public class Version1FeedParser implements FeedParser {
 
         static Rule<EntityGameDownloadPmp> rule = new ObjectRule<>(EntityGameDownloadPmp::new)
             .put("url", (o, it) -> o.url = it, StringRule.get());
+    }
+
+    private static class EntityConfig {
+        EntityConfigTofServer tofServer;
+        static Rule<EntityConfig> rule = new ObjectRule<>(EntityConfig::new)
+            .put("tof-server", (o, it) -> o.tofServer = it, EntityConfigTofServer.rule);
+    }
+
+    private static class EntityConfigTofServer {
+        String names;
+        String hosts;
+        static Rule<EntityConfigTofServer> rule = new ObjectRule<>(EntityConfigTofServer::new)
+            .put("names", (o, it) -> o.names = it, StringRule.get())
+            .put("hosts", (o, it) -> o.hosts = it, StringRule.get());
     }
 }

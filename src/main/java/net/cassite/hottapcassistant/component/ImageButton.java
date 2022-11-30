@@ -5,7 +5,6 @@ import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import net.cassite.hottapcassistant.i18n.I18n;
 
 public class ImageButton extends ImageView {
     private final double w;
@@ -15,11 +14,11 @@ public class ImageButton extends ImageView {
     public ImageButton(String prefix, String suffix) {
         setCursor(Cursor.HAND);
 
-        var normalImage = new Image(prefix + "-normal-" + I18n.get().id() + "." + suffix, false);
+        var normalImage = new Image(prefix + "-normal" + "." + suffix, false);
         w = normalImage.getWidth();
         h = normalImage.getHeight();
-        var hoverImage = new Image(prefix + "-hover-" + I18n.get().id() + "." + suffix, true);
-        var downImage = new Image(prefix + "-down-" + I18n.get().id() + "." + suffix, true);
+        var hoverImage = new Image(prefix + "-hover" + "." + suffix, true);
+        var downImage = new Image(prefix + "-down" + "." + suffix, true);
         setImage(normalImage);
         setOnMouseEntered(e -> setImage(hoverImage));
         setOnMouseExited(e -> setImage(normalImage));

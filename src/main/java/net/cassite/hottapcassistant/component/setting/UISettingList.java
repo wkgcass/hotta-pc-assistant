@@ -32,9 +32,7 @@ public class UISettingList extends TableView<Setting> {
                     return;
                 }
                 if (now == null) return;
-                if (old == null || old.type != now.type || now.node == null) {
-                    now.node = generateNode(now);
-                }
+                now.node = generateNode(now);
                 cell.setGraphic(now.node);
             });
             return cell;

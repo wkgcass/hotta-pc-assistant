@@ -2,16 +2,16 @@ package net.cassite.hottapcassistant.util;
 
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.config.TofServerListConfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
@@ -79,30 +79,15 @@ public class Utils {
                 } catch (Throwable ignore) {
                 }
             }
+        } else {
+            var parent = f.getParentFile();
+            if (!parent.exists()) {
+                if (!parent.mkdirs()) {
+                    throw new IOException("mkdirs " + parent + " failed");
+                }
+            }
         }
         Files.writeString(file, content);
-    }
-
-    public static boolean checkGamePath() {
-        if (GlobalValues.GamePath == null) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().gamePathNotSet()).show();
-            return false;
-        }
-        var f = new File(GlobalValues.GamePath);
-        if (!f.isDirectory()) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().gamePathIsNotDirectory()).show();
-            return false;
-        }
-        if (GlobalValues.SavedPath == null) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().savedPathNotSet()).show();
-            return false;
-        }
-        f = new File(GlobalValues.SavedPath);
-        if (!f.isDirectory()) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().savedPathIsNotDirectory()).show();
-            return false;
-        }
-        return true;
     }
 
     private static volatile RobotWrapper robot;
@@ -226,5 +211,15 @@ public class Utils {
         float[] ff = new float[3];
         java.awt.Color.RGBtoHSB((int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255), ff);
         return ff;
+    }
+
+    public static String readClassPath(String location) throws IOException {
+        try (var inputStream = TofServerListConfig.class.getClassLoader().getResourceAsStream(location)) {
+            if (inputStream == null) {
+                Logger.warn("unable to find file " + location + " in classpath");
+                return "";
+            }
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }

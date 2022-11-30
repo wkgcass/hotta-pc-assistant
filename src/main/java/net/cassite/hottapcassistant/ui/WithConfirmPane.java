@@ -12,8 +12,8 @@ import javafx.scene.layout.Pane;
 import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.FontManager;
+import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.StackTraceAlert;
-import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.Optional;
 
@@ -89,7 +89,7 @@ public abstract class WithConfirmPane extends BorderPane implements EnterCheck, 
 
     @Override
     public boolean enterCheck() {
-        if (!Utils.checkGamePath()) return false;
+        if (!GlobalValues.checkGamePath()) return false;
         try {
             reset();
             unsetModified();

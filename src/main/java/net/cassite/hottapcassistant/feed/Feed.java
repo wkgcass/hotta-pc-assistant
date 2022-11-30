@@ -24,7 +24,10 @@ public class Feed {
     public String latestVersion;
     public ZonedDateTime latestVersionReleaseTime;
     public String pmpDownloadUrl;
+    public String tofMiniLoaderUrl;
     public Image introBg;
+    public String tofServerNames;
+    public String tofServerHosts;
 
     public ZonedDateTime feedTime;
 }
