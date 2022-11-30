@@ -10,6 +10,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -401,6 +402,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         }
         var img = Utils.execRobotOnThread(r -> r.captureScreen(screen));
         var stage = new Stage();
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         stage.setFullScreen(true);
 
         var imagePane = new Pane();
@@ -489,6 +491,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         }
         var img = Utils.execRobotOnThread(r -> r.captureScreen(screen));
         var stage = new Stage();
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         stage.setFullScreen(true);
 
         var imagePane = new Pane();
