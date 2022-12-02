@@ -28,8 +28,8 @@ public class AssistantFishing {
 
     public static AssistantFishing empty() {
         var fish = new AssistantFishing();
-        fish.startKey = new Key("F9");
-        fish.stopKey = new Key("F9");
+        fish.startKey = new Key("F8");
+        fish.stopKey = new Key("F8");
         fish.leftKey = new Key("A");
         fish.rightKey = new Key("D");
         return fish;
