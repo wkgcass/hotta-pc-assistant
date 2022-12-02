@@ -63,6 +63,7 @@ public class FishRobot {
     private boolean isPressingRight;
     private int totalManagingCount = 0;
     private int staminaDrainManagingCount = 0;
+    private int posNotFoundCount = 0;
     private final FishingRecognitionDisplay display = new FishingRecognitionDisplay();
 
     public FishRobot(Consumer<Status> statusInformer, Consumer<Double> percentageInformer) {
@@ -409,10 +410,20 @@ public class FishRobot {
         if (pos == -1) {
             // it's ok because it's not easy to track
             // let it move anyway
-            if (!isPressingLeft && !isPressingRight) {
-                moveLeft();
+            ++posNotFoundCount;
+            if (posNotFoundCount >= 20) {
+                if (isPressingLeft) {
+                    moveRight();
+                } else {
+                    moveLeft();
+                }
+            } else {
+                if (!isPressingLeft && !isPressingRight) {
+                    moveLeft();
+                }
             }
         } else {
+            posNotFoundCount = 0;
             if (pos < bar) {
                 moveRight();
             } else {
@@ -424,6 +435,7 @@ public class FishRobot {
     private void exitManaging() {
         totalManagingCount = 0;
         staminaDrainManagingCount = 0;
+        posNotFoundCount = 0;
         releaseLeftOrRight();
     }
 
