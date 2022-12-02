@@ -19,6 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Main extends Application {
+    private MainScreen mainScreen = null;
+
     @Override
     public void start(Stage stage) {
         stage.getIcons().add(new Image("images/icon/icon.jpg"));
@@ -29,7 +31,8 @@ public class Main extends Application {
             new SimpleAlert(Alert.AlertType.WARNING, I18n.get().loadingFontFailed()).show();
         }
 
-        var root = new MainScreen();
+        mainScreen = new MainScreen();
+        var root = mainScreen;
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
@@ -41,6 +44,8 @@ public class Main extends Application {
         GlobalScreenUtils.unregister();
         TaskManager.terminate();
         FeedThread.get().terminate();
+        var mainScreen = this.mainScreen;
+        if (mainScreen != null) mainScreen.terminate();
     }
 
     public static void main(String[] args) {

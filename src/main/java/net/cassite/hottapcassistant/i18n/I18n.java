@@ -159,6 +159,8 @@ public abstract class I18n {
 
     public abstract String macroSwitchButtonLabel();
 
+    public abstract String rememberMousePositionButtonLabel();
+
     public abstract String macroAlertLabel();
 
     public abstract String macroColumnNameEnable();

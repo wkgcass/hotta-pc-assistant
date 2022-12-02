@@ -52,6 +52,9 @@ public class AssistantMacroData {
         }
         if (key.key != null) return key.key == currentKey;
         if (key.button != null) return key.button == currentMouse;
+        if (currentKey == KeyCode.CONTROL) return ctrl;
+        if (currentKey == KeyCode.ALT) return alt;
+        if (currentKey == KeyCode.SHIFT) return shift;
         return false;
     }
 

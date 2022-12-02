@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.util;
 
+import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.robot.Robot;
@@ -50,5 +51,9 @@ public class RobotWrapper {
     public void mouseMove(double x, double y) {
         Logger.debug("mouse move: (" + x + ", " + y + ")");
         robot.mouseMove(x, y);
+    }
+
+    public Point2D getMousePosition() {
+        return robot.getMousePosition();
     }
 }

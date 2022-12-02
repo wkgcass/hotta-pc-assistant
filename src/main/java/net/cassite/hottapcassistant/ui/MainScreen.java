@@ -37,6 +37,11 @@ public class MainScreen extends BorderPane {
     }
 
     private record ToolInstance(int index, StackPane pane, Label label, Node content) {
+        public void terminate() {
+            if (content instanceof Terminate) {
+                ((Terminate) content).terminate();
+            }
+        }
     }
 
     private final List<ToolInstance> toolInstances = new ArrayList<>();
@@ -126,6 +131,12 @@ public class MainScreen extends BorderPane {
             return ((ExitCheck) tool.content).exitCheck();
         } else {
             return true;
+        }
+    }
+
+    public void terminate() {
+        for (var t : toolInstances) {
+            t.terminate();
         }
     }
 

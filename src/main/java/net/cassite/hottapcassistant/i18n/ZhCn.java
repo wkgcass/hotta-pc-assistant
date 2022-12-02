@@ -394,6 +394,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String rememberMousePositionButtonLabel() {
+        return "记忆鼠标位置";
+    }
+
+    @Override
     public String macroAlertLabel() {
         return """
             需要使用管理员权限运行本程序才能在游戏中使用宏。

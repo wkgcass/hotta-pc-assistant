@@ -26,7 +26,7 @@ public class AssistantConfig {
         return new AssistantConfig(path);
     }
 
-    private static final Path assistantFilePath = Path.of(System.getProperty("user.home"), "AppData", "Local", "HottaPCAssistant", "Assistant.vjson");
+    public static final Path assistantFilePath = Path.of(System.getProperty("user.home"), "AppData", "Local", "HottaPCAssistant", "Assistant.vjson");
 
     public static Assistant readAssistant() throws IOException {
         var f = assistantFilePath.toFile();
