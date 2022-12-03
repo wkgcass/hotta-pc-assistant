@@ -6,6 +6,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.stage.StageStyle;
+import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.entity.TofServer;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.FontManager;
@@ -18,7 +19,7 @@ public class UIServerChooser extends Dialog<List<TofServer>> {
         initStyle(StageStyle.UTILITY);
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        getDialogPane().setPrefWidth(400);
+        getDialogPane().setPrefWidth(700);
 
         var vbox = new VBox();
         var ls = new UIServerList();
@@ -41,7 +42,7 @@ public class UIServerChooser extends Dialog<List<TofServer>> {
             ls.setDisable(!now);
         });
         checkbox.setSelected(checkboxSelected);
-        vbox.getChildren().addAll(checkbox, ls);
+        vbox.getChildren().addAll(checkbox, new VPadding(5), ls);
 
         setResultConverter(t -> {
             if (t != ButtonType.OK) return null;

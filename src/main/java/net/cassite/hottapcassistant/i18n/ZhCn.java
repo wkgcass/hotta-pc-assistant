@@ -615,7 +615,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String enableHostsFileModificationForGlobalServer() {
-        return "修改hosts文件";
+        return "修改hosts文件直连国际服（需要使用管理员权限运行本程序）";
     }
 
     @Override
