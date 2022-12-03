@@ -46,7 +46,7 @@ public class UIServerChooser extends Dialog<List<TofServer>> {
 
         setResultConverter(t -> {
             if (t != ButtonType.OK) return null;
-            if (!checkbox.isSelected()) return null;
+            if (!checkbox.isSelected()) return new ArrayList<>();
             var ret = new ArrayList<TofServer>();
             ls.getItems().forEach(e -> {
                 if (e.selected) ret.add(e);
