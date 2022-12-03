@@ -86,14 +86,20 @@ public class FeedThread extends Thread {
         handleIssue1(httpBody);
     }
 
-    private void exec() throws Exception {
+    private void exec() {
         var req = HttpRequest.newBuilder(
                 URI.create("https://api.github.com/repos/wkgcass/hotta-pc-assistant/issues/1/comments?page=1&per_page=100")
             )
             .GET()
             .timeout(Duration.ofSeconds(10))
             .build();
-        var resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp;
+        try {
+            resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            Logger.warn("unable to retrieve github issue 1 comments, skipping");
+            return;
+        }
         var httpBody = resp.body();
         if (resp.statusCode() != 200) {
             Logger.error("calling github for issue 1 comments failed, status: " + resp.statusCode() + ", body: " + httpBody);

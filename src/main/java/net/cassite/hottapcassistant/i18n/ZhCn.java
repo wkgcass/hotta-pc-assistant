@@ -498,7 +498,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String positionOfFishingPointTip() {
-        return "垂钓点的绿光发出的位置";
+        return "垂钓点的绿光发出的位置（按WSAD可微调）";
     }
 
     @Override
@@ -513,7 +513,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String positionOfFishStaminaTip() {
-        return "鱼的体力条的范围";
+        return "鱼的体力条的范围（左边青色弧形条）";
     }
 
     @Override

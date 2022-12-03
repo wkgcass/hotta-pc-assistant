@@ -391,7 +391,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         isConfiguring = false;
     }
 
-    @SuppressWarnings("DuplicatedCode")
+    @SuppressWarnings({"DuplicatedCode", "ManualMinMaxCalculation"})
     private void configureFishingPointAndCastingPoint(Consumer<Boolean> cb) {
         var screen = getScreen();
         if (screen == null) {
@@ -437,7 +437,29 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         }
         imagePane.getChildren().addAll(desc, fishingPoint, castingPoint);
 
+        var wsadHandler = new WSADMovingHandler(0.02, 0.02,
+            xy -> {
+                if (xy[0] < 0) {
+                    fishingPoint.setLayoutX(0);
+                } else if (xy[0] > stage.getWidth()) {
+                    fishingPoint.setLayoutX(stage.getWidth());
+                } else {
+                    fishingPoint.setLayoutX(xy[0]);
+                }
+                if (xy[1] < 0) {
+                    fishingPoint.setLayoutY(0);
+                } else if (xy[1] > stage.getHeight()) {
+                    fishingPoint.setLayoutY(stage.getHeight());
+                } else {
+                    fishingPoint.setLayoutY(xy[1]);
+                }
+            },
+            () -> new double[]{fishingPoint.getLayoutX(), fishingPoint.getLayoutY()}
+        );
+
+        imagePane.setOnKeyPressed(e -> wsadHandler.onPressed(e.getCode()));
         imagePane.setOnKeyReleased(e -> {
+            wsadHandler.onReleased(e.getCode());
             if (e.getCode() == KeyCode.ENTER || (e.getCode() == KeyCode.W && e.isControlDown())) {
                 stage.close();
             }

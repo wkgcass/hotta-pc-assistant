@@ -375,8 +375,10 @@ public class FishRobot {
             int s = pixelCount(img, FishStaminaColor);
             int e = pixelCount(img, FishStaminaEmptyColor);
             if (s == 0 && e == 0) {
-                exitManaging();
-                setStatus(Status.FAILED);
+                if (totalManagingCount > 50) {
+                    exitManaging();
+                    setStatus(Status.FAILED);
+                }
                 return;
             }
             p = ((double) s) / (s + e);

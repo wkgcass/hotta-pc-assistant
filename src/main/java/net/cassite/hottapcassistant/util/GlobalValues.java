@@ -33,7 +33,7 @@ public class GlobalValues {
 
     public static AssistantConfig getGameAssistantConfig() {
         if (savedPath.get() == null) throw new IllegalStateException();
-        return AssistantConfig.ofSaved(Path.of(savedPath.get(), "Assistant.vjson").toAbsolutePath().toString());
+        return AssistantConfig.ofSaved(Path.of(savedPath.get(), "Assistant.vjson.txt").toAbsolutePath().toString());
     }
 
     public static boolean swapConfig() throws Exception {
