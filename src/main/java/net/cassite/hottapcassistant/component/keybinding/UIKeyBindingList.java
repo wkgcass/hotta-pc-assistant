@@ -37,10 +37,10 @@ public class UIKeyBindingList extends TableView<KeyBinding> {
         ctrlColumn.setCellFactory(param -> {
             var cell = new TableCell<KeyBinding, KeyBinding>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 var row = cell.getTableRow().getItem();
                 var checkBox = new CheckBox();
                 cell.setGraphic(checkBox);
@@ -58,10 +58,10 @@ public class UIKeyBindingList extends TableView<KeyBinding> {
         altColumn.setCellFactory(param -> {
             var cell = new TableCell<KeyBinding, KeyBinding>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 var row = cell.getTableRow().getItem();
                 var checkBox = new CheckBox();
                 cell.setGraphic(checkBox);
@@ -79,10 +79,10 @@ public class UIKeyBindingList extends TableView<KeyBinding> {
         shiftColumn.setCellFactory(param -> {
             var cell = new TableCell<KeyBinding, KeyBinding>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 var row = cell.getTableRow().getItem();
                 var checkBox = new CheckBox();
                 cell.setGraphic(checkBox);
@@ -102,14 +102,12 @@ public class UIKeyBindingList extends TableView<KeyBinding> {
             var cell = new TableCell<KeyBinding, Pointer<KeyBinding>>();
             cell.setAlignment(Pos.CENTER);
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() != null) {
-                    if (cell.getTableRow().getItem() != null) {
-                        cell.setCursor(Cursor.HAND);
-                    }
-                }
-                if (now == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setText(null);
+                    cell.setCursor(Cursor.DEFAULT);
                     return;
                 }
+                cell.setCursor(Cursor.HAND);
                 if (now.item.key == null) {
                     cell.setText("");
                 } else {
@@ -143,7 +141,9 @@ public class UIKeyBindingList extends TableView<KeyBinding> {
         scaleColumn.setCellFactory(param -> {
             var cell = new TableCell<KeyBinding, KeyBinding>();
             cell.itemProperty().addListener((ob, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
+                    cell.setText(null);
                     return;
                 }
                 var row = cell.getTableRow().getItem();
@@ -155,7 +155,7 @@ public class UIKeyBindingList extends TableView<KeyBinding> {
                 var inputBox = new TextField();
                 cell.setGraphic(inputBox);
                 cell.setText(null);
-                if (now == null || !now.isAxis) {
+                if (!now.isAxis) {
                     inputBox.setText("");
                 } else {
                     inputBox.setText(Utils.floatValueFormat.format(now.scale));

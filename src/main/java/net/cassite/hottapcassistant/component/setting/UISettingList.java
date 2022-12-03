@@ -30,10 +30,10 @@ public class UISettingList extends TableView<Setting> {
         valueColumn.setCellFactory(param -> {
             var cell = new TableCell<Setting, Setting>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 now.node = generateNode(now);
                 cell.setGraphic(now.node);
             });

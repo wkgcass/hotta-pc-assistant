@@ -33,10 +33,10 @@ public class UIMacroList extends TableView<AssistantMacroData> {
         enableColumn.setCellFactory(param -> {
             var cell = new TableCell<AssistantMacroData, AssistantMacroData>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 var row = cell.getTableRow().getItem();
                 var checkBox = new CheckBox();
                 cell.setGraphic(checkBox);
@@ -56,10 +56,10 @@ public class UIMacroList extends TableView<AssistantMacroData> {
         ctrlColumn.setCellFactory(param -> {
             var cell = new TableCell<AssistantMacroData, AssistantMacroData>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 var row = cell.getTableRow().getItem();
                 var checkBox = new CheckBox();
                 cell.setGraphic(checkBox);
@@ -76,10 +76,10 @@ public class UIMacroList extends TableView<AssistantMacroData> {
         altColumn.setCellFactory(param -> {
             var cell = new TableCell<AssistantMacroData, AssistantMacroData>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 var row = cell.getTableRow().getItem();
                 var checkBox = new CheckBox();
                 cell.setGraphic(checkBox);
@@ -96,10 +96,10 @@ public class UIMacroList extends TableView<AssistantMacroData> {
         shiftColumn.setCellFactory(param -> {
             var cell = new TableCell<AssistantMacroData, AssistantMacroData>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 var row = cell.getTableRow().getItem();
                 var checkBox = new CheckBox();
                 cell.setGraphic(checkBox);
@@ -118,10 +118,11 @@ public class UIMacroList extends TableView<AssistantMacroData> {
             var cell = new TableCell<AssistantMacroData, Pointer<AssistantMacroData>>();
             cell.setAlignment(Pos.CENTER);
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setText(null);
+                    cell.setCursor(Cursor.DEFAULT);
                     return;
                 }
-                if (now == null) return;
                 cell.setCursor(Cursor.HAND);
                 if (now.item.key == null) {
                     cell.setText("");

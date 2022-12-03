@@ -26,10 +26,10 @@ public class UIServerList extends TableView<TofServer> {
         checkColumn.setCellFactory(param -> {
             var cell = new TableCell<TofServer, TofServer>();
             cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
+                    cell.setGraphic(null);
                     return;
                 }
-                if (now == null) return;
                 var row = cell.getTableRow().getItem();
                 var checkbox = new CheckBox();
                 cell.setGraphic(checkbox);
