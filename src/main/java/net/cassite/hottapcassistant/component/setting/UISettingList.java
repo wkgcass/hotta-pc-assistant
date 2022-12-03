@@ -7,6 +7,8 @@ import javafx.scene.control.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.SimpleAlert;
 
+import java.util.Objects;
+
 public class UISettingList extends TableView<Setting> {
     private final Runnable modifiedCallback;
 
@@ -46,7 +48,7 @@ public class UISettingList extends TableView<Setting> {
         return switch (setting.type) {
             case INT, FLOAT -> {
                 var input = new TextField(setting.formatValue());
-                input.setOnAction(e -> {
+                Runnable applyHandler = () -> {
                     String text = input.getText();
                     Object v;
                     try {
@@ -68,7 +70,13 @@ public class UISettingList extends TableView<Setting> {
                     }
                     setting.value = v;
                     modifiedCallback.run();
+                };
+                input.focusedProperty().addListener((ob, old, now) -> {
+                    if (now == null) return;
+                    if (Objects.equals(old, now)) return;
+                    if (!now) applyHandler.run();
                 });
+                input.setOnAction(e -> applyHandler.run());
                 yield input;
             }
             case BOOL, BOOL_0_1 -> {
@@ -100,7 +108,7 @@ public class UISettingList extends TableView<Setting> {
                     "3840x2160", // 4K
                     "-1x-1" // fullscreen
                 );
-                box.setOnAction(e -> {
+                Runnable applyHandler = () -> {
                     String v = box.getValue();
                     if (!v.contains("x")) {
                         new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue()).showAndWait();
@@ -134,7 +142,13 @@ public class UISettingList extends TableView<Setting> {
                     }
                     setting.value = x + "x" + y;
                     modifiedCallback.run();
+                };
+                box.focusedProperty().addListener((ob, old, now) -> {
+                    if (now == null) return;
+                    if (Objects.equals(old, now)) return;
+                    if (!now) applyHandler.run();
                 });
+                box.setOnAction(e -> applyHandler.run());
                 yield box;
             }
         };
