@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -48,6 +49,8 @@ public class WelcomePane extends StackPane {
     private final TextField selectGameLocationInput;
     private final TextField selectSavedLocationInput;
     private final TextField selectGlobalServerGameLocationInput;
+
+    private boolean isAltDown = false;
 
     public WelcomePane() {
         setBackground(new Background(new BackgroundImage(
@@ -381,7 +384,7 @@ public class WelcomePane extends StackPane {
 
             var launchBtn = new ImageButton("images/global-launch-btn/launch", "png");
             launchBtn.setScale(0.5);
-            launchBtn.setOnAction(e -> launchGlobalServer());
+            launchBtn.setOnAction(e -> launchGlobalServer(isAltDown));
             group.getChildren().add(downloadBtn);
             selectGlobalServerGameLocationInput.textProperty().addListener((ob, old, now) -> {
                 group.getChildren().clear();
@@ -392,6 +395,17 @@ public class WelcomePane extends StackPane {
                 }
             });
         }
+
+        setOnKeyPressed(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ALT) {
+                isAltDown = true;
+            }
+        });
+        setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.ALT) {
+                isAltDown = false;
+            }
+        });
 
         Platform.runLater(this::initLocations);
     }
@@ -466,47 +480,49 @@ public class WelcomePane extends StackPane {
         }
     }
 
-    private void launchGlobalServer() {
+    private void launchGlobalServer(boolean showHostsHack) {
         if (!GlobalValues.checkGlobalServerGamePath()) {
             return;
         }
         useGlobalGameCheckBox.setSelected(true);
 
-        List<TofServer> servers = null;
-        List<String> selectedServers = null;
-        try {
-            servers = TofServerListConfig.read();
-        } catch (IOException e) {
-            Logger.error("failed reading tof server list", e);
-            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().failedReadingTofServerList()).showAndWait();
-        }
-        try {
-            var ass = AssistantConfig.readAssistant();
-            selectedServers = ass.lastValues.requireWritingHostsFileServerNames;
-        } catch (IOException e) {
-            Logger.error("failed reading enabled servers from last config", e);
-        }
-        if (selectedServers == null) selectedServers = Collections.emptyList();
-        final var fSelectedServers = selectedServers;
-        if (servers != null) {
-            servers.forEach(e -> {
-                if (fSelectedServers.contains(e.name)) {
-                    e.selected = true;
-                }
-            });
-            var res = new UIServerChooser(servers).showAndWait();
-            if (res.isPresent()) {
-                var b = TofServerListConfig.setHosts(res.get());
-                if (!b) {
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().failedWritingHostsFile()).showAndWait();
-                }
-                try {
-                    AssistantConfig.updateAssistant(ass -> {
-                        if (ass.lastValues == null) ass.lastValues = new AssistantLastValues();
-                        ass.lastValues.requireWritingHostsFileServerNames = res.get().stream().map(e -> e.name).toList();
-                    });
-                } catch (IOException e) {
-                    Logger.error("failed saving hosts enabled servers to lastValues", e);
+        if (showHostsHack) {
+            List<TofServer> servers = null;
+            List<String> selectedServers = null;
+            try {
+                servers = TofServerListConfig.read();
+            } catch (IOException e) {
+                Logger.error("failed reading tof server list", e);
+                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().failedReadingTofServerList()).showAndWait();
+            }
+            try {
+                var ass = AssistantConfig.readAssistant();
+                selectedServers = ass.lastValues.requireWritingHostsFileServerNames;
+            } catch (IOException e) {
+                Logger.error("failed reading enabled servers from last config", e);
+            }
+            if (selectedServers == null) selectedServers = Collections.emptyList();
+            final var fSelectedServers = selectedServers;
+            if (servers != null) {
+                servers.forEach(e -> {
+                    if (fSelectedServers.contains(e.name)) {
+                        e.selected = true;
+                    }
+                });
+                var res = new UIServerChooser(servers).showAndWait();
+                if (res.isPresent()) {
+                    var b = TofServerListConfig.setHosts(res.get());
+                    if (!b) {
+                        new SimpleAlert(Alert.AlertType.ERROR, I18n.get().failedWritingHostsFile()).showAndWait();
+                    }
+                    try {
+                        AssistantConfig.updateAssistant(ass -> {
+                            if (ass.lastValues == null) ass.lastValues = new AssistantLastValues();
+                            ass.lastValues.requireWritingHostsFileServerNames = res.get().stream().map(e -> e.name).toList();
+                        });
+                    } catch (IOException e) {
+                        Logger.error("failed saving hosts enabled servers to lastValues", e);
+                    }
                 }
             }
         }
