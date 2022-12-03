@@ -40,6 +40,9 @@ public class SettingConfig {
         put("fFightCameraDistance", SettingType.FLOAT);
         put("MaxVisibilityPlayer", SettingType.INT);
         put("FrameRateLimit", SettingType.FLOAT);
+        put("ResolutionSizeX", SettingType.INT);
+        put("ResolutionSizeY", SettingType.INT);
+        put("FullscreenMode", SettingType.INT);
     }};
     private static final List<String> availableSettingsOrder = new ArrayList<>() {{
         addAll(availableSettings.keySet());
