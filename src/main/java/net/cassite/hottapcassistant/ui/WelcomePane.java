@@ -9,7 +9,6 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
@@ -26,10 +25,7 @@ import net.cassite.hottapcassistant.config.TofServerListConfig;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.FontManager;
-import net.cassite.hottapcassistant.util.GlobalValues;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.SimpleAlert;
+import net.cassite.hottapcassistant.util.*;
 
 import java.awt.*;
 import java.io.File;
@@ -54,7 +50,7 @@ public class WelcomePane extends StackPane {
 
     public WelcomePane() {
         setBackground(new Background(new BackgroundImage(
-            new Image("images/bg/bg0.jpg"),
+            ImageManager.get().load("images/bg/bg0.jpg"),
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.CENTER,

@@ -3,16 +3,13 @@ package net.cassite.hottapcassistant;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import net.cassite.hottapcassistant.component.LoadingStage;
 import net.cassite.hottapcassistant.feed.FeedThread;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.ui.MainScreen;
-import net.cassite.hottapcassistant.util.GlobalScreenUtils;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.SimpleAlert;
-import net.cassite.hottapcassistant.util.TaskManager;
+import net.cassite.hottapcassistant.util.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,21 +20,23 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.getIcons().add(new Image("images/icon/icon.jpg"));
-        stage.setOnCloseRequest(e -> terminate());
-
         var font = Font.loadFont(getClass().getResourceAsStream("/font/SmileySans-Oblique.otf"), 1);
         if (font == null) {
             new SimpleAlert(Alert.AlertType.WARNING, I18n.get().loadingFontFailed()).show();
         }
 
-        mainScreen = new MainScreen();
-        var root = mainScreen;
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
+        LoadingStage.load(() -> {
+            stage.getIcons().add(ImageManager.get().load("images/icon/icon.jpg"));
+            stage.setOnCloseRequest(e -> terminate());
 
-        MainScreen.initStage(stage);
-        stage.show();
+            mainScreen = new MainScreen();
+            var root = mainScreen;
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+
+            MainScreen.initStage(stage);
+            stage.show();
+        });
     }
 
     private void terminate() {

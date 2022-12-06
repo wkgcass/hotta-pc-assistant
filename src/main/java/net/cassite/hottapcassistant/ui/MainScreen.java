@@ -7,6 +7,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -22,21 +23,34 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class MainScreen extends BorderPane {
-    public record ToolInfo(String name, Supplier<Pane> instantiate) {
+    private record ToolInfo(String name, Supplier<Pane> instantiate, boolean hide) {
     }
 
     private static final List<ToolInfo> tools = new ArrayList<>();
 
     static {
-        tools.add(new ToolInfo(I18n.get().toolNameWelcome(), WelcomePane::new));
-        tools.add(new ToolInfo(I18n.get().toolNameGameSettings(), GameSettingsPane::new));
-        tools.add(new ToolInfo(I18n.get().toolNameInputSettings(), InputSettingsPane::new));
-        tools.add(new ToolInfo(I18n.get().toolNameMacro(), MacroPane::new));
-        tools.add(new ToolInfo(I18n.get().toolNameFishing(), FishingPane::new));
-        tools.add(new ToolInfo(I18n.get().toolNameAbout(), AboutPane::new));
+        tools.add(new ToolInfo(I18n.get().toolNameWelcome(), WelcomePane::new, false));
+        tools.add(new ToolInfo(I18n.get().toolNameGameSettings(), GameSettingsPane::new, false));
+        tools.add(new ToolInfo(I18n.get().toolNameInputSettings(), InputSettingsPane::new, false));
+        tools.add(new ToolInfo(I18n.get().toolNameMacro(), MacroPane::new, true));
+        tools.add(new ToolInfo(I18n.get().toolNameFishing(), FishingPane::new, true));
+        tools.add(new ToolInfo(I18n.get().toolNameCoolDown(), CoolDownPane::new, false));
+        tools.add(new ToolInfo(I18n.get().toolNameAbout(), AboutPane::new, false));
     }
 
-    private record ToolInstance(int index, StackPane pane, Label label, Node content) {
+    private record ToolInstance(int index, StackPane pane, Label label, Node content, Separator sep,
+                                boolean canBeHidden) {
+        public void setVisible(boolean visible, Node center) {
+            if (!visible) {
+                if (!canBeHidden) return;
+                if (content == center) return;
+            }
+            pane.setVisible(visible);
+            sep.setVisible(visible);
+            pane.setManaged(visible);
+            sep.setManaged(visible);
+        }
+
         public void terminate() {
             if (content instanceof Terminate) {
                 ((Terminate) content).terminate();
@@ -61,9 +75,10 @@ public class MainScreen extends BorderPane {
         for (int i = 0; i < tools.size(); i++) {
             var tool = tools.get(i);
             var pane = new StackPane();
+            var sep = new Separator();
             var label = new Label(tool.name());
             var contentNode = tool.instantiate.get();
-            var inst = new ToolInstance(i, pane, label, contentNode);
+            var inst = new ToolInstance(i, pane, label, contentNode, sep, tool.hide);
             toolInstances.add(inst);
             if (isFirst) {
                 isFirst = false;
@@ -80,12 +95,16 @@ public class MainScreen extends BorderPane {
             pane.setAlignment(Pos.CENTER);
             pane.getChildren().add(label);
             leftSideBar.getChildren().add(pane);
-            leftSideBar.getChildren().add(new Separator());
+            leftSideBar.getChildren().add(sep);
+            if (tool.hide) {
+                inst.setVisible(false, getCenter());
+            }
 
             pane.setOnMouseClicked(e -> {
                 if (getCenter() == null) {
                     if (canEnterTool(inst)) {
                         setCenter(contentNode);
+                        inst.setVisible(true, null);
                         setLabelSelected(inst);
                     }
                     return;
@@ -93,18 +112,40 @@ public class MainScreen extends BorderPane {
                 if (getCenter() != contentNode) {
                     if (canEnterTool(inst) && exitTool()) {
                         setCenter(contentNode);
+                        inst.setVisible(true, null);
                         setLabelSelected(inst);
+                    } else {
+                        hideInactive();
                     }
                 }
             });
         }
 
         setLeft(new HBox(leftSideBar, new Separator(Orientation.VERTICAL)));
+
+        setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ALT) {
+                altIsPressed = true;
+                for (var inst : toolInstances) {
+                    inst.setVisible(true, getCenter());
+                }
+            }
+        });
+        setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.ALT) {
+                altIsPressed = false;
+                for (var inst : toolInstances) {
+                    inst.setVisible(false, getCenter());
+                }
+            }
+        });
     }
+
+    private boolean altIsPressed = false;
 
     private boolean canEnterTool(ToolInstance tool) {
         if (tool.content instanceof EnterCheck) {
-            return ((EnterCheck) tool.content).enterCheck();
+            return ((EnterCheck) tool.content).enterCheck(altIsPressed);
         } else {
             return true;
         }
@@ -118,6 +159,7 @@ public class MainScreen extends BorderPane {
             }
             if (exitTool(tool)) {
                 setLabelUnselected(tool);
+                tool.setVisible(false, null);
                 return true;
             } else {
                 return false;
@@ -131,6 +173,16 @@ public class MainScreen extends BorderPane {
             return ((ExitCheck) tool.content).exitCheck();
         } else {
             return true;
+        }
+    }
+
+    private void hideInactive() {
+        var centerNode = getCenter();
+        for (var tool : toolInstances) {
+            if (tool.content == centerNode) {
+                continue;
+            }
+            tool.setVisible(false, centerNode);
         }
     }
 

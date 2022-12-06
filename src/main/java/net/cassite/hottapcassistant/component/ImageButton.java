@@ -3,8 +3,8 @@ package net.cassite.hottapcassistant.component;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import net.cassite.hottapcassistant.util.ImageManager;
 
 public class ImageButton extends ImageView {
     private final double w;
@@ -14,11 +14,11 @@ public class ImageButton extends ImageView {
     public ImageButton(String prefix, String suffix) {
         setCursor(Cursor.HAND);
 
-        var normalImage = new Image(prefix + "-normal" + "." + suffix, false);
+        var normalImage = ImageManager.get().load(prefix + "-normal" + "." + suffix);
         w = normalImage.getWidth();
         h = normalImage.getHeight();
-        var hoverImage = new Image(prefix + "-hover" + "." + suffix, true);
-        var downImage = new Image(prefix + "-down" + "." + suffix, true);
+        var hoverImage = ImageManager.get().load(prefix + "-hover" + "." + suffix);
+        var downImage = ImageManager.get().load(prefix + "-down" + "." + suffix);
         setImage(normalImage);
         setOnMouseEntered(e -> setImage(hoverImage));
         setOnMouseExited(e -> setImage(normalImage));

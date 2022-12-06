@@ -88,7 +88,7 @@ public abstract class WithConfirmPane extends BorderPane implements EnterCheck, 
     }
 
     @Override
-    public boolean enterCheck() {
+    public boolean enterCheck(boolean skipGamePathCheck) {
         if (!GlobalValues.checkGamePath()) return false;
         try {
             reset();

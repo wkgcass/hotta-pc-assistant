@@ -3,12 +3,8 @@ package net.cassite.hottapcassistant.entity;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.simple.SimpleString;
 
-public class KeyBinding {
+public class KeyBinding extends InputData {
     public String action;
-    public boolean ctrl;
-    public boolean alt;
-    public boolean shift;
-    public Key key;
     public double scale;
 
     public boolean isAxis;

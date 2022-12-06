@@ -14,7 +14,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,16 +48,24 @@ public class FeedThread extends Thread {
 
     @Override
     public void run() {
+        checkLock();
+        if (needToStop) {
+            return;
+        }
         try {
             loadCache();
         } catch (Throwable t) {
             Logger.error("failed loading cache", t);
         }
         while (!needToStop) {
+            checkLock();
             try {
                 exec();
             } catch (Throwable t) {
                 Logger.error("exception thrown in feed thread", t);
+            }
+            if (needToStop) {
+                break;
             }
             try {
                 //noinspection BusyWait
@@ -62,6 +73,11 @@ public class FeedThread extends Thread {
             } catch (InterruptedException ignore) {
             }
         }
+    }
+
+    private void checkLock() {
+        Feed.feed.lockMacroPane = Utils.checkLock("macro", false, false);
+        Feed.feed.lockFishingPane = Utils.checkLock("fishing", false, false);
     }
 
     private void loadCache() throws IOException {
@@ -72,7 +88,8 @@ public class FeedThread extends Thread {
             Logger.warn(file.getAbsolutePath() + " does not exist, skip loading from cache");
             return;
         }
-        if (!file.isFile()) {
+        var fileAttrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        if (!fileAttrs.isRegularFile()) {
             Logger.warn(file.getAbsolutePath() + " is not a valid file, skip loading from cache");
             try {
                 //noinspection ResultOfMethodCallIgnored
@@ -81,9 +98,12 @@ public class FeedThread extends Thread {
             }
             return;
         }
+        var lastModified = fileAttrs.lastModifiedTime().toMillis();
         var httpBody = Files.readString(path);
         Logger.info("using cached github issue 1 comments: " + httpBody);
         handleIssue1(httpBody);
+        Feed.feed.feedTime = Instant.ofEpochMilli(lastModified).atZone(ZoneId.systemDefault());
+        Feed.alert();
     }
 
     private void exec() {

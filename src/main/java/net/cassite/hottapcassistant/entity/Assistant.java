@@ -9,11 +9,13 @@ public class Assistant {
     public AssistantLastValues lastValues;
     public AssistantMacro macro;
     public AssistantFishing fishing;
+    public AssistantCoolDown cooldown;
 
     public static final Rule<Assistant> rule = new ObjectRule<>(Assistant::new)
         .put("lastValues", (o, it) -> o.lastValues = it, AssistantLastValues.rule)
         .put("macro", (o, it) -> o.macro = it, AssistantMacro.rule)
-        .put("fishing", (o, it) -> o.fishing = it, AssistantFishing.rule);
+        .put("fishing", (o, it) -> o.fishing = it, AssistantFishing.rule)
+        .put("cooldown", (o, it) -> o.cooldown = it, AssistantCoolDown.rule);
 
     public static Assistant empty() {
         var ret = new Assistant();
@@ -31,6 +33,9 @@ public class Assistant {
             ob.putInst("macro", macro.toJson());
         if (fishing != null)
             ob.putInst("fishing", fishing.toJson());
+        if (cooldown != null) {
+            ob.putInst("cooldown", cooldown.toJson());
+        }
         return ob.build();
     }
 }

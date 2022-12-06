@@ -41,7 +41,11 @@ public abstract class I18n {
 
     abstract public String toolNameFishing();
 
+    abstract public String toolNameCoolDown();
+
     abstract public String toolNameAbout();
+
+    abstract public String toolIsLocked(String name);
 
     abstract public String selectGameLocation();
 
@@ -258,4 +262,30 @@ public abstract class I18n {
     public abstract String chooseCNVersion();
 
     public abstract String chooseGlobalVersion();
+
+    public abstract String weaponName(String name);
+
+    public abstract String matrixName(String name);
+
+    public abstract String relicsName(String name);
+
+    public abstract String startCoolDown();
+
+    public abstract String stopCoolDown();
+
+    public abstract String weaponNotSelected();
+
+    public abstract String duplicatedWeapon();
+
+    public abstract String duplicatedRelics();
+
+    public abstract String relicsChooserPlaceHolder(int index);
+
+    public abstract String loadingStageTitle();
+
+    public abstract String hintPressAlt();
+
+    public abstract String cooldownTipsButton();
+
+    public abstract String cooldownTips();
 }

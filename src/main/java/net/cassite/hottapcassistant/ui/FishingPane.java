@@ -247,7 +247,11 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
     }
 
     @Override
-    public boolean enterCheck() {
+    public boolean enterCheck(boolean skipGamePathCheck) {
+        if (!Utils.checkLock("fishing")) {
+            return false;
+        }
+
         try {
             var a = AssistantConfig.readAssistant();
             fishing = a.fishing;

@@ -57,8 +57,23 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String toolNameCoolDown() {
+        return "CD指示器(beta)";
+    }
+
+    @Override
     public String toolNameAbout() {
         return "关于";
+    }
+
+    @Override
+    public String toolIsLocked(String name) {
+        name = switch (name) {
+            case "macro" -> toolNameMacro();
+            case "fishing" -> toolNameFishing();
+            default -> name;
+        };
+        return "此工具暂未开放：" + name;
     }
 
     @Override
@@ -578,6 +593,7 @@ public class ZhCn extends I18n {
             本程序使用JavaFX默认字体或者得意黑字体 B站@oooooohmygosh
             本程序欢迎页封面图来自幻塔官网，做了调色
             本程序图标为旅行莎莉头像，图片来自B站 @幻塔手游 的头像
+            武器、意志、源器、技能、buff等图标，来源于fandom tof wiki图片和幻塔客户端截图
             """;
     }
 
@@ -669,5 +685,111 @@ public class ZhCn extends I18n {
     @Override
     public String chooseGlobalVersion() {
         return "国际服";
+    }
+
+    @Override
+    public String weaponName(String name) {
+        return switch (name) {
+            case "gé lái pǔ ní" -> "格莱普尼";
+            case "liú quán chè xīn" -> "流泉澈心";
+            case "qǐ míng xīng" -> "启明星";
+            case "yǐng zhī" -> "影织";
+            case "pò jūn" -> "破均";
+            case "bīng fēng zhī shǐ" -> "冰风之矢";
+            case "bā ěr méng kè" -> "巴尔蒙克";
+            case "bú miè zhī yì" -> "不灭之翼";
+            case "hóng lián rèn" -> "红莲刃";
+            case "fù hé gōng" -> "复合弓";
+            case "hēi yā míng lián" -> "黑鸦冥镰";
+            case "v2 róng qǖ dùn" -> "V2熔驱盾";
+            case "fǒu jué lì fāng" -> "否决立方";
+            case "chì yàn zuǒ lún" -> "炽焰左轮";
+            case "sī pà kè" -> "斯帕克";
+            case "sì yè shí zì (burn)" -> "四叶十字(灼烧)";
+            case "sì yè shí zì (gas)" -> "四叶十字(瓦斯)";
+            default -> name;
+        };
+    }
+
+    @Override
+    public String matrixName(String name) {
+        //noinspection SwitchStatementWithTooFewBranches
+        return switch (name) {
+            case "kè láo dí yà" -> "克劳迪娅";
+            default -> name;
+        };
+    }
+
+    @Override
+    public String relicsName(String name) {
+        return switch (name) {
+            case "dice" -> "天选骰子";
+            case "kǎo-ēn-tè" -> "考恩特";
+            case "kǎo-ēn-tè-2" -> "考恩特II型";
+            default -> name;
+        };
+    }
+
+    @Override
+    public String startCoolDown() {
+        return "启动";
+    }
+
+    @Override
+    public String stopCoolDown() {
+        return "停止";
+    }
+
+    @Override
+    public String weaponNotSelected() {
+        return "存在空的武器位";
+    }
+
+    @Override
+    public String duplicatedWeapon() {
+        return "武器选择重复";
+    }
+
+    @Override
+    public String duplicatedRelics() {
+        return "源器选择重复";
+    }
+
+    @Override
+    public String relicsChooserPlaceHolder(int index) {
+        return "源器" + (index + 1);
+    }
+
+    @Override
+    public String loadingStageTitle() {
+        return "加载中...";
+    }
+
+    @Override
+    public String hintPressAlt() {
+        return "按住alt键有惊喜！";
+    }
+
+    @Override
+    public String cooldownTipsButton() {
+        return "说明";
+    }
+
+    @Override
+    public String cooldownTips() {
+        return """
+            在游戏中使用本工具需要管理员权限。
+            本工具会直接监听键盘鼠标事件，并根据这些事件来模拟武器的切换和技能的释放。
+            所以本工具不会和游戏本体有任何交互，也不会被检测。
+            但正因为所有事件都是模拟的，工具给出的结果会不可避免的与游戏实际情况发生差异。
+            为此，本工具设计了一些容错方案，尽可能的与游戏保持一致：
+            1. 对于所有武器，如果软件计算的冷却时间已经经过了90%以上，那么即使没有冷却完全，也视为可使用的状态；
+            2. 对于1星及以上的格莱普尼（芬璃尔），在短时间内连续按下5次技能按钮，则无视当前状态，直接视为冷却完全并依次释放了一次主技能和一次1星副技能的状态；
+            3. 对于6星影织（凛夜），技能冷却进度条会正常显示，但因软件无法计算连携次数，所以技能本身不会进入冷却，需要玩家自行盯紧buff栏；
+            4. 对于1星及以上的流泉澈心（不破咲），点击其技能计数器可以增加次数，方便玩家在读条后同步该计数器；
+            5. 对于3星及以上的炽焰左轮，由于无法判定灼烧情况，所以只要进行闪避攻击或者蓄力攻击，就认为触发了离子灼烧；
+            6. 对于6星的炽焰左轮，只计算离子灼烧对其的冷却减少效果，且冷却减少间隔使用2秒而非游戏中的1.5秒；
+            即使存在这些容错设计，某些情况下还是不可避免的与游戏发生不一致，所以正确用法是：主要以游戏为准，然后时不时瞅一眼冷却指示器。
+            """;
     }
 }

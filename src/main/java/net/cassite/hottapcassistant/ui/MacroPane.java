@@ -329,7 +329,11 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean enterCheck() {
+    public boolean enterCheck(boolean skipGamePathCheck) {
+        if (!Utils.checkLock("macro")) {
+            return false;
+        }
+
         GlobalValues.useVersion.removeListener(inputConfigChangeListener);
         GlobalValues.savedPath.removeListener(inputConfigChangeListener);
         GlobalValues.useVersion.addListener(inputConfigChangeListener);

@@ -2,15 +2,21 @@ package net.cassite.hottapcassistant.util;
 
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import net.cassite.hottapcassistant.config.TofServerListConfig;
+import net.cassite.hottapcassistant.feed.Feed;
+import net.cassite.hottapcassistant.i18n.I18n;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -221,5 +227,92 @@ public class Utils {
             }
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
+    }
+
+    public static Image getWeaponImageFromClasspath(String name) {
+        try {
+            return ImageManager.get().load("images/weapons/" + name + ".png");
+        } catch (Exception e) {
+            Logger.error("failed loading image for weapon " + name, e);
+            return null;
+        }
+    }
+
+    public static Image getMatrixImageFromClasspath(String name) {
+        try {
+            return ImageManager.get().load("images/matrix/" + name + ".png");
+        } catch (Exception e) {
+            Logger.error("failed loading image for matrix " + name, e);
+            return null;
+        }
+    }
+
+    public static Image getBuffImageFromClasspath(String name) {
+        try {
+            return ImageManager.get().load("images/buff/" + name + ".png");
+        } catch (Exception e) {
+            Logger.error("failed loading image for buff " + name, e);
+            return null;
+        }
+    }
+
+    public static Image getRelicsImageFromClasspath(String name) {
+        try {
+            return ImageManager.get().load("images/relics/" + name + ".png");
+        } catch (Exception e) {
+            Logger.error("failed loading image for relics " + name, e);
+            return null;
+        }
+    }
+
+    public static long subtractLongGE0(long a, long b) {
+        if (a < b) {
+            return 0;
+        } else {
+            return a - b;
+        }
+    }
+
+    public static boolean checkLock(String name) {
+        return checkLock(name, true, true);
+    }
+
+    public static boolean checkLock(String name, boolean alert, boolean useFeed) {
+        if (useFeed) {
+            Boolean ret = null;
+            if (name.equals("macro")) {
+                ret = Feed.get().lockMacroPane;
+            } else if (name.equals("fishing")) {
+                ret = Feed.get().lockFishingPane;
+            }
+            if (ret != null) {
+                if (!ret && alert) {
+                    new SimpleAlert(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name)).showAndWait();
+                }
+                return ret;
+            }
+        }
+
+        InetAddress[] addrs;
+        try {
+            addrs = InetAddress.getAllByName(name + ".lock.hotta-pc-assistant.special.cassite.net");
+        } catch (UnknownHostException ignore) {
+            if (alert) {
+                new SimpleAlert(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name)).showAndWait();
+            }
+            return false;
+        }
+        for (var addr : addrs) {
+            var bytes = addr.getAddress();
+            if (bytes == null) continue;
+            if (bytes.length != 4) continue;
+            if (bytes[0] == 2 && bytes[1] == 2 && bytes[2] == 2 && bytes[3] == 2) {
+                return true;
+            }
+        }
+        if (alert) {
+            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name)).showAndWait();
+        }
+        return false;
     }
 }

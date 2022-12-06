@@ -29,5 +29,8 @@ public class Feed {
     public String tofServerNames;
     public String tofServerHosts;
 
+    public Boolean lockMacroPane;
+    public Boolean lockFishingPane;
+
     public ZonedDateTime feedTime;
 }
