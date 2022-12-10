@@ -167,11 +167,15 @@ public class Utils {
     }
 
     public static Rectangle2D calculateTextBounds(Label label) {
+        Text text = new Text(label.getText());
+        text.setFont(label.getFont());
+        return calculateTextBounds(text);
+    }
+
+    public static Rectangle2D calculateTextBounds(Text text) {
         double textWidth;
         double textHeight;
         {
-            Text text = new Text(label.getText());
-            text.setFont(label.getFont());
             textWidth = text.getLayoutBounds().getWidth();
             textHeight = text.getLayoutBounds().getHeight();
         }

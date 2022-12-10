@@ -9,11 +9,10 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
@@ -152,11 +151,13 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         double r = WeaponCoolDown.MAX_RADIUS;
         setWidth(10 + (2 * r) * groups.size() + margin * (groups.size() - 1) + 10);
         setHeight(10 + 2 * r + 40);
-        var descLabel = new Label() {{
+        var descLabel = new Text() {{
             FontManager.setFont(this, 24);
+            setFill(Color.WHITE);
+            setStrokeWidth(0.5);
+            setStroke(Color.BLACK);
         }};
-        descLabel.setLayoutY(10 + 2 * r + 2);
-        descLabel.setBackground(Background.EMPTY);
+        descLabel.setLayoutY(10 + 2 * r + 2 + 25);
         for (var i = 0; i < groups.size(); ++i) {
             var n = groups.get(i);
             n.setLayoutX(10 + r + (2 * r + margin) * i);
@@ -203,7 +204,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         timer.start();
     }
 
-    private void setTextForDescLabel(Label descLabel, String s) {
+    private void setTextForDescLabel(Text descLabel, String s) {
         if (s.equals(descLabel.getText())) return;
         descLabel.setText(s);
         if (s.isBlank()) return;
