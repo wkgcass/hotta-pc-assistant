@@ -151,7 +151,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         final double margin = 5;
         double r = WeaponCoolDown.MAX_RADIUS;
         setWidth(10 + (2 * r) * groups.size() + margin * (groups.size() - 1) + 10);
-        setHeight(10 + 2 * r + 30);
+        setHeight(10 + 2 * r + 40);
         var descLabel = new Label() {{
             FontManager.setFont(this, 24);
         }};
