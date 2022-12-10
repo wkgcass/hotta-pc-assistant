@@ -9,6 +9,8 @@ public interface Weapon {
 
     WeaponElement element();
 
+    WeaponCategory category();
+
     void init(int stars, Matrix[] matrix);
 
     void start();
