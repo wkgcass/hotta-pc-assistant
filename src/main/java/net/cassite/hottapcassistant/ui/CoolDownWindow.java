@@ -17,10 +17,12 @@ import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.Relics;
+import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.data.relics.DiceRelics;
 import net.cassite.hottapcassistant.data.relics.KaoEnTeRelics;
+import net.cassite.hottapcassistant.data.simulacra.XingHuanSimulacra;
 import net.cassite.hottapcassistant.data.weapon.*;
 import net.cassite.hottapcassistant.entity.InputData;
 import net.cassite.hottapcassistant.entity.Key;
@@ -34,7 +36,6 @@ import java.util.*;
 public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMouseListener {
     private static final InputData SpecialAttack = new InputData(new Key(KeyCode.BACKQUOTE));
     private final WeaponContext ctx;
-    private final Relics[] relics;
     private final InputData weaponSkill;
     private final InputData[] melee;
     private final InputData[] evade;
@@ -52,12 +53,12 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private WeaponSpecialInfo siYeShiZiShotRemain;
     private WeaponCoolDown shiZiZhuoShaoBuffTimer;
     private WeaponCoolDown liZiZhuoShaoBuffTimer;
+    private WeaponCoolDown xingHuanSimulacraTimer;
 
-    public CoolDownWindow(List<Weapon> weapons, Relics[] relics,
+    public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
                           InputData weaponSkill, InputData[] melee, InputData[] evade,
                           InputData[] changeWeapons, InputData[] artifact) {
-        this.ctx = new WeaponContext(weapons);
-        this.relics = relics;
+        this.ctx = new WeaponContext(weapons, relics, simulacra);
         this.weaponSkill = weaponSkill;
         this.melee = melee;
         this.evade = evade;
@@ -112,6 +113,10 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             }
         }
 
+        if (simulacra instanceof XingHuanSimulacra) {
+            xingHuanSimulacraTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("xing-huan-simulacra"));
+        }
+
         var groups = new ArrayList<Group>(Arrays.asList(cds));
         if (liuQuanCheXinCounter != null) groups.add(liuQuanCheXinCounter);
         if (yingYueZhiJingBuffTimer != null) groups.add(yingYueZhiJingBuffTimer);
@@ -121,6 +126,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (liZiZhuoShaoBuffTimer != null) groups.add(liZiZhuoShaoBuffTimer);
         if (diceBuffTimer != null) groups.add(diceBuffTimer);
         if (kaoEnTeBuffTimer != null) groups.add(kaoEnTeBuffTimer);
+        if (xingHuanSimulacraTimer != null) groups.add(xingHuanSimulacraTimer);
 
         final double margin = 5;
         double r = WeaponCoolDown.MAX_RADIUS;
@@ -159,9 +165,6 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         };
 
         ctx.start();
-        for (var rr : relics) {
-            rr.start();
-        }
         timer.start();
     }
 
@@ -273,8 +276,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     }
 
     private void useArtifact(int index) {
-        if (relics[index] == null) return;
-        relics[index].use(ctx);
+        ctx.useRelics(index);
     }
 
     private long lastAttackButtonDownTs;
@@ -350,13 +352,23 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 }
             }
         }
-        for (var r : relics) {
+        for (var r : ctx.relics) {
             if (r instanceof DiceRelics) {
                 diceBuffTimer.setCoolDown(r.getTime());
                 diceBuffTimer.setAllCoolDown(r.getAllTime());
             } else if (r instanceof KaoEnTeRelics) {
                 kaoEnTeBuffTimer.setCoolDown(r.getTime());
                 kaoEnTeBuffTimer.setAllCoolDown(r.getAllTime());
+            }
+        }
+        if (ctx.simulacra instanceof XingHuanSimulacra xh) {
+            var timer = xingHuanSimulacraTimer;
+            if (timer != null) {
+                var buffTime = xh.getBuffTime();
+                var total = xh.getTotalBuffTime();
+                timer.setCoolDown(buffTime);
+                if (buffTime == 0) timer.setAllCoolDown(null);
+                else timer.setAllCoolDown(new double[]{buffTime / (double) total});
             }
         }
     }
@@ -370,9 +382,6 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private void stop() {
         timer.stop();
         ctx.stop();
-        for (var rr : relics) {
-            rr.stop();
-        }
         GlobalScreen.removeNativeKeyListener(this);
         GlobalScreen.removeNativeMouseListener(this);
         GlobalScreenUtils.disable(this);

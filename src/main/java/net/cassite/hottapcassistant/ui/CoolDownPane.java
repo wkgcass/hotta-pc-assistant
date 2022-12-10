@@ -22,7 +22,9 @@ import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.config.InputConfig;
 import net.cassite.hottapcassistant.data.Matrix;
 import net.cassite.hottapcassistant.data.Relics;
+import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
+import net.cassite.hottapcassistant.data.simulacra.DummySimulacra;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.*;
@@ -69,6 +71,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         new SimpleObjectProperty(),
         new SimpleObjectProperty(),
     };
+    private final SimpleObjectProperty<SimulacraRef> simulacra = new SimpleObjectProperty<>(null);
 
     public CoolDownPane() {
         var vbox = new VBox();
@@ -287,6 +290,40 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 relicsStars0.setPrefWidth(120);
             }
 
+            ComboBox<SimulacraRef> simulacraRefComboBox;
+            {
+                simulacraRefComboBox = new ComboBox<>();
+                simulacraRefComboBox.setPrefWidth(120);
+                simulacraRefComboBox.setEditable(false);
+                simulacraRefComboBox.setItems(FXCollections.observableList(SimulacraRef.all()));
+                simulacraRefComboBox.getSelectionModel().select(0);
+                simulacraRefComboBox.setOnAction(e -> simulacra.set(simulacraRefComboBox.getValue()));
+                simulacraRefComboBox.setConverter(new StringConverter<>() {
+                    @Override
+                    public String toString(SimulacraRef object) {
+                        if (object == null) return "";
+                        return object.name;
+                    }
+
+                    @Override
+                    public SimulacraRef fromString(String string) {
+                        throw new UnsupportedOperationException();
+                    }
+                });
+                simulacra.addListener((ob, old, now) -> {
+                    if (now == null) return;
+                    for (var s : simulacraRefComboBox.getItems()) {
+                        if (s.id == now.id) {
+                            if (s != now) {
+                                simulacraRefComboBox.setValue(s);
+                                simulacra.set(s);
+                            }
+                            break;
+                        }
+                    }
+                });
+            }
+
             hbox.getChildren().addAll(startBtn, new HPadding(4), stopBtn,
                 new HPadding(4), tipsBtn,
                 new HPadding(20), new VBox() {{
@@ -295,7 +332,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 }}, new HPadding(4), new VBox() {{
                     getChildren().add(relics[1]);
                     getChildren().add(relicsStars[1]);
-                }});
+                }}, new HPadding(20), simulacraRefComboBox);
         }
     }
 
@@ -328,6 +365,15 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     return;
                 }
                 relics[i] = rr.make();
+            }
+        }
+        Simulacra simulacra;
+        {
+            var s = this.simulacra.get();
+            if (s != null) {
+                simulacra = s.make();
+            } else {
+                simulacra = new DummySimulacra();
             }
         }
 
@@ -386,6 +432,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 rConfig.stars = r == null ? 3 : r.getStars();
                 config.relics.add(rConfig);
             }
+            config.simulacra = new AssistantCoolDownSimulacra();
+            {
+                var s = this.simulacra.get();
+                config.simulacra.simulacraId = s == null ? 0 : s.id;
+            }
             Logger.info("weapon properties:\n" + config.toJson().pretty());
 
             try {
@@ -395,7 +446,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             }
         }
 
-        var window = new CoolDownWindow(weapons, relics, weaponSkill, melee, evade, changeWeapons, useArtifacts);
+        var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts);
         this.window = window;
         window.show();
     }
@@ -534,6 +585,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         if (cooldown == null) return;
         loadWeaponsFromConfig(cooldown.weapons);
         loadRelicsFromConfig(cooldown.relics);
+        loadSimulacraFromConfig(cooldown.simulacra);
     }
 
     private void loadWeaponsFromConfig(List<AssistantCoolDownWeapon> weapons) {
@@ -562,6 +614,12 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             r.starsSupplier = () -> rr.stars;
             this.relics[i].set(r);
         }
+    }
+
+    private void loadSimulacraFromConfig(AssistantCoolDownSimulacra simulacra) {
+        if (simulacra == null) return;
+        var s = new SimulacraRef(simulacra.simulacraId, null);
+        this.simulacra.set(s);
     }
 
     @Override

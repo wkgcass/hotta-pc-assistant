@@ -6,11 +6,15 @@ import java.util.List;
 
 public class WeaponContext {
     public final List<Weapon> weapons;
+    public final Relics[] relics;
+    public final Simulacra simulacra;
     public Weapon current;
 
-    public WeaponContext(List<Weapon> weapons) {
+    public WeaponContext(List<Weapon> weapons, Relics[] relics, Simulacra simulacra) {
         if (weapons.isEmpty()) throw new IllegalArgumentException();
         this.weapons = weapons;
+        this.relics = relics;
+        this.simulacra = simulacra;
         this.current = weapons.get(0);
     }
 
@@ -18,12 +22,22 @@ public class WeaponContext {
         for (var w : weapons) {
             w.start();
         }
+        for (var r : relics) {
+            if (r != null)
+                r.start();
+        }
+        simulacra.start();
     }
 
     public void stop() {
         for (var w : weapons) {
             w.stop();
         }
+        for (var r : relics) {
+            if (r != null)
+                r.stop();
+        }
+        simulacra.stop();
     }
 
     public void resetCoolDown() {
@@ -43,8 +57,9 @@ public class WeaponContext {
         if (ok) {
             Logger.info("use weapon skill " + current.getName());
             for (var w : weapons) {
-                w.alertSkillUsed(this, w);
+                w.alertSkillUsed(this, current);
             }
+            simulacra.alertSkillUsed(this, current);
         }
     }
 
@@ -81,5 +96,10 @@ public class WeaponContext {
         for (var ww : weapons) {
             ww.alertWeaponSwitched(this, w);
         }
+    }
+
+    public void useRelics(int index) {
+        if (relics[index] == null) return;
+        relics[index].use(this);
     }
 }

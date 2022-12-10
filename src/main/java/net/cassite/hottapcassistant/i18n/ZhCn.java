@@ -731,6 +731,15 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String simulacraName(String name) {
+        //noinspection SwitchStatementWithTooFewBranches
+        return switch (name) {
+            case "xīng huán" -> "星寰";
+            default -> name;
+        };
+    }
+
+    @Override
     public String startCoolDown() {
         return "启动";
     }

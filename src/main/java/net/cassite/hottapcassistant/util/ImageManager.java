@@ -10,6 +10,7 @@ public class ImageManager {
         "/images/bg/bg0.jpg",
         "/images/buff/li-zi-zhuo-shao.png",
         "/images/buff/shi-zi-zhuo-shao.png",
+        "/images/buff/xing-huan-simulacra.png",
         "/images/buff/ying-yue-zhi-jing.png",
         "/images/downloadgame-btn/downloadgame-down.png",
         "/images/downloadgame-btn/downloadgame-hover.png",
