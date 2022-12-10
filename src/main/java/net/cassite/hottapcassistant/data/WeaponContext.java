@@ -10,6 +10,7 @@ public class WeaponContext {
     public final Relics[] relics;
     public final Simulacra simulacra;
     public Weapon current;
+    public final ResonanceInfo resonanceInfo;
 
     private volatile Thread thread;
     private BurnSettleContext burnSettleContext;
@@ -19,7 +20,12 @@ public class WeaponContext {
         this.weapons = weapons;
         this.relics = relics;
         this.simulacra = simulacra;
+        this.resonanceInfo = ResonanceInfo.build(weapons);
         this.current = weapons.get(0);
+
+        for (var w : weapons) {
+            w.init(this);
+        }
     }
 
     public void start() {
@@ -160,16 +166,13 @@ public class WeaponContext {
 
     public long calcExtraBurnTime(long t) {
         YingZhiWeapon yingZhi = null;
-        var fireCount = 0;
         for (var w : weapons) {
             if (w instanceof YingZhiWeapon) {
                 yingZhi = (YingZhiWeapon) w;
-            }
-            if (w.element() == WeaponElement.FIRE) {
-                ++fireCount;
+                break;
             }
         }
-        if (yingZhi != null && fireCount >= 2) {
+        if (yingZhi != null && resonanceInfo.fire) {
             if (yingZhi.getFieldTime() > 0) {
                 return t + 4_000;
             }

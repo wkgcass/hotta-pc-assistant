@@ -50,6 +50,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     // special info
     private WeaponSpecialInfo liuQuanCheXinCounter;
+    private WeaponSpecialInfo wanDaoHuiQiCounter;
     private WeaponCoolDown yingYueZhiJingBuffTimer;
     private WeaponCoolDown diceBuffTimer;
     private WeaponCoolDown kaoEnTeBuffTimer;
@@ -100,6 +101,12 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 liuQuanCheXinCounter = new WeaponSpecialInfo(lw.getImage(), I18n.get().buffName("liuQuanCheXinCounter"));
                 liuQuanCheXinCounter.setOnMouseClicked(e -> lw.addCount(ctx));
                 liuQuanCheXinCounter.setCursor(Cursor.HAND);
+            } else if (w instanceof WanDaoWeapon wd) {
+                if (ctx.resonanceInfo.sup) {
+                    wanDaoHuiQiCounter = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("hui-qi"), I18n.get().buffName("wanDaoHuiQiCounter"));
+                    wanDaoHuiQiCounter.setOnMouseClicked(e -> wd.resetCount());
+                    wanDaoHuiQiCounter.setCursor(Cursor.HAND);
+                }
             } else if (w instanceof YingZhiWeapon) {
                 yingYueZhiJingBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ying-yue-zhi-jing"), I18n.get().buffName("yingYueZhiJingBuffTimer"));
             } else if (w instanceof BingFengZhiShiWeapon) {
@@ -147,6 +154,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
         var groups = new ArrayList<Group>(Arrays.asList(cds));
         if (liuQuanCheXinCounter != null) groups.add(liuQuanCheXinCounter);
+        if (wanDaoHuiQiCounter != null) groups.add(wanDaoHuiQiCounter);
         if (yingYueZhiJingBuffTimer != null) groups.add(yingYueZhiJingBuffTimer);
         if (bingFengZhiShiBuffTimer != null) groups.add(bingFengZhiShiBuffTimer);
         if (siYeShiZiShotRemain != null) groups.add(siYeShiZiShotRemain);
@@ -379,6 +387,11 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 var counter = liuQuanCheXinCounter;
                 if (counter != null) {
                     counter.setText(((LiuQuanCheXinWeapon) w).getCount() + "");
+                }
+            } else if (w instanceof WanDaoWeapon) {
+                var counter = wanDaoHuiQiCounter;
+                if (counter != null) {
+                    counter.setText(((WanDaoWeapon) w).getCount() + "");
                 }
             } else if (w instanceof YingZhiWeapon) {
                 var yyzj = yingYueZhiJingBuffTimer;

@@ -39,13 +39,7 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon {
         if (stars < 1) {
             return;
         }
-        int iceCount = 0;
-        for (var ww : ctx.weapons) {
-            if (ww.element() == WeaponElement.ICE) {
-                ++iceCount;
-            }
-        }
-        boolean triggerred = iceCount >= 2;
+        boolean triggerred = ctx.resonanceInfo.ice;
         if (!triggerred) {
             for (var ww : ctx.weapons) {
                 if (ww instanceof YingZhiWeapon) {

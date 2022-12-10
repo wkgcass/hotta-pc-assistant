@@ -12,6 +12,7 @@ public abstract class AbstractWeapon implements Weapon {
     protected int cooldown;
     protected double considerCDIsClearedRatio = 0.1;
     protected Matrix[] matrix;
+    protected WeaponContext ctx;
     private volatile Thread thread;
     protected volatile long cd = 0L;
 
@@ -51,6 +52,11 @@ public abstract class AbstractWeapon implements Weapon {
     public void init(int stars, Matrix[] matrix) {
         this.stars = stars;
         this.matrix = matrix;
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
+        this.ctx = ctx;
     }
 
     @Override

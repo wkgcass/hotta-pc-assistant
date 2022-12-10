@@ -13,6 +13,8 @@ public interface Weapon {
 
     void init(int stars, Matrix[] matrix);
 
+    void init(WeaponContext ctx);
+
     void start();
 
     void stop();

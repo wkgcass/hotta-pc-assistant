@@ -10,6 +10,7 @@ public class ImageManager {
         "/images/bg/bg0.jpg",
         "/images/buff/burn-settle.png",
         "/images/buff/dodge.png",
+        "/images/buff/hui-qi.png",
         "/images/buff/li-zi-zhuo-shao.png",
         "/images/buff/optical-space.png",
         "/images/buff/shi-zi-zhuo-shao.png",
@@ -46,10 +47,12 @@ public class ImageManager {
         "/images/weapons/hong-lian-ren.png",
         "/images/weapons/liu-quan-che-xin.png",
         "/images/weapons/po-jun.png",
+        "/images/weapons/po-xiao.png",
         "/images/weapons/qi-ming-xing.png",
         "/images/weapons/si-pa-ke.png",
         "/images/weapons/si-ye-shi-zi.png",
         "/images/weapons/v2-rong-qv-dun.png",
+        "/images/weapons/wan-dao.png",
         "/images/weapons/ying-zhi.png",
     };
     private static final ImageManager instance = new ImageManager();

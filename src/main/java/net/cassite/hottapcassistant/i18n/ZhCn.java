@@ -707,6 +707,8 @@ public class ZhCn extends I18n {
             case "sī pà kè" -> "斯帕克";
             case "sì yè shí zì (burn)" -> "四叶十字(灼烧)";
             case "sì yè shí zì (gas)" -> "四叶十字(瓦斯)";
+            case "pò xiǎo" -> "破晓";
+            case "wǎn dǎo" -> "晚祷";
             default -> name;
         };
     }
@@ -754,6 +756,7 @@ public class ZhCn extends I18n {
             case "diceBuffTimer" -> "热核增伤";
             case "kaoEnTeBuffTimer" -> "考恩特增伤";
             case "xingHuanSimulacraTimer" -> "星寰拟态霸体效果";
+            case "wanDaoHuiQiCounter" -> "晚祷辉起计数";
             default -> name;
         };
     }
@@ -817,6 +820,8 @@ public class ZhCn extends I18n {
             4. 对于1星及以上的流泉澈心（不破咲），点击其技能计数器可以增加次数，方便玩家在读条后同步该计数器；
             5. 对于3星及以上的炽焰左轮，由于无法判定灼烧情况，所以只要进行闪避攻击或者蓄力攻击，就认为触发了离子灼烧；
             6. 对于6星的炽焰左轮，只计算离子灼烧对其的冷却减少效果，且冷却减少间隔使用2秒而非游戏中的1.5秒；
+            7. 对于触发恩赐共鸣的晚祷（星环），点击辉起计数器可以将其重置为3次，方便玩家在读条后同步该计数器；
+            8. 短按天选骰子则重置所有武器的技能冷却，长按（大于300毫秒）则只提供热核buff，不刷新技能冷却；
             即使存在这些容错设计，某些情况下还是不可避免的与游戏发生不一致，所以正确用法是：主要以游戏为准，然后时不时瞅一眼冷却指示器。
             """;
     }
