@@ -118,7 +118,19 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             }
         }
         if (needBurnSettle) {
+            // check for burn source
+            needBurnSettle = false;
+            for (var w : weapons) {
+                if (w instanceof BurnSiYeShiZiWeapon || w instanceof ChiYanZuoLunWeapon) {
+                    needBurnSettle = true;
+                    break;
+                }
+            }
+        }
+        if (needBurnSettle) {
             burnSettleTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("burn-settle"), I18n.get().buffName("burnSettleTimer"));
+        } else {
+            opticalSpaceTimer = null;
         }
 
         for (var r : relics) {
