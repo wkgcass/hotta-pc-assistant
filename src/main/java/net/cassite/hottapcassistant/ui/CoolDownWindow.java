@@ -64,6 +64,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         this.evade = evade;
         this.changeWeapons = changeWeapons;
         this.artifact = artifact;
+        this.lastArtifactButtonDownTs = new long[artifact.length];
 
         GlobalScreenUtils.enable(this);
         GlobalScreen.addNativeKeyListener(this);
@@ -175,14 +176,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     public void nativeKeyPressed(NativeKeyEvent e) {
         var key = KeyCode.valueOf(e.getKeyCode());
         if (key == null) return;
-        if (keys.add(key)) {
-            for (var input : melee) {
-                if (input.matches(keys, btns, key, null)) {
-                    lastAttackButtonDownTs = System.currentTimeMillis();
-                    break;
-                }
-            }
-        }
+        handlePressed(key, null);
     }
 
     @Override
@@ -205,12 +199,30 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             b = MouseButton.SECONDARY;
         }
         if (b == null) return;
-        if (btns.add(b)) {
-            for (var input : melee) {
-                if (input.matches(keys, btns, null, b)) {
-                    lastAttackButtonDownTs = System.currentTimeMillis();
-                    break;
-                }
+        handlePressed(null, b);
+    }
+
+    private void handlePressed(KeyCode key, MouseButton btn) {
+        boolean handle = false;
+        if (key != null) {
+            handle = keys.add(key);
+        } else if (btn != null) {
+            handle = btns.add(btn);
+        }
+        if (!handle) {
+            return;
+        }
+        for (var input : melee) {
+            if (input.matches(keys, btns, key, btn)) {
+                lastAttackButtonDownTs = System.currentTimeMillis();
+                break;
+            }
+        }
+        for (int i = 0; i < artifact.length; i++) {
+            InputData input = artifact[i];
+            if (input.matches(keys, btns, key, btn)) {
+                lastArtifactButtonDownTs[i] = System.currentTimeMillis();
+                break;
             }
         }
     }
@@ -276,10 +288,13 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     }
 
     private void useArtifact(int index) {
-        ctx.useRelics(index);
+        long current = System.currentTimeMillis();
+        ctx.useRelics(index, current - lastArtifactButtonDownTs[index] > 300);
+        lastArtifactButtonDownTs[index] = 0;
     }
 
     private long lastAttackButtonDownTs;
+    private final long[] lastArtifactButtonDownTs;
     private long lastDodgeTs;
 
     private void attack() {

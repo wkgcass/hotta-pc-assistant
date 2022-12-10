@@ -15,6 +15,11 @@ public interface Relics {
 
     void use(WeaponContext ctx);
 
+    @SuppressWarnings("unused")
+    default void use(WeaponContext ctx, boolean holding) {
+        use(ctx);
+    }
+
     long getTime();
 
     double[] getAllTime();

@@ -98,8 +98,8 @@ public class WeaponContext {
         }
     }
 
-    public void useRelics(int index) {
+    public void useRelics(int index, boolean holding) {
         if (relics[index] == null) return;
-        relics[index].use(this);
+        relics[index].use(this, holding);
     }
 }

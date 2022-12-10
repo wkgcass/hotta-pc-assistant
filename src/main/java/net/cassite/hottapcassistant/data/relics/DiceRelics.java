@@ -13,8 +13,21 @@ public class DiceRelics extends AbstractRelics implements Relics {
 
     @Override
     public void use(WeaponContext ctx) {
-        cd = stars >= 2 ? totalCDStar2 : totalCDStar0;
+        buff();
         ctx.resetCoolDown();
+    }
+
+    @Override
+    public void use(WeaponContext ctx, boolean holding) {
+        if (!holding) {
+            use(ctx);
+            return;
+        }
+        buff();
+    }
+
+    private void buff() {
+        cd = stars >= 2 ? totalCDStar2 : totalCDStar0;
     }
 
     @Override
