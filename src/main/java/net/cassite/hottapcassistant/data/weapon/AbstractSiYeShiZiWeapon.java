@@ -13,7 +13,13 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
     // 1 -> skill used
     // 2 -> selected
     protected long burnBuff;
+
+    private long opticalSpaceTime;
+    private int countForOpticalSpace = 0;
+    private long lastShotTs = 0;
+
     protected int shotRemain = -1;
+    protected int dodgeRemain = 0; // will / 2
 
     public AbstractSiYeShiZiWeapon() {
         super(14);
@@ -35,6 +41,7 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
             state = 0;
         }
         burnBuff = Utils.subtractLongGE0(burnBuff, delta);
+        opticalSpaceTime = Utils.subtractLongGE0(opticalSpaceTime, delta);
     }
 
     @Override
@@ -50,6 +57,7 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
             state = 2;
             cd = 14_000;
             shotRemain = 8;
+            dodgeRemain = 8; // will / 2
             return true;
         } else {
             assert state == 2;
@@ -64,19 +72,50 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
 
     @Override
     public void aimAttack(WeaponContext ctx) {
-        if (shotRemain == -1) return;
-        --shotRemain;
+        shot();
+    }
+
+    @Override
+    public void dodge(WeaponContext ctx) {
+        if (dodgeRemain == 0) return;
+        --dodgeRemain;
     }
 
     @Override
     public void dodgeAttack(WeaponContext ctx) {
-        if (shotRemain == -1) return;
-        --shotRemain;
+        shot();
+    }
+
+    private void shot() {
+        if (shotRemain != -1) {
+            --shotRemain;
+        }
+        var now = System.currentTimeMillis();
+        if (now - lastShotTs < 35_000) {
+            countForOpticalSpace += 1;
+            if (countForOpticalSpace == 2) {
+                countForOpticalSpace = 0;
+                triggerOpticalSpace();
+            }
+        } else {
+            countForOpticalSpace = 1;
+        }
+        lastShotTs = now;
+    }
+
+    private void triggerOpticalSpace() {
+        if (stars < 1) {
+            return;
+        }
+        if (opticalSpaceTime == 0) {
+            opticalSpaceTime = getTotalOpticalSpaceTime();
+        }
     }
 
     @Override
     public void alertWeaponSwitched(WeaponContext ctx, Weapon w) {
         shotRemain = -1;
+        dodgeRemain = 0;
     }
 
     @Override
@@ -96,7 +135,19 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
         return cd;
     }
 
+    public long getOpticalSpaceTime() {
+        return opticalSpaceTime;
+    }
+
+    public long getTotalOpticalSpaceTime() {
+        return 12_000;
+    }
+
     public int getShotRemain() {
         return Math.max(shotRemain, 0);
+    }
+
+    public int getDodgeRemain() {
+        return (dodgeRemain + 1) / 2; // 8 -> 4, 7 -> 4, 6 -> 3, etc...
     }
 }

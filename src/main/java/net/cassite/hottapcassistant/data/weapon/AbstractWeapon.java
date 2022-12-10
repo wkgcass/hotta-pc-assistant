@@ -145,6 +145,10 @@ public abstract class AbstractWeapon implements Weapon {
     }
 
     @Override
+    public void dodge(WeaponContext ctx) {
+    }
+
+    @Override
     public void dodgeAttack(WeaponContext ctx) {
     }
 

@@ -9,13 +9,16 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
+import net.cassite.hottapcassistant.component.cooldown.WithDesc;
 import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
@@ -27,7 +30,9 @@ import net.cassite.hottapcassistant.data.weapon.*;
 import net.cassite.hottapcassistant.entity.InputData;
 import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.entity.KeyCode;
+import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.DragHandler;
+import net.cassite.hottapcassistant.util.FontManager;
 import net.cassite.hottapcassistant.util.GlobalScreenUtils;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -51,8 +56,11 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private WeaponCoolDown kaoEnTeBuffTimer;
     private WeaponCoolDown bingFengZhiShiBuffTimer;
     private WeaponSpecialInfo siYeShiZiShotRemain;
+    private WeaponSpecialInfo siYeShiZiDodgeRemain;
     private WeaponCoolDown shiZiZhuoShaoBuffTimer;
+    private WeaponCoolDown opticalSpaceTimer;
     private WeaponCoolDown liZiZhuoShaoBuffTimer;
+    private WeaponCoolDown burnSettleTimer;
     private WeaponCoolDown xingHuanSimulacraTimer;
 
     public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
@@ -82,40 +90,48 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
         cds = new WeaponCoolDown[weapons.size()];
         for (var i = 0; i < weapons.size(); ++i) {
-            cds[i] = new WeaponCoolDown(weapons.get(i).getImage());
+            cds[i] = new WeaponCoolDown(weapons.get(i).getImage(), weapons.get(i).getName());
             if (weapons.get(i) == ctx.current) {
                 cds[i].setActive(true);
             }
         }
+        var needBurnSettle = false;
         for (var w : weapons) {
             if (w instanceof LiuQuanCheXinWeapon lw) {
-                liuQuanCheXinCounter = new WeaponSpecialInfo(lw.getImage());
+                liuQuanCheXinCounter = new WeaponSpecialInfo(lw.getImage(), I18n.get().buffName("liuQuanCheXinCounter"));
                 liuQuanCheXinCounter.setOnMouseClicked(e -> lw.addCount(ctx));
                 liuQuanCheXinCounter.setCursor(Cursor.HAND);
             } else if (w instanceof YingZhiWeapon) {
-                yingYueZhiJingBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ying-yue-zhi-jing"));
+                yingYueZhiJingBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ying-yue-zhi-jing"), I18n.get().buffName("yingYueZhiJingBuffTimer"));
             } else if (w instanceof BingFengZhiShiWeapon) {
-                bingFengZhiShiBuffTimer = new WeaponCoolDown(w.getImage());
+                bingFengZhiShiBuffTimer = new WeaponCoolDown(w.getImage(), I18n.get().buffName("bingFengZhiShiBuffTimer"));
             } else if (w instanceof AbstractSiYeShiZiWeapon) {
-                siYeShiZiShotRemain = new WeaponSpecialInfo(w.getImage());
+                siYeShiZiShotRemain = new WeaponSpecialInfo(w.getImage(), I18n.get().buffName("siYeShiZiShotRemain"));
+                siYeShiZiDodgeRemain = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("dodge"), I18n.get().buffName("siYeShiZiDodgeRemain"));
+                opticalSpaceTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("optical-space"), I18n.get().buffName("opticalSpaceTimer"));
                 if (w instanceof BurnSiYeShiZiWeapon) {
-                    shiZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("shi-zi-zhuo-shao"));
+                    shiZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("shi-zi-zhuo-shao"), I18n.get().buffName("shiZiZhuoShaoBuffTimer"));
                 }
             } else if (w instanceof ChiYanZuoLunWeapon) {
-                liZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("li-zi-zhuo-shao"));
+                liZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("li-zi-zhuo-shao"), I18n.get().buffName("liZiZhuoShaoBuffTimer"));
+            } else if (w instanceof SiPaKeWeapon) {
+                needBurnSettle = true;
             }
+        }
+        if (needBurnSettle) {
+            burnSettleTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("burn-settle"), I18n.get().buffName("burnSettleTimer"));
         }
 
         for (var r : relics) {
             if (r instanceof DiceRelics) {
-                diceBuffTimer = new WeaponCoolDown(r.getImage());
+                diceBuffTimer = new WeaponCoolDown(r.getImage(), I18n.get().buffName("diceBuffTimer"));
             } else if (r instanceof KaoEnTeRelics) {
-                kaoEnTeBuffTimer = new WeaponCoolDown(r.getImage());
+                kaoEnTeBuffTimer = new WeaponCoolDown(r.getImage(), I18n.get().buffName("kaoEnTeBuffTimer"));
             }
         }
 
         if (simulacra instanceof XingHuanSimulacra) {
-            xingHuanSimulacraTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("xing-huan-simulacra"));
+            xingHuanSimulacraTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("xing-huan-simulacra"), I18n.get().buffName("xingHuanSimulacraTimer"));
         }
 
         var groups = new ArrayList<Group>(Arrays.asList(cds));
@@ -123,8 +139,11 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (yingYueZhiJingBuffTimer != null) groups.add(yingYueZhiJingBuffTimer);
         if (bingFengZhiShiBuffTimer != null) groups.add(bingFengZhiShiBuffTimer);
         if (siYeShiZiShotRemain != null) groups.add(siYeShiZiShotRemain);
+        if (siYeShiZiDodgeRemain != null) groups.add(siYeShiZiDodgeRemain);
         if (shiZiZhuoShaoBuffTimer != null) groups.add(shiZiZhuoShaoBuffTimer);
         if (liZiZhuoShaoBuffTimer != null) groups.add(liZiZhuoShaoBuffTimer);
+        if (opticalSpaceTimer != null) groups.add(opticalSpaceTimer);
+        if (burnSettleTimer != null) groups.add(burnSettleTimer);
         if (diceBuffTimer != null) groups.add(diceBuffTimer);
         if (kaoEnTeBuffTimer != null) groups.add(kaoEnTeBuffTimer);
         if (xingHuanSimulacraTimer != null) groups.add(xingHuanSimulacraTimer);
@@ -132,11 +151,25 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         final double margin = 5;
         double r = WeaponCoolDown.MAX_RADIUS;
         setWidth(10 + (2 * r) * groups.size() + margin * (groups.size() - 1) + 10);
-        setHeight(10 + 2 * r + 10);
+        setHeight(10 + 2 * r + 30);
+        var descLabel = new Label() {{
+            FontManager.setFont(this, 24);
+        }};
+        descLabel.setLayoutY(10 + 2 * r + 2);
+        descLabel.setBackground(Background.EMPTY);
         for (var i = 0; i < groups.size(); ++i) {
-            groups.get(i).setLayoutX(10 + r + (2 * r + margin) * i);
-            groups.get(i).setLayoutY(10 + r);
-            group.getChildren().add(groups.get(i));
+            var n = groups.get(i);
+            n.setLayoutX(10 + r + (2 * r + margin) * i);
+            n.setLayoutY(10 + r);
+            String desc;
+            if (n instanceof WithDesc) {
+                desc = ((WithDesc) n).desc();
+            } else {
+                desc = "";
+            }
+            n.setOnMouseEntered(e -> setTextForDescLabel(descLabel, desc));
+            n.setOnMouseExited(e -> setTextForDescLabel(descLabel, ""));
+            group.getChildren().add(n);
         }
         if (groups.size() > 3) {
             var sep = new Line();
@@ -150,6 +183,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             sep.setLayoutY(10);
             group.getChildren().add(sep);
         }
+        group.getChildren().add(descLabel);
 
         var dragHandler = new DragHandler(xy -> {
             setX(xy[0]);
@@ -167,6 +201,14 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
         ctx.start();
         timer.start();
+    }
+
+    private void setTextForDescLabel(Label descLabel, String s) {
+        if (s.equals(descLabel.getText())) return;
+        descLabel.setText(s);
+        if (s.isBlank()) return;
+        var bounds = Utils.calculateTextBounds(descLabel);
+        descLabel.setLayoutX(getWidth() / 2 - bounds.getWidth() / 2);
     }
 
     private final Set<KeyCode> keys = new HashSet<>();
@@ -312,6 +354,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     private void dodge() {
         lastDodgeTs = System.currentTimeMillis();
+        ctx.dodge();
     }
 
     private void updateUI() {
@@ -345,6 +388,15 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             } else if (w instanceof AbstractSiYeShiZiWeapon sysz) {
                 if (siYeShiZiShotRemain != null) {
                     siYeShiZiShotRemain.setText(sysz.getShotRemain() + "");
+                }
+                if (siYeShiZiDodgeRemain != null) {
+                    siYeShiZiDodgeRemain.setText(sysz.getDodgeRemain() + "");
+                }
+                if (opticalSpaceTimer != null) {
+                    var time = sysz.getOpticalSpaceTime();
+                    var total = sysz.getTotalOpticalSpaceTime();
+                    opticalSpaceTimer.setCoolDown(time);
+                    opticalSpaceTimer.setAllCoolDown(new double[]{time / (double) total});
                 }
                 if (w instanceof BurnSiYeShiZiWeapon bsysz) {
                     var szzs = shiZiZhuoShaoBuffTimer;
@@ -385,6 +437,12 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 if (buffTime == 0) timer.setAllCoolDown(null);
                 else timer.setAllCoolDown(new double[]{buffTime / (double) total});
             }
+        }
+        if (burnSettleTimer != null) {
+            var ctx = this.ctx.getBurnSettleContext();
+            burnSettleTimer.setCoolDown(ctx.getCd());
+            if (ctx.getCd() == 0) burnSettleTimer.setAllCoolDown(null);
+            else burnSettleTimer.setAllCoolDown(new double[]{ctx.getCd() / (double) ctx.getLastTotalCD()});
         }
     }
 

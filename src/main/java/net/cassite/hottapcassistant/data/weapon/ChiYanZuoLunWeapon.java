@@ -39,19 +39,21 @@ public class ChiYanZuoLunWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public void aimAttack(WeaponContext ctx) {
-        burn();
+        burn(ctx);
     }
 
     @Override
     public void alertDodgeAttack(WeaponContext ctx, Weapon w) {
         if (w == this || stars >= 5) {
-            burn();
+            burn(ctx);
         }
     }
 
-    private void burn() {
+    private void burn(WeaponContext ctx) {
         if (stars >= 3) {
-            burnBuff = getTotalBurnBuff();
+            var burnBuff = getTotalBurnBuff();
+            burnBuff = ctx.calcExtraBurnTime(burnBuff);
+            this.burnBuff = burnBuff;
         }
     }
 

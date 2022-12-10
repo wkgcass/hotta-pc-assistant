@@ -25,6 +25,8 @@ public interface Weapon {
 
     void attack(WeaponContext ctx);
 
+    void dodge(WeaponContext ctx);
+
     void dodgeAttack(WeaponContext ctx);
 
     void aimAttack(WeaponContext ctx);

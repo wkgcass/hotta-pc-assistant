@@ -9,13 +9,16 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class WeaponSpecialInfo extends Group {
+public class WeaponSpecialInfo extends Group implements WithDesc {
     private static final int INNER_RADIUS = WeaponCoolDown.INNER_RADIUS;
     private static final int FONT_SIZE = WeaponCoolDown.FONT_SIZE;
     private final Group textPane;
     private final Label text;
+    private final String desc;
 
-    public WeaponSpecialInfo(Image image) {
+    public WeaponSpecialInfo(Image image, String desc) {
+        this.desc = desc;
+
         var innerCircle = new Circle();
         innerCircle.setFill(Color.TRANSPARENT);
         innerCircle.setStrokeWidth(1);
@@ -66,5 +69,10 @@ public class WeaponSpecialInfo extends Group {
         var rect = Utils.calculateTextBounds(text);
         text.setLayoutX(-rect.getWidth() / 2);
         text.setLayoutY(-rect.getHeight() / 2);
+    }
+
+    @Override
+    public String desc() {
+        return desc;
     }
 }

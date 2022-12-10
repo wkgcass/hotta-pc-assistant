@@ -271,6 +271,8 @@ public abstract class I18n {
 
     public abstract String simulacraName(String name);
 
+    public abstract String buffName(String name);
+
     public abstract String startCoolDown();
 
     public abstract String stopCoolDown();

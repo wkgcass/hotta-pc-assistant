@@ -15,26 +15,28 @@ public class BurnSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
     @Override
     public void aimAttack(WeaponContext ctx) {
         super.aimAttack(ctx);
-        burn();
+        burn(ctx);
     }
 
     @Override
     public void dodgeAttack(WeaponContext ctx) {
         super.dodgeAttack(ctx);
-        burn();
+        burn(ctx);
     }
 
     @Override
     public void specialAttack(WeaponContext ctx) {
         super.specialAttack(ctx);
-        burn();
+        burn(ctx);
     }
 
-    private void burn() {
+    private void burn(WeaponContext ctx) {
         if (shotRemain < 0) {
             return;
         }
-        burnBuff = getTotalBurnBuff();
+        var burnBuff = getTotalBurnBuff();
+        burnBuff = ctx.calcExtraBurnTime(burnBuff);
+        this.burnBuff = burnBuff;
     }
 
     @Override

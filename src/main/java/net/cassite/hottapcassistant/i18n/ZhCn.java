@@ -740,6 +740,25 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String buffName(String name) {
+        return switch (name) {
+            case "liuQuanCheXinCounter" -> "流泉澈心技能次数";
+            case "yingYueZhiJingBuffTimer" -> "映月之境";
+            case "bingFengZhiShiBuffTimer" -> "冰风之矢增伤";
+            case "siYeShiZiShotRemain" -> "四叶十字狙击次数";
+            case "siYeShiZiDodgeRemain" -> "四叶十字闪避次数";
+            case "opticalSpaceTimer" -> "光学空间";
+            case "shiZiZhuoShaoBuffTimer" -> "十字灼烧";
+            case "liZiZhuoShaoBuffTimer" -> "离子灼烧";
+            case "burnSettleTimer" -> "灼烧结算";
+            case "diceBuffTimer" -> "热核增伤";
+            case "kaoEnTeBuffTimer" -> "考恩特增伤";
+            case "xingHuanSimulacraTimer" -> "星寰拟态霸体效果";
+            default -> name;
+        };
+    }
+
+    @Override
     public String startCoolDown() {
         return "启动";
     }

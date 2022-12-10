@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.data;
 
+import net.cassite.hottapcassistant.data.weapon.YingZhiWeapon;
 import net.cassite.hottapcassistant.util.Logger;
 
 import java.util.List;
@@ -9,6 +10,9 @@ public class WeaponContext {
     public final Relics[] relics;
     public final Simulacra simulacra;
     public Weapon current;
+
+    private volatile Thread thread;
+    private BurnSettleContext burnSettleContext;
 
     public WeaponContext(List<Weapon> weapons, Relics[] relics, Simulacra simulacra) {
         if (weapons.isEmpty()) throw new IllegalArgumentException();
@@ -27,6 +31,39 @@ public class WeaponContext {
                 r.start();
         }
         simulacra.start();
+        selfStart();
+    }
+
+    private void selfStart() {
+        if (thread != null) {
+            throw new IllegalStateException();
+        }
+        var thread = new Thread(this::threadRun, "thread-weapon-ctx");
+        this.thread = thread;
+        thread.start();
+    }
+
+    private void threadRun() {
+        long lastTs = System.currentTimeMillis();
+        while (this.thread != null) {
+            try {
+                //noinspection BusyWait
+                Thread.sleep(100);
+            } catch (InterruptedException ignore) {
+            }
+            long ts = System.currentTimeMillis();
+            long delta = ts - lastTs;
+            lastTs = ts;
+
+            threadTick(ts, delta);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void threadTick(long ts, long delta) {
+        if (burnSettleContext != null) {
+            burnSettleContext.tick(this, delta);
+        }
     }
 
     public void stop() {
@@ -38,6 +75,19 @@ public class WeaponContext {
                 r.stop();
         }
         simulacra.stop();
+        selfStop();
+    }
+
+    private void selfStop() {
+        var thread = this.thread;
+        if (thread != null) {
+            this.thread = null;
+            thread.interrupt();
+            try {
+                thread.join();
+            } catch (InterruptedException ignore) {
+            }
+        }
     }
 
     public void resetCoolDown() {
@@ -66,6 +116,11 @@ public class WeaponContext {
     public void attack() {
         Logger.info("weapon attack " + current.getName());
         current.attack(this);
+    }
+
+    public void dodge() {
+        Logger.info("weapon dodge " + current.getName());
+        current.dodge(this);
     }
 
     public void dodgeAttack() {
@@ -101,5 +156,31 @@ public class WeaponContext {
     public void useRelics(int index, boolean holding) {
         if (relics[index] == null) return;
         relics[index].use(this, holding);
+    }
+
+    public long calcExtraBurnTime(long t) {
+        YingZhiWeapon yingZhi = null;
+        var fireCount = 0;
+        for (var w : weapons) {
+            if (w instanceof YingZhiWeapon) {
+                yingZhi = (YingZhiWeapon) w;
+            }
+            if (w.element() == WeaponElement.FIRE) {
+                ++fireCount;
+            }
+        }
+        if (yingZhi != null && fireCount >= 2) {
+            if (yingZhi.getFieldTime() > 0) {
+                return t + 4_000;
+            }
+        }
+        return t;
+    }
+
+    public BurnSettleContext getBurnSettleContext() {
+        if (burnSettleContext == null) {
+            burnSettleContext = new BurnSettleContext();
+        }
+        return burnSettleContext;
     }
 }

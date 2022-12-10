@@ -10,7 +10,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class WeaponCoolDown extends Group {
+public class WeaponCoolDown extends Group implements WithDesc {
     static final int INNER_RADIUS = 28;
     static final int FONT_SIZE = 24;
     private static final int L1_RADIUS = INNER_RADIUS + 4;
@@ -24,7 +24,11 @@ public class WeaponCoolDown extends Group {
     private final Label cdNumber;
     private final SimpleObjectProperty<Color> backgroundColor = new SimpleObjectProperty<>(INACTIVE_COLOR);
 
-    public WeaponCoolDown(Image image) {
+    private final String desc;
+
+    public WeaponCoolDown(Image image, String desc) {
+        this.desc = desc;
+
         var innerCircle = new Circle();
         innerCircle.setFill(Color.TRANSPARENT);
         innerCircle.setStrokeWidth(1);
@@ -114,5 +118,10 @@ public class WeaponCoolDown extends Group {
         } else {
             backgroundColor.set(INACTIVE_COLOR);
         }
+    }
+
+    @Override
+    public String desc() {
+        return desc;
     }
 }
