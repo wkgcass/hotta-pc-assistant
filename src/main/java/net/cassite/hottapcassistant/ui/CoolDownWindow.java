@@ -148,7 +148,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             }
         }
 
-        if (simulacra instanceof XingHuanSimulacra) {
+        if (simulacra instanceof XingHuanSimulacra && ctx.resonanceInfo.sup) {
             xingHuanSimulacraTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("xing-huan-simulacra"), I18n.get().buffName("xingHuanSimulacraTimer"));
         }
 
