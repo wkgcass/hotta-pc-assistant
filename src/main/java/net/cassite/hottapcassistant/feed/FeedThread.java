@@ -36,9 +36,10 @@ public class FeedThread extends Thread {
     final HttpClient client;
 
     private FeedThread() {
-        client = HttpClient.newBuilder().connectTimeout(
-            Duration.ofSeconds(10)
-        ).build();
+        client = HttpClient.newBuilder()
+            .connectTimeout(
+                Duration.ofSeconds(10)
+            ).build();
     }
 
     public void terminate() {

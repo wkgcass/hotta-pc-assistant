@@ -98,7 +98,7 @@ public class Version1FeedParser implements FeedParser {
         try {
             resp = FeedThread.get().client.send(req, HttpResponse.BodyHandlers.ofByteArray());
         } catch (Throwable t) {
-            Logger.error("failed to retrieve " + resourceName + " from feed: " + url, t);
+            Logger.error("failed to retrieve " + resourceName + " from feed: " + url + ": " + t.getMessage());
         }
         if (resp == null) {
             return null;
