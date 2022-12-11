@@ -46,6 +46,7 @@ public class ImageManager {
         "/images/weapons/ge-lai-pu-ni.png",
         "/images/weapons/hei-ya-ming-lian.png",
         "/images/weapons/hong-lian-ren.png",
+        "/images/weapons/ling-guang.png",
         "/images/weapons/liu-quan-che-xin.png",
         "/images/weapons/po-jun.png",
         "/images/weapons/po-xiao.png",

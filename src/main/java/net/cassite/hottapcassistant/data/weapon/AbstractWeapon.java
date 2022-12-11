@@ -49,6 +49,11 @@ public abstract class AbstractWeapon implements Weapon {
     abstract protected Image buildImage();
 
     @Override
+    public int getStars() {
+        return stars;
+    }
+
+    @Override
     public void init(int stars, Matrix[] matrix) {
         this.stars = stars;
         this.matrix = matrix;

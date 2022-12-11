@@ -72,7 +72,7 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
 
     @Override
     public void aimAttack(WeaponContext ctx) {
-        shot();
+        shot(ctx);
     }
 
     @Override
@@ -83,12 +83,21 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
 
     @Override
     public void dodgeAttack(WeaponContext ctx) {
-        shot();
+        shot(ctx);
     }
 
-    private void shot() {
+    private void shot(WeaponContext ctx) {
         if (shotRemain != -1) {
-            --shotRemain;
+            var opt = ctx.weapons.stream().filter(e -> e instanceof LingGuangWeapon).findAny();
+            if (opt.isPresent() && opt.get().getStars() >= 1) {
+                if (shotRemain >= 3) {
+                    shotRemain -= 4;
+                } else {
+                    shotRemain = -1;
+                }
+            } else {
+                --shotRemain;
+            }
         }
         var now = System.currentTimeMillis();
         if (now - lastShotTs < 35_000) {

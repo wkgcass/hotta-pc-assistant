@@ -133,7 +133,7 @@ public class WeaponContext {
         Logger.info("weapon dodge attack " + current.getName());
         current.dodgeAttack(this);
         for (var w : weapons) {
-            w.alertDodgeAttack(this, w);
+            w.alertDodgeAttack(this, current);
         }
     }
 

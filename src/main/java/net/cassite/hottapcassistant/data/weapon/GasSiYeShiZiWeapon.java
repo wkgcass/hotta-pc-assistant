@@ -8,23 +8,23 @@ public class GasSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
     @Override
     public void aimAttack(WeaponContext ctx) {
         super.aimAttack(ctx);
-        cd(ctx);
+        cd(ctx, 700);
     }
 
     @Override
     public void dodgeAttack(WeaponContext ctx) {
         super.dodgeAttack(ctx);
-        cd(ctx);
+        cd(ctx, 1400); // gas blast will also decrease cd
     }
 
     @Override
     public void specialAttack(WeaponContext ctx) {
         super.specialAttack(ctx);
-        cd(ctx);
+        cd(ctx, 700);
     }
 
-    private void cd(WeaponContext ctx) {
-        if (shotRemain < 0) {
+    private void cd(WeaponContext ctx, long decrease) {
+        if (shotRemain <= 0) { // the last shot will not decrease cd
             return;
         }
         for (var w : ctx.weapons) {
@@ -32,7 +32,9 @@ public class GasSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
                 continue;
             }
             if (w.element() == WeaponElement.FIRE) {
-                w.decreaseCoolDown(700);
+                if (!(w instanceof LingGuangWeapon)) { // FIXME: game bug, might change in the future
+                    w.decreaseCoolDown(decrease);
+                }
             }
         }
     }

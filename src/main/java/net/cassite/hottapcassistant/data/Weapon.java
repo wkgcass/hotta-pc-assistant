@@ -11,6 +11,8 @@ public interface Weapon {
 
     WeaponCategory category();
 
+    int getStars();
+
     void init(int stars, Matrix[] matrix);
 
     void init(WeaponContext ctx);
