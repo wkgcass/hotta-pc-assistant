@@ -50,7 +50,7 @@ public class WelcomePane extends StackPane {
 
     public WelcomePane() {
         setBackground(new Background(new BackgroundImage(
-            ImageManager.get().load("images/bg/bg0.jpg"),
+            ImageManager.get().load("images/bg/bg1.png"),
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.CENTER,

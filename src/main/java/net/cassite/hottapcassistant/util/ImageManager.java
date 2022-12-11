@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ImageManager {
     public static final String[] ALL = new String[]{
         "/images/bg/bg0.jpg",
+        "/images/bg/bg1.png",
         "/images/buff/burn-settle.png",
         "/images/buff/dodge.png",
         "/images/buff/hui-qi.png",
