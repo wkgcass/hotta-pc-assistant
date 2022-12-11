@@ -209,6 +209,7 @@ public class ZhCn extends I18n {
             case "ChangeWeapon2_BreakFate" -> "命运突围-武器3";
             case "Chat" -> "打开聊天窗口";
             case "Crouch" -> "下蹲";
+            case "Diving" -> "潜水";
             case "Crouch_BreakFate" -> "命运突围-下蹲";
             case "Evade" -> "闪避（鼠标）";
             case "Evade_Key" -> "闪避";

@@ -42,6 +42,7 @@ public class InputConfig {
         "Interaction",
         "Jump",
         "Crouch",
+        "Diving",
         "Mount",
         "Vines",
         "Supply",
