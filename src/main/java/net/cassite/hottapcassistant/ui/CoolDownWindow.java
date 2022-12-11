@@ -128,7 +128,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             // check for burn source
             needBurnSettle = false;
             for (var w : weapons) {
-                if (w instanceof BurnSiYeShiZiWeapon || w instanceof ChiYanZuoLunWeapon) {
+                if (w instanceof BurnSiYeShiZiWeapon || w instanceof ChiYanZuoLunWeapon || w instanceof LingGuangWeapon) {
                     needBurnSettle = true;
                     break;
                 }
