@@ -29,6 +29,6 @@ public class QiMingXingWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.SUP;
+        return WeaponCategory.SUPPORT;
     }
 }

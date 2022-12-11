@@ -32,7 +32,7 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.ATK;
+        return WeaponCategory.CARRY;
     }
 
     @Override

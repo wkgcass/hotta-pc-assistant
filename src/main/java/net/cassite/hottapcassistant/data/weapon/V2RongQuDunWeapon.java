@@ -24,7 +24,7 @@ public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.DEF;
+        return WeaponCategory.TANK;
     }
 
     @Override

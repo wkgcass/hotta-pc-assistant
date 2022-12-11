@@ -29,6 +29,6 @@ public class PoJunWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.ATK;
+        return WeaponCategory.CARRY;
     }
 }

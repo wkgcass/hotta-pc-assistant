@@ -22,7 +22,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.SUP;
+        return WeaponCategory.SUPPORT;
     }
 
     @Override

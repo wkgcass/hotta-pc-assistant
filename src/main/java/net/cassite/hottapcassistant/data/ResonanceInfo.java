@@ -51,9 +51,9 @@ public class ResonanceInfo {
                 case PHYSICS -> physicsCount++;
             }
             switch (w.category()) {
-                case ATK -> atkCount++;
-                case SUP -> supCount++;
-                case DEF -> defCount++;
+                case CARRY -> atkCount++;
+                case SUPPORT -> supCount++;
+                case TANK -> defCount++;
             }
         }
         return new ResonanceInfo(
