@@ -7,14 +7,14 @@ import net.cassite.hottapcassistant.util.Utils;
 
 public class SiPaKeWeapon extends AbstractWeapon implements Weapon {
     public SiPaKeWeapon() {
-        super(30, 200);
+        super(30, 400);
     }
 
     @Override
     public void init(int stars, Matrix[] matrix) {
         super.init(stars, matrix);
         if (stars >= 6) {
-            cooldown = 16_000;
+            cooldown = 16_400;
         }
     }
 
