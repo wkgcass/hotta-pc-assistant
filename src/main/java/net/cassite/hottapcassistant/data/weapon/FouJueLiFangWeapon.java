@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.data.Matrix;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponElement;
@@ -20,6 +21,14 @@ public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon {
     @Override
     public WeaponCategory category() {
         return WeaponCategory.SUP;
+    }
+
+    @Override
+    public void init(int stars, Matrix[] matrix) {
+        super.init(stars, matrix);
+        if (stars >= 3) {
+            cooldown = 30_700;
+        }
     }
 
     @Override
