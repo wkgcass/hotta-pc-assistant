@@ -32,9 +32,7 @@ public class GasSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
                 continue;
             }
             if (w.element() == WeaponElement.FIRE) {
-                if (!(w instanceof LingGuangWeapon)) { // FIXME: game bug, might change in the future
-                    w.decreaseCoolDown(decrease);
-                }
+                w.decreaseCoolDown(decrease);
             }
         }
     }
