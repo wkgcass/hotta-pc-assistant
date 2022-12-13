@@ -301,7 +301,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private static final double r = WeaponCoolDown.MAX_RADIUS;
 
     private void resizeWindow() {
-        setWidth((10 + (2 * r) * totalIndicatorCount + margin * (totalIndicatorCount - 1) + 10) * scale.getX());
+        setWidth((10 + (2 * r) * (totalIndicatorCount + 1) + margin * ((totalIndicatorCount + 1) - 1) + 10) * scale.getX());
         setHeight((10 + 2 * r + 40) * scale.getY());
     }
 
