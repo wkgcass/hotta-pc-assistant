@@ -760,6 +760,7 @@ public class ZhCn extends I18n {
             case "xingHuanSimulacraTimer" -> "星寰拟态霸体效果";
             case "wanDaoHuiQiCounter" -> "晚祷辉起计数";
             case "linYe2MatrixBuffTimer" -> "凛夜意志两件套";
+            case "yongDongCD" -> "涌动";
             default -> name;
         };
     }

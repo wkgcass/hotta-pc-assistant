@@ -193,11 +193,11 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStop impleme
     }
 
     @Override
-    public void alertWeaponSwitched(WeaponContext ctx, Weapon w) {
-        alertWeaponSwitched0(ctx, w);
+    public void alertWeaponSwitched(WeaponContext ctx, Weapon w, boolean discharge) {
+        alertWeaponSwitched0(ctx, w, discharge);
     }
 
-    protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w) {
+    protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
     }
 
     @Override

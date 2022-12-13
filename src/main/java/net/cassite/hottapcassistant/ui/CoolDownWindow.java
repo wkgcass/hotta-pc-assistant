@@ -49,6 +49,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     // special info
     private WeaponSpecialInfo liuQuanCheXinCounter;
+    private WeaponCoolDown yongDongCD;
     private WeaponSpecialInfo wanDaoHuiQiCounter;
     private WeaponCoolDown yingYueZhiJingBuffTimer;
     private WeaponCoolDown diceBuffTimer;
@@ -77,6 +78,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         this.evade = evade;
         this.changeWeapons = changeWeapons;
         this.artifact = artifact;
+        this.lastWeaponButtonDownTs = new long[weapons.size()];
         this.lastArtifactButtonDownTs = new long[artifact.length];
 
         GlobalScreenUtils.enable(this);
@@ -123,6 +125,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 liuQuanCheXinCounter = new WeaponSpecialInfo(lw.getImage(), I18n.get().buffName("liuQuanCheXinCounter"));
                 liuQuanCheXinCounter.setOnMouseClicked(e -> lw.addCount(ctx));
                 liuQuanCheXinCounter.setCursor(Cursor.HAND);
+                yongDongCD = new WeaponCoolDown(Utils.getBuffImageFromClasspath("yong-dong"), I18n.get().buffName("yongDongCD"));
             } else if (w instanceof WanDaoWeapon wd) {
                 if (ctx.resonanceInfo.sup()) {
                     wanDaoHuiQiCounter = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("hui-qi"), I18n.get().buffName("wanDaoHuiQiCounter"));
@@ -197,6 +200,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
         var groups = new ArrayList<Group>(Arrays.asList(cds));
         if (liuQuanCheXinCounter != null) groups.add(liuQuanCheXinCounter);
+        if (yongDongCD != null) groups.add(yongDongCD);
         if (wanDaoHuiQiCounter != null) groups.add(wanDaoHuiQiCounter);
         if (yingYueZhiJingBuffTimer != null) groups.add(yingYueZhiJingBuffTimer);
         if (bingFengZhiShiBuffTimer != null) groups.add(bingFengZhiShiBuffTimer);
@@ -336,6 +340,13 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 break;
             }
         }
+        for (var i = 0; i < changeWeapons.length; ++i) {
+            InputData input = changeWeapons[i];
+            if (input.matches(keys, btns, key, btn)) {
+                lastWeaponButtonDownTs[i] = System.currentTimeMillis();
+                break;
+            }
+        }
         for (int i = 0; i < artifact.length; i++) {
             InputData input = artifact[i];
             if (input.matches(keys, btns, key, btn)) {
@@ -397,7 +408,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     }
 
     private void changeWeapon(int index) {
-        ctx.switchWeapon(index);
+        long current = System.currentTimeMillis();
+        ctx.switchWeapon(index, current - lastWeaponButtonDownTs[index] > 300);
         cds[index].setActive(true);
         for (var i = 0; i < cds.length; ++i) {
             if (i == index) continue;
@@ -408,10 +420,10 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private void useArtifact(int index) {
         long current = System.currentTimeMillis();
         ctx.useRelics(index, current - lastArtifactButtonDownTs[index] > 300);
-        lastArtifactButtonDownTs[index] = 0;
     }
 
     private long lastAttackButtonDownTs;
+    private final long[] lastWeaponButtonDownTs;
     private final long[] lastArtifactButtonDownTs;
     private long lastDodgeTs;
 
@@ -438,10 +450,18 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             var w = ctx.weapons.get(i);
             cds[i].setCoolDown(w.getCoolDown());
             cds[i].setAllCoolDown(w.getAllCoolDown());
-            if (w instanceof LiuQuanCheXinWeapon) {
+            if (w instanceof LiuQuanCheXinWeapon lw) {
                 var counter = liuQuanCheXinCounter;
                 if (counter != null) {
-                    counter.setText(((LiuQuanCheXinWeapon) w).getCount() + "");
+                    counter.setText(lw.getCount() + "");
+                }
+                var yd = yongDongCD;
+                if (yd != null) {
+                    var time = lw.getYongDongCD();
+                    var total = lw.getTotalYongDongCD();
+                    yd.setCoolDown(time);
+                    if (time == 0) yd.setAllCoolDown(null);
+                    else yd.setAllCoolDown(new double[]{time / (double) total});
                 }
             } else if (w instanceof WanDaoWeapon) {
                 var counter = wanDaoHuiQiCounter;

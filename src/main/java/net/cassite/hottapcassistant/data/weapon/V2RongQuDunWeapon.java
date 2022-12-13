@@ -42,7 +42,7 @@ public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w) {
+    protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
         state = 0;
     }
 

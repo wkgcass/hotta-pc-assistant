@@ -35,7 +35,7 @@ public interface Weapon extends WithThreadStartStop {
 
     void alertAttack(WeaponContext ctx, Weapon w, AttackType type);
 
-    void alertWeaponSwitched(WeaponContext ctx, Weapon w);
+    void alertWeaponSwitched(WeaponContext ctx, Weapon w, boolean discharge);
 
     void resetCoolDown();
 

@@ -156,15 +156,15 @@ public class WeaponContext {
         }
     }
 
-    public void switchWeapon(int index) {
+    public void switchWeapon(int index, boolean discharge) {
         var w = weapons.get(index);
         if (current == w) {
             return;
         }
-        Logger.info("weapon switched from " + current.getName() + " to " + w.getName());
+        Logger.info("weapon switched from " + current.getName() + " to " + w.getName() + (discharge ? " and discharges" : ""));
         current = w;
         for (var ww : weapons) {
-            ww.alertWeaponSwitched(this, w);
+            ww.alertWeaponSwitched(this, w, discharge);
         }
     }
 
