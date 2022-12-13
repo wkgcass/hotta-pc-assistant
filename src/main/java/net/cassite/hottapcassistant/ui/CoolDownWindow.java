@@ -9,6 +9,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -29,10 +30,7 @@ import net.cassite.hottapcassistant.entity.InputData;
 import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.entity.KeyCode;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.DragHandler;
-import net.cassite.hottapcassistant.util.FontManager;
-import net.cassite.hottapcassistant.util.GlobalScreenUtils;
-import net.cassite.hottapcassistant.util.Utils;
+import net.cassite.hottapcassistant.util.*;
 
 import java.util.*;
 
@@ -72,7 +70,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
                           InputData weaponSkill, InputData[] melee, InputData[] evade,
-                          InputData[] changeWeapons, InputData[] artifact) {
+                          InputData[] changeWeapons, InputData[] artifact,
+                          Runnable reset) {
         this.ctx = new WeaponContext(weapons, relics, simulacra);
         this.weaponSkill = weaponSkill;
         this.melee = melee;
@@ -112,6 +111,15 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         setResizable(false);
         centerOnScreen();
         setTitle("CoolDown Indicator");
+
+        var resetBtn = new ImageView(ImageManager.get().load("/images/icon/reloading.png"));
+        resetBtn.setLayoutX(10 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
+        resetBtn.setLayoutY(10 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
+        resetBtn.setFitWidth(2 * (WeaponCoolDown.MIN_RADIUS - 2));
+        resetBtn.setFitHeight(2 * (WeaponCoolDown.MIN_RADIUS - 2));
+        resetBtn.setCursor(Cursor.HAND);
+        resetBtn.setOnMouseClicked(e -> reset.run());
+        group.getChildren().add(resetBtn);
 
         cds = new WeaponCoolDown[weapons.size()];
         for (var i = 0; i < weapons.size(); ++i) {
@@ -233,7 +241,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         descLabel.setLayoutY(10 + 2 * r + 2 + 25);
         for (var i = 0; i < groups.size(); ++i) {
             var n = groups.get(i);
-            n.setLayoutX(10 + r + (2 * r + margin) * i);
+            n.setLayoutX(10 + r + (2 * r + margin) * (i + 1));
             n.setLayoutY(10 + r);
             String desc;
             if (n instanceof WithDesc) {
@@ -245,6 +253,18 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             n.setOnMouseExited(e -> setTextForDescLabel(descLabel, ""));
             group.getChildren().add(n);
         }
+        {
+            var sep = new Line();
+            sep.setStrokeWidth(2);
+            sep.setStartX(0);
+            sep.setStartY(r / 2);
+            sep.setEndX(0);
+            sep.setEndY(2 * r - r / 2);
+            sep.setStroke(Color.GRAY);
+            sep.setLayoutX(10 + 2 * r + margin - margin / 2);
+            sep.setLayoutY(10);
+            group.getChildren().add(sep);
+        }
         if (groups.size() > 3) {
             var sep = new Line();
             sep.setStrokeWidth(2);
@@ -253,7 +273,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             sep.setEndX(0);
             sep.setEndY(2 * r - r / 2);
             sep.setStroke(Color.GRAY);
-            sep.setLayoutX(10 + (2 * r + margin) * 3 - margin / 2);
+            sep.setLayoutX(10 + (2 * r + margin) * 4 - margin / 2);
             sep.setLayoutY(10);
             group.getChildren().add(sep);
         }

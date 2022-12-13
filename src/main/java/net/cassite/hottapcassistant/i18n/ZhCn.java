@@ -595,6 +595,7 @@ public class ZhCn extends I18n {
             本程序欢迎页封面图来自幻塔官网或者游戏内素材，做了调色
             本程序图标为旅行莎莉头像，图片来自B站 @幻塔手游 的头像
             武器、意志、源器、技能、buff等图标，来源于fandom tof wiki图片和幻塔客户端截图
+            CD指示器的重置图标：Reload icons created by kosonicon - Flaticon
             """;
     }
 

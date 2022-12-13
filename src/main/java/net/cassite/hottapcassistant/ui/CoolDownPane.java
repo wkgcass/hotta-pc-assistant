@@ -446,10 +446,12 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             }
         }
 
-        var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts);
+        var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts,
+            this::reset);
         this.window = window;
         setWindowPosition(window);
         window.show();
+        Utils.iconifyWindow(getScene().getWindow());
     }
 
     private double windowPositionX;
@@ -475,6 +477,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             windowScale = window.getScale();
             window.close();
         }
+    }
+
+    private void reset() {
+        stop();
+        start();
     }
 
     @SuppressWarnings({"rawtypes"})

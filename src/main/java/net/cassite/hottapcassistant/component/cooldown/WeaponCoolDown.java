@@ -16,6 +16,7 @@ public class WeaponCoolDown extends Group implements WithDesc {
     private static final int L1_RADIUS = INNER_RADIUS + 4;
     private static final int L2_RADIUS = L1_RADIUS + 4;
     public static final double MAX_RADIUS = L2_RADIUS;
+    public static final double MIN_RADIUS = INNER_RADIUS;
     static final Color INACTIVE_COLOR = Color.color(0x88 / 255d, 0x88 / 255d, 0x88 / 255d);
     private static final Color ACTIVE_COLOR = Color.color(0xff / 255d, 0x99 / 255d, 0x66 / 255d);
 
