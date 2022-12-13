@@ -19,10 +19,8 @@ import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.component.cooldown.WithDesc;
-import net.cassite.hottapcassistant.data.Relics;
-import net.cassite.hottapcassistant.data.Simulacra;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponContext;
+import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.matrix.LinYeMatrix;
 import net.cassite.hottapcassistant.data.relics.DiceRelics;
 import net.cassite.hottapcassistant.data.relics.KaoEnTeRelics;
 import net.cassite.hottapcassistant.data.simulacra.XingHuanSimulacra;
@@ -62,7 +60,10 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private WeaponCoolDown opticalSpaceTimer;
     private WeaponCoolDown liZiZhuoShaoBuffTimer;
     private WeaponCoolDown burnSettleTimer;
+    private WeaponCoolDown linYeMatrixBuffTimer;
     private WeaponCoolDown xingHuanSimulacraTimer;
+
+    private LinYeMatrix linYe2Matrix;
 
     private final Scale scale = new Scale(1, 1);
     private final int totalIndicatorCount;
@@ -161,6 +162,27 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             opticalSpaceTimer = null;
         }
 
+        linYe2Matrix = null;
+        for (var w : weapons) {
+            Matrix linYe = null;
+            for (var m : w.getMatrix()) {
+                if (m instanceof LinYeMatrix) {
+                    linYe = m;
+                    break;
+                }
+            }
+            if (linYe == null) {
+                continue;
+            }
+            if (linYe.getEffectiveStars()[2] != -1) {
+                linYe2Matrix = (LinYeMatrix) linYe;
+                break;
+            }
+        }
+        if (linYe2Matrix != null) {
+            linYeMatrixBuffTimer = new WeaponCoolDown(linYe2Matrix.getImage(), I18n.get().buffName("linYe2MatrixBuffTimer"));
+        }
+
         for (var r : relics) {
             if (r instanceof DiceRelics) {
                 diceBuffTimer = new WeaponCoolDown(r.getImage(), I18n.get().buffName("diceBuffTimer"));
@@ -186,6 +208,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (burnSettleTimer != null) groups.add(burnSettleTimer);
         if (diceBuffTimer != null) groups.add(diceBuffTimer);
         if (kaoEnTeBuffTimer != null) groups.add(kaoEnTeBuffTimer);
+        if (linYeMatrixBuffTimer != null) groups.add(linYeMatrixBuffTimer);
         if (xingHuanSimulacraTimer != null) groups.add(xingHuanSimulacraTimer);
 
         totalIndicatorCount = groups.size();
@@ -475,6 +498,15 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                     if (burn == 0) lzzs.setAllCoolDown(null);
                     else lzzs.setAllCoolDown(new double[]{burn / (double) total});
                 }
+            }
+        }
+        if (linYe2Matrix != null) {
+            if (linYeMatrixBuffTimer != null) {
+                var time = linYe2Matrix.getBuffTime();
+                var total = linYe2Matrix.getTotalBuffTime();
+                linYeMatrixBuffTimer.setCoolDown(time);
+                if (time == 0) linYeMatrixBuffTimer.setAllCoolDown(null);
+                else linYeMatrixBuffTimer.setAllCoolDown(new double[]{time / (double) total});
             }
         }
         for (var r : ctx.relics) {

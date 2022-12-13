@@ -5,6 +5,7 @@ import kotlin.Pair;
 import net.cassite.hottapcassistant.data.Matrix;
 import net.cassite.hottapcassistant.data.matrix.DummyMatrix;
 import net.cassite.hottapcassistant.data.matrix.KeLaoDiYaMatrix;
+import net.cassite.hottapcassistant.data.matrix.LinYeMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class MatrixRef {
         Pair<Integer, Supplier<Matrix>>[] ls = new Pair[]{
             new Pair<Integer, Supplier<Matrix>>(0, DummyMatrix::new),
             new Pair<Integer, Supplier<Matrix>>(1, KeLaoDiYaMatrix::new),
+            new Pair<Integer, Supplier<Matrix>>(2, LinYeMatrix::new),
         };
         var ret = new ArrayList<MatrixRef>();
         for (var pair : ls) {
