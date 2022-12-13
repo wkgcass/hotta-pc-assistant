@@ -460,8 +460,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                     var time = lw.getYongDongCD();
                     var total = lw.getTotalYongDongCD();
                     yd.setCoolDown(time);
-                    if (time == 0) yd.setAllCoolDown(null);
-                    else yd.setAllCoolDown(new double[]{time / (double) total});
+                    yd.setAllCoolDown(time, total);
                 }
             } else if (w instanceof WanDaoWeapon) {
                 var counter = wanDaoHuiQiCounter;
@@ -474,8 +473,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                     var time = ((YingZhiWeapon) w).getFieldTime();
                     var total = ((YingZhiWeapon) w).getTotalFieldTime();
                     yyzj.setCoolDown(time);
-                    if (time == 0) yyzj.setAllCoolDown(null);
-                    else yyzj.setAllCoolDown(new double[]{time / (double) total});
+                    yyzj.setAllCoolDown(time, total);
                 }
             } else if (w instanceof BingFengZhiShiWeapon) {
                 var bfzs = bingFengZhiShiBuffTimer;
@@ -483,8 +481,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                     var time = ((BingFengZhiShiWeapon) w).getBuffTime();
                     var total = ((BingFengZhiShiWeapon) w).getTotalBuffTime();
                     bfzs.setCoolDown(time);
-                    if (time == 0) bfzs.setAllCoolDown(null);
-                    else bfzs.setAllCoolDown(new double[]{time / (double) total});
+                    bfzs.setAllCoolDown(time, total);
                 }
             } else if (w instanceof AbstractSiYeShiZiWeapon sysz) {
                 if (siYeShiZiShotRemain != null) {
@@ -497,7 +494,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                     var time = sysz.getOpticalSpaceTime();
                     var total = sysz.getTotalOpticalSpaceTime();
                     opticalSpaceTimer.setCoolDown(time);
-                    opticalSpaceTimer.setAllCoolDown(new double[]{time / (double) total});
+                    opticalSpaceTimer.setAllCoolDown(time, total);
                 }
                 if (w instanceof BurnSiYeShiZiWeapon bsysz) {
                     var szzs = shiZiZhuoShaoBuffTimer;
@@ -505,8 +502,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                         var burn = bsysz.getBurnBuff();
                         var total = bsysz.getTotalBurnBuff();
                         szzs.setCoolDown(burn);
-                        if (burn == 0) szzs.setAllCoolDown(null);
-                        else szzs.setAllCoolDown(new double[]{burn / (double) total});
+                        szzs.setAllCoolDown(burn, total);
                     }
                 }
             } else if (w instanceof ChiYanZuoLunWeapon cyzl) {
@@ -515,8 +511,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                     var burn = cyzl.getBurnBuff();
                     var total = cyzl.getTotalBurnBuff();
                     lzzs.setCoolDown(burn);
-                    if (burn == 0) lzzs.setAllCoolDown(null);
-                    else lzzs.setAllCoolDown(new double[]{burn / (double) total});
+                    lzzs.setAllCoolDown(burn, total);
                 }
             }
         }
@@ -525,8 +520,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 var time = linYe2Matrix.getBuffTime();
                 var total = linYe2Matrix.getTotalBuffTime();
                 linYeMatrixBuffTimer.setCoolDown(time);
-                if (time == 0) linYeMatrixBuffTimer.setAllCoolDown(null);
-                else linYeMatrixBuffTimer.setAllCoolDown(new double[]{time / (double) total});
+                linYeMatrixBuffTimer.setAllCoolDown(time, total);
             }
         }
         for (var r : ctx.relics) {
@@ -544,15 +538,13 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 var buffTime = xh.getBuffTime();
                 var total = xh.getTotalBuffTime();
                 timer.setCoolDown(buffTime);
-                if (buffTime == 0) timer.setAllCoolDown(null);
-                else timer.setAllCoolDown(new double[]{buffTime / (double) total});
+                timer.setAllCoolDown(buffTime, total);
             }
         }
         if (burnSettleTimer != null) {
             var ctx = this.ctx.getBurnSettleContext();
             burnSettleTimer.setCoolDown(ctx.getCd());
-            if (ctx.getCd() == 0) burnSettleTimer.setAllCoolDown(null);
-            else burnSettleTimer.setAllCoolDown(new double[]{ctx.getCd() / (double) ctx.getLastTotalCD()});
+            burnSettleTimer.setAllCoolDown(ctx.getCd(), ctx.getLastTotalCD());
         }
     }
 

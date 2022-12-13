@@ -96,6 +96,11 @@ public class WeaponCoolDown extends Group implements WithDesc {
         }
     }
 
+    public void setAllCoolDown(long time, long total) {
+        if (time == 0) setAllCoolDown(null);
+        else setAllCoolDown(new double[]{time / (double) total});
+    }
+
     public void setAllCoolDown(double[] cd) {
         if (cd == null || cd.length == 0) {
             for (var c : cds) {
