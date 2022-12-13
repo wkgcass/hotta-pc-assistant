@@ -22,7 +22,11 @@ public class Main extends Application {
     public void start(Stage stage) {
         var font = Font.loadFont(getClass().getResourceAsStream("/font/SmileySans-Oblique.otf"), 1);
         if (font == null) {
-            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().loadingFontFailed()).show();
+            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().loadingFontFailed("smiley")).show();
+        }
+        font = Font.loadFont(getClass().getResourceAsStream("/font/NotoSansSC-Regular.otf"), 1);
+        if (font == null) {
+            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().loadingFontFailed("noto")).show();
         }
 
         LoadingStage.load(() -> {

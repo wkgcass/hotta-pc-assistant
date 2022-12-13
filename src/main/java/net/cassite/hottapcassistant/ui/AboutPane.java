@@ -38,13 +38,13 @@ public class AboutPane extends StackPane {
     }
 
     private final Label latestVersion = new Label() {{
-        FontManager.setFont(this);
+        FontManager.setNoto(this);
     }};
     private final Label latestReleaseTime = new Label() {{
-        FontManager.setFont(this);
+        FontManager.setNoto(this);
     }};
     private final Label lastSyncTime = new Label() {{
-        FontManager.setFont(this);
+        FontManager.setNoto(this);
     }};
 
     public AboutPane() {
@@ -54,7 +54,7 @@ public class AboutPane extends StackPane {
             new VBox() {{
                 getChildren().addAll(
                     new Label(I18n.get().version() + ": " + Version.version) {{
-                        FontManager.setFont(this);
+                        FontManager.setNoto(this);
                     }},
                     new VPadding(2),
                     latestVersion,
@@ -68,13 +68,13 @@ public class AboutPane extends StackPane {
                 setPadding(new Insets(10, 0, 10, 0));
             }},
             new Label(I18n.get().about()) {{
-                FontManager.setFont(this);
+                FontManager.setNoto(this);
             }},
             new Separator() {{
                 setPadding(new Insets(10, 0, 10, 0));
             }},
             new Label(I18n.get().contributor() + "\n" + generate()) {{
-                FontManager.setFont(this);
+                FontManager.setNoto(this);
             }});
 
         getChildren().add(vbox);

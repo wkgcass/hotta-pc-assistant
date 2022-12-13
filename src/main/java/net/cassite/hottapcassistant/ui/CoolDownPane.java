@@ -241,7 +241,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 FontManager.setFont(this);
             }};
             tipsBtn.setPrefWidth(120);
-            tipsBtn.setOnAction(e -> new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().cooldownTips()).show());
+            tipsBtn.setOnAction(e -> new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().cooldownTips(), FontManager::setNoto).show());
 
             //noinspection unchecked,rawtypes
             ComboBox<RelicsRef>[] relics = new ComboBox[]{

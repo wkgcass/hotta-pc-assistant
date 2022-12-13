@@ -25,7 +25,7 @@ public abstract class I18n {
 
     abstract public String levelWarning();
 
-    abstract public String loadingFontFailed();
+    abstract public String loadingFontFailed(String name);
 
     abstract public String titleMainScreen();
 

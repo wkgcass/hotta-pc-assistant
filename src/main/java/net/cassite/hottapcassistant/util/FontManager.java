@@ -28,4 +28,8 @@ public class FontManager {
     public static void setFont(Text text, int size) {
         text.setFont(Font.font("Smiley Sans Oblique", size));
     }
+
+    public static void setNoto(Labeled labeled) {
+        labeled.setFont(Font.font("Noto Sans Regular", 16));
+    }
 }
