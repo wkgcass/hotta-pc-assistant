@@ -26,13 +26,13 @@ public class KeLaoDiYaMatrix extends AbstractMatrix implements Matrix {
     @Override
     public void init(int[] stars) {
         super.init(stars);
-        if (stars[4] == 0) {
+        if (getEffectiveStars()[4] == 0) {
             decreaseCD = 1500;
-        } else if (stars[4] == 1) {
+        } else if (getEffectiveStars()[4] == 1) {
             decreaseCD = 2000;
-        } else if (stars[4] == 2) {
+        } else if (getEffectiveStars()[4] == 2) {
             decreaseCD = 2500;
-        } else if (stars[4] == 3) {
+        } else if (getEffectiveStars()[4] == 3) {
             decreaseCD = 3000;
         } else {
             decreaseCD = 0;
