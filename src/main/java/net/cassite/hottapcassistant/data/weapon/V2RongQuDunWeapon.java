@@ -28,12 +28,13 @@ public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    protected boolean useSkill0(WeaponContext ctx) {
+    public boolean useSkill(WeaponContext ctx) {
         if (state == 1) {
             state = 0;
+            postUseSkill(ctx);
             return true;
         }
-        var ok = super.useSkill0(ctx);
+        var ok = super.useSkill(ctx);
         if (!ok) {
             return false;
         }

@@ -68,8 +68,13 @@ public class PoXiaoWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
-        state = 0;
-        cd = humanCD;
+        if (w == this && discharge) {
+            state = 1;
+            cd = mechaCD;
+        } else {
+            state = 0;
+            cd = humanCD;
+        }
     }
 
     @Override

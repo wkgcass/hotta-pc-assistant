@@ -37,8 +37,11 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    protected boolean useSkill0(WeaponContext ctx) {
-        if (super.useSkill0(ctx)) {
+    public boolean useSkill(WeaponContext ctx) {
+        if (antiFalseTouchCD != 0) {
+            return false;
+        }
+        if (super.useSkill(ctx)) {
             antiFalseTouchCD = 500;
             resetFieldTime();
             return true;
@@ -47,6 +50,7 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
             if (antiFalseTouchCD == 0) {
                 antiFalseTouchCD = 500;
                 resetFieldTime();
+                postUseSkill(ctx);
                 return true;
             }
         }
