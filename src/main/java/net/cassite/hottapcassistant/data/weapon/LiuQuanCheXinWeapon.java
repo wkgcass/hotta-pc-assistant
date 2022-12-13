@@ -35,19 +35,11 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public void alertSkillUsed(WeaponContext ctx, Weapon w) {
+    protected void alertSkillUsed0(WeaponContext ctx, Weapon w) {
         if (stars < 1) {
             return;
         }
-        boolean triggerred = ctx.resonanceInfo.ice;
-        if (!triggerred) {
-            for (var ww : ctx.weapons) {
-                if (ww instanceof YingZhiWeapon) {
-                    triggerred = true;
-                    break;
-                }
-            }
-        }
+        boolean triggerred = ctx.resonanceInfo.iceResonance();
         if (!triggerred) {
             return;
         }

@@ -1,10 +1,7 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponCategory;
-import net.cassite.hottapcassistant.data.WeaponContext;
-import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -39,16 +36,15 @@ public class BingFengZhiShiWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public void dodgeAttack(WeaponContext ctx) {
-        if (stars >= 1) {
-            buff(500);
-        }
-    }
-
-    @Override
-    public void aimAttack(WeaponContext ctx) {
-        if (stars >= 6) {
-            buff(0);
+    protected void attack0(WeaponContext ctx, AttackType type) {
+        if (type == AttackType.DODGE) {
+            if (stars >= 1) {
+                buff(500);
+            }
+        } else if (type == AttackType.AIM) {
+            if (stars >= 6) {
+                buff(0);
+            }
         }
     }
 

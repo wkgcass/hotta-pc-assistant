@@ -1,10 +1,7 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponCategory;
-import net.cassite.hottapcassistant.data.WeaponContext;
-import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
@@ -81,7 +78,7 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon {
     private long lastTimeSkillUsed = 0;
 
     @Override
-    public boolean useSkill(WeaponContext ctx) {
+    protected boolean useSkill0(WeaponContext ctx) {
         long current = System.currentTimeMillis();
         if (stars >= 1) {
             clickedTs.add(current);
@@ -99,10 +96,9 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon {
                     setState(STATE_CAN_BE_REFRESHED);
                     clickedTs.clear();
 
-                    alertMatrix(ctx);
                     if (current - lastTimeSkillUsed >= 800) {
                         Logger.debug("ge-lai-pu-ni quick cd refresh: free matrix alert");
-                        alertMatrix(ctx);
+                        postUseSkill(ctx);
                     }
 
                     return true;
@@ -113,28 +109,24 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon {
         if (this.cd != 0) {
             return false;
         }
-        try {
-            if (state == STATE_NORMAL) {
-                if (stars < 1) {
-                    cd = 30 * 1000;
-                    return true;
-                }
-                mainSkillCD = 30 * 1000;
-                cd = 400;
-                setState(STATE_SKILL_USED);
-            } else if (state == STATE_SKILL_USED) {
-                cd = 15_000;
-                setState(STATE_CAN_BE_REFRESHED);
-            } else if (state == STATE_IS_REFRESHED) {
-                cd = 15 * 1000;
-                setState(STATE_USED_AND_CANNOT_REFRESH);
-                // FIXME: game bug, might change in the future: po-jun will get an extra ke-lao-di-ya matrix cd decrease
-                if (ctx.weapons.stream().anyMatch(e -> e instanceof PoJunWeapon)) {
-                    alertMatrix(ctx);
-                }
+        if (state == STATE_NORMAL) {
+            if (stars < 1) {
+                cd = 30 * 1000;
+                return true;
             }
-        } finally {
-            alertMatrix(ctx);
+            mainSkillCD = 30 * 1000;
+            cd = 400;
+            setState(STATE_SKILL_USED);
+        } else if (state == STATE_SKILL_USED) {
+            cd = 15_000;
+            setState(STATE_CAN_BE_REFRESHED);
+        } else if (state == STATE_IS_REFRESHED) {
+            cd = 15 * 1000;
+            setState(STATE_USED_AND_CANNOT_REFRESH);
+            // FIXME game bug, might change in the future: po-jun will get an extra ke-lao-di-ya matrix cd decrease
+            if (ctx.weapons.stream().anyMatch(e -> e instanceof PoJunWeapon)) {
+                postUseSkill(ctx);
+            }
         }
         lastTimeSkillUsed = current;
         return true;
@@ -146,13 +138,9 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public void dodgeAttack(WeaponContext ctx) {
-        refreshState2();
-    }
-
-    @Override
-    public void aimAttack(WeaponContext ctx) {
-        refreshState2();
+    protected void attack0(WeaponContext ctx, AttackType type) {
+        if (type == AttackType.DODGE || type == AttackType.AIM)
+            refreshState2();
     }
 
     private void refreshState2() {

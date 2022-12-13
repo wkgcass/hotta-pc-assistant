@@ -1,26 +1,18 @@
 package net.cassite.hottapcassistant.data.weapon;
 
+import net.cassite.hottapcassistant.data.AttackType;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.data.WeaponElement;
 import net.cassite.hottapcassistant.i18n.I18n;
 
 public class GasSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
     @Override
-    public void aimAttack(WeaponContext ctx) {
-        super.aimAttack(ctx);
-        cd(ctx, 700);
-    }
-
-    @Override
-    public void dodgeAttack(WeaponContext ctx) {
-        super.dodgeAttack(ctx);
-        cd(ctx, 1400); // gas blast will also decrease cd
-    }
-
-    @Override
-    public void specialAttack(WeaponContext ctx) {
-        super.specialAttack(ctx);
-        cd(ctx, 700);
+    protected void attack0(WeaponContext ctx, AttackType type) {
+        super.attack0(ctx, type);
+        if (type == AttackType.AIM || type == AttackType.SPECIAL)
+            cd(ctx, 700);
+        else if (type == AttackType.DODGE)
+            cd(ctx, 1400); // gas blast will also decrease cd
     }
 
     private void cd(WeaponContext ctx, long decrease) {

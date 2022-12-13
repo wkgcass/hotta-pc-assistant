@@ -27,7 +27,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     protected void threadTick(long ts, long delta) {
-        if (!ctx.resonanceInfo.sup) return;
+        if (!ctx.resonanceInfo.sup()) return;
         if (cd == 0) {
             if (count < 3) {
                 ++count;
@@ -39,24 +39,23 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public boolean useSkill(WeaponContext ctx) {
-        if (ctx.resonanceInfo.sup) {
+    protected boolean useSkill0(WeaponContext ctx) {
+        if (ctx.resonanceInfo.sup()) {
             if (count > 0) {
                 --count;
                 if (cd == 0) {
-                    return super.useSkill(ctx);
+                    return super.useSkill0(ctx);
                 } else {
-                    alertMatrix(ctx);
                     return true;
                 }
             }
         }
-        return super.useSkill(ctx);
+        return super.useSkill0(ctx);
     }
 
     @Override
     public long getCoolDown() {
-        if (ctx.resonanceInfo.sup) {
+        if (ctx.resonanceInfo.sup()) {
             if (count > 0) return 0;
         }
         return super.getCoolDown();

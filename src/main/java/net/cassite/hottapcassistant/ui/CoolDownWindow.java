@@ -123,7 +123,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 liuQuanCheXinCounter.setOnMouseClicked(e -> lw.addCount(ctx));
                 liuQuanCheXinCounter.setCursor(Cursor.HAND);
             } else if (w instanceof WanDaoWeapon wd) {
-                if (ctx.resonanceInfo.sup) {
+                if (ctx.resonanceInfo.sup()) {
                     wanDaoHuiQiCounter = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("hui-qi"), I18n.get().buffName("wanDaoHuiQiCounter"));
                     wanDaoHuiQiCounter.setOnMouseClicked(e -> wd.resetCount());
                     wanDaoHuiQiCounter.setCursor(Cursor.HAND);
@@ -169,7 +169,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             }
         }
 
-        if (simulacra instanceof XingHuanSimulacra && ctx.resonanceInfo.sup) {
+        if (simulacra instanceof XingHuanSimulacra && ctx.resonanceInfo.sup()) {
             xingHuanSimulacraTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("xing-huan-simulacra"), I18n.get().buffName("xingHuanSimulacraTimer"));
         }
 

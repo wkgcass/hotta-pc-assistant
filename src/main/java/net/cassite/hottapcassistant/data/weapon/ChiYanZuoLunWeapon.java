@@ -1,10 +1,7 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponCategory;
-import net.cassite.hottapcassistant.data.WeaponContext;
-import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -38,14 +35,18 @@ public class ChiYanZuoLunWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public void aimAttack(WeaponContext ctx) {
-        burn(ctx);
+    protected void attack0(WeaponContext ctx, AttackType type) {
+        if (type == AttackType.AIM) {
+            burn(ctx);
+        }
     }
 
     @Override
-    public void alertDodgeAttack(WeaponContext ctx, Weapon w) {
-        if (w == this || stars >= 5) {
-            burn(ctx);
+    protected void alertAttack0(WeaponContext ctx, Weapon w, AttackType type) {
+        if (type == AttackType.DODGE) {
+            if (w == this || stars >= 5) {
+                burn(ctx);
+            }
         }
     }
 

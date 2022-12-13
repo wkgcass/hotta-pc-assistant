@@ -32,6 +32,11 @@ public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public boolean skillHitTarget() {
+        return false;
+    }
+
+    @Override
     protected String buildName() {
         return I18n.get().weaponName("fǒu jué lì fāng");
     }

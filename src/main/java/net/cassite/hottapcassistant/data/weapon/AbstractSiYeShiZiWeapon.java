@@ -1,10 +1,7 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponCategory;
-import net.cassite.hottapcassistant.data.WeaponContext;
-import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.util.Utils;
 
 public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements Weapon {
@@ -66,24 +63,20 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
     }
 
     @Override
-    protected boolean skillHitTarget() {
+    public boolean skillHitTarget() {
         return false;
     }
 
     @Override
-    public void aimAttack(WeaponContext ctx) {
-        shot(ctx);
+    protected void attack0(WeaponContext ctx, AttackType type) {
+        if (type == AttackType.DODGE || type == AttackType.AIM || type == AttackType.SPECIAL)
+            shot(ctx);
     }
 
     @Override
-    public void dodge(WeaponContext ctx) {
+    protected void dodge0(WeaponContext ctx) {
         if (dodgeRemain == 0) return;
         --dodgeRemain;
-    }
-
-    @Override
-    public void dodgeAttack(WeaponContext ctx) {
-        shot(ctx);
     }
 
     private void shot(WeaponContext ctx) {
@@ -122,15 +115,9 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
     }
 
     @Override
-    public void alertWeaponSwitched(WeaponContext ctx, Weapon w) {
+    protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w) {
         shotRemain = -1;
         dodgeRemain = 0;
-    }
-
-    @Override
-    public void specialAttack(WeaponContext ctx) {
-        if (shotRemain == -1) return;
-        --shotRemain;
     }
 
     @Override

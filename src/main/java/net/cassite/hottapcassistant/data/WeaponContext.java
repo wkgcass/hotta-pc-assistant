@@ -121,7 +121,10 @@ public class WeaponContext {
 
     public void attack() {
         Logger.info("weapon attack " + current.getName());
-        current.attack(this);
+        current.attack(this, AttackType.NORMAL);
+        for (var w : weapons) {
+            w.alertAttack(this, current, AttackType.NORMAL);
+        }
     }
 
     public void dodge() {
@@ -131,20 +134,26 @@ public class WeaponContext {
 
     public void dodgeAttack() {
         Logger.info("weapon dodge attack " + current.getName());
-        current.dodgeAttack(this);
+        current.attack(this, AttackType.DODGE);
         for (var w : weapons) {
-            w.alertDodgeAttack(this, current);
+            w.alertAttack(this, current, AttackType.DODGE);
         }
     }
 
     public void aimAttack() {
         Logger.info("weapon aim/charge attack " + current.getName());
-        current.aimAttack(this);
+        current.attack(this, AttackType.AIM);
+        for (var w : weapons) {
+            w.alertAttack(this, current, AttackType.AIM);
+        }
     }
 
     public void specialAttack() {
         Logger.info("weapon special attack " + current.getName());
-        current.specialAttack(this);
+        current.attack(this, AttackType.SPECIAL);
+        for (var w : weapons) {
+            w.alertAttack(this, current, AttackType.SPECIAL);
+        }
     }
 
     public void switchWeapon(int index) {
@@ -172,7 +181,7 @@ public class WeaponContext {
                 break;
             }
         }
-        if (yingZhi != null && resonanceInfo.fire) {
+        if (yingZhi != null && resonanceInfo.fire()) {
             if (yingZhi.getFieldTime() > 0) {
                 return t + 4_000;
             }

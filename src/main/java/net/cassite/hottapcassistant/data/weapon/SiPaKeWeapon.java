@@ -29,8 +29,8 @@ public class SiPaKeWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public boolean useSkill(WeaponContext ctx) {
-        if (!super.useSkill(ctx)) {
+    protected boolean useSkill0(WeaponContext ctx) {
+        if (!super.useSkill0(ctx)) {
             return false;
         }
         var settle = ctx.getBurnSettleContext();

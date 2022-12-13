@@ -24,7 +24,7 @@ public class XingHuanSimulacra extends AbstractSimulacra implements Simulacra {
 
     @Override
     public void alertSkillUsed(WeaponContext ctx, Weapon w) {
-        if (!ctx.resonanceInfo.sup) {
+        if (!ctx.resonanceInfo.sup()) {
             return;
         }
         buffTime = getTotalBuffTime();

@@ -1,39 +1,14 @@
 package net.cassite.hottapcassistant.data;
 
+import net.cassite.hottapcassistant.data.weapon.*;
+
 import java.util.List;
 
-public class ResonanceInfo {
-    public final boolean atk;
-    public final boolean sup;
-    public final boolean def;
-    public final boolean balance;
-    public final boolean fire;
-    public final boolean ice;
-    public final boolean thunder;
-    public final boolean pyhsics;
-    public final boolean balancedElement;
-
-    public ResonanceInfo(
-        boolean atk,
-        boolean sup,
-        boolean def,
-        boolean balance,
-        boolean fire,
-        boolean ice,
-        boolean thunder,
-        boolean pyhsics,
-        boolean balancedElement) {
-
-        this.atk = atk;
-        this.sup = sup;
-        this.def = def;
-        this.balance = balance;
-        this.fire = fire;
-        this.ice = ice;
-        this.thunder = thunder;
-        this.pyhsics = pyhsics;
-        this.balancedElement = balancedElement;
-    }
+public record ResonanceInfo(boolean atk, boolean sup, boolean def, boolean balance,
+                            boolean fire, boolean ice,
+                            boolean thunder, boolean physics, boolean balancedElement,
+                            boolean fireResonance, boolean iceResonance,
+                            boolean thunderResonance, boolean physicsResonance) {
 
     public static ResonanceInfo build(List<Weapon> weapons) {
         int atkCount = 0;
@@ -43,6 +18,11 @@ public class ResonanceInfo {
         int iceCount = 0;
         int thunderCount = 0;
         int physicsCount = 0;
+        boolean hasYingZhi = false;
+        boolean hasFireResonance = false;
+        boolean hasIceResonance = false;
+        boolean hasThunderResonance = false;
+        boolean hasPhysicsResonance = false;
         for (var w : weapons) {
             switch (w.element()) {
                 case FIRE -> fireCount++;
@@ -55,6 +35,17 @@ public class ResonanceInfo {
                 case SUPPORT -> supCount++;
                 case TANK -> defCount++;
             }
+            if (w instanceof YingZhiWeapon) {
+                hasYingZhi = true;
+            } else if (w instanceof SiPaKeWeapon || w instanceof LingGuangWeapon || w instanceof FouJueLiFangWeapon) {
+                hasFireResonance = true;
+            } else if (w instanceof LiuQuanCheXinWeapon) {
+                hasIceResonance = true;
+            } else if (w instanceof QiMingXingWeapon || w instanceof GeLaiPuNiWeapon) {
+                hasThunderResonance = true;
+            } else if (w instanceof WanDaoWeapon) {
+                hasPhysicsResonance = true;
+            }
         }
         return new ResonanceInfo(
             atkCount >= 2,
@@ -65,7 +56,11 @@ public class ResonanceInfo {
             iceCount >= 2,
             thunderCount >= 2,
             physicsCount >= 2,
-            fireCount <= 1 && iceCount <= 1 && thunderCount <= 1 && physicsCount <= 1
+            fireCount <= 1 && iceCount <= 1 && thunderCount <= 1 && physicsCount <= 1,
+            hasFireResonance && (fireCount >= 2 || hasYingZhi),
+            hasIceResonance && (iceCount >= 2 || hasYingZhi),
+            hasThunderResonance && (thunderCount >= 2 || hasYingZhi),
+            hasPhysicsResonance && (physicsCount >= 2 || hasYingZhi)
         );
     }
 }

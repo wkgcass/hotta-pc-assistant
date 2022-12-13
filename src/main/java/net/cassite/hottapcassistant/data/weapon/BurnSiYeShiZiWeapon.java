@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.data.weapon;
 
+import net.cassite.hottapcassistant.data.AttackType;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.i18n.I18n;
 
@@ -13,21 +14,10 @@ public class BurnSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
     }
 
     @Override
-    public void aimAttack(WeaponContext ctx) {
-        super.aimAttack(ctx);
-        burn(ctx);
-    }
-
-    @Override
-    public void dodgeAttack(WeaponContext ctx) {
-        super.dodgeAttack(ctx);
-        burn(ctx);
-    }
-
-    @Override
-    public void specialAttack(WeaponContext ctx) {
-        super.specialAttack(ctx);
-        burn(ctx);
+    protected void attack0(WeaponContext ctx, AttackType type) {
+        super.attack0(ctx, type);
+        if (type == AttackType.AIM || type == AttackType.DODGE || type == AttackType.SPECIAL)
+            burn(ctx);
     }
 
     private void burn(WeaponContext ctx) {

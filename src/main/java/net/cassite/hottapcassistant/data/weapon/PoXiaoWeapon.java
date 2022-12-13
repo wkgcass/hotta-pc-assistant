@@ -36,8 +36,8 @@ public class PoXiaoWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public boolean useSkill(WeaponContext ctx) {
-        if (!super.useSkill(ctx)) {
+    protected boolean useSkill0(WeaponContext ctx) {
+        if (!super.useSkill0(ctx)) {
             return false;
         }
         if (state == 0) {
@@ -67,7 +67,7 @@ public class PoXiaoWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public void alertWeaponSwitched(WeaponContext ctx, Weapon w) {
+    protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w) {
         state = 0;
         cd = humanCD;
     }

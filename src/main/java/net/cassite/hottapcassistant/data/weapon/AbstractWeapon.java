@@ -1,11 +1,9 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.data.Matrix;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponContext;
+import net.cassite.hottapcassistant.data.*;
 
-public abstract class AbstractWeapon implements Weapon {
+public abstract class AbstractWeapon extends AbstractWithThreadStartStop implements Weapon {
     protected String name;
     protected Image image;
     protected int stars;
@@ -13,22 +11,21 @@ public abstract class AbstractWeapon implements Weapon {
     protected double considerCDIsClearedRatio = 0.1;
     protected Matrix[] matrix;
     protected WeaponContext ctx;
-    private volatile Thread thread;
     protected volatile long cd = 0L;
 
-    protected AbstractWeapon(int cooldown) {
+    public AbstractWeapon(int cooldown) {
         this(cooldown, false);
     }
 
-    protected AbstractWeapon(int cooldown, int attackPointTime) {
+    public AbstractWeapon(int cooldown, int attackPointTime) {
         this(cooldown, false, attackPointTime);
     }
 
-    protected AbstractWeapon(int cooldown, boolean isMillis) {
+    public AbstractWeapon(int cooldown, boolean isMillis) {
         this(cooldown, isMillis, 0);
     }
 
-    protected AbstractWeapon(int cooldown, boolean isMillis, int attackPointTime) {
+    public AbstractWeapon(int cooldown, boolean isMillis, int attackPointTime) {
         this.cooldown = cooldown * (isMillis ? 1 : 1000) + attackPointTime;
         this.name = buildName();
         this.image = buildImage();
@@ -65,56 +62,41 @@ public abstract class AbstractWeapon implements Weapon {
     }
 
     @Override
+    public Matrix[] getMatrix() {
+        return matrix;
+    }
+
+    @Override
+    protected String getThreadName() {
+        return "thread-" + getName();
+    }
+
+    @Override
     public void start() {
-        cd = 0;
-
-        if (thread != null) {
-            throw new IllegalStateException();
+        super.start();
+        for (var m : matrix) {
+            m.start();
         }
-        var thread = new Thread(this::threadRun, "thread-" + getName());
-        this.thread = thread;
-        thread.start();
-    }
-
-    private void threadRun() {
-        long lastTs = System.currentTimeMillis();
-        while (this.thread != null) {
-            try {
-                //noinspection BusyWait
-                Thread.sleep(100);
-            } catch (InterruptedException ignore) {
-            }
-            long ts = System.currentTimeMillis();
-            long delta = ts - lastTs;
-            lastTs = ts;
-
-            var cd = this.cd;
-            if (cd > delta) {
-                cd -= delta;
-                this.cd = cd;
-            } else {
-                this.cd = 0;
-            }
-
-            threadTick(ts, delta);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    protected void threadTick(long ts, long delta) {
     }
 
     @Override
     public void stop() {
-        var thread = this.thread;
-        if (thread != null) {
-            this.thread = null;
-            thread.interrupt();
-            try {
-                thread.join();
-            } catch (InterruptedException ignore) {
-            }
+        super.stop();
+        for (var m : matrix) {
+            m.stop();
         }
+    }
+
+    @Override
+    protected final void mainThreadTick(long ts, long delta) {
+        var cd = this.cd;
+        if (cd > delta) {
+            cd -= delta;
+            this.cd = cd;
+        } else {
+            this.cd = 0;
+        }
+        super.mainThreadTick(ts, delta);
     }
 
     @Override
@@ -136,51 +118,86 @@ public abstract class AbstractWeapon implements Weapon {
                 return false;
             }
         }
-        cd = cooldown;
-        alertMatrix(ctx);
+        if (!useSkill0(ctx)) {
+            return false;
+        }
+        postUseSkill(ctx);
         return true;
     }
 
-    protected void alertMatrix(WeaponContext ctx) {
+    @SuppressWarnings({"unused", "BooleanMethodIsAlwaysInverted"})
+    protected boolean useSkill0(WeaponContext ctx) {
+        cd = cooldown;
+        return true;
+    }
+
+    protected void postUseSkill(WeaponContext ctx) {
         for (var m : matrix) {
-            m.useSkill(ctx, this, skillHitTarget());
+            m.useSkill(ctx, this);
         }
     }
 
-    protected boolean skillHitTarget() {
+    public boolean skillHitTarget() {
         return true;
     }
 
     @Override
-    public void attack(WeaponContext ctx) {
+    public void attack(WeaponContext ctx, AttackType type) {
+        attack0(ctx, type);
+        postAttack(ctx, type);
+    }
+
+    protected void attack0(@SuppressWarnings("unused") WeaponContext ctx, @SuppressWarnings("unused") AttackType type) {
+    }
+
+    protected void postAttack(WeaponContext ctx, AttackType type) {
+        for (var m : matrix) {
+            m.attack(ctx, this, type);
+        }
     }
 
     @Override
     public void dodge(WeaponContext ctx) {
+        dodge0(ctx);
     }
 
-    @Override
-    public void dodgeAttack(WeaponContext ctx) {
-    }
-
-    @Override
-    public void aimAttack(WeaponContext ctx) {
-    }
-
-    @Override
-    public void specialAttack(WeaponContext ctx) {
+    protected void dodge0(@SuppressWarnings("unused") WeaponContext ctx) {
     }
 
     @Override
     public void alertSkillUsed(WeaponContext ctx, Weapon w) {
+        alertSkillUsed0(ctx, w);
+        postAlertSkillUsed(ctx, w);
+    }
+
+    protected void alertSkillUsed0(WeaponContext ctx, Weapon w) {
+    }
+
+    @SuppressWarnings("unused")
+    protected void postAlertSkillUsed(WeaponContext ctx, Weapon w) {
     }
 
     @Override
-    public void alertDodgeAttack(WeaponContext ctx, Weapon w) {
+    public void alertAttack(WeaponContext ctx, Weapon w, AttackType type) {
+        alertAttack0(ctx, w, type);
+        postAlertAttack(ctx, w, type);
+    }
+
+    protected void alertAttack0(@SuppressWarnings("unused") WeaponContext ctx,
+                                @SuppressWarnings("unused") Weapon w,
+                                @SuppressWarnings("unused") AttackType type) {
+    }
+
+    @SuppressWarnings("unused")
+    private void postAlertAttack(WeaponContext ctx, Weapon w, AttackType type) {
     }
 
     @Override
     public void alertWeaponSwitched(WeaponContext ctx, Weapon w) {
+        alertWeaponSwitched0(ctx, w);
+    }
+
+    protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w) {
     }
 
     @Override

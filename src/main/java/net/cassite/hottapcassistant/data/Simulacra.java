@@ -1,11 +1,7 @@
 package net.cassite.hottapcassistant.data;
 
-public interface Simulacra {
+public interface Simulacra extends WithThreadStartStop {
     String getName();
-
-    void start();
-
-    void stop();
 
     void alertSkillUsed(WeaponContext ctx, Weapon w);
 }

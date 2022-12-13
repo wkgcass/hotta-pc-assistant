@@ -2,7 +2,7 @@ package net.cassite.hottapcassistant.data;
 
 import javafx.scene.image.Image;
 
-public interface Weapon {
+public interface Weapon extends WithThreadStartStop {
     String getName();
 
     Image getImage();
@@ -17,9 +17,7 @@ public interface Weapon {
 
     void init(WeaponContext ctx);
 
-    void start();
-
-    void stop();
+    Matrix[] getMatrix();
 
     long getCoolDown();
 
@@ -27,19 +25,15 @@ public interface Weapon {
 
     boolean useSkill(WeaponContext ctx);
 
-    void attack(WeaponContext ctx);
+    boolean skillHitTarget();
+
+    void attack(WeaponContext ctx, AttackType type);
 
     void dodge(WeaponContext ctx);
 
-    void dodgeAttack(WeaponContext ctx);
-
-    void aimAttack(WeaponContext ctx);
-
-    void specialAttack(WeaponContext ctx);
-
     void alertSkillUsed(WeaponContext ctx, Weapon w);
 
-    void alertDodgeAttack(WeaponContext ctx, Weapon w);
+    void alertAttack(WeaponContext ctx, Weapon w, AttackType type);
 
     void alertWeaponSwitched(WeaponContext ctx, Weapon w);
 
