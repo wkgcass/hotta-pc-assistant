@@ -13,6 +13,9 @@ public class SiPaKeWeapon extends AbstractWeapon implements Weapon {
     @Override
     public void init(int stars, Matrix[] matrix) {
         super.init(stars, matrix);
+        if (stars >= 1) {
+            cooldown = 24;
+        }
         if (stars >= 6) {
             cooldown = 16_400;
         }
