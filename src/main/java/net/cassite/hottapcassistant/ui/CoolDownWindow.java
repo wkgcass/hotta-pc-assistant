@@ -13,6 +13,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
@@ -63,6 +64,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private WeaponCoolDown burnSettleTimer;
     private WeaponCoolDown xingHuanSimulacraTimer;
 
+    private final Scale scale = new Scale(1, 1);
+    private final int totalIndicatorCount;
+
     public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
                           InputData weaponSkill, InputData[] melee, InputData[] evade,
                           InputData[] changeWeapons, InputData[] artifact) {
@@ -79,6 +83,23 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         GlobalScreen.addNativeMouseListener(this);
 
         var group = new Group();
+        group.getTransforms().add(scale);
+        group.setOnScroll(e -> {
+            double zoomFactor = 0.01;
+            if (e.getDeltaY() < 0) {
+                zoomFactor = -zoomFactor;
+            }
+            double oldRatio = scale.getX();
+            double ratio = oldRatio + zoomFactor;
+            if (ratio < 0.2) {
+                ratio = 0.2;
+            } else if (ratio > 3) {
+                ratio = 3;
+            }
+            scale.setX(ratio);
+            scale.setY(ratio);
+        });
+
         var scene = new Scene(group);
         scene.setFill(Color.TRANSPARENT);
         setScene(scene);
@@ -167,10 +188,11 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (kaoEnTeBuffTimer != null) groups.add(kaoEnTeBuffTimer);
         if (xingHuanSimulacraTimer != null) groups.add(xingHuanSimulacraTimer);
 
-        final double margin = 5;
-        double r = WeaponCoolDown.MAX_RADIUS;
-        setWidth(10 + (2 * r) * groups.size() + margin * (groups.size() - 1) + 10);
-        setHeight(10 + 2 * r + 40);
+        totalIndicatorCount = groups.size();
+
+        resizeWindow();
+        scale.xProperty().addListener((ob, old, now) -> resizeWindow());
+
         var descLabel = new Text() {{
             FontManager.setFont(this, 24);
             setFill(Color.WHITE);
@@ -224,12 +246,22 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         timer.start();
     }
 
+    private static final double margin = 5;
+    private static final double r = WeaponCoolDown.MAX_RADIUS;
+
+    private void resizeWindow() {
+        setWidth((10 + (2 * r) * totalIndicatorCount + margin * (totalIndicatorCount - 1) + 10) * scale.getX());
+        setHeight((10 + 2 * r + 40) * scale.getY());
+    }
+
     private void setTextForDescLabel(Text descLabel, String s) {
         if (s.equals(descLabel.getText())) return;
         descLabel.setText(s);
         if (s.isBlank()) return;
         var bounds = Utils.calculateTextBounds(descLabel);
-        descLabel.setLayoutX(getWidth() / 2 - bounds.getWidth() / 2);
+        double width = getWidth();
+        width /= scale.getX();
+        descLabel.setLayoutX(width / 2 - bounds.getWidth() / 2);
     }
 
     private final Set<KeyCode> keys = new HashSet<>();
@@ -484,5 +516,14 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         GlobalScreen.removeNativeKeyListener(this);
         GlobalScreen.removeNativeMouseListener(this);
         GlobalScreenUtils.disable(this);
+    }
+
+    public void setScale(double scale) {
+        this.scale.setX(scale);
+        this.scale.setY(scale);
+    }
+
+    public double getScale() {
+        return scale.getX();
     }
 }

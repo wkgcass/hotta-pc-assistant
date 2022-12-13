@@ -454,11 +454,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
 
     private double windowPositionX;
     private double windowPositionY;
+    private double windowScale = 1;
 
     private void setWindowPosition(CoolDownWindow window) {
-        if (windowPositionX == 0 && windowPositionY == 0) return;
+        if (windowPositionX == 0 && windowPositionY == 0 && windowScale == 1) return;
         window.setX(windowPositionX);
         window.setY(windowPositionY);
+        window.setScale(windowScale);
     }
 
     private void stop() {
@@ -470,6 +472,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         if (window != null) {
             windowPositionX = window.getX();
             windowPositionY = window.getY();
+            windowScale = window.getScale();
             window.close();
         }
     }
