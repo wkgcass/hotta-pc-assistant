@@ -9,6 +9,7 @@ public class ImageManager {
     public static final String[] ALL = new String[]{
         "/images/bg/bg0.jpg",
         "/images/bg/bg1.png",
+        "/images/buff/bee.png",
         "/images/buff/burn-settle.png",
         "/images/buff/dodge.png",
         "/images/buff/hui-qi.png",
@@ -48,6 +49,7 @@ public class ImageManager {
         "/images/weapons/ge-lai-pu-ni.png",
         "/images/weapons/hei-ya-ming-lian.png",
         "/images/weapons/hong-lian-ren.png",
+        "/images/weapons/ling-du-zhi-zhen.png",
         "/images/weapons/ling-guang.png",
         "/images/weapons/liu-quan-che-xin.png",
         "/images/weapons/po-jun.png",

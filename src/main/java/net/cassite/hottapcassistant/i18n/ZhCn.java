@@ -711,6 +711,7 @@ public class ZhCn extends I18n {
             case "pò xiǎo" -> "破晓";
             case "wǎn dǎo" -> "晚祷";
             case "líng guāng" -> "陵光";
+            case "líng dù zhǐ zhēn" -> "零度指针";
             default -> name;
         };
     }
@@ -761,6 +762,7 @@ public class ZhCn extends I18n {
             case "wanDaoHuiQiCounter" -> "晚祷辉起计数";
             case "linYe2MatrixBuffTimer" -> "凛夜意志两件套";
             case "yongDongCD" -> "涌动";
+            case "lingDuZhiZhenBeeTimer" -> "零度指针小蜜蜂存在时间";
             default -> name;
         };
     }

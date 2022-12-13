@@ -34,7 +34,8 @@ public class WeaponRef {
             new Pair<Integer, Supplier<Weapon>>(17, GasSiYeShiZiWeapon::new),
             new Pair<Integer, Supplier<Weapon>>(18, PoXiaoWeapon::new),
             new Pair<Integer, Supplier<Weapon>>(19, WanDaoWeapon::new),
-            // next is 21
+            new Pair<Integer, Supplier<Weapon>>(21, LingDuZhiZhenWeapon::new),
+            // next is 22
         };
         var ret = new ArrayList<WeaponRef>();
         for (var pair : ls) {

@@ -62,6 +62,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private WeaponCoolDown liZiZhuoShaoBuffTimer;
     private WeaponCoolDown burnSettleTimer;
     private WeaponCoolDown linYeMatrixBuffTimer;
+    private WeaponCoolDown lingDuZhiZhenBeeTimer;
     private WeaponCoolDown xingHuanSimulacraTimer;
 
     private LinYeMatrix linYe2Matrix;
@@ -147,6 +148,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 liZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("li-zi-zhuo-shao"), I18n.get().buffName("liZiZhuoShaoBuffTimer"));
             } else if (w instanceof SiPaKeWeapon) {
                 needBurnSettle = true;
+            } else if (w instanceof LingDuZhiZhenWeapon) {
+                lingDuZhiZhenBeeTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("bee"), I18n.get().buffName("lingDuZhiZhenBeeTimer"));
             }
         }
         if (needBurnSettle) {
@@ -213,6 +216,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (diceBuffTimer != null) groups.add(diceBuffTimer);
         if (kaoEnTeBuffTimer != null) groups.add(kaoEnTeBuffTimer);
         if (linYeMatrixBuffTimer != null) groups.add(linYeMatrixBuffTimer);
+        if (lingDuZhiZhenBeeTimer != null) groups.add(lingDuZhiZhenBeeTimer);
         if (xingHuanSimulacraTimer != null) groups.add(xingHuanSimulacraTimer);
 
         totalIndicatorCount = groups.size();
@@ -512,6 +516,14 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                     var total = cyzl.getTotalBurnBuff();
                     lzzs.setCoolDown(burn);
                     lzzs.setAllCoolDown(burn, total);
+                }
+            } else if (w instanceof LingDuZhiZhenWeapon ldzz) {
+                var timer = lingDuZhiZhenBeeTimer;
+                if (timer != null) {
+                    var time = ldzz.getBeeTime();
+                    var total = ldzz.getTotalBeeTime();
+                    timer.setCoolDown(time);
+                    timer.setAllCoolDown(time, total);
                 }
             }
         }
