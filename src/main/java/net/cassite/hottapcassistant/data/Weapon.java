@@ -31,6 +31,8 @@ public interface Weapon extends WithThreadStartStop {
 
     void dodge(WeaponContext ctx);
 
+    void jump(WeaponContext ctx);
+
     void alertSkillUsed(WeaponContext ctx, Weapon w);
 
     void alertAttack(WeaponContext ctx, Weapon w, AttackType type);

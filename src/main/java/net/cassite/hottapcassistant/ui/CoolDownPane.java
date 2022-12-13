@@ -39,6 +39,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     private InputData[] evade;
     private final InputData[] changeWeapons = new InputData[3];
     private final InputData[] useArtifacts = new InputData[2];
+    private InputData jump;
     @SuppressWarnings({"unchecked", "rawtypes"})
     private final SimpleObjectProperty<WeaponRef>[] weapons = new SimpleObjectProperty[]{
         new SimpleObjectProperty(null),
@@ -446,7 +447,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             }
         }
 
-        var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts,
+        var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts, jump,
             this::reset);
         this.window = window;
         setWindowPosition(window);
@@ -538,6 +539,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         InputData changeWeapon2 = null;
         InputData artifact1 = null;
         InputData artifact2 = null;
+        InputData jump = null;
         for (var kb : input) {
             if ("WeaponSkill".equals(kb.action)) {
                 weaponSkill = kb;
@@ -559,6 +561,8 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 evade = kb;
             } else if ("Evade_Key".equals(kb.action)) {
                 evadeKey = kb;
+            } else if ("Jump".equals(kb.action)) {
+                jump = kb;
             }
         }
         if (weaponSkill == null) {
@@ -588,6 +592,9 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         if (evadeKey == null) {
             evadeKey = new InputData(new Key(KeyCode.SHIFT, true));
         }
+        if (jump == null) {
+            jump = new InputData(new Key(KeyCode.SPACE));
+        }
 
         this.weaponSkill = weaponSkill;
         if (meleeKey == null) {
@@ -601,6 +608,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         this.changeWeapons[2] = changeWeapon2;
         this.useArtifacts[0] = artifact1;
         this.useArtifacts[1] = artifact2;
+        this.jump = jump;
 
         return true;
     }

@@ -12,7 +12,7 @@ public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
     private long beeTime = 0;
 
     public LingDuZhiZhenWeapon() {
-        super(60);
+        super(60, 800);
     }
 
     @Override
@@ -37,6 +37,16 @@ public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
                 beeTime = getTotalBeeTime();
             }
         }
+    }
+
+    @Override
+    public boolean skillHitTarget() {
+        return false;
+    }
+
+    @Override
+    protected boolean isRevertibleSkill(WeaponContext ctx) {
+        return true;
     }
 
     @Override

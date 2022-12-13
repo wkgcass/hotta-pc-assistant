@@ -111,12 +111,16 @@ public class WeaponContext {
     public void useSkill() {
         boolean ok = current.useSkill(this);
         if (ok) {
-            Logger.info("use weapon skill " + current.getName());
-            for (var w : weapons) {
-                w.alertSkillUsed(this, current);
-            }
-            simulacra.alertSkillUsed(this, current);
+            postUseSkill(current);
         }
+    }
+
+    public void postUseSkill(Weapon cw) {
+        Logger.info("use weapon skill " + cw.getName());
+        for (var w : weapons) {
+            w.alertSkillUsed(this, cw);
+        }
+        simulacra.alertSkillUsed(this, cw);
     }
 
     public void attack() {
@@ -194,5 +198,9 @@ public class WeaponContext {
             burnSettleContext = new BurnSettleContext();
         }
         return burnSettleContext;
+    }
+
+    public void jump() {
+        current.jump(this);
     }
 }

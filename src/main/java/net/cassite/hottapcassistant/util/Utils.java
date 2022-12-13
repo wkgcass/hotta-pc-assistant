@@ -319,4 +319,11 @@ public class Utils {
         }
         return false;
     }
+
+    public static void delay(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException ignore) {
+        }
+    }
 }

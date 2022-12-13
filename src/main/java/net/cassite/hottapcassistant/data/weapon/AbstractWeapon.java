@@ -2,12 +2,16 @@ package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.util.Logger;
+import net.cassite.hottapcassistant.util.TaskManager;
+import net.cassite.hottapcassistant.util.Utils;
 
 public abstract class AbstractWeapon extends AbstractWithThreadStartStop implements Weapon {
     protected String name;
     protected Image image;
     protected int stars;
     protected int cooldown;
+    protected int attackPointTime;
     protected double considerCDIsClearedRatio = 0.1;
     protected Matrix[] matrix;
     protected WeaponContext ctx;
@@ -27,6 +31,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStop impleme
 
     public AbstractWeapon(int cooldown, boolean isMillis, int attackPointTime) {
         this.cooldown = cooldown * (isMillis ? 1 : 1000) + attackPointTime;
+        this.attackPointTime = attackPointTime;
         this.name = buildName();
         this.image = buildImage();
     }
@@ -118,11 +123,55 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStop impleme
                 return false;
             }
         }
+        return useSkillIgnoreCD(ctx);
+    }
+
+    protected boolean useSkillIgnoreCD(WeaponContext ctx) {
         if (!useSkill0(ctx)) {
             return false;
         }
+        if (isRevertibleSkill(ctx) && attackPointTime > 0) {
+            postUseRevertibleSkill(ctx);
+            return false;
+        } else {
+            postUseSkill(ctx);
+            return true;
+        }
+    }
+
+    private volatile int revertibleSkillStateVersion = 0;
+    private volatile boolean handlingRevertibleSkill = false;
+
+    private void postUseRevertibleSkill(WeaponContext ctx) {
+        revertSkillIfNeeded(ctx);
+        handlingRevertibleSkill = true;
+        var oldVersion = ++revertibleSkillStateVersion;
+        TaskManager.execute(() -> {
+            Utils.delay(attackPointTime);
+            if (oldVersion != revertibleSkillStateVersion) {
+                Logger.debug("the skill of " + getName() + " was reverted");
+                return;
+            }
+            postRevertibleSkill(ctx);
+            handlingRevertibleSkill = false;
+        });
+    }
+
+    private void postRevertibleSkill(WeaponContext ctx) {
         postUseSkill(ctx);
-        return true;
+        ctx.postUseSkill(this);
+    }
+
+    private void revertSkillIfNeeded(@SuppressWarnings("unused") WeaponContext ctx) {
+        if (isRevertibleSkill(ctx) && handlingRevertibleSkill) {
+            ++revertibleSkillStateVersion;
+            handlingRevertibleSkill = false;
+            revertSkill0(ctx);
+        }
+    }
+
+    protected void revertSkill0(WeaponContext ctx) {
+        cd = 0;
     }
 
     @SuppressWarnings({"unused", "BooleanMethodIsAlwaysInverted"})
@@ -165,6 +214,15 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStop impleme
     }
 
     @Override
+    public void jump(WeaponContext ctx) {
+        revertSkillIfNeeded(ctx);
+    }
+
+    protected boolean isRevertibleSkill(WeaponContext ctx) {
+        return false;
+    }
+
+    @Override
     public void alertSkillUsed(WeaponContext ctx, Weapon w) {
         alertSkillUsed0(ctx, w);
         postAlertSkillUsed(ctx, w);
@@ -194,6 +252,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStop impleme
 
     @Override
     public void alertWeaponSwitched(WeaponContext ctx, Weapon w, boolean discharge) {
+        revertSkillIfNeeded(ctx);
         alertWeaponSwitched0(ctx, w, discharge);
     }
 

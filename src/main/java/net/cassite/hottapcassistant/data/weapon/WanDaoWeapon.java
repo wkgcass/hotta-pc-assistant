@@ -12,7 +12,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon {
     private int count = 3;
 
     public WanDaoWeapon() {
-        super(20);
+        super(20, 500);
     }
 
     @Override
@@ -33,24 +33,50 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon {
                 ++count;
             }
             if (count < 3) {
-                cd = cooldown;
+                cd = cooldown - attackPointTime;
             }
         }
     }
 
     @Override
-    protected boolean useSkill0(WeaponContext ctx) {
+    public boolean useSkill(WeaponContext ctx) {
         if (ctx.resonanceInfo.sup()) {
-            if (count > 0) {
-                --count;
-                if (cd == 0) {
-                    return super.useSkill0(ctx);
-                } else {
-                    return true;
-                }
-            }
+            return super.useSkillIgnoreCD(ctx);
         }
-        return super.useSkill0(ctx);
+        return super.useSkill(ctx);
+    }
+
+    @Override
+    protected boolean useSkill0(WeaponContext ctx) {
+        if (count > 0) {
+            --count;
+            if (cd == 0) {
+                return super.useSkill0(ctx);
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    protected void revertSkill0(WeaponContext ctx) {
+        if (ctx.resonanceInfo.sup()) {
+            if (count == 2) {
+                count = 3;
+                cd = 0;
+            } else if (count < 2) {
+                ++count;
+            }
+        } else {
+            super.revertSkill0(ctx);
+        }
+    }
+
+    @Override
+    protected boolean isRevertibleSkill(WeaponContext ctx) {
+        return true;
     }
 
     @Override

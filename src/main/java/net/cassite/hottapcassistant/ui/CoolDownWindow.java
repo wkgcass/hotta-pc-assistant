@@ -42,6 +42,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private final InputData[] evade;
     private final InputData[] changeWeapons;
     private final InputData[] artifact;
+    private final InputData jump;
     private final AnimationTimer timer;
     private final WeaponCoolDown[] cds;
 
@@ -71,6 +72,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
                           InputData weaponSkill, InputData[] melee, InputData[] evade,
                           InputData[] changeWeapons, InputData[] artifact,
+                          InputData jump,
                           Runnable reset) {
         this.ctx = new WeaponContext(weapons, relics, simulacra);
         this.weaponSkill = weaponSkill;
@@ -78,6 +80,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         this.evade = evade;
         this.changeWeapons = changeWeapons;
         this.artifact = artifact;
+        this.jump = jump;
         this.lastWeaponButtonDownTs = new long[weapons.size()];
         this.lastArtifactButtonDownTs = new long[artifact.length];
 
@@ -401,6 +404,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             ctx.useSkill();
         } else if (SpecialAttack.matches(keys, btns, key, btn)) {
             ctx.specialAttack();
+        } else if (jump.matches(keys, btns, key, btn)) {
+            ctx.jump();
         } else {
             for (var input : melee) {
                 if (input.matches(keys, btns, key, btn)) {
