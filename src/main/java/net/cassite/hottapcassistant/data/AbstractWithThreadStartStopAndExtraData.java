@@ -1,6 +1,13 @@
 package net.cassite.hottapcassistant.data;
 
-public abstract class AbstractWithThreadStartStop implements WithThreadStartStop {
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
+import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public abstract class AbstractWithThreadStartStopAndExtraData implements WithThreadStartStop, WithExtraData {
     private volatile Thread thread;
 
     private void threadRun() {
@@ -50,5 +57,22 @@ public abstract class AbstractWithThreadStartStop implements WithThreadStartStop
             } catch (InterruptedException ignore) {
             }
         }
+    }
+
+    protected final List<WeaponCoolDown> extraIndicatorList = new ArrayList<>();
+    protected final List<WeaponSpecialInfo> extraInfoList = new ArrayList<>();
+
+    @Override
+    public List<WeaponCoolDown> extraIndicators() {
+        return Collections.unmodifiableList(extraIndicatorList);
+    }
+
+    @Override
+    public List<WeaponSpecialInfo> extraInfo() {
+        return Collections.unmodifiableList(extraInfoList);
+    }
+
+    @Override
+    public void updateExtraData() {
     }
 }

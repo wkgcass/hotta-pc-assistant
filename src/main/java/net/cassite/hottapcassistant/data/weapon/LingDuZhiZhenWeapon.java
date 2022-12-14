@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponContext;
@@ -11,8 +12,12 @@ import net.cassite.hottapcassistant.util.Utils;
 public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
     private long beeTime = 0;
 
+    private final WeaponCoolDown lingDuZhiZhenBeeTimer;
+
     public LingDuZhiZhenWeapon() {
         super(60, 800);
+        lingDuZhiZhenBeeTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("bee"), I18n.get().buffName("lingDuZhiZhenBeeTimer"));
+        extraIndicatorList.add(lingDuZhiZhenBeeTimer);
     }
 
     @Override
@@ -65,5 +70,10 @@ public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
 
     public long getTotalBeeTime() {
         return 25_000;
+    }
+
+    @Override
+    public void updateExtraData() {
+        lingDuZhiZhenBeeTimer.setAllCoolDown(getBeeTime(), getTotalBeeTime());
     }
 }

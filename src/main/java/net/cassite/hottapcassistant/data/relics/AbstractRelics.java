@@ -1,10 +1,11 @@
 package net.cassite.hottapcassistant.data.relics;
 
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.data.AbstractWithThreadStartStop;
+import net.cassite.hottapcassistant.data.AbstractWithThreadStartStopAndExtraData;
 import net.cassite.hottapcassistant.data.Relics;
+import net.cassite.hottapcassistant.data.WeaponContext;
 
-public abstract class AbstractRelics extends AbstractWithThreadStartStop implements Relics {
+public abstract class AbstractRelics extends AbstractWithThreadStartStopAndExtraData implements Relics {
     protected final String name;
     protected final Image image;
     protected int stars;
@@ -31,6 +32,10 @@ public abstract class AbstractRelics extends AbstractWithThreadStartStop impleme
     @Override
     public void init(int stars) {
         this.stars = stars;
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
     }
 
     @Override

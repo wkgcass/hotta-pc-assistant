@@ -1,11 +1,11 @@
 package net.cassite.hottapcassistant.data.simulacra;
 
-import net.cassite.hottapcassistant.data.AbstractWithThreadStartStop;
+import net.cassite.hottapcassistant.data.AbstractWithThreadStartStopAndExtraData;
 import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponContext;
 
-public abstract class AbstractSimulacra extends AbstractWithThreadStartStop implements Simulacra {
+public abstract class AbstractSimulacra extends AbstractWithThreadStartStopAndExtraData implements Simulacra {
     protected final String name;
 
     public AbstractSimulacra() {
@@ -22,6 +22,10 @@ public abstract class AbstractSimulacra extends AbstractWithThreadStartStop impl
     @Override
     protected String getThreadName() {
         return "thread-" + getName();
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
     }
 
     @Override

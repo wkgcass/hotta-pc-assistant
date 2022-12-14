@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data.matrix;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.Matrix;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponContext;
@@ -9,6 +10,20 @@ import net.cassite.hottapcassistant.util.Utils;
 
 public class LeiBeiMatrix extends AbstractMatrix implements Matrix {
     private long cd = 0;
+
+    private final WeaponCoolDown leiBeiMatrixBuffTimer;
+
+    public LeiBeiMatrix() {
+        leiBeiMatrixBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("leiBeiMatrixBuffTimer"));
+    }
+
+    @Override
+    public void init(int[] stars) {
+        super.init(stars);
+        if (getEffectiveStars()[4] != -1) {
+            extraIndicatorList.add(leiBeiMatrixBuffTimer);
+        }
+    }
 
     @Override
     protected String buildName() {
@@ -38,5 +53,10 @@ public class LeiBeiMatrix extends AbstractMatrix implements Matrix {
 
     public long getTotalCoolDown() {
         return 15_000;
+    }
+
+    @Override
+    public void updateExtraData() {
+        leiBeiMatrixBuffTimer.setAllCoolDown(getCoolDown(), getTotalCoolDown());
     }
 }

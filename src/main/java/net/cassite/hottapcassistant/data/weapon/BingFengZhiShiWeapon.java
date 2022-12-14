@@ -1,15 +1,19 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class BingFengZhiShiWeapon extends AbstractWeapon implements Weapon {
     private long buffTime = 0;
+    private final WeaponCoolDown bingFengZhiShiBuffTimer;
 
     public BingFengZhiShiWeapon() {
         super(12, 1000);
+        bingFengZhiShiBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("bingFengZhiShiBuffTimer"));
+        extraIndicatorList.add(bingFengZhiShiBuffTimer);
     }
 
     @Override
@@ -68,5 +72,10 @@ public class BingFengZhiShiWeapon extends AbstractWeapon implements Weapon {
 
     public long getTotalBuffTime() {
         return 15_000;
+    }
+
+    @Override
+    public void updateExtraData() {
+        bingFengZhiShiBuffTimer.setAllCoolDown(getBuffTime(), getTotalBuffTime());
     }
 }

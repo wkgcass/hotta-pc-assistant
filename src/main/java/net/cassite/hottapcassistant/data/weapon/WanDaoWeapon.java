@@ -1,6 +1,8 @@
 package net.cassite.hottapcassistant.data.weapon;
 
+import javafx.scene.Cursor;
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponContext;
@@ -10,9 +12,21 @@ import net.cassite.hottapcassistant.util.Utils;
 
 public class WanDaoWeapon extends AbstractWeapon implements Weapon {
     private int count = 3;
+    private final WeaponSpecialInfo wanDaoHuiQiCounter;
 
     public WanDaoWeapon() {
         super(20, 500);
+        wanDaoHuiQiCounter = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("hui-qi"), I18n.get().buffName("wanDaoHuiQiCounter"));
+        wanDaoHuiQiCounter.setOnMouseClicked(e -> resetCount());
+        wanDaoHuiQiCounter.setCursor(Cursor.HAND);
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
+        super.init(ctx);
+        if (ctx.resonanceInfo.sup()) {
+            extraInfoList.add(wanDaoHuiQiCounter);
+        }
     }
 
     @Override
@@ -104,5 +118,10 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon {
     public void resetCount() {
         count = 3;
         cd = 0;
+    }
+
+    @Override
+    public void updateExtraData() {
+        wanDaoHuiQiCounter.setText(getCount() + "");
     }
 }

@@ -5,7 +5,7 @@ import net.cassite.hottapcassistant.data.*;
 
 import java.util.ArrayList;
 
-public abstract class AbstractMatrix extends AbstractWithThreadStartStop implements Matrix {
+public abstract class AbstractMatrix extends AbstractWithThreadStartStopAndExtraData implements Matrix {
     private final String name;
     private final Image image;
     protected int[] stars = new int[5];

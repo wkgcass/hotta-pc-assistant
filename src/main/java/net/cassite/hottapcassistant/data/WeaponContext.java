@@ -1,11 +1,17 @@
 package net.cassite.hottapcassistant.data;
 
-import net.cassite.hottapcassistant.data.weapon.YingZhiWeapon;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
+import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
+import net.cassite.hottapcassistant.data.weapon.*;
+import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Logger;
+import net.cassite.hottapcassistant.util.Utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class WeaponContext {
+public class WeaponContext implements WithExtraData {
     public final List<Weapon> weapons;
     public final Relics[] relics;
     public final Simulacra simulacra;
@@ -14,6 +20,8 @@ public class WeaponContext {
 
     private volatile Thread thread;
     private BurnSettleContext burnSettleContext;
+
+    private final WeaponCoolDown burnSettleTimer;
 
     public WeaponContext(List<Weapon> weapons, Relics[] relics, Simulacra simulacra) {
         if (weapons.isEmpty()) throw new IllegalArgumentException();
@@ -25,6 +33,16 @@ public class WeaponContext {
 
         for (var w : weapons) {
             w.init(this);
+        }
+        for (var r : relics) {
+            if (r == null) continue;
+            r.init(this);
+        }
+        simulacra.init(this);
+
+        burnSettleTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("burn-settle"), I18n.get().buffName("burnSettleTimer"));
+        if (needBurnSettle()) {
+            extraIndicators.add(burnSettleTimer);
         }
     }
 
@@ -202,5 +220,63 @@ public class WeaponContext {
 
     public void jump() {
         current.jump(this);
+    }
+
+    public boolean needBurnSettle() {
+        var needBurnSettle = false;
+        for (var w : weapons) {
+            if (w instanceof SiPaKeWeapon) {
+                needBurnSettle = true;
+                break;
+            }
+        }
+        if (needBurnSettle) {
+            needBurnSettle = false;
+            for (var w : weapons) {
+                if (w instanceof BurnSiYeShiZiWeapon || w instanceof ChiYanZuoLunWeapon || w instanceof LingGuangWeapon) {
+                    needBurnSettle = true;
+                    break;
+                }
+            }
+        }
+        return needBurnSettle;
+    }
+
+    private final List<WeaponCoolDown> extraIndicators = new ArrayList<>();
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private final List<WeaponSpecialInfo> extraInfo = new ArrayList<>();
+
+    @Override
+    public List<WeaponCoolDown> extraIndicators() {
+        return Collections.unmodifiableList(extraIndicators);
+    }
+
+    @Override
+    public List<WeaponSpecialInfo> extraInfo() {
+        return Collections.unmodifiableList(extraInfo);
+    }
+
+    @Override
+    public void updateExtraData() {
+        for (var w : weapons) {
+            w.updateExtraData();
+            var matrix = w.getMatrix();
+            for (var m : matrix) {
+                m.updateExtraData();
+            }
+        }
+        for (var r : relics) {
+            if (r == null) continue;
+            r.updateExtraData();
+        }
+        simulacra.updateExtraData();
+        selfUpdateExtraData();
+    }
+
+    private void selfUpdateExtraData() {
+        if (burnSettleContext != null) {
+            var ctx = getBurnSettleContext();
+            burnSettleTimer.setAllCoolDown(ctx.getCd(), ctx.getLastTotalCD());
+        }
     }
 }

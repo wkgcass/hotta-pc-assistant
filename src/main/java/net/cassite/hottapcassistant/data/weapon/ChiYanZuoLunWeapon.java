@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
@@ -9,8 +10,12 @@ public class ChiYanZuoLunWeapon extends AbstractWeapon implements Weapon {
     private long burnBuff = 0;
     private long lastDecreaseCD = 0;
 
+    private final WeaponCoolDown liZiZhuoShaoBuffTimer;
+
     public ChiYanZuoLunWeapon() {
         super(60, 200);
+        liZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("li-zi-zhuo-shao"), I18n.get().buffName("liZiZhuoShaoBuffTimer"));
+        extraIndicatorList.add(liZiZhuoShaoBuffTimer);
     }
 
     @Override
@@ -74,5 +79,10 @@ public class ChiYanZuoLunWeapon extends AbstractWeapon implements Weapon {
 
     public long getTotalBurnBuff() {
         return 10_000;
+    }
+
+    @Override
+    public void updateExtraData() {
+        liZiZhuoShaoBuffTimer.setAllCoolDown(getBurnBuff(), getTotalBurnBuff());
     }
 }

@@ -2,12 +2,14 @@ package net.cassite.hottapcassistant.data;
 
 import javafx.scene.image.Image;
 
-public interface Relics extends WithThreadStartStop {
+public interface Relics extends WithThreadStartStop, WithExtraData {
     String getName();
 
     Image getImage();
 
     void init(int stars);
+
+    void init(WeaponContext ctx);
 
     void use(WeaponContext ctx);
 

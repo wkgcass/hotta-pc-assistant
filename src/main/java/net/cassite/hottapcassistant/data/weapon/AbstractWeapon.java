@@ -6,7 +6,7 @@ import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.TaskManager;
 import net.cassite.hottapcassistant.util.Utils;
 
-public abstract class AbstractWeapon extends AbstractWithThreadStartStop implements Weapon {
+public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtraData implements Weapon {
     protected String name;
     protected Image image;
     protected int stars;

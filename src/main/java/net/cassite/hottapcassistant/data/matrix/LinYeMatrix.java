@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data.matrix;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.AttackType;
 import net.cassite.hottapcassistant.data.Matrix;
 import net.cassite.hottapcassistant.data.Weapon;
@@ -9,13 +10,20 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class LinYeMatrix extends AbstractMatrix implements Matrix {
-    private boolean hasTwo = false;
     private long buffTime = 0;
+
+    private final WeaponCoolDown linYeMatrixBuffTimer;
+
+    public LinYeMatrix() {
+        linYeMatrixBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("linYe2MatrixBuffTimer"));
+    }
 
     @Override
     public void init(int[] stars) {
         super.init(stars);
-        hasTwo = getEffectiveStars()[2] != -1;
+        if (getEffectiveStars()[2] != -1) {
+            extraIndicatorList.add(linYeMatrixBuffTimer);
+        }
     }
 
     @Override
@@ -36,7 +44,7 @@ public class LinYeMatrix extends AbstractMatrix implements Matrix {
     }
 
     private void hit() {
-        if (!hasTwo) return;
+        if (getEffectiveStars()[2] == -1) return;
         buffTime = getTotalBuffTime();
     }
 
@@ -56,5 +64,10 @@ public class LinYeMatrix extends AbstractMatrix implements Matrix {
     @Override
     protected Image buildImage() {
         return Utils.getMatrixImageFromClasspath("lin-ye");
+    }
+
+    @Override
+    public void updateExtraData() {
+        linYeMatrixBuffTimer.setAllCoolDown(getBuffTime(), getTotalBuffTime());
     }
 }

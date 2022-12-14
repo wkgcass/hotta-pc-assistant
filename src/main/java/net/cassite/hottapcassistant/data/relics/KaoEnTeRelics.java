@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data.relics;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -15,6 +16,13 @@ public class KaoEnTeRelics extends AbstractRelics implements Relics {
     // 2: used and with effect
     private long time1 = 0;
     private long time2 = 0;
+
+    private final WeaponCoolDown kaoEnTeBuffTimer;
+
+    public KaoEnTeRelics() {
+        kaoEnTeBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("kaoEnTeBuffTimer"));
+        extraIndicatorList.add(kaoEnTeBuffTimer);
+    }
 
     @Override
     public void use(WeaponContext ctx) {
@@ -80,5 +88,11 @@ public class KaoEnTeRelics extends AbstractRelics implements Relics {
     @Override
     protected Image buildImage() {
         return Utils.getRelicsImageFromClasspath("kao-en-te");
+    }
+
+    @Override
+    public void updateExtraData() {
+        kaoEnTeBuffTimer.setCoolDown(getTime());
+        kaoEnTeBuffTimer.setAllCoolDown(getAllTime());
     }
 }

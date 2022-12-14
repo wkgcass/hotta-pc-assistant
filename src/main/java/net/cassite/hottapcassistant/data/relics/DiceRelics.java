@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data.relics;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -10,6 +11,13 @@ public class DiceRelics extends AbstractRelics implements Relics {
     private static final long totalCDStar2 = 45 * 1000;
     private static final long totalCDStar0 = 35 * 1000;
     private long cd = 0;
+
+    private final WeaponCoolDown diceBuffTimer;
+
+    public DiceRelics() {
+        diceBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("diceBuffTimer"));
+        extraIndicatorList.add(diceBuffTimer);
+    }
 
     @Override
     public void use(WeaponContext ctx) {
@@ -63,5 +71,11 @@ public class DiceRelics extends AbstractRelics implements Relics {
     @Override
     protected Image buildImage() {
         return Utils.getRelicsImageFromClasspath("dice");
+    }
+
+    @Override
+    public void updateExtraData() {
+        diceBuffTimer.setCoolDown(getTime());
+        diceBuffTimer.setAllCoolDown(getAllTime());
     }
 }

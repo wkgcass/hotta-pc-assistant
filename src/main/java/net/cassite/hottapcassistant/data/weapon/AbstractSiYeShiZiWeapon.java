@@ -1,7 +1,10 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
+import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
 public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements Weapon {
@@ -18,8 +21,26 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
     protected int shotRemain = -1;
     protected int dodgeRemain = 0; // will / 2
 
+    private final WeaponSpecialInfo siYeShiZiShotRemain;
+    private final WeaponSpecialInfo siYeShiZiDodgeRemain;
+    private final WeaponCoolDown opticalSpaceTimer;
+
     public AbstractSiYeShiZiWeapon() {
         super(14);
+
+        siYeShiZiShotRemain = new WeaponSpecialInfo(getImage(), I18n.get().buffName("siYeShiZiShotRemain"));
+        siYeShiZiDodgeRemain = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("dodge"), I18n.get().buffName("siYeShiZiDodgeRemain"));
+        opticalSpaceTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("optical-space"), I18n.get().buffName("opticalSpaceTimer"));
+        extraInfoList.add(siYeShiZiShotRemain);
+        extraInfoList.add(siYeShiZiDodgeRemain);
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
+        super.init(ctx);
+        if (ctx.needBurnSettle()) {
+            extraIndicatorList.add(opticalSpaceTimer);
+        }
     }
 
     @Override
@@ -145,5 +166,12 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
 
     public int getDodgeRemain() {
         return (dodgeRemain + 1) / 2; // 8 -> 4, 7 -> 4, 6 -> 3, etc...
+    }
+
+    @Override
+    public void updateExtraData() {
+        siYeShiZiShotRemain.setText(getShotRemain() + "");
+        siYeShiZiDodgeRemain.setText(getDodgeRemain() + "");
+        opticalSpaceTimer.setAllCoolDown(getOpticalSpaceTime(), getTotalOpticalSpaceTime());
     }
 }

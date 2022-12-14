@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponContext;
@@ -11,9 +12,12 @@ import net.cassite.hottapcassistant.util.Utils;
 public class YingZhiWeapon extends AbstractWeapon implements Weapon {
     private long antiFalseTouchCD;
     private long fieldTime;
+    private final WeaponCoolDown yingYueZhiJingBuffTimer;
 
     public YingZhiWeapon() {
         super(30);
+        yingYueZhiJingBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ying-yue-zhi-jing"), I18n.get().buffName("yingYueZhiJingBuffTimer"));
+        extraIndicatorList.add(yingYueZhiJingBuffTimer);
     }
 
     @Override
@@ -103,5 +107,10 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
         } else {
             return super.getCoolDown();
         }
+    }
+
+    @Override
+    public void updateExtraData() {
+        yingYueZhiJingBuffTimer.setAllCoolDown(getFieldTime(), getTotalFieldTime());
     }
 }

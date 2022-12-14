@@ -18,19 +18,14 @@ import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
-import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.component.cooldown.WithDesc;
-import net.cassite.hottapcassistant.data.*;
-import net.cassite.hottapcassistant.data.matrix.LeiBeiMatrix;
-import net.cassite.hottapcassistant.data.matrix.LinYeMatrix;
-import net.cassite.hottapcassistant.data.relics.DiceRelics;
-import net.cassite.hottapcassistant.data.relics.KaoEnTeRelics;
-import net.cassite.hottapcassistant.data.simulacra.XingHuanSimulacra;
-import net.cassite.hottapcassistant.data.weapon.*;
+import net.cassite.hottapcassistant.data.Relics;
+import net.cassite.hottapcassistant.data.Simulacra;
+import net.cassite.hottapcassistant.data.Weapon;
+import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.entity.InputData;
 import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.entity.KeyCode;
-import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.*;
 
 import java.util.*;
@@ -46,28 +41,6 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private final InputData jump;
     private final AnimationTimer timer;
     private final WeaponCoolDown[] cds;
-
-    // special info
-    private WeaponSpecialInfo liuQuanCheXinCounter;
-    private WeaponCoolDown yongDongCD;
-    private WeaponSpecialInfo wanDaoHuiQiCounter;
-    private WeaponCoolDown yingYueZhiJingBuffTimer;
-    private WeaponCoolDown diceBuffTimer;
-    private WeaponCoolDown kaoEnTeBuffTimer;
-    private WeaponCoolDown bingFengZhiShiBuffTimer;
-    private WeaponSpecialInfo siYeShiZiShotRemain;
-    private WeaponSpecialInfo siYeShiZiDodgeRemain;
-    private WeaponCoolDown shiZiZhuoShaoBuffTimer;
-    private WeaponCoolDown opticalSpaceTimer;
-    private WeaponCoolDown liZiZhuoShaoBuffTimer;
-    private WeaponCoolDown burnSettleTimer;
-    private WeaponCoolDown linYeMatrixBuffTimer;
-    private WeaponCoolDown leiBeiMatrixBuffTimer;
-    private WeaponCoolDown lingDuZhiZhenBeeTimer;
-    private WeaponCoolDown xingHuanSimulacraTimer;
-
-    private LinYeMatrix linYe2Matrix;
-    private LeiBeiMatrix leiBei4Matrix;
 
     private final Scale scale = new Scale(1, 1);
     private final int totalIndicatorCount;
@@ -134,111 +107,26 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 cds[i].setActive(true);
             }
         }
-        var needBurnSettle = false;
-        for (var w : weapons) {
-            if (w instanceof LiuQuanCheXinWeapon lw) {
-                liuQuanCheXinCounter = new WeaponSpecialInfo(lw.getImage(), I18n.get().buffName("liuQuanCheXinCounter"));
-                liuQuanCheXinCounter.setOnMouseClicked(e -> lw.addCount(ctx));
-                liuQuanCheXinCounter.setCursor(Cursor.HAND);
-                yongDongCD = new WeaponCoolDown(Utils.getBuffImageFromClasspath("yong-dong"), I18n.get().buffName("yongDongCD"));
-            } else if (w instanceof WanDaoWeapon wd) {
-                if (ctx.resonanceInfo.sup()) {
-                    wanDaoHuiQiCounter = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("hui-qi"), I18n.get().buffName("wanDaoHuiQiCounter"));
-                    wanDaoHuiQiCounter.setOnMouseClicked(e -> wd.resetCount());
-                    wanDaoHuiQiCounter.setCursor(Cursor.HAND);
-                }
-            } else if (w instanceof YingZhiWeapon) {
-                yingYueZhiJingBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ying-yue-zhi-jing"), I18n.get().buffName("yingYueZhiJingBuffTimer"));
-            } else if (w instanceof BingFengZhiShiWeapon) {
-                bingFengZhiShiBuffTimer = new WeaponCoolDown(w.getImage(), I18n.get().buffName("bingFengZhiShiBuffTimer"));
-            } else if (w instanceof AbstractSiYeShiZiWeapon) {
-                siYeShiZiShotRemain = new WeaponSpecialInfo(w.getImage(), I18n.get().buffName("siYeShiZiShotRemain"));
-                siYeShiZiDodgeRemain = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("dodge"), I18n.get().buffName("siYeShiZiDodgeRemain"));
-                opticalSpaceTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("optical-space"), I18n.get().buffName("opticalSpaceTimer"));
-                if (w instanceof BurnSiYeShiZiWeapon) {
-                    shiZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("shi-zi-zhuo-shao"), I18n.get().buffName("shiZiZhuoShaoBuffTimer"));
-                }
-            } else if (w instanceof ChiYanZuoLunWeapon) {
-                liZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("li-zi-zhuo-shao"), I18n.get().buffName("liZiZhuoShaoBuffTimer"));
-            } else if (w instanceof SiPaKeWeapon) {
-                needBurnSettle = true;
-            } else if (w instanceof LingDuZhiZhenWeapon) {
-                lingDuZhiZhenBeeTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("bee"), I18n.get().buffName("lingDuZhiZhenBeeTimer"));
-            }
-        }
-        if (needBurnSettle) {
-            // check for burn source
-            needBurnSettle = false;
-            for (var w : weapons) {
-                if (w instanceof BurnSiYeShiZiWeapon || w instanceof ChiYanZuoLunWeapon || w instanceof LingGuangWeapon) {
-                    needBurnSettle = true;
-                    break;
-                }
-            }
-        }
-        if (needBurnSettle) {
-            burnSettleTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("burn-settle"), I18n.get().buffName("burnSettleTimer"));
-        } else {
-            opticalSpaceTimer = null;
-        }
-
-        for (var w : weapons) {
-            Matrix linYe = null;
-            Matrix leiBei = null;
-            for (var m : w.getMatrix()) {
-                if (m instanceof LinYeMatrix) {
-                    linYe = m;
-                } else if (m instanceof LeiBeiMatrix) {
-                    leiBei = m;
-                }
-            }
-            if (linYe != null) {
-                if (linYe.getEffectiveStars()[2] != -1) {
-                    linYe2Matrix = (LinYeMatrix) linYe;
-                }
-            }
-            if (leiBei != null) {
-                if (leiBei.getEffectiveStars()[4] != -1) {
-                    leiBei4Matrix = (LeiBeiMatrix) leiBei;
-                }
-            }
-        }
-        if (linYe2Matrix != null) {
-            linYeMatrixBuffTimer = new WeaponCoolDown(linYe2Matrix.getImage(), I18n.get().buffName("linYe2MatrixBuffTimer"));
-        }
-        if (leiBei4Matrix != null) {
-            leiBeiMatrixBuffTimer = new WeaponCoolDown(leiBei4Matrix.getImage(), I18n.get().buffName("leiBeiMatrixBuffTimer"));
-        }
-
-        for (var r : relics) {
-            if (r instanceof DiceRelics) {
-                diceBuffTimer = new WeaponCoolDown(r.getImage(), I18n.get().buffName("diceBuffTimer"));
-            } else if (r instanceof KaoEnTeRelics) {
-                kaoEnTeBuffTimer = new WeaponCoolDown(r.getImage(), I18n.get().buffName("kaoEnTeBuffTimer"));
-            }
-        }
-
-        if (simulacra instanceof XingHuanSimulacra && ctx.resonanceInfo.sup()) {
-            xingHuanSimulacraTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("xing-huan-simulacra"), I18n.get().buffName("xingHuanSimulacraTimer"));
-        }
 
         var groups = new ArrayList<Group>(Arrays.asList(cds));
-        if (liuQuanCheXinCounter != null) groups.add(liuQuanCheXinCounter);
-        if (yongDongCD != null) groups.add(yongDongCD);
-        if (wanDaoHuiQiCounter != null) groups.add(wanDaoHuiQiCounter);
-        if (yingYueZhiJingBuffTimer != null) groups.add(yingYueZhiJingBuffTimer);
-        if (bingFengZhiShiBuffTimer != null) groups.add(bingFengZhiShiBuffTimer);
-        if (siYeShiZiShotRemain != null) groups.add(siYeShiZiShotRemain);
-        if (siYeShiZiDodgeRemain != null) groups.add(siYeShiZiDodgeRemain);
-        if (shiZiZhuoShaoBuffTimer != null) groups.add(shiZiZhuoShaoBuffTimer);
-        if (liZiZhuoShaoBuffTimer != null) groups.add(liZiZhuoShaoBuffTimer);
-        if (opticalSpaceTimer != null) groups.add(opticalSpaceTimer);
-        if (burnSettleTimer != null) groups.add(burnSettleTimer);
-        if (diceBuffTimer != null) groups.add(diceBuffTimer);
-        if (kaoEnTeBuffTimer != null) groups.add(kaoEnTeBuffTimer);
-        if (linYeMatrixBuffTimer != null) groups.add(linYeMatrixBuffTimer);
-        if (lingDuZhiZhenBeeTimer != null) groups.add(lingDuZhiZhenBeeTimer);
-        if (xingHuanSimulacraTimer != null) groups.add(xingHuanSimulacraTimer);
+        for (var w : weapons) {
+            groups.addAll(w.extraIndicators());
+            groups.addAll(w.extraInfo());
+            var matrix = w.getMatrix();
+            for (var m : matrix) {
+                groups.addAll(m.extraIndicators());
+                groups.addAll(m.extraInfo());
+            }
+        }
+        for (var r : relics) {
+            if (r == null) continue;
+            groups.addAll(r.extraIndicators());
+            groups.addAll(r.extraInfo());
+        }
+        groups.addAll(simulacra.extraIndicators());
+        groups.addAll(simulacra.extraInfo());
+        groups.addAll(ctx.extraIndicators());
+        groups.addAll(ctx.extraInfo());
 
         totalIndicatorCount = groups.size();
 
@@ -489,118 +377,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             var w = ctx.weapons.get(i);
             cds[i].setCoolDown(w.getCoolDown());
             cds[i].setAllCoolDown(w.getAllCoolDown());
-            if (w instanceof LiuQuanCheXinWeapon lw) {
-                var counter = liuQuanCheXinCounter;
-                if (counter != null) {
-                    counter.setText(lw.getCount() + "");
-                }
-                var yd = yongDongCD;
-                if (yd != null) {
-                    var time = lw.getYongDongCD();
-                    var total = lw.getTotalYongDongCD();
-                    yd.setCoolDown(time);
-                    yd.setAllCoolDown(time, total);
-                }
-            } else if (w instanceof WanDaoWeapon) {
-                var counter = wanDaoHuiQiCounter;
-                if (counter != null) {
-                    counter.setText(((WanDaoWeapon) w).getCount() + "");
-                }
-            } else if (w instanceof YingZhiWeapon) {
-                var yyzj = yingYueZhiJingBuffTimer;
-                if (yyzj != null) {
-                    var time = ((YingZhiWeapon) w).getFieldTime();
-                    var total = ((YingZhiWeapon) w).getTotalFieldTime();
-                    yyzj.setCoolDown(time);
-                    yyzj.setAllCoolDown(time, total);
-                }
-            } else if (w instanceof BingFengZhiShiWeapon) {
-                var bfzs = bingFengZhiShiBuffTimer;
-                if (bfzs != null) {
-                    var time = ((BingFengZhiShiWeapon) w).getBuffTime();
-                    var total = ((BingFengZhiShiWeapon) w).getTotalBuffTime();
-                    bfzs.setCoolDown(time);
-                    bfzs.setAllCoolDown(time, total);
-                }
-            } else if (w instanceof AbstractSiYeShiZiWeapon sysz) {
-                if (siYeShiZiShotRemain != null) {
-                    siYeShiZiShotRemain.setText(sysz.getShotRemain() + "");
-                }
-                if (siYeShiZiDodgeRemain != null) {
-                    siYeShiZiDodgeRemain.setText(sysz.getDodgeRemain() + "");
-                }
-                if (opticalSpaceTimer != null) {
-                    var time = sysz.getOpticalSpaceTime();
-                    var total = sysz.getTotalOpticalSpaceTime();
-                    opticalSpaceTimer.setCoolDown(time);
-                    opticalSpaceTimer.setAllCoolDown(time, total);
-                }
-                if (w instanceof BurnSiYeShiZiWeapon bsysz) {
-                    var szzs = shiZiZhuoShaoBuffTimer;
-                    if (szzs != null) {
-                        var burn = bsysz.getBurnBuff();
-                        var total = bsysz.getTotalBurnBuff();
-                        szzs.setCoolDown(burn);
-                        szzs.setAllCoolDown(burn, total);
-                    }
-                }
-            } else if (w instanceof ChiYanZuoLunWeapon cyzl) {
-                var lzzs = liZiZhuoShaoBuffTimer;
-                if (lzzs != null) {
-                    var burn = cyzl.getBurnBuff();
-                    var total = cyzl.getTotalBurnBuff();
-                    lzzs.setCoolDown(burn);
-                    lzzs.setAllCoolDown(burn, total);
-                }
-            } else if (w instanceof LingDuZhiZhenWeapon ldzz) {
-                var timer = lingDuZhiZhenBeeTimer;
-                if (timer != null) {
-                    var time = ldzz.getBeeTime();
-                    var total = ldzz.getTotalBeeTime();
-                    timer.setCoolDown(time);
-                    timer.setAllCoolDown(time, total);
-                }
-            }
         }
-        if (linYe2Matrix != null) {
-            if (linYeMatrixBuffTimer != null) {
-                var time = linYe2Matrix.getBuffTime();
-                var total = linYe2Matrix.getTotalBuffTime();
-                linYeMatrixBuffTimer.setCoolDown(time);
-                linYeMatrixBuffTimer.setAllCoolDown(time, total);
-            }
-        }
-        if (leiBei4Matrix != null) {
-            if (leiBeiMatrixBuffTimer != null) {
-                var time = leiBei4Matrix.getCoolDown();
-                var total = leiBei4Matrix.getTotalCoolDown();
-                leiBeiMatrixBuffTimer.setCoolDown(time);
-                leiBeiMatrixBuffTimer.setAllCoolDown(time, total);
-            }
-        }
-        for (var r : ctx.relics) {
-            if (r instanceof DiceRelics) {
-                diceBuffTimer.setCoolDown(r.getTime());
-                diceBuffTimer.setAllCoolDown(r.getAllTime());
-            } else if (r instanceof KaoEnTeRelics) {
-                kaoEnTeBuffTimer.setCoolDown(r.getTime());
-                kaoEnTeBuffTimer.setAllCoolDown(r.getAllTime());
-            }
-        }
-        if (ctx.simulacra instanceof XingHuanSimulacra xh) {
-            var timer = xingHuanSimulacraTimer;
-            if (timer != null) {
-                var buffTime = xh.getBuffTime();
-                var total = xh.getTotalBuffTime();
-                timer.setCoolDown(buffTime);
-                timer.setAllCoolDown(buffTime, total);
-            }
-        }
-        if (burnSettleTimer != null) {
-            var ctx = this.ctx.getBurnSettleContext();
-            burnSettleTimer.setCoolDown(ctx.getCd());
-            burnSettleTimer.setAllCoolDown(ctx.getCd(), ctx.getLastTotalCD());
-        }
+        ctx.updateExtraData();
     }
 
     @Override

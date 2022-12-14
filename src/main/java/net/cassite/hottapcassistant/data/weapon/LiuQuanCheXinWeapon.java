@@ -1,6 +1,9 @@
 package net.cassite.hottapcassistant.data.weapon;
 
+import javafx.scene.Cursor;
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
+import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
@@ -8,9 +11,24 @@ import net.cassite.hottapcassistant.util.Utils;
 public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon {
     private int count = 0;
     private long yongDongCD = 0;
+    private final WeaponSpecialInfo liuQuanCheXinCounter;
+    private final WeaponCoolDown yongDongCDIndicator;
 
     public LiuQuanCheXinWeapon() {
         super(30, 200);
+        liuQuanCheXinCounter = new WeaponSpecialInfo(getImage(), I18n.get().buffName("liuQuanCheXinCounter"));
+        yongDongCDIndicator = new WeaponCoolDown(Utils.getBuffImageFromClasspath("yong-dong"), I18n.get().buffName("yongDongCD"));
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
+        super.init(ctx);
+        extraIndicatorList.add(yongDongCDIndicator);
+        if (ctx.resonanceInfo.iceResonance()) {
+            extraInfoList.add(liuQuanCheXinCounter);
+        }
+        liuQuanCheXinCounter.setOnMouseClicked(e -> addCount(ctx));
+        liuQuanCheXinCounter.setCursor(Cursor.HAND);
     }
 
     @Override
@@ -92,5 +110,11 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon {
             return 5_000;
         }
         return 10_000;
+    }
+
+    @Override
+    public void updateExtraData() {
+        liuQuanCheXinCounter.setText(getCount() + "");
+        yongDongCDIndicator.setAllCoolDown(getYongDongCD(), getTotalYongDongCD());
     }
 }

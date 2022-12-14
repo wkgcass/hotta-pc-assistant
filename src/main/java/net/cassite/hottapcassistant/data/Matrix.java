@@ -2,7 +2,7 @@ package net.cassite.hottapcassistant.data;
 
 import javafx.scene.image.Image;
 
-public interface Matrix extends WithThreadStartStop {
+public interface Matrix extends WithThreadStartStop, WithExtraData {
     String getName();
 
     Image getImage();
