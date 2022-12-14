@@ -336,7 +336,10 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     private void changeWeapon(int index) {
         long current = System.currentTimeMillis();
-        ctx.switchWeapon(index, current - lastWeaponButtonDownTs[index] > 300);
+        boolean ok = ctx.switchWeapon(index, current - lastWeaponButtonDownTs[index] > 300);
+        if (!ok) {
+            return;
+        }
         cds[index].setActive(true);
         for (var i = 0; i < cds.length; ++i) {
             if (i == index) continue;
@@ -377,6 +380,17 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             var w = ctx.weapons.get(i);
             cds[i].setCoolDown(w.getCoolDown());
             cds[i].setAllCoolDown(w.getAllCoolDown());
+
+            {
+                var cd = ctx.getSwitchWeaponCoolDown(i);
+                var total = ctx.getTotalSwitchWeaponCoolDown();
+                var p = (cd / (double) total);
+                if (p == 0) {
+                    cds[i].setLayoutY(10 + r);
+                } else {
+                    cds[i].setLayoutY(10 + r + 10 + 20 * p);
+                }
+            }
         }
         ctx.updateExtraData();
     }

@@ -22,6 +22,7 @@ public class WeaponContext implements WithExtraData {
     private BurnSettleContext burnSettleContext;
 
     private final WeaponCoolDown burnSettleTimer;
+    private final long[] weaponSwitchCD;
 
     public WeaponContext(List<Weapon> weapons, Relics[] relics, Simulacra simulacra) {
         if (weapons.isEmpty()) throw new IllegalArgumentException();
@@ -44,6 +45,7 @@ public class WeaponContext implements WithExtraData {
         if (needBurnSettle()) {
             extraIndicators.add(burnSettleTimer);
         }
+        weaponSwitchCD = new long[weapons.size()];
     }
 
     public void start() {
@@ -87,6 +89,11 @@ public class WeaponContext implements WithExtraData {
     private void threadTick(long ts, long delta) {
         if (burnSettleContext != null) {
             burnSettleContext.tick(this, delta);
+        }
+        for (var i = 0; i < weaponSwitchCD.length; ++i) {
+            var cd = weaponSwitchCD[i];
+            cd = Utils.subtractLongGE0(cd, delta);
+            weaponSwitchCD[i] = cd;
         }
     }
 
@@ -178,16 +185,24 @@ public class WeaponContext implements WithExtraData {
         }
     }
 
-    public void switchWeapon(int index, boolean discharge) {
+    public boolean switchWeapon(int index, boolean discharge) {
         var w = weapons.get(index);
         if (current == w) {
-            return;
+            return true;
+        }
+        if (weaponSwitchCD[index] > 0) {
+            return false;
         }
         Logger.info("weapon switched from " + current.getName() + " to " + w.getName() + (discharge ? " and discharges" : ""));
+        int oldIndex = weapons.indexOf(current);
+        if (oldIndex != -1) {
+            weaponSwitchCD[oldIndex] = getTotalSwitchWeaponCoolDown();
+        }
         current = w;
         for (var ww : weapons) {
             ww.alertWeaponSwitched(this, w, discharge);
         }
+        return true;
     }
 
     public void useRelics(int index, boolean holding) {
@@ -278,5 +293,13 @@ public class WeaponContext implements WithExtraData {
             var ctx = getBurnSettleContext();
             burnSettleTimer.setAllCoolDown(ctx.getCd(), ctx.getLastTotalCD());
         }
+    }
+
+    public long getSwitchWeaponCoolDown(int index) {
+        return weaponSwitchCD[index];
+    }
+
+    public long getTotalSwitchWeaponCoolDown() {
+        return 3_000;
     }
 }
