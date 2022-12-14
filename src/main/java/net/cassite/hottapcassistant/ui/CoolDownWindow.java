@@ -21,6 +21,7 @@ import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.component.cooldown.WithDesc;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.matrix.LeiBeiMatrix;
 import net.cassite.hottapcassistant.data.matrix.LinYeMatrix;
 import net.cassite.hottapcassistant.data.relics.DiceRelics;
 import net.cassite.hottapcassistant.data.relics.KaoEnTeRelics;
@@ -61,10 +62,12 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private WeaponCoolDown liZiZhuoShaoBuffTimer;
     private WeaponCoolDown burnSettleTimer;
     private WeaponCoolDown linYeMatrixBuffTimer;
+    private WeaponCoolDown leiBeiMatrixBuffTimer;
     private WeaponCoolDown lingDuZhiZhenBeeTimer;
     private WeaponCoolDown xingHuanSimulacraTimer;
 
     private LinYeMatrix linYe2Matrix;
+    private LeiBeiMatrix leiBei4Matrix;
 
     private final Scale scale = new Scale(1, 1);
     private final int totalIndicatorCount;
@@ -179,25 +182,32 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             opticalSpaceTimer = null;
         }
 
-        linYe2Matrix = null;
         for (var w : weapons) {
             Matrix linYe = null;
+            Matrix leiBei = null;
             for (var m : w.getMatrix()) {
                 if (m instanceof LinYeMatrix) {
                     linYe = m;
-                    break;
+                } else if (m instanceof LeiBeiMatrix) {
+                    leiBei = m;
                 }
             }
-            if (linYe == null) {
-                continue;
+            if (linYe != null) {
+                if (linYe.getEffectiveStars()[2] != -1) {
+                    linYe2Matrix = (LinYeMatrix) linYe;
+                }
             }
-            if (linYe.getEffectiveStars()[2] != -1) {
-                linYe2Matrix = (LinYeMatrix) linYe;
-                break;
+            if (leiBei != null) {
+                if (leiBei.getEffectiveStars()[4] != -1) {
+                    leiBei4Matrix = (LeiBeiMatrix) leiBei;
+                }
             }
         }
         if (linYe2Matrix != null) {
             linYeMatrixBuffTimer = new WeaponCoolDown(linYe2Matrix.getImage(), I18n.get().buffName("linYe2MatrixBuffTimer"));
+        }
+        if (leiBei4Matrix != null) {
+            leiBeiMatrixBuffTimer = new WeaponCoolDown(leiBei4Matrix.getImage(), I18n.get().buffName("leiBeiMatrixBuffTimer"));
         }
 
         for (var r : relics) {
@@ -558,6 +568,14 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 var total = linYe2Matrix.getTotalBuffTime();
                 linYeMatrixBuffTimer.setCoolDown(time);
                 linYeMatrixBuffTimer.setAllCoolDown(time, total);
+            }
+        }
+        if (leiBei4Matrix != null) {
+            if (leiBeiMatrixBuffTimer != null) {
+                var time = leiBei4Matrix.getCoolDown();
+                var total = leiBei4Matrix.getTotalCoolDown();
+                leiBeiMatrixBuffTimer.setCoolDown(time);
+                leiBeiMatrixBuffTimer.setAllCoolDown(time, total);
             }
         }
         for (var r : ctx.relics) {

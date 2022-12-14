@@ -722,6 +722,7 @@ public class ZhCn extends I18n {
         return switch (name) {
             case "kè láo dí yà" -> "克劳迪娅";
             case "lǐn yè" -> "凛夜";
+            case "léi bèi" -> "蕾贝";
             default -> name;
         };
     }
@@ -764,6 +765,7 @@ public class ZhCn extends I18n {
             case "linYe2MatrixBuffTimer" -> "凛夜意志两件套";
             case "yongDongCD" -> "涌动";
             case "lingDuZhiZhenBeeTimer" -> "零度指针小蜜蜂存在时间";
+            case "leiBeiMatrixBuffTimer" -> "蕾贝意志四件套";
             default -> name;
         };
     }

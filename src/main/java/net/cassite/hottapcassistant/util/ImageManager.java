@@ -35,6 +35,7 @@ public class ImageManager {
         "/images/launchgame-btn/launchgame-normal.png",
         "/images/matrix/dummy.png",
         "/images/matrix/ke-lao-di-ya.png",
+        "/images/matrix/lei-bei.png",
         "/images/matrix/lin-ye.png",
         "/images/relics/dice.png",
         "/images/relics/kao-en-te.png",
