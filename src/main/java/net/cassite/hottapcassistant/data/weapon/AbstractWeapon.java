@@ -207,6 +207,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
 
     @Override
     public void dodge(WeaponContext ctx) {
+        revertSkillIfNeeded(ctx);
         dodge0(ctx);
     }
 
