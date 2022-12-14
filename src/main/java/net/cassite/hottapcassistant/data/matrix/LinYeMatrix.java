@@ -53,7 +53,7 @@ public class LinYeMatrix extends AbstractMatrix implements Matrix {
     }
 
     public long getTotalBuffTime() {
-        return 15_000;
+        return 18_000;
     }
 
     @Override
