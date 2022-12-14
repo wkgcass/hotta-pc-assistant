@@ -7,10 +7,11 @@ import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.resonance.PhysicsResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class WanDaoWeapon extends AbstractWeapon implements Weapon {
+public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsResonance {
     private int count = 3;
     private final WeaponSpecialInfo wanDaoHuiQiCounter;
 

@@ -2,10 +2,11 @@ package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.resonance.FireResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon {
+public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon, FireResonance {
     public FouJueLiFangWeapon() {
         super(60, 700);
     }

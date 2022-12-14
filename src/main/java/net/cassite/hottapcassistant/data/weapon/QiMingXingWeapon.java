@@ -5,10 +5,11 @@ import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.resonance.ThunderResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class QiMingXingWeapon extends AbstractWeapon implements Weapon {
+public class QiMingXingWeapon extends AbstractWeapon implements Weapon, ThunderResonance {
     public QiMingXingWeapon() {
         super(25, 500);
     }

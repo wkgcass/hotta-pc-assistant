@@ -5,10 +5,11 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.resonance.IceResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon {
+public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceResonance {
     private int count = 0;
     private long yongDongCD = 0;
     private final WeaponSpecialInfo liuQuanCheXinCounter;

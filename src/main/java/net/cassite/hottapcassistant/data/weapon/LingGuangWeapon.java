@@ -4,10 +4,11 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.resonance.FireResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class LingGuangWeapon extends AbstractWeapon implements Weapon {
+public class LingGuangWeapon extends AbstractWeapon implements Weapon, FireResonance {
     public LingGuangWeapon() {
         super(12);
     }

@@ -1,5 +1,9 @@
 package net.cassite.hottapcassistant.data;
 
+import net.cassite.hottapcassistant.data.resonance.FireResonance;
+import net.cassite.hottapcassistant.data.resonance.IceResonance;
+import net.cassite.hottapcassistant.data.resonance.PhysicsResonance;
+import net.cassite.hottapcassistant.data.resonance.ThunderResonance;
 import net.cassite.hottapcassistant.data.weapon.*;
 
 import java.util.List;
@@ -37,13 +41,13 @@ public record ResonanceInfo(boolean atk, boolean sup, boolean def, boolean balan
             }
             if (w instanceof YingZhiWeapon) {
                 hasYingZhi = true;
-            } else if (w instanceof SiPaKeWeapon || w instanceof LingGuangWeapon || w instanceof FouJueLiFangWeapon) {
+            } else if (w instanceof FireResonance) {
                 hasFireResonance = true;
-            } else if (w instanceof LiuQuanCheXinWeapon) {
+            } else if (w instanceof IceResonance) {
                 hasIceResonance = true;
-            } else if (w instanceof QiMingXingWeapon || w instanceof GeLaiPuNiWeapon) {
+            } else if (w instanceof ThunderResonance) {
                 hasThunderResonance = true;
-            } else if (w instanceof WanDaoWeapon) {
+            } else if (w instanceof PhysicsResonance) {
                 hasPhysicsResonance = true;
             }
         }
