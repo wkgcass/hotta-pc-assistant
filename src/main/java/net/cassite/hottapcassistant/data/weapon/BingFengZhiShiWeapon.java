@@ -40,6 +40,16 @@ public class BingFengZhiShiWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    protected boolean useSkill0(WeaponContext ctx) {
+        boolean ok = super.useSkill0(ctx);
+        if (!ok) return false;
+        if (stars >= 1) {
+            buff(1000);
+        }
+        return true;
+    }
+
+    @Override
     protected void attack0(WeaponContext ctx, AttackType type) {
         if (type == AttackType.DODGE) {
             if (stars >= 1) {

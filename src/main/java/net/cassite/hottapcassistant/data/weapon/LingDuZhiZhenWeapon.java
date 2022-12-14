@@ -6,11 +6,10 @@ import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.data.WeaponElement;
-import net.cassite.hottapcassistant.data.resonance.IceResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon, IceResonance {
+public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
     private long beeTime = 0;
 
     private final WeaponCoolDown lingDuZhiZhenBeeTimer;
