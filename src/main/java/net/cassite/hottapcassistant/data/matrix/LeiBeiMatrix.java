@@ -14,7 +14,7 @@ public class LeiBeiMatrix extends AbstractMatrix implements Matrix {
     private final WeaponCoolDown leiBeiMatrixBuffTimer;
 
     public LeiBeiMatrix() {
-        leiBeiMatrixBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("leiBeiMatrixBuffTimer"));
+        leiBeiMatrixBuffTimer = new WeaponCoolDown(getImage(), 1.5, I18n.get().buffName("leiBeiMatrixBuffTimer"));
     }
 
     @Override

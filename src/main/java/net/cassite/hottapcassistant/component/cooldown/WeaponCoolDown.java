@@ -28,6 +28,10 @@ public class WeaponCoolDown extends Group implements WithDesc {
     private final String desc;
 
     public WeaponCoolDown(Image image, String desc) {
+        this(image, 1, desc);
+    }
+
+    public WeaponCoolDown(Image image, double imageScale, String desc) {
         this.desc = desc;
 
         var innerCircle = new Circle();
@@ -50,13 +54,13 @@ public class WeaponCoolDown extends Group implements WithDesc {
         maskCircle.setFill(Color.WHITE);
         maskCircle.setStrokeWidth(0);
         maskCircle.setRadius(INNER_RADIUS);
-        maskCircle.setCenterX(INNER_RADIUS);
-        maskCircle.setCenterY(INNER_RADIUS);
+        maskCircle.setCenterX(INNER_RADIUS * imageScale);
+        maskCircle.setCenterY(INNER_RADIUS * imageScale);
         var imageView = new ImageView(image);
-        imageView.setFitWidth(INNER_RADIUS * 2);
-        imageView.setFitHeight(INNER_RADIUS * 2);
-        imageView.setLayoutX(-INNER_RADIUS);
-        imageView.setLayoutY(-INNER_RADIUS);
+        imageView.setFitWidth(INNER_RADIUS * 2 * imageScale);
+        imageView.setFitHeight(INNER_RADIUS * 2 * imageScale);
+        imageView.setLayoutX(-INNER_RADIUS * imageScale);
+        imageView.setLayoutY(-INNER_RADIUS * imageScale);
         imageView.setClip(maskCircle);
 
         var innerBackground = new Circle();
