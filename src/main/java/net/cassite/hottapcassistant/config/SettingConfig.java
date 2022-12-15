@@ -88,7 +88,6 @@ public class SettingConfig {
                 line = line.trim();
                 if (line.equals("/Script/QRSL.QRSLGameUserSettings")) {
                     gameUserSettingsIndex = i;
-                    break;
                 }
             } else if (line.contains("=")) {
                 var split = line.split("=");
