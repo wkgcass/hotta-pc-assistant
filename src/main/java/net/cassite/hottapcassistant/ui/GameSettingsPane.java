@@ -5,21 +5,19 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import net.cassite.hottapcassistant.component.setting.UISettingList;
 import net.cassite.hottapcassistant.config.SettingConfig;
-import net.cassite.hottapcassistant.entity.GameVersion;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.FontManager;
 import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.SimpleAlert;
 import net.cassite.hottapcassistant.util.StyleUtils;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
 public class GameSettingsPane extends WithConfirmPane {
     private final UISettingList ls;
-    private final Button openConfigIni;
 
     public GameSettingsPane() {
         ls = new UISettingList(this::setModified);
@@ -48,28 +46,12 @@ public class GameSettingsPane extends WithConfirmPane {
                 new SimpleAlert(Alert.AlertType.ERROR, I18n.get().openFileFailed()).show();
             }
         });
-        openConfigIni = new Button(I18n.get().openConfigIni()) {{
-            FontManager.setFont(this);
-        }};
-        openConfigIni.setOnAction(e -> {
-            try {
-                Desktop.getDesktop().open(new File(getSettingConfig().configPath));
-            } catch (IOException ignore) {
-                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().openFileFailed()).show();
-            }
-        });
         insertElementToBottom(openGameUserSettingsIni);
-        insertElementToBottom(openConfigIni);
     }
 
     private SettingConfig getSettingConfig() {
         var settings = Path.of(GlobalValues.savedPath.get(), "Config", "WindowsNoEditor", "GameUserSettings.ini").toString();
-        if (GlobalValues.useVersion.get() == GameVersion.CN) {
-            var configIni = Path.of(GlobalValues.gamePath.get(), "WmGpLaunch", "UserData", "Config", "Config.ini").toString();
-            return SettingConfig.ofSavedAndWmgp(settings, configIni);
-        } else {
-            return SettingConfig.ofSaved(settings);
-        }
+        return SettingConfig.ofSaved(settings);
     }
 
     @Override
@@ -80,6 +62,5 @@ public class GameSettingsPane extends WithConfirmPane {
     @Override
     protected void reset() throws IOException {
         ls.setItems(FXCollections.observableList(getSettingConfig().read()));
-        openConfigIni.setVisible(GlobalValues.useVersion.get() == GameVersion.CN);
     }
 }

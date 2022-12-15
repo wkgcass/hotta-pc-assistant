@@ -4,6 +4,7 @@ import javafx.scene.control.Alert;
 import net.cassite.hottapcassistant.component.setting.Setting;
 import net.cassite.hottapcassistant.component.setting.SettingType;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.SimpleAlert;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -15,24 +16,16 @@ import java.util.function.Function;
 
 public class SettingConfig {
     public final String settingsPath;
-    public final String configPath; // nullable
 
-    private SettingConfig(String settingsPath, String configPath) {
+    private SettingConfig(String settingsPath) {
         this.settingsPath = settingsPath;
-        this.configPath = configPath;
     }
 
     public static SettingConfig ofSaved(String settingsPath) {
-        return new SettingConfig(settingsPath, null);
-    }
-
-    public static SettingConfig ofSavedAndWmgp(String settingsPath, String configPath) {
-        return new SettingConfig(settingsPath, configPath);
+        return new SettingConfig(settingsPath);
     }
 
     private static final LinkedHashMap<String, SettingType> availableSettings = new LinkedHashMap<>() {{
-        put("dx11", SettingType.BOOL_0_1);
-        put("Resolution_0", SettingType.RESOLUTION);
         put("bAutoCombatDiet", SettingType.BOOL);
         put("AutoCombatDietHpPercent", SettingType.FLOAT);
         put("bAutoCombatArtifactSkill", SettingType.BOOL);
@@ -62,7 +55,7 @@ public class SettingConfig {
 
     public List<Setting> read() throws IOException {
         List<Setting> settings = new ArrayList<>();
-        readConfigFrom(settings, configPath);
+        initSettingsConfig();
         readConfigFrom(settings, settingsPath);
 
         settings.sort((a, b) -> {
@@ -80,10 +73,57 @@ public class SettingConfig {
         return settings;
     }
 
-    private void readConfigFrom(List<Setting> settings, String path) throws IOException {
-        if (path == null) {
+    private void initSettingsConfig() throws IOException {
+        Path settingsPath = Path.of(this.settingsPath);
+        var lines = Files.readAllLines(settingsPath);
+        var gameUserSettingsIndex = -1;
+        boolean hasResolutionSizeX = false;
+        boolean hasResolutionSizeY = false;
+        boolean hasFullscreenMode = false;
+        for (var i = 0; i < lines.size(); ++i) {
+            var line = lines.get(i);
+            line = line.trim();
+            if (line.startsWith("[") && line.endsWith("]")) {
+                line = line.substring(1, line.length() - 1);
+                line = line.trim();
+                if (line.equals("/Script/QRSL.QRSLGameUserSettings")) {
+                    gameUserSettingsIndex = i;
+                    break;
+                }
+            } else if (line.contains("=")) {
+                var split = line.split("=");
+                if (split.length != 2) continue;
+                var key = split[0].trim();
+                switch (key) {
+                    case "ResolutionSizeX" -> hasResolutionSizeX = true;
+                    case "ResolutionSizeY" -> hasResolutionSizeY = true;
+                    case "FullscreenMode" -> hasFullscreenMode = true;
+                }
+            }
+        }
+        if (gameUserSettingsIndex == -1) {
+            Logger.warn("cannot find [/Script/QRSL.QRSLGameUserSettings] in " + settingsPath);
             return;
         }
+        var modified = false;
+        if (!hasFullscreenMode) {
+            lines.add(gameUserSettingsIndex + 1, "FullscreenMode=2");
+            modified = true;
+        }
+        if (!hasResolutionSizeY) {
+            lines.add(gameUserSettingsIndex + 1, "ResolutionSizeY=768");
+            modified = true;
+        }
+        if (!hasResolutionSizeX) {
+            lines.add(gameUserSettingsIndex + 1, "ResolutionSizeX=1024");
+            modified = true;
+        }
+        if (modified) {
+            Utils.writeFile(settingsPath, String.join("\n", lines));
+        }
+    }
+
+    private void readConfigFrom(List<Setting> settings, String path) throws IOException {
         var lines = Files.readAllLines(Path.of(path));
         for (int i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
@@ -121,27 +161,16 @@ public class SettingConfig {
         Path settingsPath = Path.of(this.settingsPath);
         var settingsFile = Files.readAllLines(settingsPath);
 
-        Path configPath = this.configPath == null ? null : Path.of(this.configPath);
-        var configsFile = configPath == null ? null : Files.readAllLines(configPath);
-
         for (var s : settings) {
             if (s.lineIndex == -1 || s.source == null) {
                 continue;
             }
-            if (s.source.equals(this.configPath)) {
-                if (s.lineIndex >= configsFile.size()) {
-                    throw new IOException("config file has been changed, lines cannot match");
-                }
-                configsFile.set(s.lineIndex, s.toString());
-            } else if (s.source.equals(this.settingsPath)) {
+            if (s.source.equals(this.settingsPath)) {
                 if (s.lineIndex >= settingsFile.size()) {
                     throw new IOException("settings file has been changed, lines cannot match");
                 }
                 settingsFile.set(s.lineIndex, s.toString());
             }
-        }
-        if (configPath != null) {
-            Utils.writeFile(configPath, String.join("\n", configsFile));
         }
         Utils.writeFile(settingsPath, String.join("\n", settingsFile));
     }

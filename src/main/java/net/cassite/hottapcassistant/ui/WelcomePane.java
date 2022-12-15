@@ -586,6 +586,14 @@ public class WelcomePane extends StackPane {
                 return;
             }
         }
+        final String htdir = "HTMobile";
+        for (char c = 'C'; c <= 'Z'; ++c) {
+            File f = new File(c + ":\\" + htdir + "\\gameLauncher.exe");
+            if (f.isFile()) {
+                selectGameLocationInput.setText(f.getParentFile().getAbsolutePath());
+                return;
+            }
+        }
         if (alert) {
             new SimpleAlert(Alert.AlertType.WARNING, I18n.get().autoSearchFailed()).showAndWait();
         }

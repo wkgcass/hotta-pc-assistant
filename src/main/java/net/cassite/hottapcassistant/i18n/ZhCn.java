@@ -262,8 +262,6 @@ public class ZhCn extends I18n {
     @Override
     public String configNameMapping(String name) {
         return switch (name) {
-            case "dx11" -> "使用DX11";
-            case "Resolution_0" -> "分辨率（-1x-1表示全屏）";
             case "bAutoCombatDiet" -> "自动战斗-使用食物";
             case "AutoCombatDietHpPercent" -> "自动战斗-使用食物时的血量百分比";
             case "bAutoCombatArtifactSkill" -> "自动战斗-使用源器";
@@ -271,9 +269,9 @@ public class ZhCn extends I18n {
             case "fFightCameraDistance" -> "战斗时镜头距离";
             case "MaxVisibilityPlayer" -> "可见玩家数量";
             case "FrameRateLimit" -> "帧率限制";
-            case "ResolutionSizeX" -> "[国际服生效]分辨率X";
-            case "ResolutionSizeY" -> "[国际服生效]分辨率Y";
-            case "FullscreenMode" -> "[国际服生效]全屏模式[1=全屏|2=窗口]";
+            case "ResolutionSizeX" -> "分辨率X";
+            case "ResolutionSizeY" -> "分辨率Y";
+            case "FullscreenMode" -> "全屏模式[1=全屏|2=窗口]";
             default -> super.configNameMapping(name);
         };
     }
@@ -356,11 +354,6 @@ public class ZhCn extends I18n {
     @Override
     public String settingColumnNameValue() {
         return "值";
-    }
-
-    @Override
-    public String openConfigIni() {
-        return "打开Config.ini";
     }
 
     @Override

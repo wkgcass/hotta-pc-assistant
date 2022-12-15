@@ -143,8 +143,6 @@ public abstract class I18n {
 
     public abstract String settingColumnNameValue();
 
-    public abstract String openConfigIni();
-
     public abstract String openGameUserSettingsIni();
 
     public abstract String openInputIni();
