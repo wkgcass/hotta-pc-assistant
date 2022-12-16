@@ -11,6 +11,7 @@ public class ImageManager {
         "/images/bg/bg1.png",
         "/images/buff/bee.png",
         "/images/buff/burn-settle.png",
+        "/images/buff/charge.png",
         "/images/buff/dodge.png",
         "/images/buff/hui-qi.png",
         "/images/buff/li-zi-zhuo-shao.png",

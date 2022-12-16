@@ -9,4 +9,5 @@ open module net.cassite.hottapcassistant {
     requires com.github.kwhat.jnativehook;
     requires org.controlsfx.controls;
     exports net.cassite.hottapcassistant;
+    exports net.cassite.hottapcassistant.test;
 }

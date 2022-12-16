@@ -24,6 +24,8 @@ import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponContext;
+import net.cassite.hottapcassistant.discharge.DischargeDetector;
+import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
 import net.cassite.hottapcassistant.entity.InputData;
 import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.entity.KeyCode;
@@ -47,15 +49,18 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private final Text descLabel;
     private final List<Group> buffs = new ArrayList<>();
     private final List<Group> row2 = new ArrayList<>();
+    private final DischargeDetector dischargeDetector;
 
     private final Scale scale = new Scale(1, 1);
     private final int totalIndicatorCount;
+
+    private WeaponCoolDown chargePercentage;
 
     public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
                           InputData weaponSkill, InputData[] melee, InputData[] evade,
                           InputData[] changeWeapons, InputData[] artifact,
                           InputData jump,
-                          Set<String> row2Ids,
+                          Set<String> row2Ids, AssistantCoolDownOptions options,
                           Runnable resetCallback) {
         this.ctx = new WeaponContext(weapons, relics, simulacra);
         this.weaponSkill = weaponSkill;
@@ -66,6 +71,15 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         this.jump = jump;
         this.lastWeaponButtonDownTs = new long[weapons.size()];
         this.lastArtifactButtonDownTs = new long[artifact.length];
+        if (options == null || !options.scanDischargeEnabled()) {
+            dischargeDetector = null;
+        } else {
+            dischargeDetector = new DischargeDetector(
+                options.scanDischargeRect,
+                options.scanDischargeCriticalPoints,
+                options.scanDischargeDebug
+            );
+        }
 
         GlobalScreenUtils.enable(this);
         GlobalScreen.addNativeKeyListener(this);
@@ -135,6 +149,11 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         buffs.addAll(addBuffPositionHandler(simulacra.extraInfo()));
         buffs.addAll(addBuffPositionHandler(ctx.extraIndicators()));
         buffs.addAll(addBuffPositionHandler(ctx.extraInfo()));
+
+        if (dischargeDetector != null) {
+            chargePercentage = new WeaponCoolDown(Utils.getBuffImageFromClasspath("charge"), "chargePercentage", I18n.get().buffName("chargePercentage"));
+            buffs.add(chargePercentage);
+        }
 
         totalIndicatorCount = 3 + buffs.size();
 
@@ -212,6 +231,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             }
         };
 
+        if (dischargeDetector != null) {
+            dischargeDetector.start();
+        }
         ctx.start();
         timer.start();
     }
@@ -417,7 +439,13 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     private void changeWeapon(int index) {
         long current = System.currentTimeMillis();
-        boolean ok = ctx.switchWeapon(index, current - lastWeaponButtonDownTs[index] > 300);
+        boolean discharge;
+        if (dischargeDetector == null) {
+            discharge = current - lastWeaponButtonDownTs[index] > 300;
+        } else {
+            discharge = dischargeDetector.isFullCharge();
+        }
+        boolean ok = ctx.switchWeapon(index, discharge);
         if (!ok) {
             return;
         }
@@ -425,6 +453,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         for (var i = 0; i < cds.length; ++i) {
             if (i == index) continue;
             cds[i].setActive(false);
+        }
+        if (discharge && dischargeDetector != null) {
+            dischargeDetector.discharge();
         }
     }
 
@@ -474,6 +505,15 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             }
         }
         ctx.updateExtraData();
+        if (chargePercentage != null) {
+            if (dischargeDetector != null) {
+                if (dischargeDetector.isFullCharge()) {
+                    chargePercentage.setAllCoolDown(new double[]{1, dischargeDetector.getPercentage()});
+                } else {
+                    chargePercentage.setAllCoolDown(new double[]{dischargeDetector.getPercentage()});
+                }
+            }
+        }
     }
 
     @Override
@@ -485,6 +525,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private void stop() {
         timer.stop();
         ctx.stop();
+        if (dischargeDetector != null) {
+            dischargeDetector.stop();
+        }
         GlobalScreen.removeNativeKeyListener(this);
         GlobalScreen.removeNativeMouseListener(this);
         GlobalScreenUtils.disable(this);

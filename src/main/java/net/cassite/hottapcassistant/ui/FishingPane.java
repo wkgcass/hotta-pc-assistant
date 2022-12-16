@@ -508,14 +508,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
     @SuppressWarnings("DuplicatedCode")
     private void configurePosBarAndStamina(Consumer<Boolean> cb) {
-        var window = this.getScene().getWindow();
-        var screenOb = Screen.getScreensForRectangle(window.getX(), window.getY(), window.getWidth(), window.getHeight());
-        Screen screen;
-        if (screenOb.isEmpty()) {
-            screen = Screen.getPrimary();
-        } else {
-            screen = screenOb.get(0);
-        }
+        Screen screen = getScreen();
         if (screen == null) {
             new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
             cb.accept(false);

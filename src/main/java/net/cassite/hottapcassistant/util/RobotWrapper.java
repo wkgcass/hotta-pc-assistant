@@ -87,6 +87,13 @@ public class RobotWrapper {
         return robot.getScreenCapture(img, x, y, width, height);
     }
 
+    public java.awt.Image awtCapture(int x, int y, int width, int height) {
+        var mi = awtRobot.createMultiResolutionScreenCapture(new Rectangle(x, y, width, height));
+        var ls = mi.getResolutionVariants();
+        if (ls.isEmpty()) return null;
+        return ls.get(ls.size() - 1);
+    }
+
     public void mouseMove(double x, double y) {
         Logger.debug("mouse move: (" + x + ", " + y + ")");
         robot.mouseMove(x, y);

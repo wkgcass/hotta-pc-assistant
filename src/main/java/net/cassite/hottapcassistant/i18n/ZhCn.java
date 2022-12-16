@@ -784,6 +784,7 @@ public class ZhCn extends I18n {
             case "lingGuangTaunt" -> "陵光坚毅嘲讽";
             case "yeQueZhiYuStar5" -> "夜雀之羽5星重伤";
             case "moShuShiJian" -> "魔术时间";
+            case "chargePercentage" -> "充能百分比";
             default -> name;
         };
     }
@@ -796,6 +797,61 @@ public class ZhCn extends I18n {
     @Override
     public String stopCoolDown() {
         return "停止";
+    }
+
+    @Override
+    public String cooldownOptionsBtn() {
+        return "选项";
+    }
+
+    @Override
+    public String cooldownOptionsTitle() {
+        return "冷却指示器选项";
+    }
+
+    @Override
+    public String cooldownScanDischargeDesc() {
+        return "连携充能检测功能会读取屏幕，以识别当前的充能值。\n" +
+            "该检测仅对屏幕指定区域进行截图操作（截图频率较高），不会读取游戏内存数据。";
+    }
+
+    @Override
+    public String cooldownScanDischargeCheckBox() {
+        return "启用连携充能检测（beta）";
+    }
+
+    @Override
+    public String cooldownScanDischargeDebugCheckBox() {
+        return "开启debug模式（充能检测结果会放置在剪贴板中）";
+    }
+
+    @Override
+    public String cooldownScanDischargeResetBtn() {
+        return "重置连携充能检测配置";
+    }
+
+    @Override
+    public String scanDischargeConfigureTips() {
+        return """
+            请先进入游戏将充能打到即将充满的状态（90%以上）
+            之后回到本窗口，点击"确定"，然后马上切换到游戏界面，等待几秒后将进入配置界面。
+            配置界面内，点击Enter（回车）确认配置，或者点击CTRL+W取消配置""";
+    }
+
+    @Override
+    public String positionOfDischargeTip() {
+        return "将选框拖动至任意一把后台武器上，尽量刚好包括其充能条";
+    }
+
+    @Override
+    public String scanDischargeScreenDescription() {
+        return "点击Enter（回车）确认配置，或者点击CTRL+W取消配置";
+    }
+
+    @Override
+    public String failedCalculatingCriticalPoints() {
+        return "计算关键点失败，请重新框选。\n" +
+            "请注意，充能必须是差一点点充满的状态（90%以上）";
     }
 
     @Override

@@ -1,22 +1,32 @@
 package net.cassite.hottapcassistant.ui;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.component.VPadding;
+import net.cassite.hottapcassistant.component.shapes.MovableRect;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.config.InputConfig;
 import net.cassite.hottapcassistant.data.Matrix;
@@ -24,12 +34,19 @@ import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.simulacra.DummySimulacra;
+import net.cassite.hottapcassistant.discharge.DischargeCheckAlgorithm;
+import net.cassite.hottapcassistant.discharge.DischargeCheckContext;
+import net.cassite.hottapcassistant.discharge.SimpleDischargeCheckAlgorithm;
+import net.cassite.hottapcassistant.entity.Point;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.*;
 
+import java.awt.*;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
@@ -77,6 +94,8 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     private final Set<String> row2Ids = new HashSet<>();
     private final ObservableList<String> configurationNames = FXCollections.observableList(new ArrayList<>());
     private final ObservableList<AssistantCoolDownConfiguration> configurations = FXCollections.observableList(new ArrayList<>());
+    private final SimpleObjectProperty<AssistantCoolDownOptions> options = new SimpleObjectProperty<>(AssistantCoolDownOptions.empty());
+    private final CoolDownOptions optionsStage = new CoolDownOptions();
 
     public CoolDownPane() {
         var vbox = new VBox();
@@ -304,13 +323,33 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 stopBtn.setDisable(!now);
             });
 
+            hbox.getChildren().addAll(startBtn, new HPadding(4), stopBtn);
+        }
+
+        {
+            buttonsVBox.getChildren().add(new VPadding(4));
+            var hbox = new HBox();
+            buttonsVBox.getChildren().add(hbox);
+
+            var optionsBtn = new Button(I18n.get().cooldownOptionsBtn()) {{
+                FontManager.setFont(this);
+            }};
+            optionsBtn.setPrefWidth(WIDTH_HEIGHT);
+            optionsBtn.setOnAction(e -> {
+                if (optionsStage.isShowing()) {
+                    optionsStage.requestFocus();
+                } else {
+                    optionsStage.show();
+                }
+            });
+
             var tipsBtn = new Button(I18n.get().cooldownTipsButton()) {{
                 FontManager.setFont(this);
             }};
             tipsBtn.setPrefWidth(WIDTH_HEIGHT);
             tipsBtn.setOnAction(e -> new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().cooldownTips(), FontManager::setNoto).show());
 
-            hbox.getChildren().addAll(startBtn, new HPadding(4), stopBtn, new HPadding(4), tipsBtn);
+            hbox.getChildren().addAll(optionsBtn, new HPadding(4), tipsBtn);
         }
 
         {
@@ -418,6 +457,10 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     private void start() {
         if (isStarted.get()) return;
 
+        if (optionsStage.isShowing()) {
+            optionsStage.close();
+        }
+
         var set = new HashSet<Integer>();
         for (var weapon : weapons) {
             if (weapon.get() == null) {
@@ -483,7 +526,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         saveConfig();
 
         var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts, jump,
-            row2Ids,
+            row2Ids, options.get(),
             this::reset);
         this.window = window;
         setWindowPosition(window);
@@ -547,6 +590,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         }
         config.row2Ids = row2Ids;
         config.configurations = new ArrayList<>(configurations);
+        config.options = this.options.get();
         Logger.info("weapon properties:\n" + config.toJson().stringify());
         return config;
     }
@@ -733,6 +777,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         loadSimulacraFromConfig(cooldown.simulacra);
         loadRow2Ids(cooldown.row2Ids);
         loadConfigurations(cooldown.configurations);
+        loadOptions(cooldown.options);
     }
 
     private void loadFromConfig(AssistantCoolDownConfiguration cooldown) {
@@ -788,8 +833,280 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         this.configurations.addAll(configurations);
     }
 
+    private void loadOptions(AssistantCoolDownOptions options) {
+        if (options == null) return;
+        this.options.set(options);
+    }
+
     @Override
     public void terminate() {
         stop();
+    }
+
+    private class CoolDownOptions extends Stage {
+        CoolDownOptions() {
+            var vbox = new VBox();
+            vbox.setPadding(new Insets(10, 10, 10, 10));
+            var scene = new Scene(vbox);
+            setScene(scene);
+
+            {
+                var scanDischargeDesc = new Label(I18n.get().cooldownScanDischargeDesc()) {{
+                    FontManager.setNoto(this);
+                }};
+                vbox.getChildren().add(scanDischargeDesc);
+                vbox.getChildren().add(new VPadding(4));
+                var scanDischargeCheckbox = new CheckBox(I18n.get().cooldownScanDischargeCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(scanDischargeCheckbox);
+                vbox.getChildren().add(new VPadding(4));
+                var scanDischargeDebugCheckbox = new CheckBox(I18n.get().cooldownScanDischargeDebugCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(scanDischargeDebugCheckbox);
+                vbox.getChildren().add(new VPadding(4));
+                var scanDischargeResetConfigBtn = new Button(I18n.get().cooldownScanDischargeResetBtn()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(scanDischargeResetConfigBtn);
+
+                options.addListener((ob, old, now) -> {
+                    if (now == null) return;
+                    if (now.scanDischargeEnabled()) {
+                        scanDischargeCheckbox.setSelected(true);
+                    }
+                    scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
+                });
+                scanDischargeCheckbox.setOnAction(e -> {
+                    var selected = scanDischargeCheckbox.isSelected();
+                    if (selected) {
+                        chooseScanDischargeRectStep1(ok -> {
+                            if (ok) {
+                                var opt = options.get();
+                                opt.scanDischarge = true;
+                                saveConfig();
+                            } else {
+                                scanDischargeCheckbox.setSelected(false);
+                            }
+                        });
+                    } else {
+                        var opt = options.get();
+                        opt.scanDischarge = false;
+                        saveConfig();
+                    }
+                });
+                scanDischargeDebugCheckbox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.scanDischargeDebug = scanDischargeDebugCheckbox.isSelected();
+                    saveConfig();
+                });
+                scanDischargeResetConfigBtn.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.scanDischargeRect = null;
+                    opt.scanDischargeCriticalPoints = null;
+                    opt.scanDischarge = false;
+                    saveConfig();
+                    scanDischargeCheckbox.setSelected(false);
+                });
+            }
+
+            setTitle(I18n.get().cooldownOptionsTitle());
+            centerOnScreen();
+        }
+
+        private void chooseScanDischargeRectStep1(Consumer<Boolean> cb) {
+            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().scanDischargeConfigureTips()).showAndWait();
+            TaskManager.execute(() -> {
+                Utils.delay(3_000);
+                Platform.runLater(() -> chooseScanDischargeRectStep2(cb));
+            });
+        }
+
+        @SuppressWarnings("DuplicatedCode")
+        private void chooseScanDischargeRectStep2(Consumer<Boolean> cb) {
+            Screen screen = Utils.getScreenOf(getScene().getWindow());
+            if (screen == null) {
+                new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
+                cb.accept(false);
+                return;
+            }
+            final Screen fScreen = screen;
+            var img = Utils.execRobotOnThread(r -> r.captureScreen(screen));
+            var stage = new Stage();
+            stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+            stage.setFullScreen(true);
+
+            var imagePane = new Pane();
+            imagePane.setBackground(new Background(new BackgroundImage(img,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                new BackgroundSize(1, 1, true, true, false, false
+                ))));
+
+            var scene = new Scene(imagePane);
+
+            var scanDischargeRect = new MovableRect(I18n.get().positionOfDischargeTip());
+            scanDischargeRect.setLayoutX(img.getWidth() * 2 / 3 / screen.getOutputScaleX());
+            scanDischargeRect.setLayoutY(img.getHeight() * 2 / 3 / screen.getOutputScaleY());
+            scanDischargeRect.setWidth(128);
+            scanDischargeRect.setHeight(128);
+
+            var desc = new Label(I18n.get().scanDischargeScreenDescription()) {{
+                FontManager.setFont(this, 48);
+                setTextFill(Color.RED);
+            }};
+            {
+                var wh = Utils.calculateTextBounds(desc);
+                desc.setLayoutX(0);
+                desc.setLayoutY(img.getHeight() / screen.getOutputScaleY() - wh.getHeight() - 110);
+            }
+
+            imagePane.getChildren().addAll(desc, scanDischargeRect);
+
+            imagePane.setOnKeyReleased(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                    if (calculatePointsAndStore(img, scanDischargeRect.makeRect(), fScreen)) {
+                        cb.accept(true);
+                    } else {
+                        Platform.runLater(() -> new SimpleAlert(Alert.AlertType.WARNING, I18n.get().failedCalculatingCriticalPoints()).show());
+                        cb.accept(false);
+                    }
+                    stage.close();
+                } else if ((e.getCode() == javafx.scene.input.KeyCode.W && e.isControlDown())) {
+                    stage.close();
+                    cb.accept(false);
+                }
+            });
+
+            stage.setScene(scene);
+            Platform.runLater(imagePane::requestFocus);
+            stage.showAndWait();
+        }
+
+        @SuppressWarnings("IntegerDivisionInFloatingPointContext")
+        private boolean calculatePointsAndStore(Image img, Rect rect, Screen screen) {
+            try {
+                var wImg = new WritableImage(
+                    (int) (rect.w * screen.getOutputScaleX()),
+                    (int) (rect.h * screen.getOutputScaleY()));
+                wImg.getPixelWriter().setPixels(0, 0,
+                    (int) (rect.w * screen.getOutputScaleX()),
+                    (int) (rect.h * screen.getOutputScaleY()),
+                    img.getPixelReader(),
+                    (int) (rect.x * screen.getOutputScaleX()),
+                    (int) (rect.y * screen.getOutputScaleY()));
+                img = wImg;
+            } catch (Exception e) {
+                Logger.error("calculatePointsAndStore failure 1", e);
+                return false;
+            }
+
+            var bImg = SwingFXUtils.fromFXImage(img, null);
+            var opt = options.get();
+            DischargeCheckContext ctx;
+            if (opt.scanDischargeDebug) {
+                var g = bImg.createGraphics();
+                g.setPaint(new java.awt.Color(255, 0, 0));
+                ctx = DischargeCheckContext.of(bImg, g);
+            } else {
+                ctx = DischargeCheckContext.of(bImg);
+            }
+            DischargeCheckAlgorithm.DischargeCheckResult result;
+            if (ctx != null) {
+                var algo = new SimpleDischargeCheckAlgorithm();
+                algo.init(ctx);
+                result = algo.check();
+            } else {
+                result = null;
+            }
+            if (opt.scanDischargeDebug) {
+                var g = bImg.createGraphics();
+                g.setPaint(new java.awt.Color(255, 0, 0));
+                g.setFont(new Font(null, Font.BOLD, 16));
+                if (result == null) {
+                    g.drawString("null", 10, 20);
+                } else {
+                    g.drawString(Utils.roughFloatValueFormat.format(result.p() * 100) + "%", 10, 20);
+                }
+                bImg.flush();
+                Utils.copyImageToClipboard(bImg);
+            }
+            if (result == null) {
+                return false;
+            }
+            if (result.p() < 0.90) {
+                return false;
+            }
+            if (result.p() == 1) {
+                return false;
+            }
+            var pointAdjust = (int) (img.getWidth() / 35);
+            var midX = ctx.getInitialX();
+            var topY = ctx.getInitialY() + pointAdjust;
+            var leftX = ctx.getMinX() + pointAdjust;
+            var rightX = ctx.getMaxX() - pointAdjust;
+            var botY = ctx.getMaxY() - pointAdjust;
+
+            var points = new ArrayList<Point>();
+            var p0 = new Point(midX, topY);
+            points.add(p0);
+            var p2 = new Point(rightX, topY + ((rightX - midX + 1) / 2));
+            points.add(Point.midOf(p0, p2));
+            points.add(p2);
+            var p4 = new Point(rightX, botY - ((rightX - midX + 1) / 2));
+            points.add(Point.midOf(p2, p4));
+            points.add(p4);
+            var p6 = new Point(midX, botY);
+            points.add(Point.midOf(p4, p6));
+            points.add(p6);
+            var p8 = new Point(leftX, botY - ((midX - leftX + 1) / 2));
+            points.add(Point.midOf(p6, p8));
+            points.add(p8);
+            var p10 = new Point(leftX, topY + ((midX - leftX + 1) / 2));
+            points.add(Point.midOf(p8, p10));
+            points.add(p10);
+            points.add(Point.midOf(p0, p10));
+            try { // find the last critical point
+                int n = 1;
+                while (true) {
+                    var argb = img.getPixelReader().getArgb(midX - 2 * n, topY + n);
+                    if (!DischargeCheckContext.isChargeColor(argb)) {
+                        break;
+                    }
+                }
+                points.add(new Point(midX - 2 * n, topY + n));
+            } catch (Exception e) {
+                Logger.error("calculatePointsAndStore failure 2", e);
+                return false;
+            }
+
+            if (opt.scanDischargeDebug) {
+                bImg = SwingFXUtils.fromFXImage(img, null);
+                var g = bImg.createGraphics();
+                int pointRadius = (int) (img.getWidth() / 15);
+                for (int i = points.size() - 2; i >= 0; --i) {
+                    var p = points.get(i);
+                    var rgb = bImg.getRGB((int) p.x, (int) p.y);
+                    g.setPaint(new java.awt.Color(rgb));
+                    g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius * 2, pointRadius * 2);
+                }
+                bImg.flush();
+                final var fBImg = bImg;
+                Platform.runLater(() -> Utils.copyImageToClipboard(fBImg));
+            }
+            for (int i = 0; i < points.size() - 1; ++i) {
+                var p = points.get(i);
+                var rgb = img.getPixelReader().getArgb((int) p.x, (int) p.y);
+                if (!DischargeCheckContext.isChargeColor(rgb)) {
+                    return false;
+                }
+            }
+
+            opt.scanDischargeRect = rect;
+            opt.scanDischargeCriticalPoints = points;
+            return true;
+        }
     }
 }

@@ -1,10 +1,13 @@
 package net.cassite.hottapcassistant.util;
 
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
@@ -130,6 +133,11 @@ public class Utils {
         }
         //noinspection unchecked
         return (T) obj[0];
+    }
+
+    public static java.awt.Image robotAWTCapture(int x, int y, int width, int height) {
+        checkAndInitRobot();
+        return robot.awtCapture(x, y, width, height);
     }
 
     public static void moveAndClickOnThread(double x, double y, Key key) {
@@ -375,5 +383,11 @@ public class Utils {
         bGr.drawImage(awtImage, 0, 0, null);
         bGr.dispose();
         return bImage;
+    }
+
+    public static void copyImageToClipboard(BufferedImage bImg) {
+        var content = new ClipboardContent();
+        content.putImage(SwingFXUtils.toFXImage(bImg, null));
+        Clipboard.getSystemClipboard().setContent(content);
     }
 }

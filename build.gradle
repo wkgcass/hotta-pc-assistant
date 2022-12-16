@@ -68,3 +68,9 @@ tasks.jlinkZip.doFirst {
 jlinkZip {
     group = 'distribution'
 }
+
+task runTest(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "net.cassite.hottapcassistant.test.TestMain"
+    args = ["net.cassite.hottapcassistant.test." + System.getProperty("TestClass")]
+}

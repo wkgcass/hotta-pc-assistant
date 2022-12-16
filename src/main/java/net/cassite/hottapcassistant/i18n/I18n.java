@@ -277,6 +277,26 @@ public abstract class I18n {
 
     public abstract String stopCoolDown();
 
+    public abstract String cooldownOptionsBtn();
+
+    public abstract String cooldownOptionsTitle();
+
+    public abstract String cooldownScanDischargeDesc();
+
+    public abstract String cooldownScanDischargeCheckBox();
+
+    public abstract String cooldownScanDischargeDebugCheckBox();
+
+    public abstract String cooldownScanDischargeResetBtn();
+
+    public abstract String scanDischargeConfigureTips();
+
+    public abstract String positionOfDischargeTip();
+
+    public abstract String scanDischargeScreenDescription();
+
+    public abstract String failedCalculatingCriticalPoints();
+
     public abstract String weaponNotSelected();
 
     public abstract String duplicatedWeapon();

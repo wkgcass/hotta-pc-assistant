@@ -27,6 +27,7 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
     private final CoolDownArc[] cds;
     private final Group cdPane;
     private final Label cdNumber;
+    private final ImageView imageView;
     private final SimpleObjectProperty<Color> backgroundColor = new SimpleObjectProperty<>(INACTIVE_COLOR);
     private final Translate translate = new Translate();
     private CoolDownOKAnimationTimer cooldownOKTimer = new CoolDownOKAnimationTimer();
@@ -64,7 +65,7 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
         maskCircle.setRadius(INNER_RADIUS);
         maskCircle.setCenterX(INNER_RADIUS * imageScale);
         maskCircle.setCenterY(INNER_RADIUS * imageScale);
-        var imageView = new ImageView(image);
+        imageView = new ImageView(image);
         imageView.setFitWidth(INNER_RADIUS * 2 * imageScale);
         imageView.setFitHeight(INNER_RADIUS * 2 * imageScale);
         imageView.setLayoutX(-INNER_RADIUS * imageScale);

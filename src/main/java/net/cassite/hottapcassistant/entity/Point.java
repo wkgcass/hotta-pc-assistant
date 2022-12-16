@@ -14,6 +14,18 @@ public class Point {
         .put("x", (o, it) -> o.x = it, DoubleRule.get())
         .put("y", (o, it) -> o.y = it, DoubleRule.get());
 
+    public Point() {
+    }
+
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public static Point midOf(Point a, Point b) {
+        return new Point((a.x + b.x) / 2, (a.y + b.y) / 2);
+    }
+
     public JSON.Object toJson() {
         return new ObjectBuilder()
             .put("x", x)
