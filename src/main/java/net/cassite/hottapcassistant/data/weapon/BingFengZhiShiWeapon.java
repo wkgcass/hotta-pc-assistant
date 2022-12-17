@@ -12,8 +12,13 @@ public class BingFengZhiShiWeapon extends AbstractWeapon implements Weapon {
 
     public BingFengZhiShiWeapon() {
         super(12, 1000);
-        bingFengZhiShiBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("bingFengZhiShiBuffTimer"));
+        bingFengZhiShiBuffTimer = new WeaponCoolDown(getImage(), "bingFengZhiShiBuffTimer", I18n.get().buffName("bingFengZhiShiBuffTimer"));
         extraIndicatorList.add(bingFengZhiShiBuffTimer);
+    }
+
+    @Override
+    public String getId() {
+        return "bing-feng-zhi-shi";
     }
 
     @Override

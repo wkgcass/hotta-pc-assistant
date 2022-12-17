@@ -15,7 +15,7 @@ public class LinYeMatrix extends AbstractMatrix implements Matrix {
     private final WeaponCoolDown linYeMatrixBuffTimer;
 
     public LinYeMatrix() {
-        linYeMatrixBuffTimer = new WeaponCoolDown(getImage(), 1.5, I18n.get().buffName("linYe2MatrixBuffTimer"));
+        linYeMatrixBuffTimer = new WeaponCoolDown(getImage(), 1.5, "linYe2MatrixBuffTimer", I18n.get().buffName("linYe2MatrixBuffTimer"));
     }
 
     @Override

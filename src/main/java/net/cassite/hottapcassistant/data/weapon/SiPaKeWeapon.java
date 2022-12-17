@@ -23,6 +23,11 @@ public class SiPaKeWeapon extends AbstractWeapon implements Weapon, FireResonanc
     }
 
     @Override
+    public String getId() {
+        return "si-pa-ke";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.FIRE;
     }

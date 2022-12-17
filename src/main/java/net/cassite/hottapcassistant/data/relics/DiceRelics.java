@@ -15,7 +15,7 @@ public class DiceRelics extends AbstractRelics implements Relics {
     private final WeaponCoolDown diceBuffTimer;
 
     public DiceRelics() {
-        diceBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("diceBuffTimer"));
+        diceBuffTimer = new WeaponCoolDown(getImage(), "diceBuffTimer", I18n.get().buffName("diceBuffTimer"));
         extraIndicatorList.add(diceBuffTimer);
     }
 

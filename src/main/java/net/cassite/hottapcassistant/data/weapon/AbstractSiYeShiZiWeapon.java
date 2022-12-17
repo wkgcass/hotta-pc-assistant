@@ -28,9 +28,9 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
     public AbstractSiYeShiZiWeapon() {
         super(14);
 
-        siYeShiZiShotRemain = new WeaponSpecialInfo(getImage(), I18n.get().buffName("siYeShiZiShotRemain"));
-        siYeShiZiDodgeRemain = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("dodge"), I18n.get().buffName("siYeShiZiDodgeRemain"));
-        opticalSpaceTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("optical-space"), I18n.get().buffName("opticalSpaceTimer"));
+        siYeShiZiShotRemain = new WeaponSpecialInfo(getImage(), "siYeShiZiShotRemain", I18n.get().buffName("siYeShiZiShotRemain"));
+        siYeShiZiDodgeRemain = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("dodge"), "siYeShiZiDodgeRemain", I18n.get().buffName("siYeShiZiDodgeRemain"));
+        opticalSpaceTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("optical-space"), "opticalSpaceTimer", I18n.get().buffName("opticalSpaceTimer"));
         extraInfoList.add(siYeShiZiShotRemain);
         extraInfoList.add(siYeShiZiDodgeRemain);
     }

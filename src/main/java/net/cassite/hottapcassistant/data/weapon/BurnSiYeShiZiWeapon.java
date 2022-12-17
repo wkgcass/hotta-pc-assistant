@@ -10,7 +10,7 @@ public class BurnSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
     private final WeaponCoolDown shiZiZhuoShaoBuffTimer;
 
     public BurnSiYeShiZiWeapon() {
-        shiZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("shi-zi-zhuo-shao"), I18n.get().buffName("shiZiZhuoShaoBuffTimer"));
+        shiZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("shi-zi-zhuo-shao"), "shiZiZhuoShaoBuffTimer", I18n.get().buffName("shiZiZhuoShaoBuffTimer"));
         extraIndicatorList.add(shiZiZhuoShaoBuffTimer);
     }
 
@@ -46,5 +46,10 @@ public class BurnSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
     @Override
     public void updateExtraData() {
         shiZiZhuoShaoBuffTimer.setAllCoolDown(getBurnBuff(), getTotalBurnBuff());
+    }
+
+    @Override
+    public String getId() {
+        return "si-ye-shi-zi-burn";
     }
 }

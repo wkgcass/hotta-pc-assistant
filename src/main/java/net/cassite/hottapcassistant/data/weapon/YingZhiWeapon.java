@@ -16,7 +16,7 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
 
     public YingZhiWeapon() {
         super(30);
-        yingYueZhiJingBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ying-yue-zhi-jing"), I18n.get().buffName("yingYueZhiJingBuffTimer"));
+        yingYueZhiJingBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ying-yue-zhi-jing"), "yingYueZhiJingBuffTimer", I18n.get().buffName("yingYueZhiJingBuffTimer"));
         extraIndicatorList.add(yingYueZhiJingBuffTimer);
     }
 
@@ -28,6 +28,11 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("ying-zhi");
+    }
+
+    @Override
+    public String getId() {
+        return "ying-zhi";
     }
 
     @Override

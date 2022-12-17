@@ -13,6 +13,11 @@ public class BuMieZhiYiWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "bu-mie-zhi-yi";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.ICE;
     }

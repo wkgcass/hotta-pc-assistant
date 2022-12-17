@@ -33,4 +33,9 @@ public class GasSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
     protected String buildName() {
         return I18n.get().weaponName("sì yè shí zì (gas)");
     }
+
+    @Override
+    public String getId() {
+        return "si-ye-shi-zi-gas";
+    }
 }

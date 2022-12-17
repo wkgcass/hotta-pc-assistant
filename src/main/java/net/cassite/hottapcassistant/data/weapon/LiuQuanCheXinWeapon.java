@@ -17,8 +17,8 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
 
     public LiuQuanCheXinWeapon() {
         super(30, 200);
-        liuQuanCheXinCounter = new WeaponSpecialInfo(getImage(), I18n.get().buffName("liuQuanCheXinCounter"));
-        yongDongCDIndicator = new WeaponCoolDown(Utils.getBuffImageFromClasspath("yong-dong"), I18n.get().buffName("yongDongCD"));
+        liuQuanCheXinCounter = new WeaponSpecialInfo(getImage(), "liuQuanCheXinCounter", I18n.get().buffName("liuQuanCheXinCounter"));
+        yongDongCDIndicator = new WeaponCoolDown(Utils.getBuffImageFromClasspath("yong-dong"), "yongDongCD", I18n.get().buffName("yongDongCD"));
     }
 
     @Override
@@ -40,6 +40,11 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("liu-quan-che-xin");
+    }
+
+    @Override
+    public String getId() {
+        return "liu-quan-che-xin";
     }
 
     @Override

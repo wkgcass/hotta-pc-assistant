@@ -3,6 +3,8 @@ package net.cassite.hottapcassistant.data;
 import javafx.scene.image.Image;
 
 public interface Weapon extends WithThreadStartStop, WithExtraData {
+    String getId();
+
     String getName();
 
     Image getImage();

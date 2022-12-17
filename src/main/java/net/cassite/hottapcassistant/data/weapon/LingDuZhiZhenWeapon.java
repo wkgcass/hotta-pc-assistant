@@ -16,8 +16,13 @@ public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
 
     public LingDuZhiZhenWeapon() {
         super(60, 800);
-        lingDuZhiZhenBeeTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("bee"), I18n.get().buffName("lingDuZhiZhenBeeTimer"));
+        lingDuZhiZhenBeeTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("bee"), "lingDuZhiZhenBeeTimer", I18n.get().buffName("lingDuZhiZhenBeeTimer"));
         extraIndicatorList.add(lingDuZhiZhenBeeTimer);
+    }
+
+    @Override
+    public String getId() {
+        return "ling-du-zhi-zhen";
     }
 
     @Override

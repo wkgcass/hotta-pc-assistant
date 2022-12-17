@@ -13,6 +13,11 @@ public class FuHeGongWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "fu-he-gong";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.FIRE;
     }

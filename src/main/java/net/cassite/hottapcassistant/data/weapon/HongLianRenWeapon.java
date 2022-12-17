@@ -13,6 +13,11 @@ public class HongLianRenWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "hong-lian-ren";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.PHYSICS;
     }

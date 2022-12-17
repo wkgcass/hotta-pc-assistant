@@ -796,6 +796,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String cooldownResetDesc() {
+        return "重置";
+    }
+
+    @Override
     public String loadingStageTitle() {
         return "加载中...";
     }

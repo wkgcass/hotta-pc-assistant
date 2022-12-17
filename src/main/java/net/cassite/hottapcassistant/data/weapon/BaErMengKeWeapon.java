@@ -13,6 +13,11 @@ public class BaErMengKeWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "ba-er-meng-ke";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.ICE;
     }

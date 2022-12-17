@@ -17,7 +17,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
 
     public WanDaoWeapon() {
         super(20, 500);
-        wanDaoHuiQiCounter = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("hui-qi"), I18n.get().buffName("wanDaoHuiQiCounter"));
+        wanDaoHuiQiCounter = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("hui-qi"), "wanDaoHuiQiCounter", I18n.get().buffName("wanDaoHuiQiCounter"));
         wanDaoHuiQiCounter.setOnMouseClicked(e -> resetCount());
         wanDaoHuiQiCounter.setCursor(Cursor.HAND);
     }
@@ -28,6 +28,11 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
         if (ctx.resonanceInfo.support()) {
             extraInfoList.add(wanDaoHuiQiCounter);
         }
+    }
+
+    @Override
+    public String getId() {
+        return "wan-dao";
     }
 
     @Override

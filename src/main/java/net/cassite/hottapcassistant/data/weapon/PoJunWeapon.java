@@ -23,6 +23,11 @@ public class PoJunWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "po-jun";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.THUNDER;
     }

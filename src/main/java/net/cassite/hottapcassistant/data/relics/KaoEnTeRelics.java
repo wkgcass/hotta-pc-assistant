@@ -20,7 +20,7 @@ public class KaoEnTeRelics extends AbstractRelics implements Relics {
     private final WeaponCoolDown kaoEnTeBuffTimer;
 
     public KaoEnTeRelics() {
-        kaoEnTeBuffTimer = new WeaponCoolDown(getImage(), I18n.get().buffName("kaoEnTeBuffTimer"));
+        kaoEnTeBuffTimer = new WeaponCoolDown(getImage(), "kaoEnTeBuffTimer", I18n.get().buffName("kaoEnTeBuffTimer"));
         extraIndicatorList.add(kaoEnTeBuffTimer);
     }
 

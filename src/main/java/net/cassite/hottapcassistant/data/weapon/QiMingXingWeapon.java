@@ -25,6 +25,11 @@ public class QiMingXingWeapon extends AbstractWeapon implements Weapon, ThunderR
     }
 
     @Override
+    public String getId() {
+        return "qi-ming-xing";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.THUNDER;
     }

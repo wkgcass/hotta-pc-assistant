@@ -73,6 +73,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         new SimpleObjectProperty(),
     };
     private final SimpleObjectProperty<SimulacraRef> simulacra = new SimpleObjectProperty<>(null);
+    private final Set<String> row2Ids = new HashSet<>();
 
     public CoolDownPane() {
         var vbox = new VBox();
@@ -405,54 +406,58 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             weapons.add(this.weapons[i].get().make(matrixs));
         }
 
-        { // build config
-            var config = new AssistantCoolDown();
-            config.weapons = new ArrayList<>(this.weapons.length);
-            var thisWeapons = this.weapons;
-            for (int i = 0, simpleObjectPropertiesLength = thisWeapons.length; i < simpleObjectPropertiesLength; i++) {
-                var wp = thisWeapons[i];
-                var w = wp.get();
-                var wConfig = new AssistantCoolDownWeapon();
-                wConfig.weaponId = w == null ? 0 : w.id;
-                wConfig.stars = w == null ? 6 : w.getStars();
-                wConfig.matrix = new ArrayList<>(this.matrixs[i].length);
-                for (var mp : this.matrixs[i]) {
-                    var m = mp.get();
-                    var mConfig = new AssistantCoolDownWeaponMatrix();
-                    mConfig.matrixId = m == null ? 0 : m.id;
-                    mConfig.stars = m == null ? 3 : m.getStars();
-                    wConfig.matrix.add(mConfig);
-                }
-                config.weapons.add(wConfig);
-            }
-            config.relics = new ArrayList<>(this.relics.length);
-            for (var rp : this.relics) {
-                var r = rp.get();
-                var rConfig = new AssistantCoolDownRelics();
-                rConfig.relicsId = r == null ? 0 : r.id;
-                rConfig.stars = r == null ? 3 : r.getStars();
-                config.relics.add(rConfig);
-            }
-            config.simulacra = new AssistantCoolDownSimulacra();
-            {
-                var s = this.simulacra.get();
-                config.simulacra.simulacraId = s == null ? 0 : s.id;
-            }
-            Logger.info("weapon properties:\n" + config.toJson().pretty());
-
-            try {
-                AssistantConfig.updateAssistant(ass -> ass.cooldown = config);
-            } catch (IOException e) {
-                Logger.error("updating assistant config for cooldown failed", e);
-            }
-        }
+        saveConfig();
 
         var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts, jump,
+            row2Ids,
             this::reset);
         this.window = window;
         setWindowPosition(window);
         window.show();
         Utils.iconifyWindow(getScene().getWindow());
+    }
+
+    private void saveConfig() {
+        var config = new AssistantCoolDown();
+        config.weapons = new ArrayList<>(this.weapons.length);
+        var thisWeapons = this.weapons;
+        for (int i = 0, simpleObjectPropertiesLength = thisWeapons.length; i < simpleObjectPropertiesLength; i++) {
+            var wp = thisWeapons[i];
+            var w = wp.get();
+            var wConfig = new AssistantCoolDownWeapon();
+            wConfig.weaponId = w == null ? 0 : w.id;
+            wConfig.stars = w == null ? 6 : w.getStars();
+            wConfig.matrix = new ArrayList<>(this.matrixs[i].length);
+            for (var mp : this.matrixs[i]) {
+                var m = mp.get();
+                var mConfig = new AssistantCoolDownWeaponMatrix();
+                mConfig.matrixId = m == null ? 0 : m.id;
+                mConfig.stars = m == null ? 3 : m.getStars();
+                wConfig.matrix.add(mConfig);
+            }
+            config.weapons.add(wConfig);
+        }
+        config.relics = new ArrayList<>(this.relics.length);
+        for (var rp : this.relics) {
+            var r = rp.get();
+            var rConfig = new AssistantCoolDownRelics();
+            rConfig.relicsId = r == null ? 0 : r.id;
+            rConfig.stars = r == null ? 3 : r.getStars();
+            config.relics.add(rConfig);
+        }
+        config.simulacra = new AssistantCoolDownSimulacra();
+        {
+            var s = this.simulacra.get();
+            config.simulacra.simulacraId = s == null ? 0 : s.id;
+        }
+        config.row2Ids = row2Ids;
+        Logger.info("weapon properties:\n" + config.toJson().pretty());
+
+        try {
+            AssistantConfig.updateAssistant(ass -> ass.cooldown = config);
+        } catch (IOException e) {
+            Logger.error("updating assistant config for cooldown failed", e);
+        }
     }
 
     private double windowPositionX;
@@ -476,8 +481,25 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             windowPositionX = window.getX();
             windowPositionY = window.getY();
             windowScale = window.getScale();
+            handleBuffs(window);
             window.close();
         }
+    }
+
+    private void handleBuffs(CoolDownWindow window) {
+        var buffs = window.getBuffs();
+        var row2 = window.getRow2();
+        var toRemove = new HashSet<String>();
+        for (var s : row2Ids) {
+            if (!row2.contains(s)) {
+                if (buffs.contains(s)) {
+                    toRemove.add(s);
+                }
+            }
+        }
+        row2Ids.removeAll(toRemove);
+        row2Ids.addAll(row2);
+        saveConfig();
     }
 
     private void reset() {
@@ -618,6 +640,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         loadWeaponsFromConfig(cooldown.weapons);
         loadRelicsFromConfig(cooldown.relics);
         loadSimulacraFromConfig(cooldown.simulacra);
+        loadRow2Ids(cooldown.row2Ids);
     }
 
     private void loadWeaponsFromConfig(List<AssistantCoolDownWeapon> weapons) {
@@ -652,6 +675,12 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         if (simulacra == null) return;
         var s = new SimulacraRef(simulacra.simulacraId, null);
         this.simulacra.set(s);
+    }
+
+    private void loadRow2Ids(Set<String> row2Ids) {
+        if (row2Ids == null) return;
+        this.row2Ids.clear();
+        this.row2Ids.addAll(row2Ids);
     }
 
     @Override

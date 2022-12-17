@@ -13,7 +13,7 @@ public class XingHuanSimulacra extends AbstractSimulacra implements Simulacra {
     private final WeaponCoolDown xingHuanSimulacraTimer;
 
     public XingHuanSimulacra() {
-        xingHuanSimulacraTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("xing-huan-simulacra"), 1.25, I18n.get().buffName("xingHuanSimulacraTimer"));
+        xingHuanSimulacraTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("xing-huan-simulacra"), 1.25, "xingHuanSimulacraTimer", I18n.get().buffName("xingHuanSimulacraTimer"));
     }
 
     @Override

@@ -283,6 +283,8 @@ public abstract class I18n {
 
     public abstract String relicsChooserPlaceHolder(int index);
 
+    public abstract String cooldownResetDesc();
+
     public abstract String loadingStageTitle();
 
     public abstract String hintPressAlt();

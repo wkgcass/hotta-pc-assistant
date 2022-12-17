@@ -18,6 +18,11 @@ public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "v2-rong-qu-dun";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.FIRE;
     }

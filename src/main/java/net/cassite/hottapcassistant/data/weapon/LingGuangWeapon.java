@@ -11,14 +11,19 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class LingGuangWeapon extends AbstractWeapon implements Weapon, FireResonance {
-    private final WeaponCoolDown lingGuangYuJing = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ling-guang-yu-jing"), I18n.get().buffName("lingGuangYuJing"));
-    private final WeaponCoolDown lingGuangTaunt = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ling-guang-taunt"), I18n.get().buffName("lingGuangTaunt"));
+    private final WeaponCoolDown lingGuangYuJing = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ling-guang-yu-jing"), "lingGuangYuJing", I18n.get().buffName("lingGuangYuJing"));
+    private final WeaponCoolDown lingGuangTaunt = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ling-guang-taunt"), "lingGuangTaunt", I18n.get().buffName("lingGuangTaunt"));
     private long tauntTime = 0;
     private long lingGuangYuJingTime = 0;
 
     public LingGuangWeapon() {
         super(12);
         extraIndicatorList.add(lingGuangYuJing);
+    }
+
+    @Override
+    public String getId() {
+        return "ling-guang";
     }
 
     @Override

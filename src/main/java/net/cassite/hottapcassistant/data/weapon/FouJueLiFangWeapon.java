@@ -11,6 +11,11 @@ public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "fou-jue-li-fang";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.FIRE;
     }

@@ -20,6 +20,11 @@ public class PoXiaoWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "po-xiao";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.PHYSICS;
     }

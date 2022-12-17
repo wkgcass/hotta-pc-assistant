@@ -24,6 +24,11 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
     }
 
     @Override
+    public String getId() {
+        return "ge-lai-pu-ni";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.THUNDER;
     }

@@ -41,7 +41,7 @@ public class WeaponContext implements WithExtraData {
         }
         simulacra.init(this);
 
-        burnSettleTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("burn-settle"), I18n.get().buffName("burnSettleTimer"));
+        burnSettleTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("burn-settle"), "burnSettleTimer", I18n.get().buffName("burnSettleTimer"));
         if (needBurnSettle()) {
             extraIndicators.add(burnSettleTimer);
         }

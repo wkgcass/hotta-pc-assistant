@@ -18,7 +18,7 @@ import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
-import net.cassite.hottapcassistant.component.cooldown.WithDesc;
+import net.cassite.hottapcassistant.component.cooldown.WithId;
 import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
@@ -26,9 +26,11 @@ import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.entity.InputData;
 import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.entity.KeyCode;
+import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMouseListener {
     private static final InputData SpecialAttack = new InputData(new Key(KeyCode.BACKQUOTE));
@@ -41,6 +43,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private final InputData jump;
     private final AnimationTimer timer;
     private final WeaponCoolDown[] cds;
+    private final Text descLabel;
+    private final List<Group> buffs = new ArrayList<>();
+    private final List<Group> row2 = new ArrayList<>();
 
     private final Scale scale = new Scale(1, 1);
     private final int totalIndicatorCount;
@@ -49,7 +54,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                           InputData weaponSkill, InputData[] melee, InputData[] evade,
                           InputData[] changeWeapons, InputData[] artifact,
                           InputData jump,
-                          Runnable reset) {
+                          Set<String> row2Ids,
+                          Runnable resetCallback) {
         this.ctx = new WeaponContext(weapons, relics, simulacra);
         this.weaponSkill = weaponSkill;
         this.melee = melee;
@@ -97,62 +103,70 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         resetBtn.setFitWidth(2 * (WeaponCoolDown.MIN_RADIUS - 2));
         resetBtn.setFitHeight(2 * (WeaponCoolDown.MIN_RADIUS - 2));
         resetBtn.setCursor(Cursor.HAND);
-        resetBtn.setOnMouseClicked(e -> reset.run());
+        resetBtn.setOnMouseClicked(e -> resetCallback.run());
+        resetBtn.setOnMouseEntered(e -> setTextForDescLabel(I18n.get().cooldownResetDesc()));
+        resetBtn.setOnMouseExited(e -> setTextForDescLabel(""));
         group.getChildren().add(resetBtn);
 
         cds = new WeaponCoolDown[weapons.size()];
         for (var i = 0; i < weapons.size(); ++i) {
-            cds[i] = new WeaponCoolDown(weapons.get(i).getImage(), weapons.get(i).getName());
+            cds[i] = new WeaponCoolDown(weapons.get(i).getImage(), weapons.get(i).getId(), weapons.get(i).getName());
             if (weapons.get(i) == ctx.current) {
                 cds[i].setActive(true);
             }
         }
 
-        var groups = new ArrayList<Group>(Arrays.asList(cds));
         for (var w : weapons) {
-            groups.addAll(w.extraIndicators());
-            groups.addAll(w.extraInfo());
+            buffs.addAll(addBuffPositionHandler(w.extraIndicators()));
+            buffs.addAll(addBuffPositionHandler(w.extraInfo()));
             var matrix = w.getMatrix();
             for (var m : matrix) {
-                groups.addAll(m.extraIndicators());
-                groups.addAll(m.extraInfo());
+                buffs.addAll(addBuffPositionHandler(m.extraIndicators()));
+                buffs.addAll(addBuffPositionHandler(m.extraInfo()));
             }
         }
         for (var r : relics) {
             if (r == null) continue;
-            groups.addAll(r.extraIndicators());
-            groups.addAll(r.extraInfo());
+            buffs.addAll(addBuffPositionHandler(r.extraIndicators()));
+            buffs.addAll(addBuffPositionHandler(r.extraInfo()));
         }
-        groups.addAll(simulacra.extraIndicators());
-        groups.addAll(simulacra.extraInfo());
-        groups.addAll(ctx.extraIndicators());
-        groups.addAll(ctx.extraInfo());
+        buffs.addAll(addBuffPositionHandler(simulacra.extraIndicators()));
+        buffs.addAll(addBuffPositionHandler(simulacra.extraInfo()));
+        buffs.addAll(addBuffPositionHandler(ctx.extraIndicators()));
+        buffs.addAll(addBuffPositionHandler(ctx.extraInfo()));
 
-        totalIndicatorCount = groups.size();
+        totalIndicatorCount = 3 + buffs.size();
 
         resizeWindow();
         scale.xProperty().addListener((ob, old, now) -> resizeWindow());
 
-        var descLabel = new Text() {{
+        descLabel = new Text() {{
             FontManager.setFont(this, 24);
             setFill(Color.WHITE);
             setStrokeWidth(0.5);
             setStroke(Color.BLACK);
         }};
         descLabel.setLayoutY(10 + 2 * r + 2 + 25);
-        for (var i = 0; i < groups.size(); ++i) {
-            var n = groups.get(i);
+        for (var i = 0; i < cds.length; ++i) {
+            var n = cds[i];
             n.setLayoutX(10 + r + (2 * r + margin) * (i + 1));
             n.setLayoutY(10 + r);
             String desc;
-            if (n instanceof WithDesc) {
-                desc = ((WithDesc) n).desc();
-            } else {
-                desc = "";
-            }
-            n.setOnMouseEntered(e -> setTextForDescLabel(descLabel, desc));
-            n.setOnMouseExited(e -> setTextForDescLabel(descLabel, ""));
+            desc = n.desc();
+            n.setOnMouseEntered(e -> setTextForDescLabel(desc));
+            n.setOnMouseExited(e -> setTextForDescLabel(""));
             group.getChildren().add(n);
+        }
+        for (var g : buffs) {
+            if (!(g instanceof WithId)) continue;
+            var id = ((WithId) g).id();
+            if (row2Ids.contains(id)) {
+                row2.add(g);
+            }
+        }
+        setBuffPosition();
+        for (var g : buffs) {
+            group.getChildren().add(g);
         }
         {
             var sep = new Line();
@@ -166,7 +180,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             sep.setLayoutY(10);
             group.getChildren().add(sep);
         }
-        if (groups.size() > 3) {
+        if (!buffs.isEmpty()) {
             var sep = new Line();
             sep.setStrokeWidth(2);
             sep.setStartX(0);
@@ -198,22 +212,85 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         timer.start();
     }
 
+    private Collection<? extends Group> addBuffPositionHandler(List<? extends Group> ls) {
+        for (var g : ls) {
+            var cb = g.getOnMouseClicked();
+            if (cb == null) {
+                cb = e -> {
+                };
+            }
+            final var fcb = cb;
+            g.setOnMouseClicked(e -> {
+                if (e.getButton() != MouseButton.SECONDARY) {
+                    fcb.handle(e);
+                    return;
+                }
+                if (row2.contains(g)) {
+                    moveUp(g);
+                } else {
+                    moveDown(g);
+                }
+            });
+        }
+        return ls;
+    }
+
+    private void moveDown(Group g) {
+        if (row2.contains(g)) {
+            return;
+        }
+        row2.add(g);
+        row2.sort((a, b) -> {
+            var ai = buffs.indexOf(a);
+            var bi = buffs.indexOf(b);
+            return ai - bi;
+        });
+        setBuffPosition();
+    }
+
+    private void moveUp(Group g) {
+        if (!row2.contains(g)) {
+            return;
+        }
+        row2.remove(g);
+        setBuffPosition();
+    }
+
+    private void setBuffPosition() {
+        var row1 = new ArrayList<>(buffs);
+        row1.removeAll(row2);
+        for (var n : buffs) {
+            if (row2.contains(n)) {
+                int i = row2.indexOf(n);
+                n.setLayoutX(10 + r + (2 * r + margin) * (i + 4));
+                n.setLayoutY(10 + r + (2 * r + marginV));
+            } else {
+                int i = row1.indexOf(n);
+                n.setLayoutX(10 + r + (2 * r + margin) * (i + 4));
+                n.setLayoutY(10 + r);
+            }
+        }
+    }
+
     private static final double margin = 5;
+    private static final double marginV = 2;
     private static final double r = WeaponCoolDown.MAX_RADIUS;
 
     private void resizeWindow() {
         setWidth((10 + (2 * r) * (totalIndicatorCount + 1) + margin * ((totalIndicatorCount + 1) - 1) + 10) * scale.getX());
-        setHeight((10 + 2 * r + 40) * scale.getY());
+        final var rows = 2;
+        //noinspection PointlessArithmeticExpression
+        setHeight((10 + (2 * r) * rows + 10 * (rows - 1) + 10) * scale.getY());
     }
 
-    private void setTextForDescLabel(Text descLabel, String s) {
+    private static final double weaponMiddleX = 10 + r + (2 * r + margin) * 2 - margin / 2;
+
+    private void setTextForDescLabel(String s) {
         if (s.equals(descLabel.getText())) return;
         descLabel.setText(s);
         if (s.isBlank()) return;
         var bounds = Utils.calculateTextBounds(descLabel);
-        double width = getWidth();
-        width /= scale.getX();
-        descLabel.setLayoutX(width / 2 - bounds.getWidth() / 2);
+        descLabel.setLayoutX(weaponMiddleX - bounds.getWidth() / 2);
     }
 
     private final Set<KeyCode> keys = new HashSet<>();
@@ -416,5 +493,25 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     public double getScale() {
         return scale.getX();
+    }
+
+    public List<String> getBuffs() {
+        return buffs.stream().map(g -> {
+            if (g instanceof WithId id) {
+                return id.id();
+            } else {
+                return "";
+            }
+        }).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+    }
+
+    public List<String> getRow2() {
+        return row2.stream().map(g -> {
+            if (g instanceof WithId id) {
+                return id.id();
+            } else {
+                return "";
+            }
+        }).filter(s -> !s.isEmpty()).collect(Collectors.toList());
     }
 }

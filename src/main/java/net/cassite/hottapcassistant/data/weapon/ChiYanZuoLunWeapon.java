@@ -14,8 +14,13 @@ public class ChiYanZuoLunWeapon extends AbstractWeapon implements Weapon {
 
     public ChiYanZuoLunWeapon() {
         super(60, 200);
-        liZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("li-zi-zhuo-shao"), I18n.get().buffName("liZiZhuoShaoBuffTimer"));
+        liZiZhuoShaoBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("li-zi-zhuo-shao"), "liZiZhuoShaoBuffTimer", I18n.get().buffName("liZiZhuoShaoBuffTimer"));
         extraIndicatorList.add(liZiZhuoShaoBuffTimer);
+    }
+
+    @Override
+    public String getId() {
+        return "chi-yan-zuo-lun";
     }
 
     @Override

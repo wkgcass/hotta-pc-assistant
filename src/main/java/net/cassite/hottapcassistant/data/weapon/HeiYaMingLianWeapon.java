@@ -13,6 +13,11 @@ public class HeiYaMingLianWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public String getId() {
+        return "hei-ya-ming-lian";
+    }
+
+    @Override
     public WeaponElement element() {
         return WeaponElement.FIRE;
     }
