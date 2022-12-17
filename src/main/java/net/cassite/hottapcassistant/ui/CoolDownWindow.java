@@ -18,6 +18,7 @@ import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
+import net.cassite.hottapcassistant.component.cooldown.WithDesc;
 import net.cassite.hottapcassistant.component.cooldown.WithId;
 import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.Simulacra;
@@ -166,6 +167,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         }
         setBuffPosition();
         for (var g : buffs) {
+            var desc = (g instanceof WithDesc) ? ((WithDesc) g).desc() : "";
+            g.setOnMouseEntered(e -> setTextForDescLabel(desc));
+            g.setOnMouseExited(e -> setTextForDescLabel(""));
             group.getChildren().add(g);
         }
         {
