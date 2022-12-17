@@ -759,7 +759,8 @@ public class ZhCn extends I18n {
             case "yongDongCD" -> "涌动";
             case "lingDuZhiZhenBeeTimer" -> "零度指针小蜜蜂存在时间";
             case "leiBeiMatrixBuffTimer" -> "蕾贝意志四件套";
-            case "lingGuangTaunt" -> "灵光坚毅嘲讽";
+            case "lingGuangYuJing" -> "陵光御境";
+            case "lingGuangTaunt" -> "陵光坚毅嘲讽";
             default -> name;
         };
     }
