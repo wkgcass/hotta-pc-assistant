@@ -36,7 +36,7 @@ public class LingGuangWeapon extends AbstractWeapon implements Weapon, FireReson
     @Override
     public void init(WeaponContext ctx) {
         super.init(ctx);
-        if (ctx.resonanceInfo.def()) {
+        if (ctx.resonanceInfo.tank()) {
             extraIndicatorList.add(lingGuangTaunt);
         }
     }

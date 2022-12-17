@@ -107,7 +107,7 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
     }
 
     public long getTotalYongDongCD() {
-        if (ctx.resonanceInfo.def() && stars >= 3) {
+        if (ctx.resonanceInfo.tank() && stars >= 3) {
             return 5_000;
         }
         return 10_000;

@@ -25,7 +25,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
     @Override
     public void init(WeaponContext ctx) {
         super.init(ctx);
-        if (ctx.resonanceInfo.sup()) {
+        if (ctx.resonanceInfo.support()) {
             extraInfoList.add(wanDaoHuiQiCounter);
         }
     }
@@ -42,7 +42,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
 
     @Override
     protected void threadTick(long ts, long delta) {
-        if (!ctx.resonanceInfo.sup()) return;
+        if (!ctx.resonanceInfo.support()) return;
         if (cd == 0) {
             if (count < 3) {
                 ++count;
@@ -55,7 +55,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
 
     @Override
     public boolean useSkill(WeaponContext ctx) {
-        if (ctx.resonanceInfo.sup()) {
+        if (ctx.resonanceInfo.support()) {
             return super.useSkillIgnoreCD(ctx);
         }
         return super.useSkill(ctx);
@@ -77,7 +77,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
 
     @Override
     protected void revertSkill0(WeaponContext ctx) {
-        if (ctx.resonanceInfo.sup()) {
+        if (ctx.resonanceInfo.support()) {
             if (count == 2) {
                 count = 3;
                 cd = 0;
@@ -96,7 +96,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
 
     @Override
     public long getCoolDown() {
-        if (ctx.resonanceInfo.sup()) {
+        if (ctx.resonanceInfo.support()) {
             if (count > 0) return 0;
         }
         return super.getCoolDown();

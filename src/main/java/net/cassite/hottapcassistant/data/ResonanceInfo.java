@@ -8,16 +8,16 @@ import net.cassite.hottapcassistant.data.weapon.*;
 
 import java.util.List;
 
-public record ResonanceInfo(boolean atk, boolean sup, boolean def, boolean balance,
+public record ResonanceInfo(boolean carry, boolean support, boolean tank, boolean balance,
                             boolean fire, boolean ice,
                             boolean thunder, boolean physics, boolean balancedElement,
                             boolean fireResonance, boolean iceResonance,
                             boolean thunderResonance, boolean physicsResonance) {
 
     public static ResonanceInfo build(List<Weapon> weapons) {
-        int atkCount = 0;
-        int supCount = 0;
-        int defCount = 0;
+        int carryCount = 0;
+        int supportCount = 0;
+        int tankCount = 0;
         int fireCount = 0;
         int iceCount = 0;
         int thunderCount = 0;
@@ -35,9 +35,9 @@ public record ResonanceInfo(boolean atk, boolean sup, boolean def, boolean balan
                 case PHYSICS -> physicsCount++;
             }
             switch (w.category()) {
-                case CARRY -> atkCount++;
-                case SUPPORT -> supCount++;
-                case TANK -> defCount++;
+                case CARRY -> carryCount++;
+                case SUPPORT -> supportCount++;
+                case TANK -> tankCount++;
             }
             if (w instanceof YingZhiWeapon) {
                 hasYingZhi = true;
@@ -52,10 +52,10 @@ public record ResonanceInfo(boolean atk, boolean sup, boolean def, boolean balan
             }
         }
         return new ResonanceInfo(
-            atkCount >= 2,
-            supCount >= 2,
-            defCount >= 2,
-            atkCount <= 1 && supCount <= 1 && defCount <= 1,
+            carryCount >= 2,
+            supportCount >= 2,
+            tankCount >= 2,
+            carryCount <= 1 && supportCount <= 1 && tankCount <= 1,
             fireCount >= 2,
             iceCount >= 2,
             thunderCount >= 2,

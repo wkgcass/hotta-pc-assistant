@@ -19,7 +19,7 @@ public class XingHuanSimulacra extends AbstractSimulacra implements Simulacra {
     @Override
     public void init(WeaponContext ctx) {
         super.init(ctx);
-        if (ctx.resonanceInfo.sup()) {
+        if (ctx.resonanceInfo.support()) {
             extraIndicatorList.add(xingHuanSimulacraTimer);
         }
     }
@@ -36,7 +36,7 @@ public class XingHuanSimulacra extends AbstractSimulacra implements Simulacra {
 
     @Override
     public void alertSkillUsed(WeaponContext ctx, Weapon w) {
-        if (!ctx.resonanceInfo.sup()) {
+        if (!ctx.resonanceInfo.support()) {
             return;
         }
         buffTime = getTotalBuffTime();
