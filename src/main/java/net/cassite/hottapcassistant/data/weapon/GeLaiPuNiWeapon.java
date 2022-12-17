@@ -124,10 +124,6 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
         } else if (state == STATE_IS_REFRESHED) {
             cd = 15 * 1000;
             setState(STATE_USED_AND_CANNOT_REFRESH);
-            // FIXME game bug, might change in the future: po-jun will get an extra ke-lao-di-ya matrix cd decrease
-            if (ctx.weapons.stream().anyMatch(e -> e instanceof PoJunWeapon)) {
-                postUseSkill(ctx);
-            }
         }
         lastTimeSkillUsed = current;
         return true;
