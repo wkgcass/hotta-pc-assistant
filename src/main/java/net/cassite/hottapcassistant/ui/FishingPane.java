@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
@@ -195,6 +196,25 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
             vbox.getChildren().add(new Label(I18n.get().configureFishingHelpMsg()) {{
                 FontManager.setFont(this);
             }});
+        }
+
+        {
+            var sep = new Separator();
+            sep.setPadding(new Insets(10, 0, 10, 0));
+            vbox.getChildren().add(sep);
+        }
+
+        {
+            var tip1 = new ImageView(ImageManager.get().load("/images/misc/fishing-1.png"));
+            tip1.setPreserveRatio(true);
+            tip1.setFitHeight(150);
+            var tip2 = new ImageView(ImageManager.get().load("/images/misc/fishing-2.png"));
+            tip2.setPreserveRatio(true);
+            tip2.setFitHeight(150);
+            var tip3 = new ImageView(ImageManager.get().load("/images/misc/fishing-3.png"));
+            tip3.setPreserveRatio(true);
+            tip3.setFitWidth(450);
+            vbox.getChildren().addAll(new HBox(tip1, tip2), tip3);
         }
     }
 
