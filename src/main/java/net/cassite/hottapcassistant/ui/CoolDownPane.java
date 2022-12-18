@@ -4,12 +4,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Separator;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
@@ -32,8 +31,11 @@ import net.cassite.hottapcassistant.util.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
+    private static final int WIDTH_HEIGHT = 110;
+
     private InputData weaponSkill;
     private InputData[] melee;
     private InputData[] evade;
@@ -74,6 +76,8 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     };
     private final SimpleObjectProperty<SimulacraRef> simulacra = new SimpleObjectProperty<>(null);
     private final Set<String> row2Ids = new HashSet<>();
+    private final ObservableList<String> configurationNames = FXCollections.observableList(new ArrayList<>());
+    private final ObservableList<AssistantCoolDownConfiguration> configurations = FXCollections.observableList(new ArrayList<>());
 
     public CoolDownPane() {
         var vbox = new VBox();
@@ -134,13 +138,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         if (selected == null) return;
                         weapons[wi].set(selected);
                     });
-                    weaponSelect.setPrefWidth(150);
-                    image.setFitWidth(150);
-                    image.setFitHeight(150);
+                    weaponSelect.setPrefWidth(WIDTH_HEIGHT + 30);
+                    image.setFitWidth(WIDTH_HEIGHT + 30);
+                    image.setFitHeight(WIDTH_HEIGHT + 30);
                     starsSelect.setEditable(false);
                     starsSelect.setItems(FXCollections.observableList(Arrays.asList(0, 1, 2, 3, 4, 5, 6)));
                     starsSelect.getSelectionModel().select(6);
-                    starsSelect.setPrefWidth(150);
+                    starsSelect.setPrefWidth(WIDTH_HEIGHT + 30);
                 }
 
                 {
@@ -197,15 +201,71 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         if (selected == null) return;
                         matrixs[wi][mi].set(selected);
                     });
-                    matrixSelect.setPrefWidth(120);
-                    image.setFitWidth(120);
-                    image.setFitHeight(120);
+                    matrixSelect.setPrefWidth(WIDTH_HEIGHT);
+                    image.setFitWidth(WIDTH_HEIGHT);
+                    image.setFitHeight(WIDTH_HEIGHT);
                     starsSelect.setEditable(false);
                     starsSelect.setItems(FXCollections.observableList(Arrays.asList(0, 1, 2, 3)));
                     starsSelect.getSelectionModel().select(3);
-                    starsSelect.setPrefWidth(120);
+                    starsSelect.setPrefWidth(WIDTH_HEIGHT);
                 }
             }
+        }
+
+        {
+            var sep = new Separator();
+            sep.setPadding(new Insets(10, 0, 10, 0));
+            vbox.getChildren().add(sep);
+        }
+
+        {
+            var hbox = new HBox();
+            vbox.getChildren().add(hbox);
+
+            var label = new Label(I18n.get().cooldownConfigurationLabel()) {{
+                FontManager.setFont(this, 14);
+            }};
+            label.setPadding(new Insets(3, 0, 0, 0));
+
+            configurations.addListener((ListChangeListener<AssistantCoolDownConfiguration>) c ->
+                configurationNames.setAll(configurations.stream().map(e -> e.name).collect(Collectors.toList())));
+
+            var equipConfig = new ComboBox<String>();
+            equipConfig.setEditable(true);
+            equipConfig.setItems(configurationNames);
+            equipConfig.setOnAction(e -> {
+                var selected = equipConfig.getValue();
+                if (selected == null) return;
+                var opt = configurations.stream().filter(ee -> selected.equals(ee.name)).findAny();
+                opt.ifPresent(this::loadFromConfig);
+            });
+            equipConfig.setPrefWidth(WIDTH_HEIGHT);
+            var saveButton = new Button(I18n.get().cooldownConfigurationSave()) {{
+                FontManager.setFont(this, 13);
+            }};
+            saveButton.setOnAction(e -> {
+                var name = equipConfig.getValue();
+                if (name == null || name.isBlank()) return;
+                if (configurationNames.contains(name)) {
+                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().cooldownConfigurationDuplicate()).showAndWait();
+                    return;
+                }
+                newConfiguration(name);
+            });
+            var deleteButton = new Button(I18n.get().cooldownConfigurationDelete()) {{
+                FontManager.setFont(this, 13);
+            }};
+            deleteButton.setOnAction(e -> {
+                var name = equipConfig.getValue();
+                if (name == null || name.isBlank()) return;
+                if (!configurationNames.contains(name)) {
+                    return;
+                }
+                configurations.removeIf(ee -> name.equals(ee.name));
+                saveConfig();
+                equipConfig.setValue(null);
+            });
+            hbox.getChildren().addAll(label, new HPadding(5), equipConfig, new HPadding(5), saveButton, new HPadding(5), deleteButton);
         }
 
         {
@@ -222,13 +282,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             var startBtn = new Button(I18n.get().startCoolDown()) {{
                 FontManager.setFont(this);
             }};
-            startBtn.setPrefWidth(120);
+            startBtn.setPrefWidth(WIDTH_HEIGHT);
             startBtn.setOnAction(e -> start());
 
             var stopBtn = new Button(I18n.get().stopCoolDown()) {{
                 FontManager.setFont(this);
             }};
-            stopBtn.setPrefWidth(120);
+            stopBtn.setPrefWidth(WIDTH_HEIGHT);
             stopBtn.setDisable(true);
             stopBtn.setOnAction(e -> stop());
 
@@ -241,7 +301,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             var tipsBtn = new Button(I18n.get().cooldownTipsButton()) {{
                 FontManager.setFont(this);
             }};
-            tipsBtn.setPrefWidth(120);
+            tipsBtn.setPrefWidth(WIDTH_HEIGHT);
             tipsBtn.setOnAction(e -> new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().cooldownTips(), FontManager::setNoto).show());
 
             //noinspection unchecked,rawtypes
@@ -285,17 +345,17 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         }
                     }
                 });
-                relics0.setPrefWidth(120);
+                relics0.setPrefWidth(WIDTH_HEIGHT);
                 relicsStars0.setEditable(false);
                 relicsStars0.setItems(FXCollections.observableList(Arrays.asList(0, 1, 2, 3, 4, 5)));
                 relicsStars0.getSelectionModel().select(3);
-                relicsStars0.setPrefWidth(120);
+                relicsStars0.setPrefWidth(WIDTH_HEIGHT);
             }
 
             ComboBox<SimulacraRef> simulacraRefComboBox;
             {
                 simulacraRefComboBox = new ComboBox<>();
-                simulacraRefComboBox.setPrefWidth(120);
+                simulacraRefComboBox.setPrefWidth(WIDTH_HEIGHT);
                 simulacraRefComboBox.setEditable(false);
                 simulacraRefComboBox.setItems(FXCollections.observableList(SimulacraRef.all()));
                 simulacraRefComboBox.getSelectionModel().select(0);
@@ -418,6 +478,27 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     }
 
     private void saveConfig() {
+        var config = buildConfig();
+        try {
+            AssistantConfig.updateAssistant(ass -> ass.cooldown = config);
+        } catch (IOException e) {
+            Logger.error("updating assistant config for cooldown failed", e);
+        }
+    }
+
+    private void newConfiguration(String name) {
+        var cd = buildConfig();
+        var ret = new AssistantCoolDownConfiguration();
+        ret.name = name;
+        ret.weapons = cd.weapons;
+        ret.relics = cd.relics;
+        ret.simulacra = cd.simulacra;
+
+        configurations.add(ret);
+        saveConfig();
+    }
+
+    private AssistantCoolDown buildConfig() {
         var config = new AssistantCoolDown();
         config.weapons = new ArrayList<>(this.weapons.length);
         var thisWeapons = this.weapons;
@@ -451,13 +532,9 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             config.simulacra.simulacraId = s == null ? 0 : s.id;
         }
         config.row2Ids = row2Ids;
-        Logger.info("weapon properties:\n" + config.toJson().pretty());
-
-        try {
-            AssistantConfig.updateAssistant(ass -> ass.cooldown = config);
-        } catch (IOException e) {
-            Logger.error("updating assistant config for cooldown failed", e);
-        }
+        config.configurations = new ArrayList<>(configurations);
+        Logger.info("weapon properties:\n" + config.toJson().stringify());
+        return config;
     }
 
     private double windowPositionX;
@@ -641,6 +718,14 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         loadRelicsFromConfig(cooldown.relics);
         loadSimulacraFromConfig(cooldown.simulacra);
         loadRow2Ids(cooldown.row2Ids);
+        loadConfigurations(cooldown.configurations);
+    }
+
+    private void loadFromConfig(AssistantCoolDownConfiguration cooldown) {
+        if (cooldown == null) return;
+        loadWeaponsFromConfig(cooldown.weapons);
+        loadRelicsFromConfig(cooldown.relics);
+        loadSimulacraFromConfig(cooldown.simulacra);
     }
 
     private void loadWeaponsFromConfig(List<AssistantCoolDownWeapon> weapons) {
@@ -681,6 +766,12 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         if (row2Ids == null) return;
         this.row2Ids.clear();
         this.row2Ids.addAll(row2Ids);
+    }
+
+    private void loadConfigurations(List<AssistantCoolDownConfiguration> configurations) {
+        if (configurations == null) return;
+        this.configurations.clear();
+        this.configurations.addAll(configurations);
     }
 
     @Override

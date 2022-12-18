@@ -796,6 +796,26 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String cooldownConfigurationLabel() {
+        return "装配方案";
+    }
+
+    @Override
+    public String cooldownConfigurationDuplicate() {
+        return "装配方案名称重复";
+    }
+
+    @Override
+    public String cooldownConfigurationSave() {
+        return "保存";
+    }
+
+    @Override
+    public String cooldownConfigurationDelete() {
+        return "删除";
+    }
+
+    @Override
     public String cooldownResetDesc() {
         return "重置";
     }

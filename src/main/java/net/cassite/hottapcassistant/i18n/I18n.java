@@ -283,6 +283,14 @@ public abstract class I18n {
 
     public abstract String relicsChooserPlaceHolder(int index);
 
+    public abstract String cooldownConfigurationLabel();
+
+    public abstract String cooldownConfigurationDuplicate();
+
+    public abstract String cooldownConfigurationSave();
+
+    public abstract String cooldownConfigurationDelete();
+
     public abstract String cooldownResetDesc();
 
     public abstract String loadingStageTitle();
