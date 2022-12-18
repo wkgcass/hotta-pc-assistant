@@ -13,12 +13,13 @@ import net.cassite.hottapcassistant.util.Utils;
 public class WeaponCoolDown extends Group implements WithId, WithDesc {
     static final int INNER_RADIUS = 28;
     static final int FONT_SIZE = 24;
-    private static final int L1_RADIUS = INNER_RADIUS + 4;
-    private static final int L2_RADIUS = L1_RADIUS + 4;
+    private static final int STROKE_WIDTH = 4;
+    private static final int L1_RADIUS = INNER_RADIUS + STROKE_WIDTH + 1;
+    private static final int L2_RADIUS = L1_RADIUS + STROKE_WIDTH;
     public static final double MAX_RADIUS = L2_RADIUS;
     public static final double MIN_RADIUS = INNER_RADIUS;
-    static final Color INACTIVE_COLOR = Color.color(0x88 / 255d, 0x88 / 255d, 0x88 / 255d);
-    private static final Color ACTIVE_COLOR = Color.color(0xff / 255d, 0x99 / 255d, 0x66 / 255d);
+    static final Color INACTIVE_COLOR = Color.color(0x88 / 255d, 0x88 / 255d, 0x88 / 255d, 0.5);
+    private static final Color ACTIVE_COLOR = Color.color(0xff / 255d, 0x99 / 255d, 0x66 / 255d, 0.9);
 
     private final CoolDownArc[] cds;
     private final Group cdPane;
@@ -75,10 +76,10 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
         });
 
         var cd0 = new CoolDownArc(Color.color(0xff / 255d, 0x66 / 255d, 0x66 / 255d));
-        cd0.setRadius(L1_RADIUS);
+        cd0.setRadius(L1_RADIUS, STROKE_WIDTH);
         cd0.setVisible(false);
         var cd1 = new CoolDownArc(Color.color(0x00 / 255d, 0x99 / 255d, 0xcc / 255d));
-        cd1.setRadius(L2_RADIUS);
+        cd1.setRadius(L2_RADIUS, STROKE_WIDTH);
         cd1.setVisible(false);
         this.cds = new CoolDownArc[]{cd0, cd1};
 

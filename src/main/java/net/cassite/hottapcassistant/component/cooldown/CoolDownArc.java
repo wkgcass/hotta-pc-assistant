@@ -10,27 +10,34 @@ import javafx.scene.shape.Circle;
 public class CoolDownArc extends Group {
     private final Circle circle;
     private final Arc arc;
+    private final Circle clip;
 
     public CoolDownArc(Paint arcFill) {
         this.circle = new Circle();
         this.arc = new Arc();
+        this.clip = new Circle();
 
         arc.setType(ArcType.ROUND);
 
         arc.setStrokeWidth(0);
         arc.setFill(arcFill);
 
-        circle.setStrokeWidth(1);
-        circle.setStroke(Color.WHITE);
-        circle.setFill(Color.color(0xcc / 255d, 0xcc / 255d, 0xcc / 255d));
+        circle.setStrokeWidth(0);
+        circle.setFill(Color.color(0xff / 255d, 0xff / 255d, 0xff / 255d, 0.3));
 
         getChildren().addAll(circle, arc);
+
+        clip.setFill(Color.TRANSPARENT);
+        clip.setStroke(Color.WHITE);
+        this.setClip(clip);
     }
 
-    public void setRadius(double r) {
+    public void setRadius(double r, double w) {
         circle.setRadius(r);
         arc.setRadiusX(r);
         arc.setRadiusY(r);
+        clip.setRadius(r - w / 2);
+        clip.setStrokeWidth(w);
     }
 
     public void setPercentage(double p) {

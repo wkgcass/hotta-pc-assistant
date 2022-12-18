@@ -180,7 +180,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             sep.setEndX(0);
             sep.setEndY(2 * r - r / 2);
             sep.setStroke(Color.GRAY);
-            sep.setLayoutX(10 + 2 * r + margin - margin / 2);
+            sep.setLayoutX(10 + 2 * r + margin - margin / 2 - 1);
             sep.setLayoutY(10);
             group.getChildren().add(sep);
         }
