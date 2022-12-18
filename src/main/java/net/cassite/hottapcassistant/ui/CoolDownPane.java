@@ -218,9 +218,16 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             vbox.getChildren().add(sep);
         }
 
+        var buttonsAndRelicsSimulacraHBox = new HBox();
+        vbox.getChildren().add(buttonsAndRelicsSimulacraHBox);
+
+        var buttonsVBox = new VBox();
+        buttonsAndRelicsSimulacraHBox.getChildren().add(buttonsVBox);
+        buttonsVBox.setMaxWidth(700);
+
         {
             var hbox = new HBox();
-            vbox.getChildren().add(hbox);
+            buttonsVBox.getChildren().add(hbox);
 
             var label = new Label(I18n.get().cooldownConfigurationLabel()) {{
                 FontManager.setFont(this, 14);
@@ -271,13 +278,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         {
             var sep = new Separator();
             sep.setPadding(new Insets(10, 0, 10, 0));
-            vbox.getChildren().add(sep);
+            buttonsVBox.getChildren().add(sep);
         }
 
         // buttons
         {
             var hbox = new HBox();
-            vbox.getChildren().add(hbox);
+            buttonsVBox.getChildren().add(hbox);
 
             var startBtn = new Button(I18n.get().startCoolDown()) {{
                 FontManager.setFont(this);
@@ -304,6 +311,14 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             tipsBtn.setPrefWidth(WIDTH_HEIGHT);
             tipsBtn.setOnAction(e -> new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().cooldownTips(), FontManager::setNoto).show());
 
+            hbox.getChildren().addAll(startBtn, new HPadding(4), stopBtn, new HPadding(4), tipsBtn);
+        }
+
+        {
+            buttonsAndRelicsSimulacraHBox.getChildren().add(new HPadding(20));
+        }
+
+        {
             //noinspection unchecked,rawtypes
             ComboBox<RelicsRef>[] relics = new ComboBox[]{
                 new ComboBox(),
@@ -386,15 +401,15 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 });
             }
 
-            hbox.getChildren().addAll(startBtn, new HPadding(4), stopBtn,
-                new HPadding(4), tipsBtn,
-                new HPadding(20), new VBox() {{
-                    getChildren().add(relics[0]);
-                    getChildren().add(relicsStars[0]);
-                }}, new HPadding(4), new VBox() {{
-                    getChildren().add(relics[1]);
-                    getChildren().add(relicsStars[1]);
-                }}, new HPadding(20), simulacraRefComboBox);
+            var hbox = new HBox();
+            buttonsAndRelicsSimulacraHBox.getChildren().add(hbox);
+            hbox.getChildren().addAll(new VBox() {{
+                getChildren().add(relics[0]);
+                getChildren().add(relicsStars[0]);
+            }}, new HPadding(4), new VBox() {{
+                getChildren().add(relics[1]);
+                getChildren().add(relicsStars[1]);
+            }}, new HPadding(20), simulacraRefComboBox);
         }
     }
 
