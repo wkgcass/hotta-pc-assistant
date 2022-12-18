@@ -68,6 +68,9 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
 
     @Override
     protected boolean useSkill0(WeaponContext ctx) {
+        if (!ctx.resonanceInfo.support()) {
+            return super.useSkill0(ctx);
+        }
         if (count > 0) {
             --count;
             if (cd == 0) {
