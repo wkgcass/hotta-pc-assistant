@@ -36,6 +36,7 @@ public class SettingConfig {
         put("ResolutionSizeX", SettingType.INT);
         put("ResolutionSizeY", SettingType.INT);
         put("FullscreenMode", SettingType.INT);
+        put("bPreferD3D12InGame", SettingType.BOOL);
     }};
     private static final List<String> availableSettingsOrder = new ArrayList<>() {{
         addAll(availableSettings.keySet());
@@ -77,9 +78,11 @@ public class SettingConfig {
         Path settingsPath = Path.of(this.settingsPath);
         var lines = Files.readAllLines(settingsPath);
         var gameUserSettingsIndex = -1;
+        var d3dRHIPreferenceIndex = -1;
         boolean hasResolutionSizeX = false;
         boolean hasResolutionSizeY = false;
         boolean hasFullscreenMode = false;
+        boolean hasD3D12 = false;
         for (var i = 0; i < lines.size(); ++i) {
             var line = lines.get(i);
             line = line.trim();
@@ -88,6 +91,8 @@ public class SettingConfig {
                 line = line.trim();
                 if (line.equals("/Script/QRSL.QRSLGameUserSettings")) {
                     gameUserSettingsIndex = i;
+                } else if (line.equals("D3DRHIPreference")) {
+                    d3dRHIPreferenceIndex = i;
                 }
             } else if (line.contains("=")) {
                 var split = line.split("=");
@@ -97,6 +102,7 @@ public class SettingConfig {
                     case "ResolutionSizeX" -> hasResolutionSizeX = true;
                     case "ResolutionSizeY" -> hasResolutionSizeY = true;
                     case "FullscreenMode" -> hasFullscreenMode = true;
+                    case "bPreferD3D12InGame" -> hasD3D12 = true;
                 }
             }
         }
@@ -104,20 +110,33 @@ public class SettingConfig {
             Logger.warn("cannot find [/Script/QRSL.QRSLGameUserSettings] in " + settingsPath);
             return;
         }
-        var modified = false;
+        var modified = 0;
         if (!hasFullscreenMode) {
             lines.add(gameUserSettingsIndex + 1, "FullscreenMode=2");
-            modified = true;
+            ++modified;
         }
         if (!hasResolutionSizeY) {
             lines.add(gameUserSettingsIndex + 1, "ResolutionSizeY=768");
-            modified = true;
+            ++modified;
         }
         if (!hasResolutionSizeX) {
             lines.add(gameUserSettingsIndex + 1, "ResolutionSizeX=1024");
-            modified = true;
+            ++modified;
         }
-        if (modified) {
+        if (!hasD3D12) {
+            if (d3dRHIPreferenceIndex == -1) {
+                lines.add("[D3DRHIPreference]");
+                lines.add("bPreferD3D12InGame=True");
+            } else {
+                if (d3dRHIPreferenceIndex < gameUserSettingsIndex) {
+                    lines.add(d3dRHIPreferenceIndex + 1, "bPreferD3D12InGame=True");
+                } else {
+                    lines.add(d3dRHIPreferenceIndex + 1 + modified, "bPreferD3D12InGame=True");
+                }
+            }
+            ++modified;
+        }
+        if (modified != 0) {
             Utils.writeFile(settingsPath, String.join("\n", lines));
         }
     }

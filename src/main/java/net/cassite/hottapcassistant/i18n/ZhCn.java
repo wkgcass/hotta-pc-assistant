@@ -272,6 +272,7 @@ public class ZhCn extends I18n {
             case "ResolutionSizeX" -> "分辨率X";
             case "ResolutionSizeY" -> "分辨率Y";
             case "FullscreenMode" -> "全屏模式[1=全屏|2=窗口]";
+            case "bPreferD3D12InGame" -> "使用DX12";
             default -> super.configNameMapping(name);
         };
     }
