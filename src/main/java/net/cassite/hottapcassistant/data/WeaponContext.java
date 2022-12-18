@@ -190,7 +190,7 @@ public class WeaponContext implements WithExtraData {
         if (current == w) {
             return true;
         }
-        if (weaponSwitchCD[index] > 0) {
+        if (weaponSwitchCD[index] > getTotalSwitchWeaponCoolDown() * 0.1) {
             return false;
         }
         Logger.info("weapon switched from " + current.getName() + " to " + w.getName() + (discharge ? " and discharges" : ""));

@@ -56,9 +56,9 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
             return true;
         }
         if (stars >= 6) {
+            resetFieldTime(); // no cd check, user may hit skill button very quickly
             if (antiFalseTouchCD == 0) {
-                antiFalseTouchCD = 500;
-                resetFieldTime();
+                antiFalseTouchCD = 3000;
                 postUseSkill(ctx);
                 return true;
             }
