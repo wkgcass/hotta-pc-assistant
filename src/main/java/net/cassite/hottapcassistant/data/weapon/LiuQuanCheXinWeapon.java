@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
 import net.cassite.hottapcassistant.data.resonance.IceResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
@@ -77,6 +78,11 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
         boolean triggerred = ctx.resonanceInfo.iceResonance();
         if (!triggerred) {
             return;
+        }
+        if (w instanceof TriggerLiuQuanCheXinStar1) {
+            if (!((TriggerLiuQuanCheXinStar1) w).triggerLiuQuanCheXinStar1()) {
+                return;
+            }
         }
         int n = count + 1;
         if (n >= 5) {

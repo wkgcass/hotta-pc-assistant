@@ -713,6 +713,20 @@ public class ZhCn extends I18n {
             case "wǎn dǎo" -> "晚祷";
             case "líng guāng" -> "陵光";
             case "líng dù zhǐ zhēn" -> "零度指针";
+            case "ā lài yē shí" -> "阿赖耶识";
+            case "jí léi shuāng rèn" -> "疾雷双刃";
+            case "chāo diàn cí shuāng xīng" -> "超电磁双星";
+            case "chū dòng zhòng jī" -> "初动重击";
+            case "diàn cí rèn" -> "电磁刃";
+            case "gě dòu dāo" -> "格斗刀";
+            case "huán hǎi lún rèn" -> "环海轮刃";
+            case "léi tíng zhàn jǐ" -> "雷霆战戟";
+            case "mò bǐ wū sī" -> "莫比乌斯";
+            case "qiáng wēi zhī fēng" -> "蔷薇之锋";
+            case "shèng hén quán zhàng" -> "圣痕权杖";
+            case "shuāng dòng cháng qiāng" -> "霜冻长枪";
+            case "yè què zhī yǔ" -> "夜雀之羽";
+            case "zhōng jié zhě" -> "终结者";
             default -> name;
         };
     }
@@ -768,6 +782,8 @@ public class ZhCn extends I18n {
             case "leiBeiMatrixBuffTimer" -> "蕾贝意志四件套";
             case "lingGuangYuJing" -> "陵光御境";
             case "lingGuangTaunt" -> "陵光坚毅嘲讽";
+            case "yeQueZhiYuStar5" -> "夜雀之羽5星重伤";
+            case "moShuShiJian" -> "魔术时间";
             default -> name;
         };
     }
@@ -859,6 +875,7 @@ public class ZhCn extends I18n {
             7. 对于触发恩赐共鸣的晚祷（星环），点击辉起计数器可以将其重置为3次，方便玩家在读条后同步该计数器；
             8. 同时装备1星及以上陵光和四叶十字时，由于羽翎非常容易获取，所以默认永远处于三把羽翎的状态，四叶十字的弹药消耗为每次4发；
             9. 四叶十字（瓦斯）的冷却减少效果和实际操作有极强的关联性，所以在实战中使用四叶十字（瓦斯）时，冷却时间不保证完全匹配；
+            10. 由于无法检测电爆，所以不处理超电磁双星6星效果；
             即使存在这些容错设计，某些情况下还是不可避免的与游戏发生不一致，所以正确用法是：主要以游戏为准，然后时不时瞅一眼冷却指示器。
             此外有如下特殊处理：
             1. 长按（大于300毫秒）武器按键切换到其他武器时，视为释放了一次连携技，目前[流泉澈心, 破晓]对此行为有特殊处理；

@@ -81,7 +81,7 @@ public class ImageManager {
         "/images/weapons/wan-dao.png",
         "/images/weapons/ye-que-zhi-yu.png",
         "/images/weapons/ying-zhi.png",
-        "/images/weapons/zhong-jie-zhi.png",
+        "/images/weapons/zhong-jie-zhe.png",
     };
     private static final ImageManager instance = new ImageManager();
 

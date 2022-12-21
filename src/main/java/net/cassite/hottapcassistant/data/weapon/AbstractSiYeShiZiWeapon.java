@@ -4,10 +4,11 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
-public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements Weapon {
+public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements Weapon, TriggerLiuQuanCheXinStar1 {
     private int state = 0;
     // 0 -> normal
     // 1 -> skill used
@@ -173,5 +174,10 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
         siYeShiZiShotRemain.setText(getShotRemain() + "");
         siYeShiZiDodgeRemain.setText(getDodgeRemain() + "");
         opticalSpaceTimer.setAllCoolDown(getOpticalSpaceTime(), getTotalOpticalSpaceTime());
+    }
+
+    @Override
+    public boolean triggerLiuQuanCheXinStar1() {
+        return state == 1;
     }
 }
