@@ -1,5 +1,7 @@
 package net.cassite.hottapcassistant.component.cooldown;
 
+import javafx.animation.AnimationTimer;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -8,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Translate;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class WeaponCoolDown extends Group implements WithId, WithDesc {
@@ -25,6 +28,8 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
     private final Group cdPane;
     private final Label cdNumber;
     private final SimpleObjectProperty<Color> backgroundColor = new SimpleObjectProperty<>(INACTIVE_COLOR);
+    private final Translate translate = new Translate();
+    private CoolDownOKAnimationTimer cooldownOKTimer = new CoolDownOKAnimationTimer();
 
     private final String id;
     private final String desc;
@@ -84,11 +89,59 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
         this.cds = new CoolDownArc[]{cd0, cd1};
 
         getChildren().addAll(cd1, cd0, innerBackground, imageView, cdPane, innerCircle);
+
+        isCoolingDown.addListener((ob, old, now) -> {
+            if (now == null) return;
+            if (old == now) return;
+            if (now) {
+                translate.setY(0);
+                var timer = this.cooldownOKTimer;
+                this.cooldownOKTimer = null;
+                if (timer != null) {
+                    timer.stop();
+                }
+            } else {
+                var timer = new CoolDownOKAnimationTimer();
+                timer.start();
+                this.cooldownOKTimer = timer;
+            }
+        });
+        getTransforms().add(translate);
+    }
+
+    private final SimpleBooleanProperty isCoolingDown = new SimpleBooleanProperty(false);
+
+    private class CoolDownOKAnimationTimer extends AnimationTimer {
+        long beginTime;
+
+        @Override
+        public void handle(long now) {
+            if (beginTime == 0) {
+                beginTime = now;
+                return;
+            }
+            var delta = (double) (now - beginTime);
+            if (delta > 500_000_000) {
+                translate.setY(0);
+                stop();
+                cooldownOKTimer = null;
+            } else if (delta > 250_000_000) {
+                var d = delta - 250_000_000;
+                d /= 250_000_000;
+                var v = (d * d - d) * 15;
+                translate.setY(v);
+            } else {
+                var d = delta / 250_000_000;
+                var v = (d * d - d) * 40;
+                translate.setY(v);
+            }
+        }
     }
 
     public void setCoolDown(long time) {
         if (time == 0) {
             cdPane.setVisible(false);
+            isCoolingDown.set(false);
             return;
         }
         cdPane.setVisible(true);
@@ -102,6 +155,7 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
             cdNumber.setLayoutX(x);
             cdNumber.setLayoutY(y);
         }
+        isCoolingDown.set(true);
     }
 
     public void setAllCoolDown(long time, long total) {
