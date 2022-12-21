@@ -62,6 +62,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String toolNameToolBox() {
+        return "工具箱";
+    }
+
+    @Override
     public String toolNameAbout() {
         return "关于";
     }
@@ -881,5 +886,78 @@ public class ZhCn extends I18n {
     @Override
     public String cancelInvalidAssistantConfigBtn() {
         return "取消";
+    }
+
+    @Override
+    public String toolName(String name) {
+        return switch (name) {
+            case "auto-checking-mystic-salesman" -> "检查神秘商人";
+            default -> name;
+        };
+    }
+
+    @Override
+    public String autoCheckingMysticSalesmanDesc() {
+        return """
+            本工具用于自动检查神秘商人是否存在，当发现存在后，会调用配置的powershell脚本。
+            你可以在脚本中发送邮件来通知神秘商人已刷新。
+            需要在游戏关闭的状态下运行本工具，之后会自动启动游戏、检查神秘商人图标、最后退出游戏。
+            第一次启动后会立即执行一轮该流程，后续会在每个整点的后1分钟执行流程。
+            工具运行时会自动修改游戏的分辨率，你可以在"游戏设置"中将其调整回来。
+            """;
+    }
+
+    @Override
+    public String autoCheckingMysticSalesmanStepName(String name) {
+        return switch (name) {
+            case "stopped" -> "停止";
+            case "timer" -> "等待下一个整点触发...";
+            case "openLauncher" -> "打开启动器";
+            case "waitForLauncher" -> "等待启动器开启...";
+            case "launch" -> "启动";
+            case "waitForLogin" -> "等待登录界面...";
+            case "login" -> "登录";
+            case "waitForMenu" -> "等待菜单...";
+            case "clickMenu" -> "点击菜单|休闲";
+            case "waitForHousingChooser" -> "等待出现选择家园模式...";
+            case "clickHousing" -> "点击家园模式";
+            case "waitForHousing" -> "等待家园模式界面...";
+            case "clickReward" -> "点击领取奖励按钮";
+            case "scanForMystic" -> "查找神秘商人图标...";
+            case "callback" -> "执行脚本...";
+            case "exit" -> "退出";
+            case "exiting" -> "退出中...";
+            default -> name;
+        };
+    }
+
+    @Override
+    public String autoCheckingMysticSalesmanCallbackScriptLabel() {
+        return "选择powershell脚本";
+    }
+
+    @Override
+    public String autoCheckingMysticSalesmanStartBtn() {
+        return "启动";
+    }
+
+    @Override
+    public String autoCheckingMysticSalesmanStopBtn() {
+        return "停止";
+    }
+
+    @Override
+    public String autoCheckingMysticSalesmanScriptPathNotSet() {
+        return "没有设置回调脚本路径";
+    }
+
+    @Override
+    public String autoCheckingMysticSalesmanFailedReadingSettingsConfig() {
+        return "读取游戏配置文件失败";
+    }
+
+    @Override
+    public String autoCheckingMysticSalesmanFailedWritingSettingsConfig() {
+        return "写入游戏配置文件失败";
     }
 }

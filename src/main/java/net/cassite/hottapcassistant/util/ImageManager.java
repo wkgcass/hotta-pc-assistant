@@ -33,6 +33,7 @@ public class ImageManager {
         "/images/global-launch-btn/launch-normal.png",
         "/images/icon/icon.ico",
         "/images/icon/icon.jpg",
+        "/images/icon/mystic-salesman.jpg",
         "/images/icon/reloading.png",
         "/images/launchgame-btn/launchgame-down.png",
         "/images/launchgame-btn/launchgame-hover.png",

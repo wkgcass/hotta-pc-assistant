@@ -7,5 +7,6 @@ open module net.cassite.hottapcassistant {
     requires vjson;
     requires com.github.kwhat.jnativehook;
     requires org.controlsfx.controls;
+    requires opencv;
     exports net.cassite.hottapcassistant;
 }

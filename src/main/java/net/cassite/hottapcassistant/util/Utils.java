@@ -5,14 +5,25 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
+import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import net.cassite.hottapcassistant.config.TofServerListConfig;
+import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -126,6 +137,27 @@ public class Utils {
         }
         //noinspection unchecked
         return (T) obj[0];
+    }
+
+    public static void moveAndClickOnThread(double x, double y, Key key) {
+        execRobotOnThread(r -> {
+            r.mouseMove(x, y);
+            return null;
+        });
+        delay(100);
+        clickOnThread(key);
+    }
+
+    public static void clickOnThread(Key key) {
+        execRobotOnThread(r -> {
+            r.press(key);
+            return null;
+        });
+        delay(50);
+        execRobotOnThread(r -> {
+            r.release(key);
+            return null;
+        });
     }
 
     public static void checkAndInitRobot() {
@@ -325,5 +357,93 @@ public class Utils {
             Thread.sleep(time);
         } catch (InterruptedException ignore) {
         }
+    }
+
+    public static Mat image2Mat(Image image) {
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+        byte[] buffer = new byte[width * height * 4];
+
+        var reader = image.getPixelReader();
+        var format = WritablePixelFormat.getByteBgraInstance();
+        reader.getPixels(0, 0, width, height, format, buffer, 0, width * 4);
+
+        var mat = new Mat(height, width, CvType.CV_8UC4);
+        mat.put(0, 0, buffer);
+        return mat;
+    }
+
+    public static Mat[] image2MatWithMask(Image image) {
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+        var wimg = new WritableImage(width, height);
+
+        var reader = image.getPixelReader();
+        var writer = wimg.getPixelWriter();
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                int argb = reader.getArgb(x, y);
+                if (((argb >> 24) & 0xff) == 0) {
+                    writer.setArgb(x, y, 0xff000000);
+                } else {
+                    writer.setArgb(x, y, 0xffffffff);
+                }
+            }
+        }
+
+        return new Mat[]{image2Mat(image), image2Mat(wimg)};
+    }
+
+    public static Image mat2Image(Mat frame) {
+        // create a temporary buffer
+        var buffer = new MatOfByte();
+        // encode the frame in the buffer, according to the PNG format
+        Imgcodecs.imencode(".png", frame, buffer);
+        // build and return an Image created from the image encoded in the
+        // buffer
+        return new Image(new ByteArrayInputStream(buffer.toArray()));
+    }
+
+    // return (x, y, p)
+    public static double[] imageTemplateMatching(Image img, Mat subMat) {
+        return imageTemplateMatching(img, subMat, null);
+    }
+
+    public static double[] imageTemplateMatching(Image img, Mat subMat, Mat mask) {
+        var imgMat = Utils.image2Mat(img);
+        if (imgMat.rows() < subMat.rows() || imgMat.cols() < subMat.cols()) {
+            Logger.warn("invalid input, cannot run template matching");
+            return new double[]{0, 0, 0};
+        }
+
+        var result = new Mat();
+        result.create(imgMat.rows() - subMat.rows() + 1, imgMat.cols() - subMat.cols() + 1, CvType.CV_32FC1);
+
+        if (mask == null) {
+            Imgproc.matchTemplate(imgMat, subMat, result, Imgproc.TM_CCORR_NORMED);
+        } else {
+            Imgproc.matchTemplate(imgMat, subMat, result, Imgproc.TM_CCORR_NORMED, mask);
+        }
+        Core.normalize(result, result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+        var mmr = Core.minMaxLoc(result);
+
+        Logger.info("template matching result: " + mmr.maxLoc.x + ", " + mmr.maxLoc.y + ", " + mmr.maxVal);
+        return new double[]{mmr.maxLoc.x, mmr.maxLoc.y, mmr.maxVal};
+    }
+
+    public static Screen getScreenOf(Window window) {
+        if (window == null) return null;
+        var screenOb = Screen.getScreensForRectangle(window.getX(), window.getY(), window.getWidth(), window.getHeight());
+        Screen screen;
+        if (screenOb.isEmpty()) {
+            screen = Screen.getPrimary();
+        } else {
+            screen = screenOb.get(0);
+        }
+        if (screen == null) {
+            new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
+            return null;
+        }
+        return screen;
     }
 }
