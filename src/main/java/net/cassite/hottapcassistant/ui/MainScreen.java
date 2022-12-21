@@ -107,6 +107,7 @@ public class MainScreen extends BorderPane {
                         setCenter(contentNode);
                         inst.setVisible(true, null);
                         setLabelSelected(inst);
+                        contentNode.requestFocus();
                     }
                     return;
                 }
@@ -115,6 +116,7 @@ public class MainScreen extends BorderPane {
                         setCenter(contentNode);
                         inst.setVisible(true, null);
                         setLabelSelected(inst);
+                        contentNode.requestFocus();
                     } else {
                         hideInactive();
                     }
