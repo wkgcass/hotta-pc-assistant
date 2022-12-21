@@ -62,6 +62,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String toolNameToolBox() {
+        return "工具箱";
+    }
+
+    @Override
     public String toolNameAbout() {
         return "关于";
     }
@@ -881,5 +886,12 @@ public class ZhCn extends I18n {
     @Override
     public String cancelInvalidAssistantConfigBtn() {
         return "取消";
+    }
+
+    @Override
+    public String toolName(String name) {
+        return switch (name) {
+            default -> name;
+        };
     }
 }

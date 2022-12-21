@@ -7,12 +7,16 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import net.cassite.hottapcassistant.config.TofServerListConfig;
+import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -126,6 +130,27 @@ public class Utils {
         }
         //noinspection unchecked
         return (T) obj[0];
+    }
+
+    public static void moveAndClickOnThread(double x, double y, Key key) {
+        execRobotOnThread(r -> {
+            r.mouseMove(x, y);
+            return null;
+        });
+        delay(100);
+        clickOnThread(key);
+    }
+
+    public static void clickOnThread(Key key) {
+        execRobotOnThread(r -> {
+            r.press(key);
+            return null;
+        });
+        delay(50);
+        execRobotOnThread(r -> {
+            r.release(key);
+            return null;
+        });
     }
 
     public static void checkAndInitRobot() {
@@ -325,5 +350,30 @@ public class Utils {
             Thread.sleep(time);
         } catch (InterruptedException ignore) {
         }
+    }
+
+    public static Screen getScreenOf(Window window) {
+        if (window == null) return null;
+        var screenOb = Screen.getScreensForRectangle(window.getX(), window.getY(), window.getWidth(), window.getHeight());
+        Screen screen;
+        if (screenOb.isEmpty()) {
+            screen = Screen.getPrimary();
+        } else {
+            screen = screenOb.get(0);
+        }
+        if (screen == null) {
+            new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
+            return null;
+        }
+        return screen;
+    }
+
+    public static BufferedImage convertToBufferedImage(java.awt.Image awtImage) {
+        if (awtImage instanceof BufferedImage) return (BufferedImage) awtImage;
+        BufferedImage bImage = new BufferedImage(awtImage.getWidth(null), awtImage.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D bGr = bImage.createGraphics();
+        bGr.drawImage(awtImage, 0, 0, null);
+        bGr.dispose();
+        return bImage;
     }
 }

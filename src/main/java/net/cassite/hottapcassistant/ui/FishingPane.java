@@ -430,21 +430,22 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.DEFAULT,
-            BackgroundSize.DEFAULT)));
+            new BackgroundSize(1, 1, true, true, false, false
+            ))));
 
         var scene = new Scene(imagePane);
 
         var fishingPoint = new MovablePoint(I18n.get().positionOfFishingPointTip());
         if (fishing.fishingPoint == null) {
-            fishingPoint.setLayoutX(img.getWidth() / 2);
-            fishingPoint.setLayoutY(img.getHeight() / 2);
+            fishingPoint.setLayoutX(img.getWidth() / 2 / screen.getOutputScaleX());
+            fishingPoint.setLayoutY(img.getHeight() / 2 / screen.getOutputScaleY());
         } else {
             fishingPoint.from(fishing.fishingPoint);
         }
         var castingPoint = new MovablePoint(I18n.get().positionOfCastingPointTip());
         if (fishing.castingPoint == null) {
-            castingPoint.setLayoutX(img.getWidth() * 2 / 3);
-            castingPoint.setLayoutY(img.getHeight() * 2 / 3);
+            castingPoint.setLayoutX(img.getWidth() * 2 / 3 / screen.getOutputScaleX());
+            castingPoint.setLayoutY(img.getHeight() * 2 / 3 / screen.getOutputScaleY());
         } else {
             castingPoint.from(fishing.castingPoint);
         }
@@ -455,7 +456,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         {
             var wh = Utils.calculateTextBounds(desc);
             desc.setLayoutX(0);
-            desc.setLayoutY(img.getHeight() - wh.getHeight() - 110);
+            desc.setLayoutY(img.getHeight() / screen.getOutputScaleY() - wh.getHeight() - 110);
         }
         imagePane.getChildren().addAll(desc, fishingPoint, castingPoint);
 
@@ -502,18 +503,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
     private Screen getScreen() {
         var window = this.getScene().getWindow();
-        var screenOb = Screen.getScreensForRectangle(window.getX(), window.getY(), window.getWidth(), window.getHeight());
-        Screen screen;
-        if (screenOb.isEmpty()) {
-            screen = Screen.getPrimary();
-        } else {
-            screen = screenOb.get(0);
-        }
-        if (screen == null) {
-            new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
-            return null;
-        }
-        return screen;
+        return Utils.getScreenOf(window);
     }
 
     @SuppressWarnings("DuplicatedCode")
@@ -541,24 +531,25 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
             BackgroundRepeat.NO_REPEAT,
             BackgroundRepeat.NO_REPEAT,
             BackgroundPosition.DEFAULT,
-            BackgroundSize.DEFAULT)));
+            new BackgroundSize(1, 1, true, true, false, false
+            ))));
 
         var scene = new Scene(imagePane);
 
         var posBarRect = new MovableRect(I18n.get().positionOfPositionTip());
         if (fishing.posBarRect == null) {
-            posBarRect.setLayoutX(img.getWidth() / 3);
+            posBarRect.setLayoutX(img.getWidth() / 3 / screen.getOutputScaleX());
             posBarRect.setLayoutY(50);
-            posBarRect.setWidth(img.getWidth() / 3);
+            posBarRect.setWidth(img.getWidth() / 3 / screen.getOutputScaleX());
             posBarRect.setHeight(150);
         } else {
             posBarRect.from(fishing.posBarRect);
         }
         var staminaRect = new MovableRect(I18n.get().positionOfFishStaminaTip());
         if (fishing.fishStaminaRect == null) {
-            staminaRect.setLayoutX(img.getWidth() / 6);
+            staminaRect.setLayoutX(img.getWidth() / 6 / screen.getOutputScaleX());
             staminaRect.setLayoutY(50);
-            staminaRect.setWidth(img.getWidth() / 6);
+            staminaRect.setWidth(img.getWidth() / 6 / screen.getOutputScaleX());
             staminaRect.setHeight(150);
         } else {
             staminaRect.from(fishing.fishStaminaRect);
@@ -570,7 +561,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         {
             var wh = Utils.calculateTextBounds(desc);
             desc.setLayoutX(0);
-            desc.setLayoutY(img.getHeight() - wh.getHeight() - 110);
+            desc.setLayoutY(img.getHeight()/screen.getOutputScaleY() - wh.getHeight() - 110);
         }
         imagePane.getChildren().addAll(desc, posBarRect, staminaRect);
 

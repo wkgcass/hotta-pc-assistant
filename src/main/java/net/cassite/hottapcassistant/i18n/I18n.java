@@ -43,6 +43,8 @@ public abstract class I18n {
 
     abstract public String toolNameCoolDown();
 
+    abstract public String toolNameToolBox();
+
     abstract public String toolNameAbout();
 
     abstract public String toolIsLocked(String name);
@@ -308,4 +310,6 @@ public abstract class I18n {
     public abstract String deleteInvalidAssistantConfigBtn();
 
     public abstract String cancelInvalidAssistantConfigBtn();
+
+    public abstract String toolName(String name);
 }
