@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.config;
 
 import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.entity.KeyBinding;
+import net.cassite.hottapcassistant.entity.KeyCode;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.JSON;
@@ -186,10 +187,17 @@ public class InputConfig {
         }
 
         if (action == null || ctrl == null || alt == null || shift == null || key == null || !key.isValid()) {
-            if (key == null || !knownToBeUnsupported(key.toString())) {
-                Logger.debug("input line skipped: " + line + " extracted data: " + action + ", " + ctrl + ", " + alt + ", " + shift + ", " + key);
+            if ("Melee_Key".equals(action)) {
+                ctrl = false;
+                alt = false;
+                shift = false;
+                key = new Key(KeyCode.CONTROL, false);
+            } else {
+                if (key == null || !knownToBeUnsupported(key.toString())) {
+                    Logger.debug("input line skipped: " + line + " extracted data: " + action + ", " + ctrl + ", " + alt + ", " + shift + ", " + key);
+                }
+                return null;
             }
-            return null;
         }
 
         var ret = new KeyBinding();
