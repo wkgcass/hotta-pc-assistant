@@ -3,6 +3,7 @@ package net.cassite.hottapcassistant.config;
 import javafx.scene.control.Alert;
 import net.cassite.hottapcassistant.component.setting.Setting;
 import net.cassite.hottapcassistant.component.setting.SettingType;
+import net.cassite.hottapcassistant.entity.GameAssistant;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.SimpleAlert;
@@ -16,13 +17,15 @@ import java.util.function.Function;
 
 public class SettingConfig {
     public final String settingsPath;
+    public final AssistantConfig assistant;
 
-    private SettingConfig(String settingsPath) {
+    private SettingConfig(String settingsPath, AssistantConfig assistant) {
         this.settingsPath = settingsPath;
+        this.assistant = assistant;
     }
 
-    public static SettingConfig ofSaved(String settingsPath) {
-        return new SettingConfig(settingsPath);
+    public static SettingConfig ofSaved(String settingsPath, AssistantConfig assistant) {
+        return new SettingConfig(settingsPath, assistant);
     }
 
     private static final LinkedHashMap<String, SettingType> availableSettings = new LinkedHashMap<>() {{
@@ -110,17 +113,35 @@ public class SettingConfig {
             Logger.warn("cannot find [/Script/QRSL.QRSLGameUserSettings] in " + settingsPath);
             return;
         }
+        GameAssistant gameAssistant;
+        try {
+            gameAssistant = assistant.readGameAssistant();
+        } catch (Exception e) {
+            gameAssistant = null;
+        }
         var modified = 0;
         if (!hasFullscreenMode) {
-            lines.add(gameUserSettingsIndex + 1, "FullscreenMode=2");
+            int mode = 2;
+            if (gameAssistant != null && gameAssistant.fullscreenMode != 0) {
+                mode = gameAssistant.fullscreenMode;
+            }
+            lines.add(gameUserSettingsIndex + 1, "FullscreenMode=" + mode);
             ++modified;
         }
         if (!hasResolutionSizeY) {
-            lines.add(gameUserSettingsIndex + 1, "ResolutionSizeY=768");
+            int resolutionSizeY = 720;
+            if (gameAssistant != null && gameAssistant.resolutionSizeY != 0) {
+                resolutionSizeY = gameAssistant.resolutionSizeY;
+            }
+            lines.add(gameUserSettingsIndex + 1, "ResolutionSizeY=" + resolutionSizeY);
             ++modified;
         }
         if (!hasResolutionSizeX) {
-            lines.add(gameUserSettingsIndex + 1, "ResolutionSizeX=1024");
+            int resolutionSizeX = 1280;
+            if (gameAssistant != null && gameAssistant.resolutionSizeX != 0) {
+                resolutionSizeX = gameAssistant.resolutionSizeX;
+            }
+            lines.add(gameUserSettingsIndex + 1, "ResolutionSizeX=" + resolutionSizeX);
             ++modified;
         }
         if (!hasD3D12) {
@@ -179,7 +200,22 @@ public class SettingConfig {
         Path settingsPath = Path.of(this.settingsPath);
         var settingsFile = Files.readAllLines(settingsPath);
 
+        int fullscreenMode = 0;
+        int resolutionSizeX = 0;
+        int resolutionSizeY = 0;
+        boolean modified = false;
+
         for (var s : settings) {
+            if ("FullscreenMode".equals(s.name)) {
+                fullscreenMode = (int) s.value;
+                modified = true;
+            } else if ("ResolutionSizeX".equals(s.name)) {
+                resolutionSizeX = (int) s.value;
+                modified = true;
+            } else if ("ResolutionSizeY".equals(s.name)) {
+                resolutionSizeY = (int) s.value;
+                modified = true;
+            }
             if (s.lineIndex == -1 || s.source == null) {
                 continue;
             }
@@ -191,5 +227,21 @@ public class SettingConfig {
             }
         }
         Utils.writeFile(settingsPath, String.join("\n", settingsFile));
+        if (modified) {
+            final var fFullscreenMode = fullscreenMode;
+            final var fResolutionSizeX = resolutionSizeX;
+            final var fResolutionSizeY = resolutionSizeY;
+            assistant.updateGameAssistant(a -> {
+                if (fFullscreenMode != 0) {
+                    a.fullscreenMode = fFullscreenMode;
+                }
+                if (fResolutionSizeX != 0) {
+                    a.resolutionSizeX = fResolutionSizeX;
+                }
+                if (fResolutionSizeY != 0) {
+                    a.resolutionSizeY = fResolutionSizeY;
+                }
+            });
+        }
     }
 }

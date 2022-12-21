@@ -51,7 +51,7 @@ public class GameSettingsPane extends WithConfirmPane {
 
     private SettingConfig getSettingConfig() {
         var settings = Path.of(GlobalValues.savedPath.get(), "Config", "WindowsNoEditor", "GameUserSettings.ini").toString();
-        return SettingConfig.ofSaved(settings);
+        return SettingConfig.ofSaved(settings, GlobalValues.getGameAssistantConfig());
     }
 
     @Override
