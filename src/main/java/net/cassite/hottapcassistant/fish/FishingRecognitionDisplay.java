@@ -55,11 +55,11 @@ public class FishingRecognitionDisplay extends Stage {
         bar.setVisible(false);
     }
 
-    public void updatePosBar(int pos, int barLeft, int barRight) {
+    public void updatePosBar(int pos, int barLeft, int barRight, double scale) {
         this.pos.setVisible(pos >= 0);
         this.bar.setVisible(barLeft >= 0 && barRight >= 0);
-        this.pos.setX(pos + 1.5);
-        this.bar.setX(barLeft);
-        this.bar.setWidth(barRight - barLeft);
+        this.pos.setX((pos + 1.5) / scale);
+        this.bar.setX(barLeft / scale);
+        this.bar.setWidth((barRight - barLeft) / scale);
     }
 }

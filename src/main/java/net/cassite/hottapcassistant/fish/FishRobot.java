@@ -55,6 +55,7 @@ public class FishRobot {
     private final WritableImage buf1 = new WritableImage(3, 3);
     private WritableImage buf2;
     private WritableImage buf3;
+    private double screenScaleX = 1;
 
     private Key leftKey;
     private Key rightKey;
@@ -90,8 +91,21 @@ public class FishRobot {
         captureXOffset = bounds.getMinX();
         captureYOffset = bounds.getMinY();
 
-        buf2 = new WritableImage((int) fishing.posBarRect.w, (int) fishing.posBarRect.h);
-        buf3 = new WritableImage((int) fishing.fishStaminaRect.w, (int) fishing.fishStaminaRect.h);
+        this.screenScaleX = screen.getOutputScaleX();
+        double screenScaleY = screen.getOutputScaleY();
+        buf2 = new WritableImage((int) (fishing.posBarRect.w * screenScaleX) + 1, (int) (fishing.posBarRect.h * screenScaleY) + 1);
+        buf3 = new WritableImage((int) (fishing.fishStaminaRect.w * screenScaleX) + 1, (int) (fishing.fishStaminaRect.h * screenScaleY) + 1);
+
+        for (int x = 0; x < buf2.getWidth(); ++x) {
+            for (int y = 0; y < buf2.getHeight(); ++y) {
+                buf2.getPixelWriter().setArgb(x, y, 0xff000000);
+            }
+        }
+        for (int x = 0; x < buf3.getWidth(); ++x) {
+            for (int y = 0; y < buf3.getHeight(); ++y) {
+                buf3.getPixelWriter().setArgb(x, y, 0xff000000);
+            }
+        }
 
         this.leftKey = leftKey;
         this.rightKey = rightKey;
@@ -228,9 +242,9 @@ public class FishRobot {
     private void displayPosBar(int[] bar, int pos) {
         Utils.runOnFX(() -> {
             if (bar != null) {
-                display.updatePosBar(pos, bar[0], bar[1]);
+                display.updatePosBar(pos, bar[0], bar[1], screenScaleX);
             } else {
-                display.updatePosBar(pos, -1, -1);
+                display.updatePosBar(pos, -1, -1, screenScaleX);
             }
         });
     }

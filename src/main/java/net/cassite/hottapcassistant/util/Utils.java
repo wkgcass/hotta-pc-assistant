@@ -23,6 +23,8 @@ import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -445,5 +447,14 @@ public class Utils {
             return null;
         }
         return screen;
+    }
+
+    public static BufferedImage convertToBufferedImage(java.awt.Image awtImage) {
+        if (awtImage instanceof BufferedImage) return (BufferedImage) awtImage;
+        BufferedImage bImage = new BufferedImage(awtImage.getWidth(null), awtImage.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D bGr = bImage.createGraphics();
+        bGr.drawImage(awtImage, 0, 0, null);
+        bGr.dispose();
+        return bImage;
     }
 }
