@@ -25,7 +25,7 @@ public class UIKeyChooser extends Dialog<Key> {
         @Override
         public void nativeKeyPressed(NativeKeyEvent e) {
             Key key;
-            if (e.getKeyCode() == VC_CONTROL || e.getKeyCode() == VC_ALT || e.getKeyCode() == VC_SHIFT) {
+            if (e.getKeyCode() == VC_CONTROL || e.getKeyCode() == VC_ALT || e.getKeyCode() == VC_SHIFT || e.getKeyCode() == 0x0e36 /*right shift*/) {
                 boolean isLeft;
                 if (e.getKeyLocation() == KEY_LOCATION_LEFT) {
                     isLeft = true;

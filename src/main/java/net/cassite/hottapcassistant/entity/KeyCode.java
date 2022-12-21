@@ -116,6 +116,7 @@ public enum KeyCode {
     }
 
     public static KeyCode valueOf(int code) {
+        if (code == 0x0e36) return SHIFT;
         if (code >= codeMap.length) return null;
         if (code < 0) return null;
         return codeMap[code];
