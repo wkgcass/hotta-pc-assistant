@@ -16,6 +16,7 @@ public class ImageManager {
         "/images/buff/li-zi-zhuo-shao.png",
         "/images/buff/ling-guang-yu-jing.png",
         "/images/buff/ling-guang-taunt.png",
+        "/images/buff/mo-shu-shi-jian.png",
         "/images/buff/optical-space.png",
         "/images/buff/shi-zi-zhuo-shao.png",
         "/images/buff/xing-huan-simulacra.png",
