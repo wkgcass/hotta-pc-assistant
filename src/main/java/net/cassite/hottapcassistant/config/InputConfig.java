@@ -2,7 +2,6 @@ package net.cassite.hottapcassistant.config;
 
 import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.entity.KeyBinding;
-import net.cassite.hottapcassistant.entity.KeyCode;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.JSON;
@@ -187,12 +186,7 @@ public class InputConfig {
         }
 
         if (action == null || ctrl == null || alt == null || shift == null || key == null || !key.isValid()) {
-            if ("Melee_Key".equals(action)) {
-                ctrl = false;
-                alt = false;
-                shift = false;
-                key = new Key(KeyCode.CONTROL, false);
-            } else {
+            if (!allowUnknownKey(action, ctrl, alt, shift, key)) {
                 if (key == null || !knownToBeUnsupported(key.toString())) {
                     Logger.debug("input line skipped: " + line + " extracted data: " + action + ", " + ctrl + ", " + alt + ", " + shift + ", " + key);
                 }
@@ -208,6 +202,10 @@ public class InputConfig {
         ret.key = key;
         ret.lineIndex = lineIndex;
         return ret;
+    }
+
+    private boolean allowUnknownKey(String action, Boolean ctrl, Boolean alt, Boolean shift, Key key) {
+        return action != null && ctrl != null && alt != null && shift != null && key != null;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

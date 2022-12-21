@@ -87,10 +87,6 @@ public enum KeyCode {
     public final boolean requireLeftRight;
     public final javafx.scene.input.KeyCode java;
 
-    KeyCode(int code, String ueText) {
-        this(code, ueText, null, false);
-    }
-
     KeyCode(int code, String ueText, javafx.scene.input.KeyCode java) {
         this(code, ueText, java, false);
     }
