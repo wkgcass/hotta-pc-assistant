@@ -300,4 +300,12 @@ public abstract class I18n {
     public abstract String cooldownTipsButton();
 
     public abstract String cooldownTips();
+
+    public abstract String invalidAssistantConfigFileAskForDeletion(String configFilePath);
+
+    public abstract String modifyInvalidAssistantConfigBtn();
+
+    public abstract String deleteInvalidAssistantConfigBtn();
+
+    public abstract String cancelInvalidAssistantConfigBtn();
 }

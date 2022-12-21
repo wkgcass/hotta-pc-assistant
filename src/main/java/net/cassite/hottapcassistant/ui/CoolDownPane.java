@@ -28,7 +28,6 @@ import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.*;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -496,7 +495,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         var config = buildConfig();
         try {
             AssistantConfig.updateAssistant(ass -> ass.cooldown = config);
-        } catch (IOException e) {
+        } catch (Exception e) {
             Logger.error("updating assistant config for cooldown failed", e);
         }
     }
@@ -618,8 +617,8 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     private boolean readConfig(boolean skipGamePath) {
         Assistant ass;
         try {
-            ass = AssistantConfig.readAssistant();
-        } catch (IOException e) {
+            ass = AssistantConfig.readAssistant(true);
+        } catch (Exception e) {
             new StackTraceAlert(e).show();
             return false;
         }

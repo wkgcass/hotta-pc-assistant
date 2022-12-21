@@ -91,7 +91,7 @@ public class WelcomePane extends StackPane {
                         if (a.lastValues == null) a.lastValues = AssistantLastValues.empty();
                         a.lastValues.savedPath = now;
                     });
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Logger.error("failed updating assistant config", e);
                 }
                 if (checkCurrentGameVersion()) {
@@ -168,7 +168,7 @@ public class WelcomePane extends StackPane {
                         if (a.lastValues == null) a.lastValues = AssistantLastValues.empty();
                         a.lastValues.gamePath = now;
                     });
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Logger.error("failed updating assistant config", e);
                 }
             });
@@ -252,7 +252,7 @@ public class WelcomePane extends StackPane {
                         if (a.lastValues == null) a.lastValues = AssistantLastValues.empty();
                         a.lastValues.globalServerGamePath = now;
                     });
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Logger.error("failed updating assistant config", e);
                 }
             });
@@ -494,7 +494,7 @@ public class WelcomePane extends StackPane {
             try {
                 var ass = AssistantConfig.readAssistant();
                 selectedServers = ass.lastValues.requireWritingHostsFileServerNames;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Logger.error("failed reading enabled servers from last config", e);
             }
             if (selectedServers == null) selectedServers = Collections.emptyList();
@@ -516,7 +516,7 @@ public class WelcomePane extends StackPane {
                             if (ass.lastValues == null) ass.lastValues = new AssistantLastValues();
                             ass.lastValues.requireWritingHostsFileServerNames = res.get().stream().map(e -> e.name).toList();
                         });
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         Logger.error("failed saving hosts enabled servers to lastValues", e);
                     }
                 }
@@ -549,7 +549,7 @@ public class WelcomePane extends StackPane {
         Assistant a;
         try {
             a = AssistantConfig.readAssistant();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Logger.error("reading assistant config failed in initLocation()", e);
             return;
         }

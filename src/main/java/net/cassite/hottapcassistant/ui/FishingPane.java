@@ -273,7 +273,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         }
 
         try {
-            var a = AssistantConfig.readAssistant();
+            var a = AssistantConfig.readAssistant(true);
             fishing = a.fishing;
         } catch (Throwable t) {
             new StackTraceAlert(t).show();
@@ -339,9 +339,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
     private void flushConfig() {
         try {
-            var config = AssistantConfig.readAssistant();
-            config.fishing = fishing;
-            AssistantConfig.writeAssistant(config);
+            AssistantConfig.updateAssistant(config -> config.fishing = fishing);
         } catch (Throwable t) {
             new StackTraceAlert(t).show();
         }

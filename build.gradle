@@ -35,7 +35,7 @@ javafx {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31"
-    implementation 'io.vproxy:vjson:1.4.2'
+    implementation 'io.vproxy:vjson:1.4.3'
     implementation 'com.github.kwhat:jnativehook:2.2.2'
     implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.1.2'
 

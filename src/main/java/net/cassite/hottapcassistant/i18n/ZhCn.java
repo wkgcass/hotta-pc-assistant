@@ -861,4 +861,25 @@ public class ZhCn extends I18n {
             3. 短按天选骰子则重置所有武器的技能冷却，长按则只提供热核buff，不刷新技能冷却；
             """;
     }
+
+    @Override
+    public String invalidAssistantConfigFileAskForDeletion(String configFilePath) {
+        return "幻塔PC助手配置文件异常。您可以修改文件" + configFilePath + "手动修复异常，" + "\n" +
+            "也可以直接删除该配置文件并以初始配置执行后续操作。";
+    }
+
+    @Override
+    public String modifyInvalidAssistantConfigBtn() {
+        return "修改";
+    }
+
+    @Override
+    public String deleteInvalidAssistantConfigBtn() {
+        return "删除";
+    }
+
+    @Override
+    public String cancelInvalidAssistantConfigBtn() {
+        return "取消";
+    }
 }

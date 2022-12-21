@@ -345,7 +345,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
     private boolean reloadMacro() {
         Assistant a;
         try {
-            a = AssistantConfig.readAssistant();
+            a = AssistantConfig.readAssistant(true);
         } catch (Throwable t) {
             new StackTraceAlert(t).show();
             return false;
@@ -391,9 +391,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
 
     private void flushConfig() {
         try {
-            var config = AssistantConfig.readAssistant();
-            config.macro = macro;
-            AssistantConfig.writeAssistant(config);
+            AssistantConfig.updateAssistant(config -> config.macro = macro);
         } catch (Throwable t) {
             new StackTraceAlert(t).show();
         }
