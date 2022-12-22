@@ -129,6 +129,9 @@ public class SimpleDischargeCheckAlgorithm implements DischargeCheckAlgorithm {
     private int[] runStep3() {
         int lastX = ctx.getX();
         int lastY = ctx.getY();
+        if (lastX < ctx.getInitialX() && ctx.getInitialX() - lastX > 10) {
+            return new int[]{lastX, lastY};
+        }
         int state = 0; // 0 move left, 1 move up, 2 move right
         int upCount = 0;
         int rightCount = 0;

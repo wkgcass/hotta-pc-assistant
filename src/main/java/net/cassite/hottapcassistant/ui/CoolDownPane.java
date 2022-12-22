@@ -855,6 +855,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     if (now.scanDischarge && now.scanDischargeRect != null) {
                         scanDischargeCheckbox.setSelected(true);
                     }
+                    scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
                 });
                 scanDischargeCheckbox.setOnAction(e -> {
                     var selected = scanDischargeCheckbox.isSelected();
