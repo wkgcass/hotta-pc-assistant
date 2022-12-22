@@ -98,11 +98,12 @@ public class DischargeDetector {
                 colors.add(rgb);
             }
             if (debug) {
+                int pointRadius = img.getWidth(null) / 15;
                 var g = bImg.createGraphics();
                 for (var i = 0; i < colors.size(); ++i) {
                     var p = points.get(i);
                     g.setPaint(new Color(colors.get(i)));
-                    g.fillOval((int) (p.x - 2), (int) (p.y - 2), 4, 4);
+                    g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius, pointRadius);
                 }
             }
             int matchCount = 0;
