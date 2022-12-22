@@ -83,7 +83,7 @@ public class DischargeDetector {
         while (thread != null) {
             if (skipDetectionCount > 0) {
                 --skipDetectionCount;
-                Utils.delay(20);
+                Utils.delay(10);
                 continue;
             }
             var img = Utils.robotAWTCapture((int) cap.x, (int) cap.y, (int) cap.h, (int) cap.h);
@@ -142,7 +142,7 @@ public class DischargeDetector {
             } else {
                 lastDetectedPoints = matchCount;
             }
-            Utils.delay(20);
+            Utils.delay(10);
         }
     }
 }

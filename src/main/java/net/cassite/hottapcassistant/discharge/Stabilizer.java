@@ -7,10 +7,10 @@ public class Stabilizer {
 
     public int add(int count) {
         counts.add(count);
-        if (counts.size() < 3) {
+        if (counts.size() < 4) {
             return -1;
         }
-        while (counts.size() > 3) {
+        while (counts.size() > 4) {
             counts.removeFirst();
         }
         var ite = counts.iterator();
