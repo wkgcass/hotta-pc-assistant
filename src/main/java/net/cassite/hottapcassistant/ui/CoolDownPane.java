@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.ui;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -8,15 +9,19 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.component.VPadding;
+import net.cassite.hottapcassistant.component.shapes.MovableRect;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.config.InputConfig;
 import net.cassite.hottapcassistant.data.Matrix;
@@ -30,6 +35,7 @@ import net.cassite.hottapcassistant.util.*;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
@@ -77,6 +83,8 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     private final Set<String> row2Ids = new HashSet<>();
     private final ObservableList<String> configurationNames = FXCollections.observableList(new ArrayList<>());
     private final ObservableList<AssistantCoolDownConfiguration> configurations = FXCollections.observableList(new ArrayList<>());
+    private final SimpleObjectProperty<AssistantCoolDownOptions> options = new SimpleObjectProperty<>(AssistantCoolDownOptions.empty());
+    private final CoolDownOptions optionsStage = new CoolDownOptions();
 
     public CoolDownPane() {
         var vbox = new VBox();
@@ -304,13 +312,27 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 stopBtn.setDisable(!now);
             });
 
+            hbox.getChildren().addAll(startBtn, new HPadding(4), stopBtn);
+        }
+
+        {
+            buttonsVBox.getChildren().add(new VPadding(2));
+            var hbox = new HBox();
+            buttonsVBox.getChildren().add(hbox);
+
+            var optionsBtn = new Button(I18n.get().cooldownOptionsBtn()) {{
+                FontManager.setFont(this);
+            }};
+            optionsBtn.setPrefWidth(WIDTH_HEIGHT);
+            optionsBtn.setOnAction(e -> optionsStage.showAndWait());
+
             var tipsBtn = new Button(I18n.get().cooldownTipsButton()) {{
                 FontManager.setFont(this);
             }};
             tipsBtn.setPrefWidth(WIDTH_HEIGHT);
             tipsBtn.setOnAction(e -> new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().cooldownTips(), FontManager::setNoto).show());
 
-            hbox.getChildren().addAll(startBtn, new HPadding(4), stopBtn, new HPadding(4), tipsBtn);
+            hbox.getChildren().addAll(optionsBtn, new HPadding(4), tipsBtn);
         }
 
         {
@@ -483,7 +505,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         saveConfig();
 
         var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts, jump,
-            row2Ids,
+            row2Ids, options.get(),
             this::reset);
         this.window = window;
         setWindowPosition(window);
@@ -547,6 +569,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         }
         config.row2Ids = row2Ids;
         config.configurations = new ArrayList<>(configurations);
+        config.options = this.options.get();
         Logger.info("weapon properties:\n" + config.toJson().stringify());
         return config;
     }
@@ -733,6 +756,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         loadSimulacraFromConfig(cooldown.simulacra);
         loadRow2Ids(cooldown.row2Ids);
         loadConfigurations(cooldown.configurations);
+        loadOptions(cooldown.options);
     }
 
     private void loadFromConfig(AssistantCoolDownConfiguration cooldown) {
@@ -788,8 +812,139 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         this.configurations.addAll(configurations);
     }
 
+    private void loadOptions(AssistantCoolDownOptions options) {
+        if (options == null) return;
+        this.options.set(options);
+    }
+
     @Override
     public void terminate() {
         stop();
+    }
+
+    private class CoolDownOptions extends Stage {
+        CoolDownOptions() {
+            var vbox = new VBox();
+            vbox.setPadding(new Insets(10, 10, 10, 10));
+            var scene = new Scene(vbox);
+            setScene(scene);
+
+            {
+                var scanDischargeDesc = new Label(I18n.get().cooldownScanDischargeDesc()) {{
+                    FontManager.setNoto(this);
+                }};
+                vbox.getChildren().add(scanDischargeDesc);
+                vbox.getChildren().add(new VPadding(4));
+                var scanDischargeCheckbox = new CheckBox(I18n.get().cooldownScanDischargeCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(scanDischargeCheckbox);
+                vbox.getChildren().add(new VPadding(4));
+                var scanDischargeResetConfigBtn = new Button(I18n.get().cooldownScanDischargeResetBtn()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(scanDischargeResetConfigBtn);
+
+                options.addListener((ob, old, now) -> {
+                    if (now == null) return;
+                    if (now.scanDischarge && now.scanDischargeRect != null) {
+                        scanDischargeCheckbox.setSelected(true);
+                    }
+                });
+                scanDischargeCheckbox.setOnAction(e -> {
+                    var selected = scanDischargeCheckbox.isSelected();
+                    if (selected) {
+                        chooseScanDischargeRectStep1(ok -> {
+                            if (ok) {
+                                var opt = options.get();
+                                opt.scanDischarge = true;
+                                saveConfig();
+                            } else {
+                                scanDischargeCheckbox.setSelected(false);
+                            }
+                        });
+                    } else {
+                        var opt = options.get();
+                        opt.scanDischarge = false;
+                        saveConfig();
+                    }
+                });
+                scanDischargeResetConfigBtn.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.scanDischargeRect = null;
+                    opt.scanDischarge = false;
+                    saveConfig();
+                    scanDischargeCheckbox.setSelected(false);
+                });
+            }
+
+            setTitle(I18n.get().cooldownOptionsTitle());
+            centerOnScreen();
+        }
+
+        private void chooseScanDischargeRectStep1(Consumer<Boolean> cb) {
+            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().scanDischargeConfigureTips()).showAndWait();
+            TaskManager.execute(() -> {
+                Utils.delay(3_000);
+                Platform.runLater(() -> chooseScanDischargeRectStep2(cb));
+            });
+        }
+
+        @SuppressWarnings("DuplicatedCode")
+        private void chooseScanDischargeRectStep2(Consumer<Boolean> cb) {
+            Screen screen = Utils.getScreenOf(getScene().getWindow());
+            if (screen == null) {
+                new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
+                cb.accept(false);
+                return;
+            }
+            var img = Utils.execRobotOnThread(r -> r.captureScreen(screen));
+            var stage = new Stage();
+            stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+            stage.setFullScreen(true);
+
+            var imagePane = new Pane();
+            imagePane.setBackground(new Background(new BackgroundImage(img,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                new BackgroundSize(1, 1, true, true, false, false
+                ))));
+
+            var scene = new Scene(imagePane);
+
+            var scanDischargeRect = new MovableRect(I18n.get().positionOfDischargeTip());
+            scanDischargeRect.setLayoutX(img.getWidth() * 2 / 3 / screen.getOutputScaleX());
+            scanDischargeRect.setLayoutY(img.getHeight() * 2 / 3 / screen.getOutputScaleY());
+            scanDischargeRect.setWidth(128);
+            scanDischargeRect.setHeight(128);
+
+            var desc = new Label(I18n.get().scanDischargeScreenDescription()) {{
+                FontManager.setFont(this, 48);
+                setTextFill(Color.RED);
+            }};
+            {
+                var wh = Utils.calculateTextBounds(desc);
+                desc.setLayoutX(0);
+                desc.setLayoutY(img.getHeight() / screen.getOutputScaleY() - wh.getHeight() - 110);
+            }
+
+            imagePane.getChildren().addAll(desc, scanDischargeRect);
+
+            imagePane.setOnKeyReleased(e -> {
+                if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                    CoolDownPane.this.options.get().scanDischargeRect = scanDischargeRect.makeRect();
+                    stage.close();
+                    cb.accept(true);
+                } else if ((e.getCode() == javafx.scene.input.KeyCode.W && e.isControlDown())) {
+                    stage.close();
+                    cb.accept(false);
+                }
+            });
+
+            stage.setScene(scene);
+            Platform.runLater(imagePane::requestFocus);
+            stage.showAndWait();
+        }
     }
 }

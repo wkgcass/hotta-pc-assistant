@@ -18,6 +18,7 @@ public class AssistantCoolDown {
     public AssistantCoolDownSimulacra simulacra;
     public Set<String> row2Ids;
     public List<AssistantCoolDownConfiguration> configurations;
+    public AssistantCoolDownOptions options;
 
     public static final Rule<AssistantCoolDown> rule = new ObjectRule<>(AssistantCoolDown::new)
         .put("weapons", (o, it) -> o.weapons = it, new ArrayRule<List<AssistantCoolDownWeapon>, AssistantCoolDownWeapon>(
@@ -30,7 +31,8 @@ public class AssistantCoolDown {
         .put("row2Ids", (o, it) -> o.row2Ids = it, new ArrayRule<Set<String>, String>(HashSet::new, Set::add, StringRule.get()))
         .put("configurations", (o, it) -> o.configurations = it, new ArrayRule<List<AssistantCoolDownConfiguration>, AssistantCoolDownConfiguration>(
             ArrayList::new, List::add, AssistantCoolDownConfiguration.rule
-        ));
+        ))
+        .put("options", (o, it) -> o.options = it, AssistantCoolDownOptions.rule);
 
     public JSON.Object toJson() {
         var ob = new ObjectBuilder();
@@ -45,6 +47,9 @@ public class AssistantCoolDown {
         }
         if (configurations != null) {
             ob.putArray("configurations", arr -> configurations.forEach(e -> arr.addInst(e.toJson())));
+        }
+        if (options != null) {
+            ob.putInst("options", options.toJson());
         }
         return ob.build();
     }

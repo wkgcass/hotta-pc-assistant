@@ -132,6 +132,11 @@ public class Utils {
         return (T) obj[0];
     }
 
+    public static java.awt.Image robotAWTCapture(int x, int y, int width, int height) {
+        checkAndInitRobot();
+        return robot.awtCapture(x, y, width, height);
+    }
+
     public static void moveAndClickOnThread(double x, double y, Key key) {
         execRobotOnThread(r -> {
             r.mouseMove(x, y);

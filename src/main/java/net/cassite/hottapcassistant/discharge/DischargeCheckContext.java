@@ -1,8 +1,7 @@
 package net.cassite.hottapcassistant.discharge;
 
-import javafx.scene.canvas.Canvas;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class DischargeCheckContext {
     private static final int chargeColor = 0xF1F9FF;
@@ -14,8 +13,8 @@ public class DischargeCheckContext {
     private static final int nonFullChargeGreen = (nonFullChargeColor >> 8) & 0xff;
     private static final int nonFullChargeBlue = nonFullChargeColor & 0xff;
 
-    private final PixelReader img;
-    private final Canvas canvas;
+    private final BufferedImage img;
+    private final DebugCanvas canvas;
     private final int width;
     private final int height;
     private final int initialX;
@@ -33,11 +32,16 @@ public class DischargeCheckContext {
     private int fullChargeColorCount = 0;
     private int nonFullChargeColorCount = 0;
 
-    private DischargeCheckContext(Image img, int[] begin, Canvas canvas) {
-        this.img = img.getPixelReader();
-        this.width = (int) img.getWidth();
-        this.height = (int) img.getHeight();
-        this.canvas = canvas;
+    private DischargeCheckContext(BufferedImage img, int[] begin, Graphics2D canvas) {
+        this.img = img;
+        this.width = img.getWidth();
+        this.height = img.getHeight();
+        if (canvas == null) {
+            this.canvas = null;
+        } else {
+            this.canvas = new DebugCanvas(canvas);
+            this.canvas.setPosition(begin[0], begin[1]);
+        }
 
         x = begin[0];
         y = begin[1];
@@ -49,30 +53,24 @@ public class DischargeCheckContext {
         xWhenReachingMaxY = x;
     }
 
-    public static DischargeCheckContext of(Image image) {
+    public static DischargeCheckContext of(BufferedImage image) {
         return of(image, null);
     }
 
-    public static DischargeCheckContext of(Image image, Canvas canvas) {
-        var img = image.getPixelReader();
-        var width = (int) image.getWidth();
-        var height = (int) image.getHeight();
+    public static DischargeCheckContext of(BufferedImage image, Graphics2D canvas) {
+        var width = image.getWidth();
+        var height = image.getHeight();
 
-        var begin = getBeginPosition(width, height, img);
+        var begin = getBeginPosition(width, height, image);
         if (begin == null) return null;
         return new DischargeCheckContext(image, begin, canvas);
     }
 
     private boolean isChargeColor(int color) {
-        if (nonFullChargeColorCount == 0 && fullChargeColorCount > 50) return isFullChargeColor(color);
-        if (nonFullChargeColorCount > 50 && fullChargeColorCount == 0) return isNonFullChargeColor(color);
-        if (nonFullChargeColorCount != 0 && fullChargeColorCount != 0) {
-            var d = nonFullChargeColorCount / (double) fullChargeColorCount;
-            if (d > 10) {
-                return isNonFullChargeColor(color);
-            } else if (d < 1 / 10d) {
-                return isFullChargeColor(color);
-            }
+        var isFullCharge = isFullCharge();
+        if (isFullCharge != null) {
+            if (isFullCharge) return isFullChargeColor(color);
+            else return isNonFullChargeColor(color);
         }
 
         if (isNonFullChargeColor(color)) {
@@ -83,6 +81,20 @@ public class DischargeCheckContext {
             return true;
         }
         return false;
+    }
+
+    public Boolean isFullCharge() {
+        if (nonFullChargeColorCount == 0 && fullChargeColorCount > 50) return Boolean.TRUE;
+        if (nonFullChargeColorCount > 50 && fullChargeColorCount == 0) return Boolean.FALSE;
+        if (nonFullChargeColorCount != 0 && fullChargeColorCount != 0) {
+            var d = nonFullChargeColorCount / (double) fullChargeColorCount;
+            if (d > 10) {
+                return Boolean.FALSE;
+            } else if (d < 1 / 10d) {
+                return Boolean.TRUE;
+            }
+        }
+        return null;
     }
 
     @SuppressWarnings({"RedundantIfStatement", "DuplicatedCode"})
@@ -109,7 +121,7 @@ public class DischargeCheckContext {
         return true;
     }
 
-    private static int[] getBeginPosition(int width, int height, PixelReader img) {
+    private static int[] getBeginPosition(int width, int height, BufferedImage img) {
         int mid = width / 2;
         int range = 40;
         if (mid + range / 2 >= width || mid - range / 2 < 0) {
@@ -121,7 +133,7 @@ public class DischargeCheckContext {
         out:
         for (int y = 0; y < height; ++y) {
             for (int x = mid + range / 2, end = mid - range / 2; x >= end; --x) {
-                var color = img.getArgb(x, y);
+                var color = img.getRGB(x, y);
                 if (isFullChargeColor(color) || isNonFullChargeColor(color)) {
                     beginX = x;
                     beginY = y;
@@ -151,7 +163,7 @@ public class DischargeCheckContext {
         if (y <= n - 1) {
             return false;
         }
-        return isChargeColor(img.getArgb(x, y - n));
+        return isChargeColor(img.getRGB(x, y - n));
     }
 
     public int moveUpWithin(int max, int extraEnsure) {
@@ -192,7 +204,7 @@ public class DischargeCheckContext {
         if (y >= height - n) {
             return false;
         }
-        return isChargeColor(img.getArgb(x, y + n));
+        return isChargeColor(img.getRGB(x, y + n));
     }
 
     public int moveDownWithin(int max, int extraEnsure) {
@@ -232,7 +244,7 @@ public class DischargeCheckContext {
         if (x <= n - 1) {
             return false;
         }
-        return isChargeColor(img.getArgb(x - n, y));
+        return isChargeColor(img.getRGB(x - n, y));
     }
 
     public int moveLeftWithin(int max, int extraEnsure) {
@@ -272,7 +284,7 @@ public class DischargeCheckContext {
         if (x >= width - n) {
             return false;
         }
-        return isChargeColor(img.getArgb(x + n, y));
+        return isChargeColor(img.getRGB(x + n, y));
     }
 
     public int moveRightWithin(int max, int extraEnsure) {
@@ -293,9 +305,7 @@ public class DischargeCheckContext {
 
     private void drawCanvas() {
         if (canvas == null) return;
-        var g = canvas.getGraphicsContext2D();
-        g.lineTo(x, y);
-        g.stroke();
+        canvas.lineTo(x, y);
     }
 
     public int getX() {
@@ -361,25 +371,25 @@ public class DischargeCheckContext {
         return (ax - bx) * (ax - bx) + (ay - by) * (ay - by) < 25;
     }
 
-    public double calculatePercentage(int x, int y) {
+    public double[] calculatePercentage(int x, int y) {
         if (movedCount > 100) {
-            if (isCloseTo(initialX, initialY, x, y)) return 1;
-            return calculatePercentageWithCentralPoint(x, y);
+            if (isCloseTo(initialX, initialY, x, y)) return new double[]{1};
+            return new double[]{calculatePercentageWithCentralPoint(x, y)};
         } else {
-            if (isCloseTo(initialX, initialY, x, y)) return 0;
+            if (isCloseTo(initialX, initialY, x, y)) return new double[]{0};
         }
         var l = Math.sqrt((x - initialX) * (x - initialX) + (y - initialY) * (y - initialY));
         var n = Math.asin((y - initialY) / l);
         var degree = n / Math.PI * 180;
         if (Math.abs(degree - 30) < 10) {
-            return 0;
+            return new double[]{0, 1 / 6d};
         }
         if (Math.abs(degree - 180) < 10) {
-            return 0.5;
+            return new double[]{0.5};
         } else if (degree > 180) { // invalid state
-            return 0;
+            return new double[]{0};
         }
-        return calculatePercentageWithDegree(degree);
+        return new double[]{calculatePercentageWithDegree(degree)};
     }
 
     private double calculatePercentageWithCentralPoint(double x, double y) {
