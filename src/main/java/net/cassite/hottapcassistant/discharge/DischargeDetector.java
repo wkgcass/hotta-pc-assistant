@@ -37,16 +37,10 @@ public class DischargeDetector {
     }
 
     public double getPercentage() {
-        return switch (lastDetectedPoints) {
-            case 0, 1 -> 0;
-            case 2 -> 1 / 6d;
-            case 3 -> 2 / 6d;
-            case 4 -> 3 / 6d;
-            case 5 -> 4 / 6d;
-            case 6 -> 5 / 6d;
-            case 7 -> 5.5 / 6d;
-            default -> 1;
-        };
+        if (lastDetectedPoints == 0 || lastDetectedPoints == 1)
+            return 0;
+        if (lastDetectedPoints >= 13) return 1;
+        return (lastDetectedPoints - 1) / 12d;
     }
 
     public void discharge() {

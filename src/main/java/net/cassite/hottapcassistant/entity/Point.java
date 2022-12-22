@@ -22,6 +22,10 @@ public class Point {
         this.y = y;
     }
 
+    public static Point midOf(Point a, Point b) {
+        return new Point((a.x + b.x) / 2, (a.y + b.y) / 2);
+    }
+
     public JSON.Object toJson() {
         return new ObjectBuilder()
             .put("x", x)

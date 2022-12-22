@@ -1052,13 +1052,22 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             var points = new ArrayList<Point>();
             var p0 = new Point(midX, topY);
             points.add(p0);
-            points.add(new Point(rightX, topY + ((rightX - midX + 1) / 2)));
-            points.add(new Point(rightX, botY - ((rightX - midX + 1) / 2)));
-            points.add(new Point(midX, botY));
-            points.add(new Point(leftX, botY - ((midX - leftX + 1) / 2)));
-            var p5 = new Point(leftX, topY + ((midX - leftX + 1) / 2));
-            points.add(p5);
-            points.add(new Point((p0.x + p5.x) / 2, (p0.y + p5.y) / 2));
+            var p2 = new Point(rightX, topY + ((rightX - midX + 1) / 2));
+            points.add(Point.midOf(p0, p2));
+            points.add(p2);
+            var p4 = new Point(rightX, botY - ((rightX - midX + 1) / 2));
+            points.add(Point.midOf(p2, p4));
+            points.add(p4);
+            var p6 = new Point(midX, botY);
+            points.add(Point.midOf(p4, p6));
+            points.add(p6);
+            var p8 = new Point(leftX, botY - ((midX - leftX + 1) / 2));
+            points.add(Point.midOf(p6, p8));
+            points.add(p8);
+            var p10 = new Point(leftX, topY + ((midX - leftX + 1) / 2));
+            points.add(Point.midOf(p8, p10));
+            points.add(p10);
+            points.add(Point.midOf(p0, p10));
             try { // find the last critical point
                 int n = 1;
                 while (true) {
