@@ -817,7 +817,12 @@ public class ZhCn extends I18n {
 
     @Override
     public String cooldownScanDischargeCheckBox() {
-        return "启用连携充能检测";
+        return "启用连携充能检测（beta）";
+    }
+
+    @Override
+    public String cooldownScanDischargeDebugCheckBox() {
+        return "开启debug模式（充能检测结果会放置在剪贴板中）";
     }
 
     @Override

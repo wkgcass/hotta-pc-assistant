@@ -198,8 +198,4 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
     public String desc() {
         return desc;
     }
-
-    public void setImage(Image image) {
-        imageView.setImage(image);
-    }
 }

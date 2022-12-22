@@ -840,6 +840,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 }};
                 vbox.getChildren().add(scanDischargeCheckbox);
                 vbox.getChildren().add(new VPadding(4));
+                var scanDischargeDebugCheckbox = new CheckBox(I18n.get().cooldownScanDischargeDebugCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(scanDischargeDebugCheckbox);
+                vbox.getChildren().add(new VPadding(4));
                 var scanDischargeResetConfigBtn = new Button(I18n.get().cooldownScanDischargeResetBtn()) {{
                     FontManager.setFont(this);
                 }};
@@ -868,6 +873,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         opt.scanDischarge = false;
                         saveConfig();
                     }
+                });
+                scanDischargeDebugCheckbox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.scanDischargeDebug = scanDischargeDebugCheckbox.isSelected();
+                    saveConfig();
                 });
                 scanDischargeResetConfigBtn.setOnAction(e -> {
                     var opt = options.get();

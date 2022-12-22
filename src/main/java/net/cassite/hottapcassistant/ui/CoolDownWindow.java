@@ -79,7 +79,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 (int) options.scanDischargeRect.y,
                 (int) options.scanDischargeRect.w,
                 (int) options.scanDischargeRect.h,
-                false
+                options.scanDischargeDebug
             );
         }
 
@@ -153,7 +153,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         buffs.addAll(addBuffPositionHandler(ctx.extraInfo()));
 
         if (dischargeDetector != null) {
-            chargePercentage = new WeaponCoolDown(ctx.current.getImage(), "chargePercentage", I18n.get().buffName("chargePercentage"));
+            chargePercentage = new WeaponCoolDown(Utils.getBuffImageFromClasspath("charge"), "chargePercentage", I18n.get().buffName("chargePercentage"));
             buffs.add(chargePercentage);
         }
 
@@ -455,9 +455,6 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         for (var i = 0; i < cds.length; ++i) {
             if (i == index) continue;
             cds[i].setActive(false);
-        }
-        if (chargePercentage != null) {
-            chargePercentage.setImage(ctx.current.getImage());
         }
         if (discharge && dischargeDetector != null) {
             dischargeDetector.discharge();
