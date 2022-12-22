@@ -72,10 +72,7 @@ public class DischargeDetector {
             var thread = this.thread;
             this.thread = null;
             if (thread == null) return;
-            try {
-                thread.join();
-            } catch (InterruptedException ignore) {
-            }
+            thread.interrupt();
         }
     }
 
