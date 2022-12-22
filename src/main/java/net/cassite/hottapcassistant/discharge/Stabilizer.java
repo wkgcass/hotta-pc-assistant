@@ -9,7 +9,7 @@ public class Stabilizer {
     private int sleepTime = 100;
     private int discardCount = 0;
 
-    public void add(DischargeCheckAlgorithm.DischargeCheckResult result) {
+    public synchronized void add(DischargeCheckAlgorithm.DischargeCheckResult result) {
         if (discardCount > 0) {
             --discardCount;
             return;
@@ -35,6 +35,8 @@ public class Stabilizer {
         }
         if (fcCount == results.size()) {
             fullCharge = true;
+            lastMax = 0;
+            sleepTime = 100;
         }
     }
 
@@ -53,10 +55,11 @@ public class Stabilizer {
         return fullCharge;
     }
 
-    public void discharge() {
+    public synchronized void discharge() {
         fullCharge = false;
         sleepTime = 100;
         discardCount = 5;
+        lastMax = 0;
         results.clear();
     }
 

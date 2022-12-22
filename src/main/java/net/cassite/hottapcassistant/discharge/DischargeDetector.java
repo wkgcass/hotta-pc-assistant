@@ -92,7 +92,7 @@ public class DischargeDetector {
                     g.setFont(new Font(null, Font.BOLD, 16));
                     g.drawString(Utils.roughFloatValueFormat.format(result.p() * 100) + "%", 10, 20);
                     g.drawString(Utils.roughFloatValueFormat.format(result.pMax() * 100) + "%", 10, 40);
-                    g.drawString("full-charge: " + result.isFullCharge(), 10, 60);
+                    g.drawString("fc=" + result.isFullCharge(), 10, 60);
                     bImg.flush();
                     var fxImg = SwingFXUtils.toFXImage(bImg, null);
                     var content = new ClipboardContent();
