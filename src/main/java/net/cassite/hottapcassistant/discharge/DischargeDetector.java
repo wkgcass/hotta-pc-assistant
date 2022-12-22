@@ -100,7 +100,7 @@ public class DischargeDetector {
             if (debug) {
                 int pointRadius = img.getWidth(null) / 15;
                 var g = bImg.createGraphics();
-                for (var i = 0; i < colors.size(); ++i) {
+                for (var i = 0; i < colors.size() - 1; ++i) {
                     var p = points.get(i);
                     g.setPaint(new Color(colors.get(i)));
                     g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius * 2, pointRadius * 2);
