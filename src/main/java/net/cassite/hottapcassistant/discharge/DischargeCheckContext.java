@@ -4,14 +4,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class DischargeCheckContext {
-    private static final int chargeColor = 0xF1F9FF;
+    private static final int chargeColor = 0xE0E0E0;
     private static final int chargeRed = (chargeColor >> 16) & 0xff;
     private static final int chargeGreen = (chargeColor >> 8) & 0xff;
     private static final int chargeBlue = chargeColor & 0xff;
-    private static final int nonFullChargeColor = 0xE0E0E0;
-    private static final int nonFullChargeRed = (nonFullChargeColor >> 16) & 0xff;
-    private static final int nonFullChargeGreen = (nonFullChargeColor >> 8) & 0xff;
-    private static final int nonFullChargeBlue = nonFullChargeColor & 0xff;
 
     private final BufferedImage img;
     private final DebugCanvas canvas;
@@ -29,8 +25,6 @@ public class DischargeCheckContext {
     private int xWhenReachingMaxY;
 
     private int movedCount = 0;
-    private int fullChargeColorCount = 0;
-    private int nonFullChargeColorCount = 0;
 
     private DischargeCheckContext(BufferedImage img, int[] begin, Graphics2D canvas) {
         this.img = img;
@@ -66,57 +60,14 @@ public class DischargeCheckContext {
         return new DischargeCheckContext(image, begin, canvas);
     }
 
-    private boolean isChargeColor(int color) {
-        var isFullCharge = isFullCharge();
-        if (isFullCharge != null) {
-            if (isFullCharge) return isFullChargeColor(color);
-            else return isNonFullChargeColor(color);
-        }
-
-        if (isNonFullChargeColor(color)) {
-            ++nonFullChargeColorCount;
-            return true;
-        } else if (isFullChargeColor(color)) {
-            ++fullChargeColorCount;
-            return true;
-        }
-        return false;
-    }
-
-    public Boolean isFullCharge() {
-        if (nonFullChargeColorCount == 0 && fullChargeColorCount > 50) return Boolean.TRUE;
-        if (nonFullChargeColorCount > 50 && fullChargeColorCount == 0) return Boolean.FALSE;
-        if (nonFullChargeColorCount != 0 && fullChargeColorCount != 0) {
-            var d = nonFullChargeColorCount / (double) fullChargeColorCount;
-            if (d > 10) {
-                return Boolean.FALSE;
-            } else if (d < 1 / 10d) {
-                return Boolean.TRUE;
-            }
-        }
-        return null;
-    }
-
-    @SuppressWarnings({"RedundantIfStatement", "DuplicatedCode"})
-    private static boolean isNonFullChargeColor(int color) {
+    public static boolean isChargeColor(int color) {
         final int delta = 22;
-        int r = (color >> 16) & 0xff;
-        if (Math.abs(nonFullChargeRed - r) > delta) return false;
-        int g = (color >> 8) & 0xff;
-        if (Math.abs(nonFullChargeGreen - g) > delta) return false;
-        int b = color & 0xff;
-        if (Math.abs(nonFullChargeBlue - b) > delta) return false;
-        return true;
-    }
-
-    @SuppressWarnings({"RedundantIfStatement", "DuplicatedCode"})
-    private static boolean isFullChargeColor(int color) {
-        final int delta = 20;
         int r = (color >> 16) & 0xff;
         if (Math.abs(chargeRed - r) > delta) return false;
         int g = (color >> 8) & 0xff;
         if (Math.abs(chargeGreen - g) > delta) return false;
         int b = color & 0xff;
+        //noinspection RedundantIfStatement
         if (Math.abs(chargeBlue - b) > delta) return false;
         return true;
     }
@@ -134,7 +85,7 @@ public class DischargeCheckContext {
         for (int y = 0; y < height; ++y) {
             for (int x = mid + range / 2, end = mid - range / 2; x >= end; --x) {
                 var color = img.getRGB(x, y);
-                if (isFullChargeColor(color) || isNonFullChargeColor(color)) {
+                if (isChargeColor(color)) {
                     beginX = x;
                     beginY = y;
                     break out;

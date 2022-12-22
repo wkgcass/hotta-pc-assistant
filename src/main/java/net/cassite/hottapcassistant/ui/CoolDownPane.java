@@ -7,11 +7,16 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
@@ -29,11 +34,17 @@ import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.simulacra.DummySimulacra;
+import net.cassite.hottapcassistant.discharge.DischargeCheckAlgorithm;
+import net.cassite.hottapcassistant.discharge.DischargeCheckContext;
+import net.cassite.hottapcassistant.discharge.SimpleDischargeCheckAlgorithm;
+import net.cassite.hottapcassistant.entity.Point;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.*;
 
+import java.awt.*;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -852,7 +863,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
 
                 options.addListener((ob, old, now) -> {
                     if (now == null) return;
-                    if (now.scanDischarge && now.scanDischargeRect != null) {
+                    if (now.scanDischargeEnabled()) {
                         scanDischargeCheckbox.setSelected(true);
                     }
                     scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
@@ -883,6 +894,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 scanDischargeResetConfigBtn.setOnAction(e -> {
                     var opt = options.get();
                     opt.scanDischargeRect = null;
+                    opt.scanDischargeCriticalPoints = null;
                     opt.scanDischarge = false;
                     saveConfig();
                     scanDischargeCheckbox.setSelected(false);
@@ -909,6 +921,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 cb.accept(false);
                 return;
             }
+            final Screen fScreen = screen;
             var img = Utils.execRobotOnThread(r -> r.captureScreen(screen));
             var stage = new Stage();
             stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
@@ -944,9 +957,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
 
             imagePane.setOnKeyReleased(e -> {
                 if (e.getCode() == javafx.scene.input.KeyCode.ENTER) {
-                    CoolDownPane.this.options.get().scanDischargeRect = scanDischargeRect.makeRect();
+                    if (calculatePointsAndStore(img, scanDischargeRect.makeRect(), fScreen)) {
+                        cb.accept(true);
+                    } else {
+                        Platform.runLater(() -> new SimpleAlert(Alert.AlertType.WARNING, I18n.get().failedCalculatingCriticalPoints()).show());
+                        cb.accept(false);
+                    }
                     stage.close();
-                    cb.accept(true);
                 } else if ((e.getCode() == javafx.scene.input.KeyCode.W && e.isControlDown())) {
                     stage.close();
                     cb.accept(false);
@@ -956,6 +973,121 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             stage.setScene(scene);
             Platform.runLater(imagePane::requestFocus);
             stage.showAndWait();
+        }
+
+        @SuppressWarnings("IntegerDivisionInFloatingPointContext")
+        private boolean calculatePointsAndStore(Image img, Rect rect, Screen screen) {
+            try {
+                var wImg = new WritableImage(
+                    (int) (rect.w * screen.getOutputScaleX()),
+                    (int) (rect.h * screen.getOutputScaleY()));
+                wImg.getPixelWriter().setPixels(0, 0,
+                    (int) (rect.w * screen.getOutputScaleX()),
+                    (int) (rect.h * screen.getOutputScaleY()),
+                    img.getPixelReader(),
+                    (int) (rect.x * screen.getOutputScaleX()),
+                    (int) (rect.y * screen.getOutputScaleY()));
+                img = wImg;
+            } catch (Exception e) {
+                Logger.error("calculatePointsAndStore failure 1", e);
+                return false;
+            }
+
+            var bImg = SwingFXUtils.fromFXImage(img, null);
+            var opt = options.get();
+            DischargeCheckContext ctx;
+            if (opt.scanDischargeDebug) {
+                var g = bImg.createGraphics();
+                g.setPaint(new java.awt.Color(255, 0, 0));
+                ctx = DischargeCheckContext.of(bImg, g);
+            } else {
+                ctx = DischargeCheckContext.of(bImg);
+            }
+            DischargeCheckAlgorithm.DischargeCheckResult result;
+            if (ctx != null) {
+                var algo = new SimpleDischargeCheckAlgorithm();
+                algo.init(ctx);
+                result = algo.check();
+            } else {
+                result = null;
+            }
+            if (opt.scanDischargeDebug) {
+                var g = bImg.createGraphics();
+                g.setPaint(new java.awt.Color(255, 0, 0));
+                g.setFont(new Font(null, Font.BOLD, 16));
+                if (result == null) {
+                    g.drawString("null", 10, 20);
+                } else {
+                    g.drawString(Utils.roughFloatValueFormat.format(result.p() * 100) + "%", 10, 20);
+                }
+                bImg.flush();
+                Utils.copyImageToClipboard(bImg);
+            }
+            if (result == null) {
+                return false;
+            }
+            if (result.p() < 0.90) {
+                return false;
+            }
+            if (result.p() == 1) {
+                return false;
+            }
+            var pointAdjust = (int) (img.getWidth() / 35);
+            var midX = ctx.getInitialX();
+            var topY = ctx.getInitialY() + pointAdjust;
+            var leftX = ctx.getMinX() + pointAdjust;
+            var rightX = ctx.getMaxX() - pointAdjust;
+            var botY = ctx.getMaxY() - pointAdjust;
+
+            var points = new ArrayList<Point>();
+            points.add(new Point(midX, topY));
+            points.add(new Point(rightX, topY + ((rightX - midX + 1) / 2)));
+            points.add(new Point(rightX, botY - ((rightX - midX + 1) / 2)));
+            points.add(new Point(midX, botY));
+            var p4 = new Point(leftX, botY - ((midX - leftX + 1) / 2));
+            points.add(p4);
+            var p5 = new Point(leftX, topY + ((midX - leftX + 1) / 2));
+            points.add(p5);
+            points.add(new Point((p4.x + p5.x) / 2, (p4.y + p5.y) / 2));
+            try { // find the last critical point
+                int n = 1;
+                while (true) {
+                    var argb = img.getPixelReader().getArgb(midX - 2 * n, topY + n);
+                    if (!DischargeCheckContext.isChargeColor(argb)) {
+                        break;
+                    }
+                }
+                points.add(new Point(midX - 2 * n, topY + n));
+            } catch (Exception e) {
+                Logger.error("calculatePointsAndStore failure 2", e);
+                return false;
+            }
+
+            if (opt.scanDischargeDebug) {
+                bImg = SwingFXUtils.fromFXImage(img, null);
+                var g = bImg.createGraphics();
+                int pointRadius = (int) (img.getWidth() / 15);
+                for (int i = points.size() - 2; i >= 0; --i) {
+                    var p = points.get(i);
+                    var rgb = bImg.getRGB((int) p.x, (int) p.y);
+                    g.setPaint(new java.awt.Color(rgb));
+                    g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius * 2, pointRadius * 2);
+                }
+                bImg.flush();
+                final var fBImg = bImg;
+                Platform.runLater(() -> Utils.copyImageToClipboard(fBImg));
+            }
+            for (int i = 0; i < points.size() - 1; ++i) {
+                var p = points.get(i);
+                var rgb = img.getPixelReader().getArgb((int) p.x, (int) p.y);
+                if (!DischargeCheckContext.isChargeColor(rgb)) {
+                    return false;
+                }
+            }
+
+            opt.scanDischargeRect = rect;
+            opt.scanDischargeCriticalPoints = points;
+            return true;
         }
     }
 }

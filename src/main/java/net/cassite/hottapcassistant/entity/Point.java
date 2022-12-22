@@ -14,6 +14,14 @@ public class Point {
         .put("x", (o, it) -> o.x = it, DoubleRule.get())
         .put("y", (o, it) -> o.y = it, DoubleRule.get());
 
+    public Point() {
+    }
+
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public JSON.Object toJson() {
         return new ObjectBuilder()
             .put("x", x)

@@ -4,24 +4,26 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import net.cassite.hottapcassistant.entity.Point;
+import net.cassite.hottapcassistant.entity.Rect;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DischargeDetector {
     private volatile Thread thread;
-    private final int x;
-    private final int y;
-    private final int w;
-    private final int h;
+    private final Rect cap;
+    private final List<Point> points;
     private final boolean debug;
-    private final Stabilizer stabilizer = new Stabilizer();
 
-    public DischargeDetector(int x, int y, int w, int h, boolean debug) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
+    private int lastDetectedPoints = 0;
+    private boolean fullCharge = false;
+
+    public DischargeDetector(Rect cap, List<Point> points, boolean debug) {
+        this.cap = cap;
+        this.points = points;
         this.debug = debug;
     }
 
@@ -30,15 +32,24 @@ public class DischargeDetector {
     }
 
     public boolean isFullCharge() {
-        return stabilizer.isFullCharge();
+        return fullCharge;
     }
 
     public double getPercentage() {
-        return stabilizer.getLastMax();
+        return switch (lastDetectedPoints) {
+            case 0, 1 -> 0;
+            case 2 -> 1 / 6d;
+            case 3 -> 2 / 6d;
+            case 4 -> 3 / 6d;
+            case 5 -> 4 / 6d;
+            case 6 -> 5 / 6d;
+            case 7 -> 5.5 / 6d;
+            default -> 1;
+        };
     }
 
     public void discharge() {
-        stabilizer.discharge();
+        fullCharge = false;
     }
 
     public void start() {
@@ -46,10 +57,15 @@ public class DischargeDetector {
             if (thread != null) {
                 throw new IllegalStateException();
             }
-            stabilizer.reset();
+            reset();
             thread = new Thread(this::run);
             thread.start();
         }
+    }
+
+    private void reset() {
+        lastDetectedPoints = 0;
+        fullCharge = false;
     }
 
     public void stop() {
@@ -66,33 +82,35 @@ public class DischargeDetector {
 
     private void run() {
         while (thread != null) {
-            var img = Utils.robotAWTCapture(x, y, w, h);
+            var img = Utils.robotAWTCapture((int) cap.x, (int) cap.y, (int) cap.h, (int) cap.h);
             var bImg = Utils.convertToBufferedImage(img);
-            DischargeCheckContext ctx;
+            var colors = new ArrayList<Integer>(points.size());
+            for (var p : points) {
+                var rgb = bImg.getRGB((int) p.x, (int) p.y);
+                colors.add(rgb);
+            }
             if (debug) {
                 var g = bImg.createGraphics();
-                g.setStroke(new BasicStroke());
-                g.setPaint(new Color(255, 0, 0));
-                ctx = DischargeCheckContext.of(bImg, g);
-            } else {
-                ctx = DischargeCheckContext.of(bImg);
+                for (var i = 0; i < colors.size(); ++i) {
+                    var p = points.get(i);
+                    g.setPaint(new Color(colors.get(i)));
+                    g.fillOval((int) (p.x - 2), (int) (p.y - 2), 4, 4);
+                }
             }
-            DischargeCheckAlgorithm.DischargeCheckResult result;
-            if (ctx == null) {
-                result = new DischargeCheckAlgorithm.DischargeCheckResult(0, 0, null);
-            } else {
-                var algo = new SimpleDischargeCheckAlgorithm();
-                algo.init(ctx);
-                result = algo.check();
+            int matchCount = 0;
+            for (; matchCount < points.size(); ++matchCount) {
+                var c = colors.get(matchCount);
+                if (!DischargeCheckContext.isChargeColor(c)) {
+                    break;
+                }
             }
             if (debug) {
+                final int fMatchCount = matchCount;
                 Platform.runLater(() -> {
                     var g = bImg.createGraphics();
                     g.setPaint(new Color(255, 0, 0));
                     g.setFont(new Font(null, Font.BOLD, 16));
-                    g.drawString(Utils.roughFloatValueFormat.format(result.p() * 100) + "%", 10, 20);
-                    g.drawString(Utils.roughFloatValueFormat.format(result.pMax() * 100) + "%", 10, 40);
-                    g.drawString("fc=" + result.isFullCharge(), 10, 60);
+                    g.drawString("match:" + fMatchCount, 10, 20);
                     bImg.flush();
                     var fxImg = SwingFXUtils.toFXImage(bImg, null);
                     var content = new ClipboardContent();
@@ -100,13 +118,17 @@ public class DischargeDetector {
                     Clipboard.getSystemClipboard().setContent(content);
                 });
             }
-            stabilizer.add(result);
+
             if (thread == null) {
                 break;
             }
+            if (lastDetectedPoints > matchCount) {
+                fullCharge = true;
+            }
+            lastDetectedPoints = matchCount;
             try {
                 //noinspection BusyWait
-                Thread.sleep(stabilizer.getSleepTime());
+                Thread.sleep(20);
             } catch (InterruptedException ignore) {
             }
         }

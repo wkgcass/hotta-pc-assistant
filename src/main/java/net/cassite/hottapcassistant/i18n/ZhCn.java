@@ -833,7 +833,7 @@ public class ZhCn extends I18n {
     @Override
     public String scanDischargeConfigureTips() {
         return """
-            请先进入游戏并打一些充能（3/4左右即可）
+            请先进入游戏将充能打到即将充满的状态（90%以上）
             之后回到本窗口，点击"确定"，然后马上切换到游戏界面，等待几秒后将进入配置界面。
             配置界面内，点击Enter（回车）确认配置，或者点击CTRL+W取消配置""";
     }
@@ -846,6 +846,12 @@ public class ZhCn extends I18n {
     @Override
     public String scanDischargeScreenDescription() {
         return "点击Enter（回车）确认配置，或者点击CTRL+W取消配置";
+    }
+
+    @Override
+    public String failedCalculatingCriticalPoints() {
+        return "计算关键点失败，请重新框选。\n" +
+            "请注意，充能必须是差一点点充满的状态（90%以上）";
     }
 
     @Override

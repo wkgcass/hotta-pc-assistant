@@ -295,6 +295,8 @@ public abstract class I18n {
 
     public abstract String scanDischargeScreenDescription();
 
+    public abstract String failedCalculatingCriticalPoints();
+
     public abstract String weaponNotSelected();
 
     public abstract String duplicatedWeapon();

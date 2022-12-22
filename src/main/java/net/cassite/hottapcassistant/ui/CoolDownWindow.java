@@ -71,14 +71,12 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         this.jump = jump;
         this.lastWeaponButtonDownTs = new long[weapons.size()];
         this.lastArtifactButtonDownTs = new long[artifact.length];
-        if (options == null || !options.scanDischarge || options.scanDischargeRect == null) {
+        if (options == null || !options.scanDischargeEnabled()) {
             dischargeDetector = null;
         } else {
             dischargeDetector = new DischargeDetector(
-                (int) options.scanDischargeRect.x,
-                (int) options.scanDischargeRect.y,
-                (int) options.scanDischargeRect.w,
-                (int) options.scanDischargeRect.h,
+                options.scanDischargeRect,
+                options.scanDischargeCriticalPoints,
                 options.scanDischargeDebug
             );
         }

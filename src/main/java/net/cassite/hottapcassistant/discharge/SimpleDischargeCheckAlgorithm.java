@@ -31,7 +31,7 @@ public class SimpleDischargeCheckAlgorithm implements DischargeCheckAlgorithm {
         var p = ctx.calculatePercentage(point[0], point[1]);
         var min = p[0];
         var max = p[p.length - 1];
-        return new DischargeCheckResult(min, max, ctx.isFullCharge());
+        return new DischargeCheckResult(min, max);
     }
 
     private int[] runStep1(int startX) {

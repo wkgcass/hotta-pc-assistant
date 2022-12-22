@@ -5,6 +5,6 @@ public interface DischargeCheckAlgorithm {
 
     DischargeCheckResult check();
 
-    record DischargeCheckResult(double p, double pMax, Boolean isFullCharge) {
+    record DischargeCheckResult(double p, double pMax) {
     }
 }
