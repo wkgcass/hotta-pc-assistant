@@ -131,10 +131,16 @@ public class DischargeDetector {
             if (thread == null) {
                 break;
             }
-            if (lastDetectedPoints > matchCount && lastDetectedPoints >= 3) {
+            if (matchCount == 8) {
+                fullCharge = true;
+            } else if (lastDetectedPoints > matchCount && lastDetectedPoints >= 3) {
                 fullCharge = true;
             }
-            lastDetectedPoints = matchCount;
+            if (matchCount == 8) {
+                lastDetectedPoints = 0;
+            } else {
+                lastDetectedPoints = matchCount;
+            }
             Utils.delay(20);
         }
     }
