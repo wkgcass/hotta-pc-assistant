@@ -103,7 +103,7 @@ public class DischargeDetector {
                 for (var i = 0; i < colors.size(); ++i) {
                     var p = points.get(i);
                     g.setPaint(new Color(colors.get(i)));
-                    g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius, pointRadius);
+                    g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius * 2, pointRadius * 2);
                 }
             }
             int matchCount = 0;
