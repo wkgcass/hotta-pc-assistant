@@ -335,7 +335,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 FontManager.setFont(this);
             }};
             optionsBtn.setPrefWidth(WIDTH_HEIGHT);
-            optionsBtn.setOnAction(e -> optionsStage.showAndWait());
+            optionsBtn.setOnAction(e -> {
+                if (optionsStage.isShowing()) {
+                    optionsStage.requestFocus();
+                } else {
+                    optionsStage.show();
+                }
+            });
 
             var tipsBtn = new Button(I18n.get().cooldownTipsButton()) {{
                 FontManager.setFont(this);
@@ -450,6 +456,10 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
 
     private void start() {
         if (isStarted.get()) return;
+
+        if (optionsStage.isShowing()) {
+            optionsStage.close();
+        }
 
         var set = new HashSet<Integer>();
         for (var weapon : weapons) {
