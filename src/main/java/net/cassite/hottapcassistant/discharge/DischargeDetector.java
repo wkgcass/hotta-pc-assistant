@@ -125,12 +125,12 @@ public class DischargeDetector {
             if (thread == null) {
                 break;
             }
-            if (matchCount == 8) {
+            if (matchCount == 13) {
                 fullCharge = true;
-            } else if (lastDetectedPoints > matchCount && lastDetectedPoints >= 3) {
+            } else if (lastDetectedPoints > matchCount && lastDetectedPoints > 7) {
                 fullCharge = true;
             }
-            if (matchCount == 8) {
+            if (matchCount == 13) {
                 lastDetectedPoints = 0;
             } else {
                 lastDetectedPoints = matchCount;
