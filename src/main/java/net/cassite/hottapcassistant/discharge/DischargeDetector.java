@@ -20,6 +20,7 @@ public class DischargeDetector {
 
     private int lastDetectedPoints = 0;
     private boolean fullCharge = false;
+    private int skipDetectionCount = 0;
 
     public DischargeDetector(Rect cap, List<Point> points, boolean debug) {
         this.cap = cap;
@@ -50,6 +51,7 @@ public class DischargeDetector {
 
     public void discharge() {
         fullCharge = false;
+        skipDetectionCount = 50;
     }
 
     public void start() {
@@ -66,6 +68,7 @@ public class DischargeDetector {
     private void reset() {
         lastDetectedPoints = 0;
         fullCharge = false;
+        skipDetectionCount = 0;
     }
 
     public void stop() {
@@ -82,6 +85,11 @@ public class DischargeDetector {
 
     private void run() {
         while (thread != null) {
+            if (skipDetectionCount > 0) {
+                --skipDetectionCount;
+                Utils.delay(20);
+                continue;
+            }
             var img = Utils.robotAWTCapture((int) cap.x, (int) cap.y, (int) cap.h, (int) cap.h);
             var bImg = Utils.convertToBufferedImage(img);
             var colors = new ArrayList<Integer>(points.size());
@@ -122,15 +130,11 @@ public class DischargeDetector {
             if (thread == null) {
                 break;
             }
-            if (lastDetectedPoints > matchCount) {
+            if (lastDetectedPoints > matchCount && lastDetectedPoints >= 3) {
                 fullCharge = true;
             }
             lastDetectedPoints = matchCount;
-            try {
-                //noinspection BusyWait
-                Thread.sleep(20);
-            } catch (InterruptedException ignore) {
-            }
+            Utils.delay(20);
         }
     }
 }
