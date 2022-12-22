@@ -327,7 +327,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         }
 
         {
-            buttonsVBox.getChildren().add(new VPadding(2));
+            buttonsVBox.getChildren().add(new VPadding(4));
             var hbox = new HBox();
             buttonsVBox.getChildren().add(hbox);
 
