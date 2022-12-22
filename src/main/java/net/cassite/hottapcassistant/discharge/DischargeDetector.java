@@ -21,6 +21,7 @@ public class DischargeDetector {
     private int lastDetectedPoints = 0;
     private boolean fullCharge = false;
     private int skipDetectionCount = 0;
+    private final Stabilizer stabilizer = new Stabilizer();
 
     public DischargeDetector(Rect cap, List<Point> points, boolean debug) {
         this.cap = cap;
@@ -63,6 +64,7 @@ public class DischargeDetector {
         lastDetectedPoints = 0;
         fullCharge = false;
         skipDetectionCount = 0;
+        stabilizer.reset();
     }
 
     public void stop() {
@@ -120,6 +122,11 @@ public class DischargeDetector {
                     content.putImage(fxImg);
                     Clipboard.getSystemClipboard().setContent(content);
                 });
+            }
+
+            matchCount = stabilizer.add(matchCount);
+            if (matchCount == -1) {
+                return;
             }
 
             if (thread == null) {
