@@ -9,7 +9,7 @@ import net.cassite.hottapcassistant.util.Utils;
 
 public class LeiTingZhanJiWeapon extends AbstractWeapon implements Weapon {
     public LeiTingZhanJiWeapon() {
-        super(25);
+        super(25, 300);
     }
 
     @Override
