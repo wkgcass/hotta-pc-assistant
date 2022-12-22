@@ -126,7 +126,7 @@ public class DischargeDetector {
 
             matchCount = stabilizer.add(matchCount);
             if (matchCount == -1) {
-                return;
+                continue;
             }
 
             if (thread == null) {
