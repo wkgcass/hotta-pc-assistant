@@ -23,7 +23,6 @@ public class ImageManager {
         "/images/buff/xing-huan-simulacra.png",
         "/images/buff/ying-yue-zhi-jing.png",
         "/images/buff/yong-dong.png",
-        "/images/buff/zhong-shang.png",
         "/images/downloadgame-btn/downloadgame-down.png",
         "/images/downloadgame-btn/downloadgame-hover.png",
         "/images/downloadgame-btn/downloadgame-normal.png",
