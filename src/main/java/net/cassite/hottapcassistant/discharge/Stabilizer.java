@@ -7,8 +7,13 @@ public class Stabilizer {
     private boolean fullCharge;
     private double lastMax;
     private int sleepTime = 100;
+    private int discardCount = 0;
 
     public void add(DischargeCheckAlgorithm.DischargeCheckResult result) {
+        if (discardCount > 0) {
+            --discardCount;
+            return;
+        }
         if (result.p() > lastMax) {
             lastMax = result.p();
         }
@@ -50,17 +55,17 @@ public class Stabilizer {
 
     public void discharge() {
         fullCharge = false;
-        if (!results.isEmpty()) {
-            lastMax = results.getLast().p();
-        } else {
-            lastMax = 0;
-        }
+        sleepTime = 100;
+        discardCount = 5;
+        results.clear();
     }
 
     public void reset() {
         results.clear();
         fullCharge = false;
         lastMax = 0;
+        sleepTime = 100;
+        discardCount = 0;
     }
 
     public double getLastMax() {

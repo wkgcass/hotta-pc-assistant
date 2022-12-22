@@ -8,7 +8,7 @@ public class DischargeCheckContext {
     private static final int chargeRed = (chargeColor >> 16) & 0xff;
     private static final int chargeGreen = (chargeColor >> 8) & 0xff;
     private static final int chargeBlue = chargeColor & 0xff;
-    private static final int nonFullChargeColor = 0xE3E1E0;
+    private static final int nonFullChargeColor = 0xE0E0E0;
     private static final int nonFullChargeRed = (nonFullChargeColor >> 16) & 0xff;
     private static final int nonFullChargeGreen = (nonFullChargeColor >> 8) & 0xff;
     private static final int nonFullChargeBlue = nonFullChargeColor & 0xff;
@@ -374,7 +374,7 @@ public class DischargeCheckContext {
     public double[] calculatePercentage(int x, int y) {
         if (movedCount > 100) {
             if (isCloseTo(initialX, initialY, x, y)) return new double[]{1};
-            return new double[]{calculatePercentageWithCentralPoint(x, y)};
+            if (maxY - y > 20) return new double[]{calculatePercentageWithCentralPoint(x, y)};
         } else {
             if (isCloseTo(initialX, initialY, x, y)) return new double[]{0};
         }
