@@ -57,7 +57,7 @@ public abstract class AbstractMatrix extends AbstractWithThreadStartStopAndExtra
     }
 
     @Override
-    public void useSkill(WeaponContext ctx, Weapon w) {
+    public void useSkill(WeaponContext ctx, Weapon w, Skill skill) {
     }
 
     @Override

@@ -43,10 +43,11 @@ public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    protected boolean useSkill0(WeaponContext ctx) {
-        if (!super.useSkill0(ctx)) return false;
+    protected Skill useSkill0(WeaponContext ctx) {
+        var skill = super.useSkill0(ctx);
+        if (skill == null) return null;
         moShuShiJianTime = getTotalMoShuShiJianTime();
-        return true;
+        return skill;
     }
 
     @Override

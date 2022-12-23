@@ -11,7 +11,7 @@ public interface Matrix extends WithThreadStartStop, WithExtraData {
 
     int[] getEffectiveStars();
 
-    void useSkill(WeaponContext ctx, Weapon w);
+    void useSkill(WeaponContext ctx, Weapon w, Skill skill);
 
     void attack(WeaponContext ctx, Weapon w, AttackType type);
 }

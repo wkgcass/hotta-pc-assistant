@@ -5,5 +5,5 @@ public interface Simulacra extends WithThreadStartStop, WithExtraData {
 
     void init(WeaponContext ctx);
 
-    void alertSkillUsed(WeaponContext ctx, Weapon w);
+    void alertSkillUsed(WeaponContext ctx, Weapon w, Skill skill);
 }

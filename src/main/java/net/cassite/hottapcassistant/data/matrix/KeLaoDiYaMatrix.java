@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.data.matrix;
 
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.Matrix;
+import net.cassite.hottapcassistant.data.Skill;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -40,8 +41,8 @@ public class KeLaoDiYaMatrix extends AbstractMatrix implements Matrix {
     }
 
     @Override
-    public void useSkill(WeaponContext ctx, Weapon w) {
-        if (!w.skillHitTarget()) return;
+    public void useSkill(WeaponContext ctx, Weapon w, Skill skill) {
+        if (!skill.hitTarget()) return;
         if (decreaseCD == 0) return;
         ctx.decreaseCoolDown(decreaseCD);
     }

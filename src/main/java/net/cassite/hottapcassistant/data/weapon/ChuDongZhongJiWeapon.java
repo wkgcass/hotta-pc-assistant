@@ -1,11 +1,10 @@
 package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponCategory;
-import net.cassite.hottapcassistant.data.WeaponContext;
-import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
+import net.cassite.hottapcassistant.data.skill.ChuDongZhongJiAttackSkill;
+import net.cassite.hottapcassistant.data.skill.ChuDongZhongJiSwitchModeSkill;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -55,27 +54,22 @@ public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, Trig
     }
 
     @Override
-    protected boolean useSkill0(WeaponContext ctx) {
+    protected Skill useSkill0(WeaponContext ctx) {
         if (state == 0) {
             var ok = super.useSkill0(ctx);
-            if (!ok) return false;
+            if (ok == null) return null;
             state = 1;
             state0CD = cd;
             cd = state1CD;
             cooldown = 10_000;
             state1Time = 25_000;
-            return true;
+            return ChuDongZhongJiSwitchModeSkill.instance;
         } else {
             var ok = super.useSkill0(ctx);
-            if (!ok) return false;
+            if (ok == null) return null;
             state1CD = cd;
-            return true;
+            return ChuDongZhongJiAttackSkill.instance;
         }
-    }
-
-    @Override
-    public boolean skillHitTarget() {
-        return state == 1;
     }
 
     @Override

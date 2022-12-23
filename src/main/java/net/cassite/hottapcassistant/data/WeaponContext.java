@@ -134,18 +134,18 @@ public class WeaponContext implements WithExtraData {
     }
 
     public void useSkill() {
-        boolean ok = current.useSkill(this);
-        if (ok) {
-            postUseSkill(current);
+        Skill skill = current.useSkill(this);
+        if (skill != null) {
+            postUseSkill(current, skill);
         }
     }
 
-    public void postUseSkill(Weapon cw) {
-        Logger.info("use weapon skill " + cw.getName());
+    public void postUseSkill(Weapon cw, Skill skill) {
+        Logger.info("use weapon skill " + cw.getName() + "." + skill);
         for (var w : weapons) {
-            w.alertSkillUsed(this, cw);
+            w.alertSkillUsed(this, cw, skill);
         }
-        simulacra.alertSkillUsed(this, cw);
+        simulacra.alertSkillUsed(this, cw, skill);
     }
 
     public void attack() {

@@ -3,6 +3,7 @@ package net.cassite.hottapcassistant.data.matrix;
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.Matrix;
+import net.cassite.hottapcassistant.data.Skill;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -41,7 +42,7 @@ public class LeiBeiMatrix extends AbstractMatrix implements Matrix {
     }
 
     @Override
-    public void useSkill(WeaponContext ctx, Weapon w) {
+    public void useSkill(WeaponContext ctx, Weapon w, Skill skill) {
         if (cd == 0 && getEffectiveStars()[4] != -1) {
             cd = getTotalCoolDown();
         }

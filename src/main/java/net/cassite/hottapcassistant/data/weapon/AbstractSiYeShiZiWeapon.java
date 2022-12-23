@@ -4,11 +4,12 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
-import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
+import net.cassite.hottapcassistant.data.skill.SiYeShiZiChooseModeSkill;
+import net.cassite.hottapcassistant.data.skill.SiYeShiZiSwitchModeSkill;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
-public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements Weapon, TriggerLiuQuanCheXinStar1 {
+public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements Weapon {
     private int state = 0;
     // 0 -> normal
     // 1 -> skill used
@@ -64,29 +65,24 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
     }
 
     @Override
-    public boolean useSkill(WeaponContext ctx) {
+    public Skill useSkill(WeaponContext ctx) {
         if (state == 0) {
-            if (super.useSkill(ctx)) {
+            if (super.useSkill(ctx) != null) {
                 state = 1;
-                return true;
+                return SiYeShiZiSwitchModeSkill.instance;
             } else {
-                return false;
+                return null;
             }
         } else if (state == 1) {
             state = 2;
             cd = 14_000;
             shotRemain = 8;
             dodgeRemain = 8; // will / 2
-            return true;
+            return SiYeShiZiChooseModeSkill.instance;
         } else {
             assert state == 2;
             return super.useSkill(ctx);
         }
-    }
-
-    @Override
-    public boolean skillHitTarget() {
-        return false;
     }
 
     @Override
@@ -175,10 +171,5 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
         siYeShiZiShotRemain.setText(getShotRemain() + "");
         siYeShiZiDodgeRemain.setText(getDodgeRemain() + "");
         opticalSpaceTimer.setAllCoolDown(getOpticalSpaceTime(), getTotalOpticalSpaceTime());
-    }
-
-    @Override
-    public boolean triggerLiuQuanCheXinStar1() {
-        return state == 1;
     }
 }

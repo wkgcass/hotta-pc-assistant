@@ -71,7 +71,7 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
     }
 
     @Override
-    protected void alertSkillUsed0(WeaponContext ctx, Weapon w) {
+    protected void alertSkillUsed0(WeaponContext ctx, Weapon w, Skill skill) {
         if (stars < 1) {
             return;
         }
@@ -79,8 +79,8 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
         if (!triggerred) {
             return;
         }
-        if (w instanceof TriggerLiuQuanCheXinStar1) {
-            if (!((TriggerLiuQuanCheXinStar1) w).triggerLiuQuanCheXinStar1()) {
+        if (skill instanceof TriggerLiuQuanCheXinStar1) {
+            if (!((TriggerLiuQuanCheXinStar1) skill).triggerLiuQuanCheXinStar1()) {
                 return;
             }
         }
@@ -110,7 +110,7 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
     }
 
     public void addCount(WeaponContext ctx) {
-        alertSkillUsed(ctx, null);
+        alertSkillUsed0(ctx, null, null);
     }
 
     public long getYongDongCD() {

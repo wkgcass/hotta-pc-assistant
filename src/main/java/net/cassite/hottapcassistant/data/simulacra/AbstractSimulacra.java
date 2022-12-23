@@ -1,9 +1,6 @@
 package net.cassite.hottapcassistant.data.simulacra;
 
-import net.cassite.hottapcassistant.data.AbstractWithThreadStartStopAndExtraData;
-import net.cassite.hottapcassistant.data.Simulacra;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponContext;
+import net.cassite.hottapcassistant.data.*;
 
 public abstract class AbstractSimulacra extends AbstractWithThreadStartStopAndExtraData implements Simulacra {
     protected final String name;
@@ -29,6 +26,6 @@ public abstract class AbstractSimulacra extends AbstractWithThreadStartStopAndEx
     }
 
     @Override
-    public void alertSkillUsed(WeaponContext ctx, Weapon w) {
+    public void alertSkillUsed(WeaponContext ctx, Weapon w, Skill skill) {
     }
 }

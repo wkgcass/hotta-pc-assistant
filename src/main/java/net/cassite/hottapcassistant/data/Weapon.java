@@ -28,9 +28,7 @@ public interface Weapon extends WithThreadStartStop, WithExtraData {
 
     double[] getAllCoolDown();
 
-    boolean useSkill(WeaponContext ctx);
-
-    boolean skillHitTarget();
+    Skill useSkill(WeaponContext ctx);
 
     void attack(WeaponContext ctx, AttackType type);
 
@@ -38,7 +36,7 @@ public interface Weapon extends WithThreadStartStop, WithExtraData {
 
     void jump(WeaponContext ctx);
 
-    void alertSkillUsed(WeaponContext ctx, Weapon w);
+    void alertSkillUsed(WeaponContext ctx, Weapon w, Skill skill);
 
     void alertAttack(WeaponContext ctx, Weapon w, AttackType type);
 

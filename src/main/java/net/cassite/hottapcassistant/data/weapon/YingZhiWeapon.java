@@ -70,14 +70,14 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public boolean useSkill(WeaponContext ctx) {
+    public Skill useSkill(WeaponContext ctx) {
         if (antiFalseTouchCD != 0) {
-            return false;
+            return null;
         }
-        if (super.useSkill(ctx)) {
+        if (super.useSkill(ctx) != null) {
             antiFalseTouchCD = 300;
             resetFieldTime();
-            return true;
+            return skillInstance();
         }
         if (stars >= 6) {
             if (handleDischargeAlert) {
@@ -85,20 +85,20 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
                     if (hasDischargeAcquiredSkill) {
                         hasDischargeAcquiredSkill = false;
                         resetFieldTime();
-                        postUseSkill(ctx);
-                        return true;
+                        postUseSkill(ctx, skillInstance());
+                        return skillInstance();
                     }
                 }
             } else {
                 resetFieldTime(); // no cd check, user may hit skill button very quickly
                 if (antiFalseTouchCD == 0) {
                     antiFalseTouchCD = 3000;
-                    postUseSkill(ctx);
-                    return true;
+                    postUseSkill(ctx, skillInstance());
+                    return skillInstance();
                 }
             }
         }
-        return false;
+        return null;
     }
 
     private void resetFieldTime() {
@@ -136,8 +136,8 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public boolean skillHitTarget() {
-        return false;
+    protected Skill skillInstance() {
+        return Skill.noHit();
     }
 
     @Override

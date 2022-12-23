@@ -84,7 +84,7 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
     private long lastTimeSkillUsed = 0;
 
     @Override
-    protected boolean useSkill0(WeaponContext ctx) {
+    protected Skill useSkill0(WeaponContext ctx) {
         long current = System.currentTimeMillis();
         if (stars >= 1) {
             clickedTs.add(current);
@@ -104,21 +104,21 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
 
                     if (current - lastTimeSkillUsed >= 800) {
                         Logger.debug("ge-lai-pu-ni quick cd refresh: free matrix alert");
-                        postUseSkill(ctx);
+                        postUseSkill(ctx, skillInstance());
                     }
 
-                    return true;
+                    return skillInstance();
                 }
             }
         }
 
         if (this.cd != 0) {
-            return false;
+            return null;
         }
         if (state == STATE_NORMAL) {
             if (stars < 1) {
                 cd = 30 * 1000;
-                return true;
+                return skillInstance();
             }
             mainSkillCD = 30 * 1000;
             cd = 400;
@@ -131,7 +131,7 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
             setState(STATE_USED_AND_CANNOT_REFRESH);
         }
         lastTimeSkillUsed = current;
-        return true;
+        return skillInstance();
     }
 
     private void setState(int state) {

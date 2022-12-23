@@ -2,10 +2,7 @@ package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponCategory;
-import net.cassite.hottapcassistant.data.WeaponContext;
-import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -50,8 +47,8 @@ public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public boolean skillHitTarget() {
-        return false;
+    protected Skill skillInstance() {
+        return Skill.noHit();
     }
 
     @Override

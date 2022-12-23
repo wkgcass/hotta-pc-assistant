@@ -1,10 +1,8 @@
 package net.cassite.hottapcassistant.data.simulacra;
 
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
-import net.cassite.hottapcassistant.data.Simulacra;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponContext;
-import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.misc.TriggerBuMieZhiYiStar1;
 import net.cassite.hottapcassistant.data.weapon.BuMieZhiYiWeapon;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
@@ -28,7 +26,7 @@ public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
     }
 
     @Override
-    public void alertSkillUsed(WeaponContext ctx, Weapon w) {
+    public void alertSkillUsed(WeaponContext ctx, Weapon w, Skill skill) {
         buffTime = getTotalBuffTime();
         if (w.element() != WeaponElement.PHYSICS && w.element() != WeaponElement.FIRE && w.element() != WeaponElement.THUNDER) {
             return;
@@ -43,6 +41,11 @@ public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
         }
         if (((BuMieZhiYiWeapon) bmzy).getZhiHanChangYuTime() == 0) {
             return;
+        }
+        if (skill instanceof TriggerBuMieZhiYiStar1) {
+            if (!((TriggerBuMieZhiYiStar1) skill).triggerBuMieZhiYiStar1()) {
+                return;
+            }
         }
         ctx.alertDischargeUsed(null);
     }

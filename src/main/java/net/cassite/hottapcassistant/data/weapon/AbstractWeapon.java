@@ -121,33 +121,34 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     }
 
     @Override
-    public boolean useSkill(WeaponContext ctx) {
+    public Skill useSkill(WeaponContext ctx) {
         if (this.cd != 0) {
             long cd = this.cd;
             if (cooldown * considerCDIsClearedRatio < cd) {
-                return false;
+                return null;
             }
         }
         return useSkillIgnoreCD(ctx);
     }
 
-    protected boolean useSkillIgnoreCD(WeaponContext ctx) {
-        if (!useSkill0(ctx)) {
-            return false;
+    protected Skill useSkillIgnoreCD(WeaponContext ctx) {
+        var skill = useSkill0(ctx);
+        if (skill == null) {
+            return null;
         }
         if (isRevertibleSkill(ctx) && attackPointTime > 0) {
-            postUseRevertibleSkill(ctx);
-            return false;
+            postUseRevertibleSkill(ctx, skill);
+            return null;
         } else {
-            postUseSkill(ctx);
-            return true;
+            postUseSkill(ctx, skill);
+            return skill;
         }
     }
 
     private volatile int revertibleSkillStateVersion = 0;
     private volatile boolean handlingRevertibleSkill = false;
 
-    private void postUseRevertibleSkill(WeaponContext ctx) {
+    private void postUseRevertibleSkill(WeaponContext ctx, Skill skill) {
         revertSkillIfNeeded(ctx);
         handlingRevertibleSkill = true;
         var oldVersion = ++revertibleSkillStateVersion;
@@ -157,14 +158,14 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
                 Logger.debug("the skill of " + getName() + " was reverted");
                 return;
             }
-            postRevertibleSkill(ctx);
+            postRevertibleSkill(ctx, skill);
             handlingRevertibleSkill = false;
         });
     }
 
-    private void postRevertibleSkill(WeaponContext ctx) {
-        postUseSkill(ctx);
-        ctx.postUseSkill(this);
+    private void postRevertibleSkill(WeaponContext ctx, Skill skill) {
+        postUseSkill(ctx, skill);
+        ctx.postUseSkill(this, skill);
     }
 
     private void revertSkillIfNeeded(@SuppressWarnings("unused") WeaponContext ctx) {
@@ -179,20 +180,20 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
         cd = 0;
     }
 
+    protected Skill skillInstance() {
+        return Skill.normal();
+    }
+
     @SuppressWarnings({"unused", "BooleanMethodIsAlwaysInverted"})
-    protected boolean useSkill0(WeaponContext ctx) {
+    protected Skill useSkill0(WeaponContext ctx) {
         cd = cooldown;
-        return true;
+        return skillInstance();
     }
 
-    protected void postUseSkill(WeaponContext ctx) {
+    protected void postUseSkill(WeaponContext ctx, Skill skill) {
         for (var m : matrix) {
-            m.useSkill(ctx, this);
+            m.useSkill(ctx, this, skill);
         }
-    }
-
-    public boolean skillHitTarget() {
-        return true;
     }
 
     @Override
@@ -229,16 +230,16 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     }
 
     @Override
-    public void alertSkillUsed(WeaponContext ctx, Weapon w) {
-        alertSkillUsed0(ctx, w);
-        postAlertSkillUsed(ctx, w);
+    public void alertSkillUsed(WeaponContext ctx, Weapon w, Skill skill) {
+        alertSkillUsed0(ctx, w, skill);
+        postAlertSkillUsed(ctx, w, skill);
     }
 
-    protected void alertSkillUsed0(WeaponContext ctx, Weapon w) {
+    protected void alertSkillUsed0(WeaponContext ctx, Weapon w, Skill skill) {
     }
 
     @SuppressWarnings("unused")
-    protected void postAlertSkillUsed(WeaponContext ctx, Weapon w) {
+    protected void postAlertSkillUsed(WeaponContext ctx, Weapon w, Skill skill) {
     }
 
     @Override

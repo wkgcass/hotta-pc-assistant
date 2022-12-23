@@ -3,10 +3,7 @@ package net.cassite.hottapcassistant.data.weapon;
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponCategory;
-import net.cassite.hottapcassistant.data.WeaponContext;
-import net.cassite.hottapcassistant.data.WeaponElement;
+import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.resonance.PhysicsResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
@@ -59,7 +56,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
     }
 
     @Override
-    public boolean useSkill(WeaponContext ctx) {
+    public Skill useSkill(WeaponContext ctx) {
         if (ctx.resonanceInfo.support()) {
             return super.useSkillIgnoreCD(ctx);
         }
@@ -67,7 +64,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
     }
 
     @Override
-    protected boolean useSkill0(WeaponContext ctx) {
+    protected Skill useSkill0(WeaponContext ctx) {
         if (!ctx.resonanceInfo.support()) {
             return super.useSkill0(ctx);
         }
@@ -76,10 +73,10 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
             if (cd == 0) {
                 return super.useSkill0(ctx);
             } else {
-                return true;
+                return skillInstance();
             }
         } else {
-            return false;
+            return null;
         }
     }
 

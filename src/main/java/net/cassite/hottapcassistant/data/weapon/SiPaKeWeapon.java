@@ -38,13 +38,14 @@ public class SiPaKeWeapon extends AbstractWeapon implements Weapon, FireResonanc
     }
 
     @Override
-    protected boolean useSkill0(WeaponContext ctx) {
-        if (!super.useSkill0(ctx)) {
-            return false;
+    protected Skill useSkill0(WeaponContext ctx) {
+        var skill = super.useSkill0(ctx);
+        if (skill == null) {
+            return null;
         }
         var settle = ctx.getBurnSettleContext();
         settle.trigger(ctx, 6_000);
-        return true;
+        return skill;
     }
 
     @Override

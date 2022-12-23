@@ -2,10 +2,7 @@ package net.cassite.hottapcassistant.data.matrix;
 
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
-import net.cassite.hottapcassistant.data.AttackType;
-import net.cassite.hottapcassistant.data.Matrix;
-import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.WeaponContext;
+import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -32,8 +29,8 @@ public class LinYeMatrix extends AbstractMatrix implements Matrix {
     }
 
     @Override
-    public void useSkill(WeaponContext ctx, Weapon w) {
-        if (w.skillHitTarget()) {
+    public void useSkill(WeaponContext ctx, Weapon w, Skill skill) {
+        if (skill.hitTarget()) {
             hit();
         }
     }

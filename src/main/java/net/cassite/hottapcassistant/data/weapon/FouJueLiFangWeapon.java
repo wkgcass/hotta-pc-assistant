@@ -34,8 +34,8 @@ public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
-    public boolean skillHitTarget() {
-        return false;
+    protected Skill skillInstance() {
+        return Skill.noHit();
     }
 
     @Override
