@@ -26,7 +26,7 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
     public void init(WeaponContext ctx) {
         super.init(ctx);
         extraIndicatorList.add(yongDongCDIndicator);
-        if (ctx.resonanceInfo.iceResonance()) {
+        if (ctx.resonanceInfo.iceResonance() && stars >= 1) {
             extraInfoList.add(liuQuanCheXinCounter);
         }
         liuQuanCheXinCounter.setOnMouseClicked(e -> addCount(ctx));

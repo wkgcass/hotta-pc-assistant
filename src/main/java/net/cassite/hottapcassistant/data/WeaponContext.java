@@ -302,4 +302,10 @@ public class WeaponContext implements WithExtraData {
     public long getTotalSwitchWeaponCoolDown() {
         return 3_000;
     }
+
+    public void alertDischargeUsed(Weapon source) {
+        for (var w : weapons) {
+            w.alertWeaponSwitched(this, source, true);
+        }
+    }
 }

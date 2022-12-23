@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.data;
 
 import javafx.scene.image.Image;
+import net.cassite.hottapcassistant.entity.WeaponArgs;
 
 public interface Weapon extends WithThreadStartStop, WithExtraData {
     String getId();
@@ -16,6 +17,8 @@ public interface Weapon extends WithThreadStartStop, WithExtraData {
     int getStars();
 
     void init(int stars, Matrix[] matrix);
+
+    void init(WeaponArgs args);
 
     void init(WeaponContext ctx);
 

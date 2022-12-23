@@ -520,7 +520,9 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 var m = MatrixRef.make(ls);
                 matrixs[index++] = m;
             }
-            weapons.add(this.weapons[i].get().make(matrixs));
+            var w = this.weapons[i].get().make(matrixs);
+            w.init(options.get());
+            weapons.add(w);
         }
 
         saveConfig();
@@ -870,6 +872,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     FontManager.setFont(this);
                 }};
                 vbox.getChildren().add(scanDischargeResetConfigBtn);
+                vbox.getChildren().add(new Separator() {{
+                    setPadding(new Insets(5, 0, 5, 0));
+                }});
+                var applyDischargeForYingZhiCheckBox = new CheckBox(I18n.get().cooldownApplyDischargeForYingZhiCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(applyDischargeForYingZhiCheckBox);
 
                 options.addListener((ob, old, now) -> {
                     if (now == null) return;
@@ -877,13 +886,19 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         scanDischargeCheckbox.setSelected(true);
                     }
                     scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
+                    applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                 });
                 scanDischargeCheckbox.setOnAction(e -> {
                     var selected = scanDischargeCheckbox.isSelected();
+                    var opt = options.get();
                     if (selected) {
+                        if (opt.canEnableDischarge()) {
+                            opt.scanDischarge = true;
+                            saveConfig();
+                            return;
+                        }
                         chooseScanDischargeRectStep1(ok -> {
                             if (ok) {
-                                var opt = options.get();
                                 opt.scanDischarge = true;
                                 saveConfig();
                             } else {
@@ -891,7 +906,6 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                             }
                         });
                     } else {
-                        var opt = options.get();
                         opt.scanDischarge = false;
                         saveConfig();
                     }
@@ -908,6 +922,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     opt.scanDischarge = false;
                     saveConfig();
                     scanDischargeCheckbox.setSelected(false);
+                });
+                applyDischargeForYingZhiCheckBox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.applyDischargeForYingZhi = applyDischargeForYingZhiCheckBox.isSelected();
+                    saveConfig();
                 });
             }
 

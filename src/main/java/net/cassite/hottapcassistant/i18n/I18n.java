@@ -289,6 +289,8 @@ public abstract class I18n {
 
     public abstract String cooldownScanDischargeResetBtn();
 
+    public abstract String cooldownApplyDischargeForYingZhiCheckBox();
+
     public abstract String scanDischargeConfigureTips();
 
     public abstract String positionOfDischargeTip();

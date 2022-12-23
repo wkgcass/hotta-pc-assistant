@@ -9,6 +9,7 @@ public class ImageManager {
     public static final String[] ALL = new String[]{
         "/images/bg/bg0.jpg",
         "/images/bg/bg1.png",
+        "/images/buff/ai-li-si-simulacra.png",
         "/images/buff/bee.png",
         "/images/buff/burn-settle.png",
         "/images/buff/charge.png",
@@ -23,6 +24,7 @@ public class ImageManager {
         "/images/buff/xing-huan-simulacra.png",
         "/images/buff/ying-yue-zhi-jing.png",
         "/images/buff/yong-dong.png",
+        "/images/buff/zhi-han-chang-yu.png",
         "/images/downloadgame-btn/downloadgame-down.png",
         "/images/downloadgame-btn/downloadgame-hover.png",
         "/images/downloadgame-btn/downloadgame-normal.png",

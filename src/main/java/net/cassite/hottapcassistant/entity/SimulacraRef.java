@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.entity;
 
 import kotlin.Pair;
 import net.cassite.hottapcassistant.data.Simulacra;
+import net.cassite.hottapcassistant.data.simulacra.AiLiSiSimulacra;
 import net.cassite.hottapcassistant.data.simulacra.DummySimulacra;
 import net.cassite.hottapcassistant.data.simulacra.XingHuanSimulacra;
 
@@ -14,7 +15,8 @@ public class SimulacraRef {
         //noinspection unchecked
         Pair<Integer, Supplier<Simulacra>>[] ls = new Pair[]{
             new Pair<Integer, Supplier<Simulacra>>(0, DummySimulacra::new),
-            new Pair<Integer, Supplier<Simulacra>>(1, XingHuanSimulacra::new)
+            new Pair<Integer, Supplier<Simulacra>>(1, XingHuanSimulacra::new),
+            new Pair<Integer, Supplier<Simulacra>>(2, AiLiSiSimulacra::new),
         };
         var ret = new ArrayList<SimulacraRef>();
         for (var pair : ls) {

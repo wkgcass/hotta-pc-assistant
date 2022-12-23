@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.entity.WeaponArgs;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.TaskManager;
 import net.cassite.hottapcassistant.util.Utils;
@@ -59,6 +60,10 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     public void init(int stars, Matrix[] matrix) {
         this.stars = stars;
         this.matrix = matrix;
+    }
+
+    @Override
+    public void init(WeaponArgs args) {
     }
 
     @Override
@@ -248,7 +253,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     }
 
     @SuppressWarnings("unused")
-    private void postAlertAttack(WeaponContext ctx, Weapon w, AttackType type) {
+    protected void postAlertAttack(WeaponContext ctx, Weapon w, AttackType type) {
     }
 
     @Override

@@ -753,9 +753,9 @@ public class ZhCn extends I18n {
 
     @Override
     public String simulacraName(String name) {
-        //noinspection SwitchStatementWithTooFewBranches
         return switch (name) {
             case "xīng huán" -> "星寰";
+            case "ài lì sī" -> "艾丽丝";
             default -> name;
         };
     }
@@ -785,6 +785,9 @@ public class ZhCn extends I18n {
             case "yeQueZhiYuStar5" -> "夜雀之羽5星重伤";
             case "moShuShiJian" -> "魔术时间";
             case "chargePercentage" -> "充能百分比";
+            case "yingZhiStar6Counter" -> "影织6星连携次数";
+            case "aiLiSiSimulacraBuff" -> "艾丽丝拟态增伤效果";
+            case "zhiHanChangYu" -> "滞寒场域";
             default -> name;
         };
     }
@@ -828,6 +831,11 @@ public class ZhCn extends I18n {
     @Override
     public String cooldownScanDischargeResetBtn() {
         return "重置连携充能检测配置";
+    }
+
+    @Override
+    public String cooldownApplyDischargeForYingZhiCheckBox() {
+        return "开启6星影织连携计数";
     }
 
     @Override
