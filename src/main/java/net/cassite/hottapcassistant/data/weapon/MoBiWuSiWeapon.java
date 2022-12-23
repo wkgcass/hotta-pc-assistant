@@ -51,6 +51,7 @@ public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
+        if (w == null) return;
         var time = moShuShiJianTime;
         moShuShiJianTime = 0;
         if (stars >= 3) {

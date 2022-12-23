@@ -138,6 +138,7 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
 
     @Override
     protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
+        if (w == null) return;
         shotRemain = -1;
         dodgeRemain = 0;
     }

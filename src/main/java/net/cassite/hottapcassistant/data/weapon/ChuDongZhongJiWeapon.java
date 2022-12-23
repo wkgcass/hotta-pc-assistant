@@ -80,6 +80,7 @@ public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, Trig
 
     @Override
     protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
+        if (w == null) return;
         resetState();
     }
 

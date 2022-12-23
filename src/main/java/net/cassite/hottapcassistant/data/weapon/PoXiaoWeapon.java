@@ -76,7 +76,7 @@ public class PoXiaoWeapon extends AbstractWeapon implements Weapon {
         if (w == this && discharge) {
             state = 1;
             cd = mechaCD;
-        } else {
+        } else if (w != null) {
             state = 0;
             cd = humanCD;
         }
