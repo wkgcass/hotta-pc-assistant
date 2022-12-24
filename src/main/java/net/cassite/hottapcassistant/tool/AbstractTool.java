@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.tool;
 
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import net.cassite.hottapcassistant.util.StackTraceAlert;
 
 public abstract class AbstractTool implements Tool {
     private final String name;
@@ -28,8 +29,14 @@ public abstract class AbstractTool implements Tool {
         if (stage != null) {
             throw new IllegalStateException();
         }
-        stage = buildStage();
+        try {
+            stage = buildStage();
+        } catch (Exception e) {
+            new StackTraceAlert(e).showAndWait();
+            return;
+        }
         if (stage != null) {
+            stage.setTitle(getName());
             stage.setOnCloseRequest(e -> {
                 stage = null;
                 terminate0();
@@ -42,7 +49,7 @@ public abstract class AbstractTool implements Tool {
 
     protected abstract Image buildIcon();
 
-    protected abstract Stage buildStage();
+    protected abstract Stage buildStage() throws Exception;
 
     @Override
     public boolean isRunning() {

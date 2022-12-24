@@ -32,4 +32,8 @@ public class FontManager {
     public static void setNoto(Labeled labeled) {
         labeled.setFont(Font.font("Noto Sans Regular", 16));
     }
+
+    public static void setNoto(TextInputControl input) {
+        input.setFont(Font.font("Noto Sans Regular", 16));
+    }
 }

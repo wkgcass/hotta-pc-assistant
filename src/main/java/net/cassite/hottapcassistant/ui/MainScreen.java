@@ -35,7 +35,7 @@ public class MainScreen extends BorderPane {
         tools.add(new ToolInfo(I18n.get().toolNameMacro(), MacroPane::new, true));
         tools.add(new ToolInfo(I18n.get().toolNameFishing(), FishingPane::new, true));
         tools.add(new ToolInfo(I18n.get().toolNameCoolDown(), CoolDownPane::new, false));
-        tools.add(new ToolInfo(I18n.get().toolNameToolBox(), ToolBoxPane::new, true));
+        tools.add(new ToolInfo(I18n.get().toolNameToolBox(), ToolBoxPane::new, false));
         tools.add(new ToolInfo(I18n.get().toolNameAbout(), AboutPane::new, false));
     }
 

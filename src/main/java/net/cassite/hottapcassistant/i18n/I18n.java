@@ -340,4 +340,36 @@ public abstract class I18n {
     public abstract String cancelInvalidAssistantConfigBtn();
 
     public abstract String toolName(String name);
+
+    public abstract String worldBossTimerLineCol();
+
+    public abstract String worldBossTimerNameCol();
+
+    public abstract String worldBossTimerLastKillCol();
+
+    public abstract String worldBossTimerETACol();
+
+    public abstract String worldBossTimerSpawnMinutesCol();
+
+    public abstract String worldBossTimerAddBtn();
+
+    public abstract String worldBossTimerDelBtn();
+
+    public abstract String worldBossTimerClearBtn();
+
+    public abstract String worldBossTimerOkBtn();
+
+    public abstract String worldBossTimerMissingLine();
+
+    public abstract String worldBossTimerMissingName();
+
+    public abstract String worldBossTimerMissingLastKill();
+
+    public abstract String worldBossTimerMissingSpawnMinutes();
+
+    public abstract String worldBossTimerInvalidLine();
+
+    public abstract String worldBossTimerInvalidLastKill();
+
+    public abstract String worldBossTimerInvalidSpawnMinutes();
 }

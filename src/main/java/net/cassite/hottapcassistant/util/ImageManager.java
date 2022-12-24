@@ -39,6 +39,7 @@ public class ImageManager {
         "/images/icon/pause.png",
         "/images/icon/play-button.png",
         "/images/icon/reloading.png",
+        "/images/icon/world-boss-timer-icon.png",
         "/images/launchgame-btn/launchgame-down.png",
         "/images/launchgame-btn/launchgame-hover.png",
         "/images/launchgame-btn/launchgame-normal.png",

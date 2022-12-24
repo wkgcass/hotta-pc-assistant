@@ -990,7 +990,88 @@ public class ZhCn extends I18n {
     @Override
     public String toolName(String name) {
         return switch (name) {
+            case "world-boss-timer" -> "世界Boss计时器";
             default -> name;
         };
+    }
+
+    @Override
+    public String worldBossTimerLineCol() {
+        return "线";
+    }
+
+    @Override
+    public String worldBossTimerNameCol() {
+        return "Boss名称";
+    }
+
+    @Override
+    public String worldBossTimerLastKillCol() {
+        return "最后击杀时间";
+    }
+
+    @Override
+    public String worldBossTimerETACol() {
+        return "预计刷新时间";
+    }
+
+    @Override
+    public String worldBossTimerSpawnMinutesCol() {
+        return "刷新用时（分钟）";
+    }
+
+    @Override
+    public String worldBossTimerAddBtn() {
+        return "添加";
+    }
+
+    @Override
+    public String worldBossTimerDelBtn() {
+        return "删除";
+    }
+
+    @Override
+    public String worldBossTimerClearBtn() {
+        return "清空";
+    }
+
+    @Override
+    public String worldBossTimerOkBtn() {
+        return "确定";
+    }
+
+    @Override
+    public String worldBossTimerMissingLine() {
+        return "没有填写分线";
+    }
+
+    @Override
+    public String worldBossTimerMissingName() {
+        return "没有填写Boss名称";
+    }
+
+    @Override
+    public String worldBossTimerMissingLastKill() {
+        return "没有填写最后击杀时间";
+    }
+
+    @Override
+    public String worldBossTimerMissingSpawnMinutes() {
+        return "没有填写刷新时间";
+    }
+
+    @Override
+    public String worldBossTimerInvalidLine() {
+        return "分线填写错误";
+    }
+
+    @Override
+    public String worldBossTimerInvalidLastKill() {
+        return "最后击杀时间填写错误";
+    }
+
+    @Override
+    public String worldBossTimerInvalidSpawnMinutes() {
+        return "刷新时间填写错误";
     }
 }
