@@ -63,7 +63,7 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
     public void init(WeaponArgs args) {
         if (args instanceof AssistantCoolDownOptions) {
             handleDischargeAlert = ((AssistantCoolDownOptions) args).applyDischargeForYingZhi;
-            if (stars >= 6) {
+            if (handleDischargeAlert && stars >= 6) {
                 extraInfoList.add(star6Counter);
             }
         }
