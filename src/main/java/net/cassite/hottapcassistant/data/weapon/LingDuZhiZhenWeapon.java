@@ -5,6 +5,7 @@ import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.skill.NoHitSkill;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
@@ -65,6 +66,11 @@ public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("ling-du-zhi-zhen");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("ke-ke-li-te", 3);
     }
 
     public long getBeeTime() {

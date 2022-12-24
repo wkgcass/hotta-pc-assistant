@@ -3,6 +3,7 @@ package net.cassite.hottapcassistant.data.weapon;
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon {
@@ -64,5 +65,10 @@ public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("v2-rong-qv-dun");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("xiu-ma", 3);
     }
 }

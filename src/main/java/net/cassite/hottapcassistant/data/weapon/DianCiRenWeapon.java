@@ -5,6 +5,7 @@ import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponElement;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class DianCiRenWeapon extends AbstractWeapon implements Weapon {
@@ -35,5 +36,10 @@ public class DianCiRenWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("dian-ci-ren");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return null;
     }
 }

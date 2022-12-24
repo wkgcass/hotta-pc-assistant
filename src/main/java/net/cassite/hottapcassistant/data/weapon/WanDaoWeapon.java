@@ -6,6 +6,7 @@ import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.resonance.PhysicsResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsResonance {
@@ -115,6 +116,11 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("wan-dao");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("xing-huan", 5);
     }
 
     public int getCount() {

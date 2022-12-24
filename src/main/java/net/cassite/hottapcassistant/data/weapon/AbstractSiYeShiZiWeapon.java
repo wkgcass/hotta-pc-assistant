@@ -7,6 +7,7 @@ import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.skill.SiYeShiZiChooseModeSkill;
 import net.cassite.hottapcassistant.data.skill.SiYeShiZiSwitchModeSkill;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements Weapon {
@@ -142,6 +143,11 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("si-ye-shi-zi");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("an-na-bei-la", 5);
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
 import net.cassite.hottapcassistant.data.resonance.IceResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceResonance {
@@ -41,6 +42,11 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("liu-quan-che-xin");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("bu-po-xiao", 3);
     }
 
     @Override

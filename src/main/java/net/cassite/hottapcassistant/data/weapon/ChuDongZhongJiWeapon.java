@@ -6,6 +6,7 @@ import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
 import net.cassite.hottapcassistant.data.skill.ChuDongZhongJiAttackSkill;
 import net.cassite.hottapcassistant.data.skill.ChuDongZhongJiSwitchModeSkill;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, TriggerLiuQuanCheXinStar1 {
@@ -112,6 +113,11 @@ public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, Trig
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("chu-dong-zhong-ji");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("xi", 3);
     }
 
     @Override

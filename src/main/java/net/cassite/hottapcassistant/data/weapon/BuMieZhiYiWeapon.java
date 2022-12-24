@@ -5,6 +5,7 @@ import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.misc.TriggerBuMieZhiYiStar1;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class BuMieZhiYiWeapon extends AbstractWeapon implements Weapon {
@@ -55,6 +56,11 @@ public class BuMieZhiYiWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("bu-mie-zhi-yi");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("ai-li-si", 5);
     }
 
     @Override

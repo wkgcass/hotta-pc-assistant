@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class ZhongJieZheWeapon extends AbstractWeapon implements Weapon, TriggerLiuQuanCheXinStar1 {
@@ -49,6 +50,11 @@ public class ZhongJieZheWeapon extends AbstractWeapon implements Weapon, Trigger
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("zhong-jie-zhe");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("xi-er-da", 3);
     }
 
     @Override
