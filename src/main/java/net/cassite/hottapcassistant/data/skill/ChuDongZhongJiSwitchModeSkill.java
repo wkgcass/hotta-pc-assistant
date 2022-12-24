@@ -3,6 +3,7 @@ package net.cassite.hottapcassistant.data.skill;
 import net.cassite.hottapcassistant.data.Skill;
 import net.cassite.hottapcassistant.data.misc.TriggerBuMieZhiYiStar1;
 import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
+import net.cassite.hottapcassistant.util.AudioGroup;
 
 public class ChuDongZhongJiSwitchModeSkill implements Skill, TriggerLiuQuanCheXinStar1, TriggerBuMieZhiYiStar1 {
     public static final ChuDongZhongJiSwitchModeSkill instance = new ChuDongZhongJiSwitchModeSkill();
@@ -13,6 +14,11 @@ public class ChuDongZhongJiSwitchModeSkill implements Skill, TriggerLiuQuanCheXi
     @Override
     public boolean hitTarget() {
         return false;
+    }
+
+    @Override
+    public AudioGroup getAudio() {
+        return null;
     }
 
     @Override

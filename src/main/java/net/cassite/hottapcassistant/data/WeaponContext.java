@@ -146,6 +146,14 @@ public class WeaponContext implements WithExtraData {
             w.alertSkillUsed(this, cw, skill);
         }
         simulacra.alertSkillUsed(this, cw, skill);
+        playSkillAudio(skill);
+    }
+
+    private void playSkillAudio(Skill skill) {
+        var audio = skill.getAudio();
+        if (audio != null) {
+            audio.play();
+        }
     }
 
     public void attack() {

@@ -2,7 +2,9 @@ package net.cassite.hottapcassistant.data.weapon;
 
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.skill.NormalSkill;
 import net.cassite.hottapcassistant.entity.WeaponArgs;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.TaskManager;
 import net.cassite.hottapcassistant.util.Utils;
@@ -17,6 +19,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     protected Matrix[] matrix;
     protected WeaponContext ctx;
     protected volatile long cd = 0L;
+    protected final AudioGroup skillAudio;
 
     public AbstractWeapon(int cooldown) {
         this(cooldown, false);
@@ -35,6 +38,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
         this.attackPointTime = attackPointTime;
         this.name = buildName();
         this.image = buildImage();
+        this.skillAudio = buildSkillAudio();
     }
 
     @Override
@@ -50,6 +54,10 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     abstract protected String buildName();
 
     abstract protected Image buildImage();
+
+    protected AudioGroup buildSkillAudio() {
+        return null;
+    }
 
     @Override
     public int getStars() {
@@ -181,7 +189,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     }
 
     protected Skill skillInstance() {
-        return Skill.normal();
+        return new NormalSkill(skillAudio);
     }
 
     @SuppressWarnings({"unused", "BooleanMethodIsAlwaysInverted"})

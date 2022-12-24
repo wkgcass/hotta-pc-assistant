@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.resonance.ThunderResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -46,6 +47,11 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("ge-lai-pu-ni");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("fen-li-er", 5);
     }
 
     @Override

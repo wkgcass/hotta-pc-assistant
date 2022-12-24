@@ -5,9 +5,11 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.skill.NoHitSkill;
 import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
 import net.cassite.hottapcassistant.entity.WeaponArgs;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class YingZhiWeapon extends AbstractWeapon implements Weapon {
@@ -37,6 +39,11 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected Image buildImage() {
         return Utils.getWeaponImageFromClasspath("ying-zhi");
+    }
+
+    @Override
+    protected AudioGroup buildSkillAudio() {
+        return Utils.getSkillAudioGroup("lin-ye", 5);
     }
 
     @Override
@@ -137,7 +144,7 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     protected Skill skillInstance() {
-        return Skill.noHit();
+        return new NoHitSkill(skillAudio);
     }
 
     @Override

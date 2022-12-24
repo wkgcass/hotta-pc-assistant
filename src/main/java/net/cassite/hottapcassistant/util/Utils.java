@@ -302,6 +302,28 @@ public class Utils {
         }
     }
 
+    public static AudioWrapper getSkillAudio(String name, int index) {
+        String n = "" + index;
+        if (index < 10) {
+            n = "0" + n;
+        }
+        return new AudioWrapper(
+            AudioManager.get().loadAudio("/audio/simulacra/" + name + "/skill" + n + ".wav")
+        );
+    }
+
+    public static AudioGroup getSkillAudioGroup(String name, int to) {
+        return getSkillAudioGroup(name, 1, to);
+    }
+
+    public static AudioGroup getSkillAudioGroup(String name, int from, int to) {
+        var array = new AudioWrapper[to - from + 1];
+        for (int i = from; i <= to; ++i) {
+            array[i - from] = getSkillAudio(name, i);
+        }
+        return new AudioGroup(array);
+    }
+
     public static long subtractLongGE0(long a, long b) {
         if (a < b) {
             return 0;
