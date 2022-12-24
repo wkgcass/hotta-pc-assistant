@@ -602,10 +602,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     private double windowScale = 1;
 
     private void setWindowPosition(CoolDownWindow window) {
-        if (windowPositionX == 0 && windowPositionY == 0 && windowScale == 1) return;
-        window.setX(windowPositionX);
-        window.setY(windowPositionY);
-        window.setScale(windowScale);
+        if (windowPositionX != 0 && windowPositionY != 0) {
+            window.setX(windowPositionX);
+            window.setY(windowPositionY);
+        }
+        if (windowScale != 1) {
+            window.setScale(windowScale);
+        }
     }
 
     private void stop() {
@@ -618,12 +621,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             windowPositionX = window.getX();
             windowPositionY = window.getY();
             windowScale = window.getScale();
-            handleBuffs(window);
+            options.get().lastWindowScale = windowScale;
+            handleBuffsAndSaveConfig(window);
             window.close();
         }
     }
 
-    private void handleBuffs(CoolDownWindow window) {
+    private void handleBuffsAndSaveConfig(CoolDownWindow window) {
         var buffs = window.getBuffs();
         var row2 = window.getRow2();
         var toRemove = new HashSet<String>();
@@ -838,6 +842,9 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
     private void loadOptions(AssistantCoolDownOptions options) {
         if (options == null) return;
         this.options.set(options);
+        if (options.lastWindowScale >= 0.2 && options.lastWindowScale <= 3) {
+            windowScale = options.lastWindowScale;
+        }
     }
 
     @Override

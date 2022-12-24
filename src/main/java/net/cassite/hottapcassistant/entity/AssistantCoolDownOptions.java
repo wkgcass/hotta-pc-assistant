@@ -1,10 +1,7 @@
 package net.cassite.hottapcassistant.entity;
 
 import vjson.JSON;
-import vjson.deserializer.rule.ArrayRule;
-import vjson.deserializer.rule.BoolRule;
-import vjson.deserializer.rule.ObjectRule;
-import vjson.deserializer.rule.Rule;
+import vjson.deserializer.rule.*;
 import vjson.util.ObjectBuilder;
 
 import java.util.ArrayList;
@@ -17,6 +14,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public List<Point> scanDischargeCriticalPoints;
     public boolean applyDischargeForYingZhi;
     public boolean playAudio;
+    public double lastWindowScale;
 
     public static final Rule<AssistantCoolDownOptions> rule = new ObjectRule<>(AssistantCoolDownOptions::new)
         .put("scanDischarge", (o, it) -> o.scanDischarge = it, BoolRule.get())
@@ -25,7 +23,8 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("scanDischargeCriticalPoints", (o, it) -> o.scanDischargeCriticalPoints = it,
             new ArrayRule<List<Point>, Point>(ArrayList::new, List::add, Point.rule))
         .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
-        .put("playAudio", (o, it) -> o.playAudio = it, BoolRule.get());
+        .put("playAudio", (o, it) -> o.playAudio = it, BoolRule.get())
+        .put("lastWindowScale", (o, it) -> o.lastWindowScale = it, DoubleRule.get());
 
     public static AssistantCoolDownOptions empty() {
         return new AssistantCoolDownOptions();
@@ -51,6 +50,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         }
         ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
         ob.put("playAudio", playAudio);
+        ob.put("lastWindowScale", lastWindowScale);
         return ob.build();
     }
 }
