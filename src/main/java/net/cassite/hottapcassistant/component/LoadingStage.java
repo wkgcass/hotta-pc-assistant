@@ -9,10 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.FontManager;
-import net.cassite.hottapcassistant.util.ImageManager;
-import net.cassite.hottapcassistant.util.TaskManager;
-import net.cassite.hottapcassistant.util.Utils;
+import net.cassite.hottapcassistant.util.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -61,8 +58,8 @@ public class LoadingStage extends Stage {
     }
 
     private void load() {
-        double total = ImageManager.ALL.length;
-        loadImages(total, 0, () -> Platform.runLater(() -> {
+        double total = ImageManager.ALL.length * 2 + AudioManager.ALL.length;
+        loadImages(total, 0, () -> loadAudio(total, ImageManager.ALL.length * 2, () -> Platform.runLater(() -> {
             isDone = true;
             label.setText(I18n.get().hintPressAlt());
             TaskManager.execute(() -> {
@@ -75,7 +72,7 @@ public class LoadingStage extends Stage {
                     Platform.runLater(cb);
                 });
             });
-        }));
+        })));
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -94,8 +91,29 @@ public class LoadingStage extends Stage {
         TaskManager.execute(() -> {
             ImageManager.get().load(path);
             Platform.runLater(() -> {
-                progressBar.setProgress((initial + count * 1.0) / total);
+                progressBar.setProgress((initial + count * 2.0) / total);
                 loadImagesRecursive(total, initial, count + 1, ite, cb);
+            });
+        });
+    }
+
+    private void loadAudio(double total, double initial, Runnable cb) {
+        var ite = Arrays.asList(AudioManager.ALL).iterator();
+        loadAudioRecursive(total, initial, 1, ite, cb);
+    }
+
+    private void loadAudioRecursive(double total, double initial, int count, Iterator<String> ite, Runnable cb) {
+        if (!ite.hasNext()) {
+            cb.run();
+            return;
+        }
+        var path = ite.next();
+        Utils.runOnFX(() -> label.setText(path));
+        TaskManager.execute(() -> {
+            AudioManager.get().loadAudio(path);
+            Platform.runLater(() -> {
+                progressBar.setProgress((initial + count * 1.0) / total);
+                loadAudioRecursive(total, initial, count + 1, ite, cb);
             });
         });
     }
