@@ -24,13 +24,16 @@ public class WeaponContext implements WithExtraData {
     private final WeaponCoolDown burnSettleTimer;
     private final long[] weaponSwitchCD;
 
-    public WeaponContext(List<Weapon> weapons, Relics[] relics, Simulacra simulacra) {
+    private final boolean playAudio;
+
+    public WeaponContext(List<Weapon> weapons, Relics[] relics, Simulacra simulacra, boolean playAudio) {
         if (weapons.isEmpty()) throw new IllegalArgumentException();
         this.weapons = weapons;
         this.relics = relics;
         this.simulacra = simulacra;
         this.resonanceInfo = ResonanceInfo.build(weapons);
         this.current = weapons.get(0);
+        this.playAudio = playAudio;
 
         for (var w : weapons) {
             w.init(this);
@@ -150,6 +153,7 @@ public class WeaponContext implements WithExtraData {
     }
 
     private void playSkillAudio(Skill skill) {
+        if (!playAudio) return;
         var audio = skill.getAudio();
         if (audio != null) {
             audio.play();

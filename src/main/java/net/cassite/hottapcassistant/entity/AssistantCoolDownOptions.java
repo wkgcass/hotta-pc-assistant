@@ -16,6 +16,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public Rect scanDischargeRect;
     public List<Point> scanDischargeCriticalPoints;
     public boolean applyDischargeForYingZhi;
+    public boolean playAudio;
 
     public static final Rule<AssistantCoolDownOptions> rule = new ObjectRule<>(AssistantCoolDownOptions::new)
         .put("scanDischarge", (o, it) -> o.scanDischarge = it, BoolRule.get())
@@ -23,7 +24,8 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("scanDischargeRect", (o, it) -> o.scanDischargeRect = it, Rect.rule)
         .put("scanDischargeCriticalPoints", (o, it) -> o.scanDischargeCriticalPoints = it,
             new ArrayRule<List<Point>, Point>(ArrayList::new, List::add, Point.rule))
-        .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get());
+        .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
+        .put("playAudio", (o, it) -> o.playAudio = it, BoolRule.get());
 
     public static AssistantCoolDownOptions empty() {
         return new AssistantCoolDownOptions();
@@ -48,6 +50,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
             ob.putArray("scanDischargeCriticalPoints", a -> scanDischargeCriticalPoints.forEach(e -> a.addInst(e.toJson())));
         }
         ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
+        ob.put("playAudio", playAudio);
         return ob.build();
     }
 }

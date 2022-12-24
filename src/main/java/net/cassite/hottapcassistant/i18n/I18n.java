@@ -291,6 +291,8 @@ public abstract class I18n {
 
     public abstract String cooldownApplyDischargeForYingZhiCheckBox();
 
+    public abstract String cooldownPlayAudioCheckBox();
+
     public abstract String scanDischargeConfigureTips();
 
     public abstract String positionOfDischargeTip();
@@ -314,6 +316,10 @@ public abstract class I18n {
     public abstract String cooldownConfigurationSave();
 
     public abstract String cooldownConfigurationDelete();
+
+    public abstract String cooldownPauseDesc();
+
+    public abstract String cooldownResumeDesc();
 
     public abstract String cooldownResetDesc();
 

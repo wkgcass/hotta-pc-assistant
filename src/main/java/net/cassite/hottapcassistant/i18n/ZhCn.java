@@ -595,7 +595,10 @@ public class ZhCn extends I18n {
             本程序欢迎页封面图来自幻塔官网或者游戏内素材，做了调色
             本程序图标为旅行莎莉头像，图片来自B站 @幻塔手游 的头像
             武器、意志、源器、技能、buff等图标，来源于fandom tof wiki图片和幻塔客户端截图
-            CD指示器的重置图标：Reload icons created by kosonicon - Flaticon
+            拟态语音来自游戏内语音
+            CD指示器的重置图标：Reload icons created by IYAHICON - Flaticon
+            CD指示器的暂停图标：Pause icons created by Hilmy Abiyyu A. - Flaticon
+            CD指示器的恢复图标：Play button icons created by Roundicons - Flaticon
             """;
     }
 
@@ -839,6 +842,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String cooldownPlayAudioCheckBox() {
+        return "播放拟态语音";
+    }
+
+    @Override
     public String scanDischargeConfigureTips() {
         return """
             请先进入游戏将充能打到即将充满的状态（90%以上）
@@ -900,6 +908,16 @@ public class ZhCn extends I18n {
     @Override
     public String cooldownConfigurationDelete() {
         return "删除";
+    }
+
+    @Override
+    public String cooldownPauseDesc() {
+        return "暂停";
+    }
+
+    @Override
+    public String cooldownResumeDesc() {
+        return "恢复";
     }
 
     @Override

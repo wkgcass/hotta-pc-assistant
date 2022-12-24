@@ -54,7 +54,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private final Scale scale = new Scale(1, 1);
     private final int totalIndicatorCount;
 
-    private WeaponCoolDown chargePercentage;
+    private final WeaponCoolDown chargePercentage;
+    private final ImageView pauseResumeBtn;
 
     public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
                           InputData weaponSkill, InputData[] melee, InputData[] evade,
@@ -62,7 +63,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                           InputData jump,
                           Set<String> row2Ids, AssistantCoolDownOptions options,
                           Runnable resetCallback) {
-        this.ctx = new WeaponContext(weapons, relics, simulacra);
+        this.ctx = new WeaponContext(weapons, relics, simulacra, options != null && options.playAudio);
         this.weaponSkill = weaponSkill;
         this.melee = melee;
         this.evade = evade;
@@ -112,8 +113,12 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         centerOnScreen();
         setTitle("CoolDown Indicator");
 
+        pauseResumeBtn = new ImageView();
+        initPauseResumeBtn(true);
+        group.getChildren().add(pauseResumeBtn);
+
         var resetBtn = new ImageView(ImageManager.get().load("/images/icon/reloading.png"));
-        resetBtn.setLayoutX(10 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
+        resetBtn.setLayoutX(10 + (2 * r + margin) + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
         resetBtn.setLayoutY(10 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
         resetBtn.setFitWidth(2 * (WeaponCoolDown.MIN_RADIUS - 2));
         resetBtn.setFitHeight(2 * (WeaponCoolDown.MIN_RADIUS - 2));
@@ -153,6 +158,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (dischargeDetector != null) {
             chargePercentage = new WeaponCoolDown(Utils.getBuffImageFromClasspath("charge"), "chargePercentage", I18n.get().buffName("chargePercentage"));
             buffs.add(chargePercentage);
+        } else {
+            chargePercentage = null;
         }
 
         totalIndicatorCount = 3 + buffs.size();
@@ -169,7 +176,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         descLabel.setLayoutY(10 + 2 * r + 2 + 25);
         for (var i = 0; i < cds.length; ++i) {
             var n = cds[i];
-            n.setLayoutX(10 + r + (2 * r + margin) * (i + 1));
+            n.setLayoutX(10 + r + (2 * r + margin) * (i + 2));
             n.setLayoutY(10 + r);
             String desc;
             desc = n.desc();
@@ -199,7 +206,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             sep.setEndX(0);
             sep.setEndY(2 * r - r / 2);
             sep.setStroke(Color.GRAY);
-            sep.setLayoutX(10 + 2 * r + margin - margin / 2 - 1);
+            sep.setLayoutX(10 + (2 * r + margin) * 2 - margin / 2 - 1);
             sep.setLayoutY(10);
             group.getChildren().add(sep);
         }
@@ -211,7 +218,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             sep.setEndX(0);
             sep.setEndY(2 * r - r / 2);
             sep.setStroke(Color.GRAY);
-            sep.setLayoutX(10 + (2 * r + margin) * 4 - margin / 2);
+            sep.setLayoutX(10 + (2 * r + margin) * 5 - margin / 2);
             sep.setLayoutY(10);
             group.getChildren().add(sep);
         }
@@ -236,6 +243,44 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         }
         ctx.start();
         timer.start();
+    }
+
+    private void initPauseResumeBtn(boolean isPause) {
+        pauseResumeBtn.setCursor(Cursor.HAND);
+        if (isPause) {
+            pauseResumeBtn.setImage(ImageManager.get().load("/images/icon/pause.png"));
+            pauseResumeBtn.setLayoutX(10 + 5 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS));
+            pauseResumeBtn.setLayoutY(10 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS));
+            pauseResumeBtn.setFitWidth(2 * (WeaponCoolDown.MIN_RADIUS) + 2);
+            pauseResumeBtn.setFitHeight(2 * (WeaponCoolDown.MIN_RADIUS) + 2);
+            pauseResumeBtn.setOnMouseClicked(e -> pause());
+            pauseResumeBtn.setOnMouseEntered(e -> setTextForDescLabel(I18n.get().cooldownPauseDesc()));
+        } else {
+            pauseResumeBtn.setImage(ImageManager.get().load("/images/icon/play-button.png"));
+            pauseResumeBtn.setLayoutX(10 + 5 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
+            pauseResumeBtn.setLayoutY(10 + 1 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
+            pauseResumeBtn.setFitWidth(2 * (WeaponCoolDown.MIN_RADIUS - 2));
+            pauseResumeBtn.setFitHeight(2 * (WeaponCoolDown.MIN_RADIUS - 2));
+            pauseResumeBtn.setOnMouseClicked(e -> resume());
+            pauseResumeBtn.setOnMouseEntered(e -> setTextForDescLabel(I18n.get().cooldownResumeDesc()));
+        }
+        pauseResumeBtn.setOnMouseExited(e -> setTextForDescLabel(""));
+    }
+
+    private volatile boolean isPaused = false;
+
+    private void pause() {
+        isPaused = true;
+        initPauseResumeBtn(false);
+        setTextForDescLabel(I18n.get().cooldownResumeDesc());
+        keys.clear();
+        btns.clear();
+    }
+
+    private void resume() {
+        isPaused = false;
+        initPauseResumeBtn(true);
+        setTextForDescLabel(I18n.get().cooldownPauseDesc());
     }
 
     private Collection<? extends Group> addBuffPositionHandler(List<? extends Group> ls) {
@@ -288,11 +333,11 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         for (var n : buffs) {
             if (row2.contains(n)) {
                 int i = row2.indexOf(n);
-                n.setLayoutX(10 + r + (2 * r + margin) * (i + 4));
+                n.setLayoutX(10 + r + (2 * r + margin) * (i + 5));
                 n.setLayoutY(10 + r + (2 * r + marginV));
             } else {
                 int i = row1.indexOf(n);
-                n.setLayoutX(10 + r + (2 * r + margin) * (i + 4));
+                n.setLayoutX(10 + r + (2 * r + margin) * (i + 5));
                 n.setLayoutY(10 + r);
             }
         }
@@ -303,13 +348,13 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private static final double r = WeaponCoolDown.MAX_RADIUS;
 
     private void resizeWindow() {
-        setWidth((10 + (2 * r) * (totalIndicatorCount + 1) + margin * ((totalIndicatorCount + 1) - 1) + 10) * scale.getX());
+        setWidth((10 + (2 * r) * (totalIndicatorCount + 2) + margin * ((totalIndicatorCount + 2) - 1) + 10) * scale.getX());
         final var rows = 2;
         //noinspection PointlessArithmeticExpression
         setHeight((10 + (2 * r) * rows + 10 * (rows - 1) + 10) * scale.getY());
     }
 
-    private static final double weaponMiddleX = 10 + r + (2 * r + margin) * 2 - margin / 2;
+    private static final double weaponMiddleX = 10 + r + (2 * r + margin) * 3 - margin / 2;
 
     private void setTextForDescLabel(String s) {
         if (s.equals(descLabel.getText())) return;
@@ -324,6 +369,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent e) {
+        if (isPaused) return;
+
         var key = KeyCode.valueOf(e.getKeyCode());
         if (key == null) return;
         handlePressed(key, null);
@@ -331,6 +378,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     @Override
     public void nativeKeyReleased(NativeKeyEvent e) {
+        if (isPaused) return;
+
         var key = KeyCode.valueOf(e.getKeyCode());
         if (key == null) return;
         if (keys.contains(key)) {
@@ -341,6 +390,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     @Override
     public void nativeMousePressed(NativeMouseEvent e) {
+        if (isPaused) return;
+
         var btn = e.getButton();
         MouseButton b = null;
         if (btn == NativeMouseEvent.BUTTON1) {
@@ -386,6 +437,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     @Override
     public void nativeMouseReleased(NativeMouseEvent e) {
+        if (isPaused) return;
+
         var btn = e.getButton();
         MouseButton b = null;
         if (btn == NativeMouseEvent.BUTTON1) {

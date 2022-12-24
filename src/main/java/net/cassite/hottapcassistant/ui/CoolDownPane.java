@@ -879,6 +879,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     FontManager.setFont(this);
                 }};
                 vbox.getChildren().add(applyDischargeForYingZhiCheckBox);
+                vbox.getChildren().add(new Separator() {{
+                    setPadding(new Insets(5, 0, 5, 0));
+                }});
+                var playAudioCheckBox = new CheckBox(I18n.get().cooldownPlayAudioCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(playAudioCheckBox);
 
                 options.addListener((ob, old, now) -> {
                     if (now == null) return;
@@ -887,6 +894,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     }
                     scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
                     applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
+                    playAudioCheckBox.setSelected(now.playAudio);
                 });
                 scanDischargeCheckbox.setOnAction(e -> {
                     var selected = scanDischargeCheckbox.isSelected();
@@ -926,6 +934,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 applyDischargeForYingZhiCheckBox.setOnAction(e -> {
                     var opt = options.get();
                     opt.applyDischargeForYingZhi = applyDischargeForYingZhiCheckBox.isSelected();
+                    saveConfig();
+                });
+                playAudioCheckBox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.playAudio = playAudioCheckBox.isSelected();
                     saveConfig();
                 });
             }
