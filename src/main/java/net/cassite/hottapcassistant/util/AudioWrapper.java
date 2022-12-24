@@ -23,7 +23,7 @@ public class AudioWrapper {
     }
 
     public boolean isLastPlayed() {
-        return false;
+        return lastPlayed;
     }
 
     public void setLastPlayed(boolean lastPlayed) {

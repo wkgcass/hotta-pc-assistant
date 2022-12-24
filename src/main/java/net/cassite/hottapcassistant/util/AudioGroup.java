@@ -37,9 +37,11 @@ public class AudioGroup {
             return;
         }
         var last = queue.peekLast();
+        var lastRemoved = false;
         if (last.isLastPlayed()) {
             queue.removeLast();
             last.setLastPlayed(false);
+            lastRemoved = true;
         }
 
         var ls = new ArrayList<AudioWrapper>();
@@ -59,8 +61,9 @@ public class AudioGroup {
         queue.remove(audio);
         audio.play();
         audio.setLastPlayed(true);
+        if (lastRemoved) {
+            queue.add(last);
+        }
         queue.add(audio);
-        queue.add(last);
-        queue.sort(comparator);
     }
 }
