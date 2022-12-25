@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.data.simulacra;
 
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.data.misc.TriggerAiLiSiSimulacra;
 import net.cassite.hottapcassistant.data.misc.TriggerBuMieZhiYiStar1;
 import net.cassite.hottapcassistant.data.weapon.BuMieZhiYiWeapon;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -27,7 +28,13 @@ public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
 
     @Override
     public void alertSkillUsed(WeaponContext ctx, Weapon w, Skill skill) {
-        buffTime = getTotalBuffTime();
+        boolean triggerBuffTime = true;
+        if (skill instanceof TriggerAiLiSiSimulacra) {
+            triggerBuffTime = ((TriggerAiLiSiSimulacra) skill).triggerAiLiSiSimulacra();
+        }
+        if (triggerBuffTime) {
+            buffTime = getTotalBuffTime();
+        }
         if (w.element() != WeaponElement.PHYSICS && w.element() != WeaponElement.FIRE && w.element() != WeaponElement.THUNDER) {
             return;
         }
