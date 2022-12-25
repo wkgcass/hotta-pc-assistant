@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.data;
 
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.entity.WeaponArgs;
+import net.cassite.hottapcassistant.util.AudioGroup;
 
 public interface Weapon extends WithThreadStartStop, WithExtraData {
     String getId();
@@ -9,6 +10,8 @@ public interface Weapon extends WithThreadStartStop, WithExtraData {
     String getName();
 
     Image getImage();
+
+    AudioGroup getSkillAudio();
 
     WeaponElement element();
 

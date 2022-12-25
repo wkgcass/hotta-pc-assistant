@@ -51,6 +51,11 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
         return image;
     }
 
+    @Override
+    public AudioGroup getSkillAudio() {
+        return skillAudio;
+    }
+
     abstract protected String buildName();
 
     abstract protected Image buildImage();

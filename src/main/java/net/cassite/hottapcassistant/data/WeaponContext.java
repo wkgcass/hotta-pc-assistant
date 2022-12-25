@@ -214,6 +214,14 @@ public class WeaponContext implements WithExtraData {
         for (var ww : weapons) {
             ww.alertWeaponSwitched(this, w, discharge);
         }
+        if (discharge) {
+            if (playAudio) {
+                var group = w.getSkillAudio();
+                if (group != null) {
+                    group.play();
+                }
+            }
+        }
         return true;
     }
 
