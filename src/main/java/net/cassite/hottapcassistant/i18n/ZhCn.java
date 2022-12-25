@@ -1,5 +1,11 @@
 package net.cassite.hottapcassistant.i18n;
 
+import net.cassite.hottapcassistant.tool.WorldBossTimer;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 public class ZhCn extends I18n {
     @Override
     public String id() {
@@ -1026,8 +1032,28 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String worldBossTimerSpawnBtn() {
+        return "刷新";
+    }
+
+    @Override
     public String worldBossTimerDelBtn() {
         return "删除";
+    }
+
+    @Override
+    public String worldBossTimerCopyBossInfoBtn() {
+        return "复制喊话";
+    }
+
+    @Override
+    public String worldBossTimerExportBtn() {
+        return "导出";
+    }
+
+    @Override
+    public String worldBossTimerImportBtn() {
+        return "导入";
     }
 
     @Override
@@ -1073,5 +1099,28 @@ public class ZhCn extends I18n {
     @Override
     public String worldBossTimerInvalidSpawnMinutes() {
         return "刷新时间填写错误";
+    }
+
+    @Override
+    public String worldBossTimerNextBossInfo(WorldBossTimer.BossInfo last, long remainingMillis) {
+        if (remainingMillis > 0) {
+            return "预计下一个[" + last.name + "]将于" + nextBossInfoTimeFormatter.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(
+                last.lastKnownKillTs + last.spawnMinutes * 60L * 1000
+            ), ZoneId.systemDefault())) + "在" + last.line + "线刷新，剩余" + (remainingMillis / 1000 / 60) + "分钟";
+        } else {
+            return "预计下一个[" + last.name + "]将于" + nextBossInfoTimeFormatter.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(
+                last.lastKnownKillTs + last.spawnMinutes * 60L * 1000
+            ), ZoneId.systemDefault())) + "在" + last.line + "线刷新，已刷新" + (-remainingMillis / 1000 / 60) + "分钟";
+        }
+    }
+
+    @Override
+    public String worldBossTimerNoDataToImport() {
+        return "没有可导入的数据，请先复制再点击导入按钮";
+    }
+
+    @Override
+    public String worldBossTimerInvalidImportingData() {
+        return "导入数据错误";
     }
 }

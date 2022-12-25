@@ -8,6 +8,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -109,6 +112,10 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 FontManager.setFont(this);
                 setPrefWidth(120);
             }};
+            var spawnBtn = new Button(I18n.get().worldBossTimerSpawnBtn()) {{
+                FontManager.setFont(this);
+                setPrefWidth(120);
+            }};
             var delBtn = new Button(I18n.get().worldBossTimerDelBtn()) {{
                 FontManager.setFont(this);
                 setPrefWidth(120);
@@ -117,8 +124,29 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 FontManager.setFont(this);
                 setPrefWidth(120);
             }};
+            var copyNextBossInfoBtn = new Button(I18n.get().worldBossTimerCopyBossInfoBtn()) {{
+                FontManager.setFont(this);
+                setPrefWidth(120);
+            }};
+            var exportBtn = new Button(I18n.get().worldBossTimerExportBtn()) {{
+                FontManager.setFont(this);
+                setPrefWidth(120);
+            }};
+            var importBtn = new Button(I18n.get().worldBossTimerImportBtn()) {{
+                FontManager.setFont(this);
+                setPrefWidth(120);
+            }};
 
             addBtn.setOnAction(e -> new AddStage(table).showAndWait());
+            spawnBtn.setOnAction(e -> {
+                var selected = table.getSelectionModel().getSelectedItem();
+                if (selected == null) {
+                    return;
+                }
+                table.getItems().remove(selected);
+                selected.lastKnownKillTs = System.currentTimeMillis();
+                table.getItems().add(selected);
+            });
             delBtn.setOnAction(e -> {
                 var selected = table.getSelectionModel().getSelectedItem();
                 if (selected == null) {
@@ -127,6 +155,28 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 table.getItems().remove(selected);
             });
             clearBtn.setOnAction(e -> table.getItems().clear());
+            copyNextBossInfoBtn.setOnAction(e -> copyNextBossInfo());
+            exportBtn.setOnAction(e -> {
+                var s = genConfig();
+                var content = new ClipboardContent();
+                content.putString(s.stringify());
+                Clipboard.getSystemClipboard().setContent(content);
+            });
+            importBtn.setOnAction(e -> {
+                String s = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
+                if (s == null) {
+                    new SimpleAlert(Alert.AlertType.WARNING, I18n.get().worldBossTimerNoDataToImport()).showAndWait();
+                    return;
+                }
+                Config config;
+                try {
+                    config = JSON.deserialize(s, Config.rule);
+                } catch (Exception ee) {
+                    new SimpleAlert(Alert.AlertType.WARNING, I18n.get().worldBossTimerInvalidImportingData()).showAndWait();
+                    return;
+                }
+                init(config);
+            });
 
             var pane = new Pane();
             var scene = new Scene(pane);
@@ -142,9 +192,17 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                         new VBox(
                             addBtn,
                             new VPadding(5),
+                            spawnBtn,
+                            new VPadding(5),
                             delBtn,
                             new VPadding(5),
-                            clearBtn
+                            clearBtn,
+                            new VPadding(5),
+                            copyNextBossInfoBtn,
+                            new VPadding(5),
+                            exportBtn,
+                            new VPadding(5),
+                            importBtn
                         )
                     )
                 )
@@ -167,11 +225,28 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             centerOnScreen();
         }
 
-        private void save() {
+        private void copyNextBossInfo() {
+            var selected = table.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                return;
+            }
+            var remainingMillis = selected.lastKnownKillTs + selected.spawnMinutes * 60L * 1000 - System.currentTimeMillis();
+            var s = I18n.get().worldBossTimerNextBossInfo(selected, remainingMillis);
+            var content = new ClipboardContent();
+            content.putString(s);
+            Clipboard.getSystemClipboard().setContent(content);
+        }
+
+        private JSON.Object genConfig() {
             var ls = table.getItems();
             var config = new Config();
             config.list = new ArrayList<>(ls);
-            var str = config.toJson().pretty();
+            return config.toJson();
+        }
+
+        private void save() {
+            var config = genConfig();
+            var str = config.pretty();
             try {
                 Utils.writeFile(recordFilePath, str);
             } catch (IOException e) {
@@ -229,6 +304,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
     }
 
     private static class AddStage extends Stage {
+        private static String lastBossName = null;
+
         AddStage(TableView<BossInfo> table) {
             var current = LocalDateTime.now();
 
@@ -263,6 +340,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             var nameInput = new TextField() {{
                 FontManager.setNoto(this);
                 setPrefWidth(250);
+                if (lastBossName != null) {
+                    setText(lastBossName);
+                }
             }};
             var lastKillInput = new TextField() {{
                 FontManager.setNoto(this);
@@ -333,6 +413,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 info.lastKnownKillTs = ZonedDateTime.of(vLastKill, ZoneId.systemDefault()).toEpochSecond() * 1000;
                 info.spawnMinutes = vSpawnMinutes;
 
+                lastBossName = info.name;
+
                 var opt = table.getItems().stream().filter(i -> i.line == info.line && i.name.equals(info.name)).findAny();
                 //noinspection OptionalIsPresent
                 if (opt.isPresent()) {
@@ -368,11 +450,11 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
     }
 
-    private static class BossInfo {
-        int line;
-        String name;
-        long lastKnownKillTs;
-        int spawnMinutes;
+    public static class BossInfo {
+        public int line;
+        public String name;
+        public long lastKnownKillTs;
+        public int spawnMinutes;
 
         static final Rule<BossInfo> rule = new ObjectRule<>(BossInfo::new)
             .put("line", (o, it) -> o.line = it, IntRule.get())

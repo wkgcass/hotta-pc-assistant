@@ -1,5 +1,12 @@
 package net.cassite.hottapcassistant.i18n;
 
+import net.cassite.hottapcassistant.tool.WorldBossTimer;
+
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+
+import static java.time.temporal.ChronoField.*;
+
 public abstract class I18n {
     private static volatile I18n impl;
 
@@ -353,9 +360,17 @@ public abstract class I18n {
 
     public abstract String worldBossTimerAddBtn();
 
+    public abstract String worldBossTimerSpawnBtn();
+
     public abstract String worldBossTimerDelBtn();
 
     public abstract String worldBossTimerClearBtn();
+
+    public abstract String worldBossTimerCopyBossInfoBtn();
+
+    public abstract String worldBossTimerExportBtn();
+
+    public abstract String worldBossTimerImportBtn();
 
     public abstract String worldBossTimerOkBtn();
 
@@ -372,4 +387,20 @@ public abstract class I18n {
     public abstract String worldBossTimerInvalidLastKill();
 
     public abstract String worldBossTimerInvalidSpawnMinutes();
+
+    protected static final DateTimeFormatter nextBossInfoTimeFormatter = new DateTimeFormatterBuilder()
+        .parseCaseInsensitive()
+        .append(new DateTimeFormatterBuilder()
+            .appendValue(HOUR_OF_DAY, 2)
+            .appendLiteral(':')
+            .appendValue(MINUTE_OF_HOUR, 2)
+            .optionalStart()
+            .toFormatter())
+        .toFormatter();
+
+    public abstract String worldBossTimerNextBossInfo(WorldBossTimer.BossInfo last, long remainingMillis);
+
+    public abstract String worldBossTimerNoDataToImport();
+
+    public abstract String worldBossTimerInvalidImportingData();
 }
