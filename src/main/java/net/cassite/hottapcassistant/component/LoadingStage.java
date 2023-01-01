@@ -47,7 +47,7 @@ public class LoadingStage extends Stage {
 
         label.setText(I18n.get().loadingStageTitle());
         progressBar.setProgress(0);
-        progressBar.setPrefWidth(650);
+        progressBar.setPrefWidth(630);
 
         setOnCloseRequest(e -> {
             if (isDone) {
