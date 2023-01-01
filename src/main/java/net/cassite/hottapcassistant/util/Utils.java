@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.util;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Rectangle2D;
@@ -221,6 +222,36 @@ public class Utils {
         } else {
             Platform.runLater(r);
         }
+    }
+
+    public static void runLater(int n, Runnable r) {
+        if (n <= 0) {
+            runOnFX(r);
+            return;
+        }
+        Platform.runLater(() -> runLater(n - 1, r));
+    }
+
+    public static void runDelay(int millis, Runnable r) {
+        var ptr = new AnimationTimer[1];
+        ptr[0] = new AnimationTimer() {
+            private long begin;
+
+            @Override
+            public void handle(long now) {
+                if (begin == 0) {
+                    begin = now;
+                    return;
+                }
+                if (now - begin < millis * 1_000_000L) {
+                    return;
+                }
+                ptr[0].stop();
+
+                r.run();
+            }
+        };
+        ptr[0].start();
     }
 
     public static boolean almostEquals(Color a, Color b) {

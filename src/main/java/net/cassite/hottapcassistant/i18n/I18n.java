@@ -358,7 +358,21 @@ public abstract class I18n {
 
     public abstract String worldBossTimerSpawnMinutesCol();
 
+    public abstract String worldBossTimerCommentCol();
+
+    public abstract String worldBossTimerLastLineCol();
+
+    public abstract String worldBossTimerAccountNameCol();
+
+    public abstract String worldBossTimerLastSwitchLineTsCol();
+
+    public abstract String worldBossTimerAccountETACol();
+
+    public abstract String worldBossTimerSwitchLineCDMinutes();
+
     public abstract String worldBossTimerAddBtn();
+
+    public abstract String worldBossTimerEditBtn();
 
     public abstract String worldBossTimerSpawnBtn();
 
@@ -372,6 +386,8 @@ public abstract class I18n {
 
     public abstract String worldBossTimerImportBtn();
 
+    public abstract String worldBossTimerSwitchLineBtn();
+
     public abstract String worldBossTimerOkBtn();
 
     public abstract String worldBossTimerMissingLine();
@@ -382,11 +398,19 @@ public abstract class I18n {
 
     public abstract String worldBossTimerMissingSpawnMinutes();
 
+    public abstract String worldBossTimerMissingLastSwitchLineTs();
+
+    public abstract String worldBossTimerMissingSwitchLineCD();
+
     public abstract String worldBossTimerInvalidLine();
 
     public abstract String worldBossTimerInvalidLastKill();
 
     public abstract String worldBossTimerInvalidSpawnMinutes();
+
+    public abstract String worldBossTimerInvalidLastSwitchLineTs();
+
+    public abstract String worldBossTimerInvalidSwitchLineCD();
 
     protected static final DateTimeFormatter nextBossInfoTimeFormatter = new DateTimeFormatterBuilder()
         .parseCaseInsensitive()

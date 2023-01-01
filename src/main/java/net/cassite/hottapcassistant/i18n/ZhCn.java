@@ -1027,8 +1027,43 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String worldBossTimerCommentCol() {
+        return "备注";
+    }
+
+    @Override
+    public String worldBossTimerLastLineCol() {
+        return "线";
+    }
+
+    @Override
+    public String worldBossTimerAccountNameCol() {
+        return "账号名";
+    }
+
+    @Override
+    public String worldBossTimerLastSwitchLineTsCol() {
+        return "最后切换时间";
+    }
+
+    @Override
+    public String worldBossTimerAccountETACol() {
+        return "预计可切线时间";
+    }
+
+    @Override
+    public String worldBossTimerSwitchLineCDMinutes() {
+        return "换线CD时间（分钟）";
+    }
+
+    @Override
     public String worldBossTimerAddBtn() {
         return "添加";
+    }
+
+    @Override
+    public String worldBossTimerEditBtn() {
+        return "修改";
     }
 
     @Override
@@ -1054,6 +1089,11 @@ public class ZhCn extends I18n {
     @Override
     public String worldBossTimerImportBtn() {
         return "导入";
+    }
+
+    @Override
+    public String worldBossTimerSwitchLineBtn() {
+        return "切线";
     }
 
     @Override
@@ -1087,6 +1127,16 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String worldBossTimerMissingLastSwitchLineTs() {
+        return "没有填写最后切线时间";
+    }
+
+    @Override
+    public String worldBossTimerMissingSwitchLineCD() {
+        return "没有指定切线CD时间";
+    }
+
+    @Override
     public String worldBossTimerInvalidLine() {
         return "分线填写错误";
     }
@@ -1099,6 +1149,16 @@ public class ZhCn extends I18n {
     @Override
     public String worldBossTimerInvalidSpawnMinutes() {
         return "刷新时间填写错误";
+    }
+
+    @Override
+    public String worldBossTimerInvalidLastSwitchLineTs() {
+        return "最后切线时间填写错误";
+    }
+
+    @Override
+    public String worldBossTimerInvalidSwitchLineCD() {
+        return "切线CD时间填写错误";
     }
 
     @Override
