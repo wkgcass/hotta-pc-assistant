@@ -632,7 +632,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             ));
 
             setWidth(450);
-            setHeight(260);
+            setHeight(290);
             setResizable(false);
             centerOnScreen();
         }
@@ -822,7 +822,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             ));
 
             setWidth(450);
-            setHeight(260);
+            setHeight(290);
             setResizable(false);
             centerOnScreen();
         }
