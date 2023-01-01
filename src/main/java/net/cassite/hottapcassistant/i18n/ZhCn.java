@@ -797,6 +797,8 @@ public class ZhCn extends I18n {
             case "yingZhiStar6Counter" -> "影织6星连携次数";
             case "aiLiSiSimulacraBuff" -> "艾丽丝拟态增伤效果";
             case "zhiHanChangYu" -> "滞寒场域";
+            case "moBiWuSiBuff" -> "莫比乌斯提前离开领域增伤";
+            case "leiDianGanYing" -> "雷电感应";
             default -> name;
         };
     }

@@ -10,6 +10,9 @@ import net.cassite.hottapcassistant.util.Utils;
 public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon {
     private long moShuShiJianTime = 0;
     private final WeaponCoolDown moShuShiJian = new WeaponCoolDown(Utils.getBuffImageFromClasspath("mo-shu-shi-jian"), "moShuShiJian", I18n.get().buffName("moShuShiJian"));
+    private long buffTime = 0;
+    private long totalBuffTime = 0;
+    private final WeaponCoolDown buff = new WeaponCoolDown(Utils.getBuffImageFromClasspath("mo-bi-wu-si-buff"), "moBiWuSiBuff", I18n.get().buffName("moBiWuSiBuff"));
 
     public MoBiWuSiWeapon() {
         super(30);
@@ -35,12 +38,14 @@ public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon {
         super.init(stars, matrix);
         if (stars >= 3) {
             extraIndicatorList.add(moShuShiJian);
+            extraIndicatorList.add(buff);
         }
     }
 
     @Override
     protected void threadTick(long ts, long delta) {
         moShuShiJianTime = Utils.subtractLongGE0(moShuShiJianTime, delta);
+        buffTime = Utils.subtractLongGE0(buffTime, delta);
     }
 
     @Override
@@ -59,6 +64,8 @@ public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon {
         if (stars >= 3) {
             if (time > 0) {
                 cd = Utils.subtractLongGE0(cd, Math.min(13_000, time));
+                totalBuffTime = 20_000 * Math.min(13_000, time) / 13_000;
+                buffTime = totalBuffTime;
             }
         }
     }
@@ -96,8 +103,17 @@ public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon {
         return 18_000;
     }
 
+    public long getBuffTime() {
+        return buffTime;
+    }
+
+    public long getTotalBuffTime() {
+        return totalBuffTime;
+    }
+
     @Override
     public void updateExtraData() {
         moShuShiJian.setAllCoolDown(moShuShiJianTime, getTotalMoShuShiJianTime());
+        buff.setAllCoolDown(buffTime, totalBuffTime);
     }
 }
