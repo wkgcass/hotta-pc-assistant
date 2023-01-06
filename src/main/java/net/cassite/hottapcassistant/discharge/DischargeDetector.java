@@ -46,7 +46,11 @@ public class DischargeDetector {
     }
 
     public void discharge() {
-        fullCharge = false;
+        if (fullCharge) {
+            fullCharge = false;
+        } else {
+            lastDetectedPoints = 0;
+        }
         skipDetectionCount = 50;
     }
 
