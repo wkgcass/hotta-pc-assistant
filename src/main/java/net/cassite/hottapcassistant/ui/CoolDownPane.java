@@ -1081,29 +1081,34 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             if (result.p() == 1) {
                 return false;
             }
-            var pointAdjust = (int) (img.getWidth() / 35);
-            var midX = ctx.getInitialX();
-            var topY = ctx.getInitialY() + pointAdjust;
-            var leftX = ctx.getMinX() + pointAdjust;
-            var rightX = ctx.getMaxX() - pointAdjust;
-            var botY = ctx.getMaxY() - pointAdjust;
+
+            int widthAfterCut = ctx.getMaxX() - ctx.getMinX();
+            int pointAdjust = widthAfterCut / 96;
+
+            int midX = ctx.getInitialX();
+            int topY = ctx.getInitialY() + pointAdjust;
+            int leftX = ctx.getMinX() + pointAdjust;
+            int rightX = ctx.getMaxX() - pointAdjust;
+            int botY = ctx.getMaxY() - pointAdjust;
 
             var points = new ArrayList<Point>();
             var p0 = new Point(midX, topY);
             points.add(p0);
-            var p2 = new Point(rightX, topY + ((rightX - midX + 1) / 2));
+            double rightYDelta = (rightX - midX + 1) / Math.sqrt(3) * 0.98;
+            var p2 = new Point(rightX, topY + rightYDelta);
             points.add(Point.midOf(p0, p2));
             points.add(p2);
-            var p4 = new Point(rightX, botY - ((rightX - midX + 1) / 2));
+            var p4 = new Point(rightX, botY - rightYDelta);
             points.add(Point.midOf(p2, p4));
             points.add(p4);
             var p6 = new Point(midX, botY);
             points.add(Point.midOf(p4, p6));
             points.add(p6);
-            var p8 = new Point(leftX, botY - ((midX - leftX + 1) / 2));
+            double leftYDelta = (midX - leftX + 1) / Math.sqrt(3) * 0.98;
+            var p8 = new Point(leftX, botY - leftYDelta);
             points.add(Point.midOf(p6, p8));
             points.add(p8);
-            var p10 = new Point(leftX, topY + ((midX - leftX + 1) / 2));
+            var p10 = new Point(leftX, topY + leftYDelta);
             points.add(Point.midOf(p8, p10));
             points.add(p10);
             points.add(Point.midOf(p0, p10));
@@ -1143,7 +1148,20 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 }
             }
 
-            opt.scanDischargeRect = rect;
+            // cut rect and move the points
+            int cutLeft = (int) Math.round(ctx.getMinX() / screen.getOutputScaleX());
+            int cutTop = (int) Math.round(ctx.getInitialY() / screen.getOutputScaleY());
+            int cutRight = (int) Math.round(rect.w - ctx.getMaxX() / screen.getOutputScaleX());
+            int cutBot = (int) Math.round(rect.h - ctx.getMaxY() / screen.getOutputScaleY());
+            opt.scanDischargeRect = new Rect(
+                rect.x + cutLeft,
+                rect.y + cutTop,
+                rect.w - cutLeft - cutRight + 1,
+                rect.h - cutTop - cutBot + 1);
+            for (var p : points) {
+                p.x -= (int) (cutLeft * screen.getOutputScaleX());
+                p.y -= (int) (cutTop * screen.getOutputScaleY());
+            }
             opt.scanDischargeCriticalPoints = points;
             return true;
         }

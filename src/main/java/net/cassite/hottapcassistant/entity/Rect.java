@@ -18,6 +18,16 @@ public class Rect {
         .put("w", (o, it) -> o.w = it, DoubleRule.get())
         .put("h", (o, it) -> o.h = it, DoubleRule.get());
 
+    public Rect() {
+    }
+
+    public Rect(double x, double y, double w, double h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+    }
+
     public JSON.Object toJson() {
         return new ObjectBuilder()
             .put("x", x)

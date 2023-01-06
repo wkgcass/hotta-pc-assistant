@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -30,6 +31,7 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
     private final SimpleObjectProperty<Color> backgroundColor = new SimpleObjectProperty<>(INACTIVE_COLOR);
     private final Translate translate = new Translate();
     private CoolDownOKAnimationTimer cooldownOKTimer = new CoolDownOKAnimationTimer();
+    private final Rotate rotate = new Rotate(0);
 
     private final String id;
     private final String desc;
@@ -88,7 +90,9 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
         cd1.setVisible(false);
         this.cds = new CoolDownArc[]{cd0, cd1};
 
-        getChildren().addAll(cd1, cd0, innerBackground, imageView, cdPane, innerCircle);
+        var cdsGroup = new Group(cd1, cd0);
+        cdsGroup.getTransforms().add(rotate);
+        getChildren().addAll(cdsGroup, innerBackground, imageView, cdPane, innerCircle);
 
         isCoolingDown.addListener((ob, old, now) -> {
             if (now == null) return;
@@ -187,6 +191,10 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
         } else {
             backgroundColor.set(INACTIVE_COLOR);
         }
+    }
+
+    public void setRotateAngle(double d) {
+        rotate.setAngle(d);
     }
 
     @Override

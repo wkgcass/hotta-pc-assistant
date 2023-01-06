@@ -3,14 +3,15 @@ package net.cassite.hottapcassistant.discharge;
 import java.util.LinkedList;
 
 public class Stabilizer {
+    private static final int SAME_COUNT = 6;
     private final LinkedList<Integer> counts = new LinkedList<>();
 
     public int add(int count) {
         counts.add(count);
-        if (counts.size() < 4) {
+        if (counts.size() < SAME_COUNT) {
             return -1;
         }
-        while (counts.size() > 4) {
+        while (counts.size() > SAME_COUNT) {
             counts.removeFirst();
         }
         var ite = counts.iterator();
