@@ -200,7 +200,7 @@ public class WeaponContext implements WithExtraData {
     public boolean switchWeapon(int index, boolean discharge) {
         var w = weapons.get(index);
         if (current == w) {
-            return true;
+            return false;
         }
         if (weaponSwitchCD[index] > getTotalSwitchWeaponCoolDown() * 0.1) {
             return false;
