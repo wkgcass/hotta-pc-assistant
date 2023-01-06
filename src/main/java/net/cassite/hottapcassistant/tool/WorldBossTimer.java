@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.tool;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -15,6 +16,7 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.component.VPadding;
@@ -78,8 +80,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         static final File recordFile = recordFilePath.toFile();
 
         private final TableView<BossInfo> table = new TableView<>();
-
         private final TableView<AccountInfo> accounts = new TableView<>();
+        private final AnimationTimer etaTimer;
 
         S() throws Exception {
             ScrollBar hScrollBar = (ScrollBar) table.lookup(".scroll-bar:horizontal");
@@ -89,6 +91,34 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
             initTableStructure();
             initAccountsStructure();
+            etaTimer = new AnimationTimer() {
+                private long last = 0;
+
+                @Override
+                public void handle(long now) {
+                    if (last == 0) {
+                        last = now;
+                        return;
+                    }
+                    if (now < last) {
+                        last = now;
+                        return;
+                    }
+                    long delta = (now - last) / 1_000_000;
+                    if (delta < 100) {
+                        return;
+                    }
+                    last = now;
+                    long current = System.currentTimeMillis();
+                    for (var i : table.getItems()) {
+                        i.timerLabel.setMillis(i.spawnMinutes * 60_000L - (current - i.lastKnownKillTs));
+                    }
+                    for (var i : accounts.getItems()) {
+                        i.timerLabel.setMillis(i.switchLineCDMinutes * 60_000L - (current - i.lastSwitchLineTs));
+                    }
+                }
+            };
+            etaTimer.start();
 
             var addBtn = new Button(I18n.get().worldBossTimerAddBtn()) {{
                 FontManager.setFont(this);
@@ -296,7 +326,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             var lineColumn = new TableColumn<BossInfo, Integer>(I18n.get().worldBossTimerLineCol());
             var nameColumn = new TableColumn<BossInfo, String>(I18n.get().worldBossTimerNameCol());
             var lastKillColumn = new TableColumn<BossInfo, String>(I18n.get().worldBossTimerLastKillCol());
-            var etaColumn = new TableColumn<BossInfo, String>(I18n.get().worldBossTimerETACol());
+            var etaColumn = new TableColumn<BossInfo, Long>(I18n.get().worldBossTimerETACol());
             var commentColumn = new TableColumn<BossInfo, String>(I18n.get().worldBossTimerCommentCol());
 
             lineColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().line));
@@ -309,12 +339,21 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                         Instant.ofEpochMilli(param.getValue().lastKnownKillTs),
                         ZoneId.systemDefault()))));
             lastKillColumn.setMinWidth(200);
-            etaColumn.setCellValueFactory(param ->
-                new ReadOnlyObjectWrapper<>(
-                    formatter.format(ZonedDateTime.ofInstant(
-                        Instant.ofEpochMilli(param.getValue().lastKnownKillTs)
-                            .plusSeconds(param.getValue().spawnMinutes * 60L),
-                        ZoneId.systemDefault()))));
+            etaColumn.setCellFactory(param -> {
+                var cell = new TableCell<BossInfo, Long>();
+                cell.itemProperty().addListener((o, old, now) -> {
+                    if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                        cell.setGraphic(null);
+                        return;
+                    }
+                    cell.setGraphic(cell.getTableRow().getItem().timerLabel);
+                });
+                return cell;
+            });
+            etaColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
+                Instant.ofEpochMilli(param.getValue().lastKnownKillTs)
+                    .plusSeconds(param.getValue().spawnMinutes * 60L)
+                    .toEpochMilli()));
             etaColumn.setMinWidth(200);
             commentColumn.setCellValueFactory(param ->
                 new ReadOnlyObjectWrapper<>(param.getValue().comment == null ? "" : param.getValue().comment));
@@ -328,7 +367,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             var lastLineColumn = new TableColumn<AccountInfo, Integer>(I18n.get().worldBossTimerLastLineCol());
             var nameColumn = new TableColumn<AccountInfo, String>(I18n.get().worldBossTimerAccountNameCol());
             var lastSwitchLineTsColumn = new TableColumn<AccountInfo, String>(I18n.get().worldBossTimerLastSwitchLineTsCol());
-            var etaColumn = new TableColumn<AccountInfo, String>(I18n.get().worldBossTimerAccountETACol());
+            var etaColumn = new TableColumn<AccountInfo, Long>(I18n.get().worldBossTimerAccountETACol());
             var commentColumn = new TableColumn<AccountInfo, String>(I18n.get().worldBossTimerCommentCol());
 
             lastLineColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().lastLine));
@@ -341,12 +380,21 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                         Instant.ofEpochMilli(param.getValue().lastSwitchLineTs),
                         ZoneId.systemDefault()))));
             lastSwitchLineTsColumn.setMinWidth(200);
-            etaColumn.setCellValueFactory(param ->
-                new ReadOnlyObjectWrapper<>(
-                    formatter.format(ZonedDateTime.ofInstant(
-                        Instant.ofEpochMilli(param.getValue().lastSwitchLineTs)
-                            .plusSeconds(param.getValue().switchLineCDMinutes * 60L),
-                        ZoneId.systemDefault()))));
+            etaColumn.setCellFactory(param -> {
+                var cell = new TableCell<AccountInfo, Long>();
+                cell.itemProperty().addListener((o, old, now) -> {
+                    if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
+                        cell.setGraphic(null);
+                        return;
+                    }
+                    cell.setGraphic(cell.getTableRow().getItem().timerLabel);
+                });
+                return cell;
+            });
+            etaColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
+                Instant.ofEpochMilli(param.getValue().lastSwitchLineTs)
+                    .plusSeconds(param.getValue().switchLineCDMinutes * 60L)
+                    .toEpochMilli()));
             etaColumn.setMinWidth(200);
             commentColumn.setCellValueFactory(param ->
                 new ReadOnlyObjectWrapper<>(param.getValue().comment == null ? "" : param.getValue().comment));
@@ -421,6 +469,12 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         private void initAccounts(List<AccountInfo> list) {
             if (list == null) return;
             accounts.setItems(FXCollections.observableList(list));
+        }
+
+        @Override
+        public void close() {
+            etaTimer.stop();
+            super.close();
         }
     }
 
@@ -839,6 +893,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         public int spawnMinutes;
         public String comment;
 
+        public final TimerLabel timerLabel = new TimerLabel(Color.BLACK, Color.ORANGE, Color.RED);
+
         static final Rule<BossInfo> rule = new ObjectRule<>(BossInfo::new)
             .put("line", (o, it) -> o.line = it, IntRule.get())
             .put("name", (o, it) -> o.name = it, StringRule.get())
@@ -864,6 +920,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         public int switchLineCDMinutes;
         public String comment;
 
+        public final TimerLabel timerLabel = new TimerLabel(Color.BLACK, Color.ORANGE, Color.GREEN);
+
         static final Rule<AccountInfo> rule = new ObjectRule<>(AccountInfo::new)
             .put("name", (o, it) -> o.name = it, StringRule.get())
             .put("lastSwitchLineTs", (o, it) -> o.lastSwitchLineTs = it, LongRule.get())
@@ -879,6 +937,42 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 .put("switchLineCDMinutes", switchLineCDMinutes)
                 .put("comment", comment)
                 .build();
+        }
+    }
+
+    static class TimerLabel extends Label {
+        private final Color normalColor;
+        private final Color almostReachesColor;
+        private final Color exceedColor;
+
+        public TimerLabel(Color normalColor, Color almostReachesColor, Color exceedColor) {
+            super("00:00:00");
+            this.normalColor = normalColor;
+            this.almostReachesColor = almostReachesColor;
+            this.exceedColor = exceedColor;
+            setTextFill(almostReachesColor);
+        }
+
+        public void setMillis(long millis) {
+            boolean negative = millis < 0;
+            millis = Math.abs(millis);
+
+            long h = millis / 1_000 / 60 / 60;
+            long m = (millis / 1_000 / 60) % 60;
+            long s = (millis / 1_000) % 60;
+
+            String hh = (h < 10 ? "0" : "") + h;
+            String mm = (m < 10 ? "0" : "") + m;
+            String ss = (s < 10 ? "0" : "") + s;
+
+            setText((negative ? "-" : "") + hh + ":" + mm + ":" + ss);
+            if (negative) {
+                setTextFill(exceedColor);
+            } else if (millis < 120_000) {
+                setTextFill(almostReachesColor);
+            } else {
+                setTextFill(normalColor);
+            }
         }
     }
 }
