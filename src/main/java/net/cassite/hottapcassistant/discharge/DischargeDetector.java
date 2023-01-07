@@ -18,6 +18,7 @@ public class DischargeDetector {
     private final Rect cap;
     private final List<Point> points;
     private final boolean debug;
+    private volatile boolean isPaused = false;
 
     private int lastDetectedPoints = 0;
     private boolean fullCharge = false;
@@ -70,6 +71,7 @@ public class DischargeDetector {
         fullCharge = false;
         skipDetectionCount = 0;
         stabilizer.reset();
+        isPaused = false;
     }
 
     public void stop() {
@@ -81,10 +83,34 @@ public class DischargeDetector {
         }
     }
 
+    public void pause() {
+        if (!isRunning()) {
+            return;
+        }
+        isPaused = true;
+    }
+
+    public void resume() {
+        if (!isRunning()) {
+            throw new IllegalStateException();
+        }
+        isPaused = false;
+    }
+
     private void run() {
         long lastBeginTs = System.currentTimeMillis();
+        boolean lastPaused = false;
         while (thread != null) {
+            if (isPaused) {
+                lastPaused = true;
+                Utils.delay(500);
+                continue;
+            }
             long now = System.currentTimeMillis();
+            if (lastPaused) {
+                lastPaused = false;
+                lastBeginTs = System.currentTimeMillis();
+            }
             if (now - lastBeginTs < 25) {
                 Utils.delay(25 - (now - lastBeginTs));
             } else if (now - lastBeginTs >= 25) {

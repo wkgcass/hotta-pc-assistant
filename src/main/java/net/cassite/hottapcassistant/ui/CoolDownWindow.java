@@ -159,6 +159,13 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             chargePercentage = new WeaponCoolDown(Utils.getBuffImageFromClasspath("charge"), "chargePercentage", I18n.get().buffName("chargePercentage")) {{
                 setRotateAngle(180);
             }};
+            chargePercentage.setOnMouseClicked(e -> {
+                if (row2.contains(chargePercentage)) {
+                    moveUp(chargePercentage);
+                } else {
+                    moveDown(chargePercentage);
+                }
+            });
             buffs.add(chargePercentage);
         } else {
             chargePercentage = null;
@@ -277,12 +284,18 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         setTextForDescLabel(I18n.get().cooldownResumeDesc());
         keys.clear();
         btns.clear();
+        if (dischargeDetector != null) {
+            dischargeDetector.pause();
+        }
     }
 
     private void resume() {
         isPaused = false;
         initPauseResumeBtn(true);
         setTextForDescLabel(I18n.get().cooldownPauseDesc());
+        if (dischargeDetector != null) {
+            dischargeDetector.resume();
+        }
     }
 
     private Collection<? extends Group> addBuffPositionHandler(List<? extends Group> ls) {
