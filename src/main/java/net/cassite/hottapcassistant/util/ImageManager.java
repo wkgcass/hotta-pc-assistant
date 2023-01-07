@@ -38,6 +38,7 @@ public class ImageManager {
         "/images/global-launch-btn/launch-normal.png",
         "/images/icon/icon.ico",
         "/images/icon/icon.jpg",
+        "/images/icon/message-helper-icon.png",
         "/images/icon/pause.png",
         "/images/icon/play-button.png",
         "/images/icon/reloading.png",

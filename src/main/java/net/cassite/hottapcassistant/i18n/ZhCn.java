@@ -605,6 +605,7 @@ public class ZhCn extends I18n {
             CD指示器的重置图标：Reload icons created by IYAHICON - Flaticon
             CD指示器的暂停图标：Pause icons created by Hilmy Abiyyu A. - Flaticon
             CD指示器的恢复图标：Play button icons created by Roundicons - Flaticon
+            聊天消息辅助图标：Keyboard icons created by Freepik - Flaticon
             """;
     }
 
@@ -999,6 +1000,7 @@ public class ZhCn extends I18n {
     public String toolName(String name) {
         return switch (name) {
             case "world-boss-timer" -> "世界Boss计时器";
+            case "message-helper" -> "聊天消息辅助";
             default -> name;
         };
     }
