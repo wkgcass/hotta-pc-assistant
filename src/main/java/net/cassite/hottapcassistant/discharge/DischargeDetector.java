@@ -109,7 +109,7 @@ public class DischargeDetector {
             long now = System.currentTimeMillis();
             if (lastPaused) {
                 lastPaused = false;
-                lastBeginTs = System.currentTimeMillis();
+                lastBeginTs = now;
             }
             if (now - lastBeginTs < 25) {
                 Utils.delay(25 - (now - lastBeginTs));
