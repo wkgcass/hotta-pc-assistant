@@ -1024,7 +1024,6 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             stage.showAndWait();
         }
 
-        @SuppressWarnings("IntegerDivisionInFloatingPointContext")
         private boolean calculatePointsAndStore(Image img, Rect rect, Screen screen) {
             try {
                 var wImg = new WritableImage(
@@ -1052,13 +1051,18 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             } else {
                 ctx = DischargeCheckContext.of(bImg);
             }
-            DischargeCheckAlgorithm.DischargeCheckResult result;
+            DischargeCheckAlgorithm.DischargeCheckResult result = null;
             if (ctx != null) {
-                var algo = new SimpleDischargeCheckAlgorithm();
-                algo.init(ctx);
-                result = algo.check();
-            } else {
-                result = null;
+                for (int extraEnsure = 2; extraEnsure >= 0; --extraEnsure) {
+                    var args = new SimpleDischargeCheckAlgorithm.Args();
+                    args.extraEnsure = extraEnsure;
+                    var algo = new SimpleDischargeCheckAlgorithm(args);
+                    algo.init(ctx);
+                    result = algo.check();
+                    if (result.p() >= 0.9) {
+                        break;
+                    }
+                }
             }
             if (opt.scanDischargeDebug) {
                 var g = bImg.createGraphics();
@@ -1083,7 +1087,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             }
 
             int widthAfterCut = ctx.getMaxX() - ctx.getMinX();
-            int pointAdjust = widthAfterCut / 96;
+            int pointAdjust = widthAfterCut / 48;
 
             int midX = ctx.getInitialX();
             int topY = ctx.getInitialY() + pointAdjust;
@@ -1160,7 +1164,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 rect.h - cutTop - cutBot + 1);
             for (var p : points) {
                 p.x -= (int) (cutLeft * screen.getOutputScaleX());
+                if (p.x < 0) {
+                    p.x = 0;
+                }
                 p.y -= (int) (cutTop * screen.getOutputScaleY());
+                if (p.y < 0) {
+                    p.y = 0;
+                }
             }
             opt.scanDischargeCriticalPoints = points;
             return true;

@@ -51,7 +51,9 @@ public class DischargeTest extends Application {
             if (ctx != null) {
                 System.out.println("start from (" + ctx.getX() + ", " + ctx.getY() + ")");
 
-                var algo = new SimpleDischargeCheckAlgorithm(System.out::println);
+                var algo = new SimpleDischargeCheckAlgorithm(
+                    new SimpleDischargeCheckAlgorithm.Args(),
+                    System.out::println);
                 algo.init(ctx);
                 var result = algo.check();
                 System.out.println("current percentage of " + imgName + ": " + result.p() + "~" + result.pMax());

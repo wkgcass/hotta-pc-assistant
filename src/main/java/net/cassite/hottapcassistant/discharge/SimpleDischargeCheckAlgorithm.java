@@ -7,12 +7,25 @@ public class SimpleDischargeCheckAlgorithm implements DischargeCheckAlgorithm {
     private DischargeCheckContext ctx;
     private final Consumer<String> logger;
 
+    public static class Args {
+        public int falsePathLimit = 5;
+        public int jumpMovingPathLimit = falsePathLimit + 1;
+        public int extraEnsure = 2;
+    }
+
     public SimpleDischargeCheckAlgorithm() {
-        this(s -> {
+        this(new Args());
+    }
+
+    public SimpleDischargeCheckAlgorithm(Args args) {
+        this(args, s -> {
         });
     }
 
-    public SimpleDischargeCheckAlgorithm(Consumer<String> logger) {
+    public SimpleDischargeCheckAlgorithm(Args args, Consumer<String> logger) {
+        this.falsePathLimit = args.falsePathLimit;
+        this.jumpMovingPathLimit = args.jumpMovingPathLimit;
+        this.extraEnsure = args.extraEnsure;
         this.logger = logger;
     }
 
@@ -21,9 +34,9 @@ public class SimpleDischargeCheckAlgorithm implements DischargeCheckAlgorithm {
         this.ctx = ctx;
     }
 
-    private static final int falsePathLimit = 5;
-    private static final int jumpMovingPathLimit = falsePathLimit + 1;
-    private static final int extraEnsure = 2;
+    private final int falsePathLimit;
+    private final int jumpMovingPathLimit;
+    private final int extraEnsure;
 
     @Override
     public DischargeCheckResult check() {
