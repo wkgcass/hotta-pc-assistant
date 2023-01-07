@@ -36,7 +36,9 @@ public abstract class AbstractTool implements Tool {
             return;
         }
         if (stage != null) {
-            stage.setTitle(getName());
+            if (stage.getTitle() == null || stage.getTitle().isBlank()) {
+                stage.setTitle(getName());
+            }
             stage.setOnCloseRequest(e -> {
                 stage = null;
                 terminate0();
