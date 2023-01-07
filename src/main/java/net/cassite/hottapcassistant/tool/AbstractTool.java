@@ -40,8 +40,8 @@ public abstract class AbstractTool implements Tool {
                 stage.setTitle(getName());
             }
             stage.setOnCloseRequest(e -> {
-                stage = null;
                 terminate0();
+                stage = null;
             });
             stage.show();
         }

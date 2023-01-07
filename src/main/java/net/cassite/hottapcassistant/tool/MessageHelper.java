@@ -44,6 +44,15 @@ public class MessageHelper extends AbstractTool implements Tool {
         terminate();
     }
 
+    @Override
+    protected void terminate0() {
+        var stage = (S) this.stage;
+        if (stage != null) {
+            GlobalScreen.removeNativeKeyListener(stage);
+            GlobalScreenUtils.disable(stage);
+        }
+    }
+
     private static class S extends Stage implements NativeKeyListener {
         private static double lastX;
         private static double lastY;
@@ -128,13 +137,6 @@ public class MessageHelper extends AbstractTool implements Tool {
 
             GlobalScreenUtils.enable(this);
             GlobalScreen.addNativeKeyListener(this);
-        }
-
-        @Override
-        public void close() {
-            GlobalScreen.removeNativeKeyListener(this);
-            GlobalScreenUtils.disable(this);
-            super.close();
         }
 
         @Override

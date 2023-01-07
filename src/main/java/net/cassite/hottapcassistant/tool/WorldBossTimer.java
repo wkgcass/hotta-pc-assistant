@@ -61,6 +61,14 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         return new S();
     }
 
+    @Override
+    protected void terminate0() {
+        var stage = (S) this.stage;
+        if (stage != null) {
+            stage.etaTimer.stop();
+        }
+    }
+
     private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
         .parseCaseInsensitive()
         .append(ISO_LOCAL_DATE)
@@ -469,12 +477,6 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         private void initAccounts(List<AccountInfo> list) {
             if (list == null) return;
             accounts.setItems(FXCollections.observableList(list));
-        }
-
-        @Override
-        public void close() {
-            etaTimer.stop();
-            super.close();
         }
     }
 

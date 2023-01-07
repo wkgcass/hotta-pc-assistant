@@ -41,6 +41,14 @@ public class LansBrainWash extends AbstractTool implements Tool {
         return new S();
     }
 
+    @Override
+    protected void terminate0() {
+        var stage = (S) this.stage;
+        if (stage != null) {
+            stage.stop();
+        }
+    }
+
     private static class S extends Stage {
         private final SimpleBooleanProperty started = new SimpleBooleanProperty(false);
         private AudioClip[] audio = null;
@@ -157,12 +165,6 @@ public class LansBrainWash extends AbstractTool implements Tool {
             if (play != null) {
                 play.stop();
             }
-        }
-
-        @Override
-        public void close() {
-            stop();
-            super.close();
         }
 
         private static class Play extends AnimationTimer {
