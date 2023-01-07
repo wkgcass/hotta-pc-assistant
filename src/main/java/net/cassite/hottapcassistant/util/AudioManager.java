@@ -8,6 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AudioManager {
     public static final String[] ALL = new String[]{
+        "/audio/lan/ai-zhe-shi.wav",
+        "/audio/lan/shei-de-xin-yu.wav",
+        "/audio/lan/wo-hui-ji-zhu-zhe-yi-ke-de.wav",
+        "/audio/lan/you-fan-ying-le.wav",
         "/audio/simulacra/pei-pei/skill03.wav",
         "/audio/simulacra/pei-pei/skill02.wav",
         "/audio/simulacra/pei-pei/skill01.wav",

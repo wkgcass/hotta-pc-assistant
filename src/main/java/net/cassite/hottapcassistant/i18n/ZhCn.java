@@ -1001,6 +1001,7 @@ public class ZhCn extends I18n {
         return switch (name) {
             case "world-boss-timer" -> "世界Boss计时器";
             case "message-helper" -> "聊天消息辅助";
+            case "lan's-brain-wash" -> "岚的洗脑循环";
             default -> name;
         };
     }
@@ -1186,5 +1187,25 @@ public class ZhCn extends I18n {
     @Override
     public String worldBossTimerInvalidImportingData() {
         return "导入数据错误";
+    }
+
+    @Override
+    public String brainWashLanStartBtn() {
+        return "开始";
+    }
+
+    @Override
+    public String brainWashLanStopBtn() {
+        return "停止";
+    }
+
+    @Override
+    public String brainWashLanFreqSliderDesc() {
+        return "洗脑频率（单位：次/分钟）";
+    }
+
+    @Override
+    public String brainWashLanRandTimeSliderDesc() {
+        return "随机时间区间（单位：秒）";
     }
 }

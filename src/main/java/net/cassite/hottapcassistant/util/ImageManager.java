@@ -15,6 +15,7 @@ public class ImageManager {
         "/images/buff/charge.png",
         "/images/buff/dodge.png",
         "/images/buff/hui-qi.png",
+        "/images/buff/lan-simulacra.png",
         "/images/buff/li-zi-zhuo-shao.png",
         "/images/buff/ling-guang-yu-jing.png",
         "/images/buff/ling-guang-taunt.png",

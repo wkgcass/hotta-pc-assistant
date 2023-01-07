@@ -427,4 +427,12 @@ public abstract class I18n {
     public abstract String worldBossTimerNoDataToImport();
 
     public abstract String worldBossTimerInvalidImportingData();
+
+    public abstract String brainWashLanStartBtn();
+
+    public abstract String brainWashLanStopBtn();
+
+    public abstract String brainWashLanFreqSliderDesc();
+
+    public abstract String brainWashLanRandTimeSliderDesc();
 }
