@@ -14,6 +14,7 @@ public class WeaponRef {
     public static List<WeaponRef> all() {
         //noinspection unchecked
         Pair<Integer, Supplier<Weapon>>[] ls = new Pair[]{
+            new Pair<Integer, Supplier<Weapon>>(36, PianGuangLingYuWeapon::new),
             new Pair<Integer, Supplier<Weapon>>(20, LingGuangWeapon::new),
             new Pair<Integer, Supplier<Weapon>>(1, GeLaiPuNiWeapon::new),
             new Pair<Integer, Supplier<Weapon>>(2, LiuQuanCheXinWeapon::new),
@@ -49,7 +50,7 @@ public class WeaponRef {
             new Pair<Integer, Supplier<Weapon>>(33, ShuangDongChangQiangWeapon::new),
             new Pair<Integer, Supplier<Weapon>>(34, YeQueZhiYuWeapon::new),
             new Pair<Integer, Supplier<Weapon>>(35, ZhongJieZheWeapon::new),
-            // next is 36
+            // next is 37
         };
         var ret = new ArrayList<WeaponRef>();
         for (var pair : ls) {

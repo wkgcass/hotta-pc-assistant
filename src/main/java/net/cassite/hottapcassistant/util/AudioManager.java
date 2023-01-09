@@ -119,6 +119,11 @@ public class AudioManager {
         "/audio/simulacra/xi-er-da/skill03.wav",
         "/audio/simulacra/xi-er-da/skill02.wav",
         "/audio/simulacra/xi-er-da/skill01.wav",
+        "/audio/simulacra/yi-ka-luo-si/skill05.wav",
+        "/audio/simulacra/yi-ka-luo-si/skill04.wav",
+        "/audio/simulacra/yi-ka-luo-si/skill03.wav",
+        "/audio/simulacra/yi-ka-luo-si/skill02.wav",
+        "/audio/simulacra/yi-ka-luo-si/skill01.wav",
     };
     private static final AudioManager instance = new AudioManager();
 

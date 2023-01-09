@@ -737,6 +737,7 @@ public class ZhCn extends I18n {
             case "shuāng dòng cháng qiāng" -> "霜冻长枪";
             case "yè què zhī yǔ" -> "夜雀之羽";
             case "zhōng jié zhě" -> "终结者";
+            case "piàn guāng líng yǚ" -> "片光零羽";
             default -> name;
         };
     }
@@ -800,6 +801,7 @@ public class ZhCn extends I18n {
             case "zhiHanChangYu" -> "滞寒场域";
             case "moBiWuSiBuff" -> "莫比乌斯提前离开领域增伤";
             case "leiDianGanYing" -> "雷电感应";
+            case "guiJiCounter" -> "归寂可用次数";
             default -> name;
         };
     }

@@ -338,9 +338,11 @@ public class Utils {
         if (index < 10) {
             n = "0" + n;
         }
-        return new AudioWrapper(
-            AudioManager.get().loadAudio("/audio/simulacra/" + name + "/skill" + n + ".wav")
-        );
+        var audio = AudioManager.get().loadAudio("/audio/simulacra/" + name + "/skill" + n + ".wav");
+        if (audio == null) {
+            return null;
+        }
+        return new AudioWrapper(audio);
     }
 
     public static AudioGroup getSkillAudioGroup(String name, int to) {
