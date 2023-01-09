@@ -198,6 +198,10 @@ public class WeaponContext implements WithExtraData {
     }
 
     public boolean switchWeapon(int index, boolean discharge) {
+        return switchWeapon(index, discharge, 0);
+    }
+
+    public boolean switchWeapon(int index, boolean discharge, long subtractSwitchWeaponCD) {
         var w = weapons.get(index);
         if (current == w) {
             return false;
@@ -208,7 +212,9 @@ public class WeaponContext implements WithExtraData {
         Logger.info("weapon switched from " + current.getName() + " to " + w.getName() + (discharge ? " and discharges" : ""));
         int oldIndex = weapons.indexOf(current);
         if (oldIndex != -1) {
-            weaponSwitchCD[oldIndex] = getTotalSwitchWeaponCoolDown();
+            var cd = getTotalSwitchWeaponCoolDown();
+            cd = Utils.subtractLongGE0(cd, subtractSwitchWeaponCD);
+            weaponSwitchCD[oldIndex] = cd;
         }
         current = w;
         for (var ww : weapons) {

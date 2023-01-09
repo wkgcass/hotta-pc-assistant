@@ -511,10 +511,11 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (dischargeDetector != null) {
             discharge = dischargeDetector.isFullCharge();
         }
+        var holdTime = current - lastWeaponButtonDownTs[index];
         if (!discharge) {
-            discharge = current - lastWeaponButtonDownTs[index] > 180;
+            discharge = holdTime > 180;
         }
-        boolean ok = ctx.switchWeapon(index, discharge);
+        boolean ok = ctx.switchWeapon(index, discharge, holdTime);
         if (!ok) {
             return;
         }
