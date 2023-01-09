@@ -4,6 +4,8 @@ import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.*;
+import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
+import net.cassite.hottapcassistant.entity.WeaponArgs;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
@@ -12,6 +14,7 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
     private int subSkillCount = 0;
     private long antiFalseTouch = 0;
     private final WeaponSpecialInfo guiJiCounter = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("gui-ji"), "guiJiCounter", I18n.get().buffName("guiJiCounter"));
+    private boolean autoFillSubSkill = false;
 
     public PianGuangLingYuWeapon() {
         super(60);
@@ -51,6 +54,13 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public void init(WeaponArgs args) {
+        if (args instanceof AssistantCoolDownOptions) {
+            autoFillSubSkill = ((AssistantCoolDownOptions) args).autoFillPianGuangLingYuSubSkill;
+        }
+    }
+
+    @Override
     protected void threadTick(long ts, long delta) {
         antiFalseTouch = Utils.subtractLongGE0(antiFalseTouch, delta);
     }
@@ -77,8 +87,10 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
-        if (w == this && discharge) {
-            subSkillCount = 2;
+        if (w == this) {
+            if (discharge || autoFillSubSkill) {
+                subSkillCount = 2;
+            }
         }
     }
 

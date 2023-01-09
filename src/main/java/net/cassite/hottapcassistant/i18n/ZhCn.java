@@ -858,6 +858,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String cooldownAutoFillPianGuangLingYuSubSkillCheckbox() {
+        return "切换到片光零羽时总是填充2层子技能";
+    }
+
+    @Override
     public String scanDischargeConfigureTips() {
         return """
             请先进入游戏将充能打到即将充满的状态（90%以上）

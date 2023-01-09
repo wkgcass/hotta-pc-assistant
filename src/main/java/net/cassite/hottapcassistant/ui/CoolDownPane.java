@@ -893,6 +893,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     FontManager.setFont(this);
                 }};
                 vbox.getChildren().add(playAudioCheckBox);
+                vbox.getChildren().add(new Separator() {{
+                    setPadding(new Insets(5, 0, 5, 0));
+                }});
+                var autoFillPianGuangLingYuSubSkillCheckbox = new CheckBox(I18n.get().cooldownAutoFillPianGuangLingYuSubSkillCheckbox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(autoFillPianGuangLingYuSubSkillCheckbox);
 
                 options.addListener((ob, old, now) -> {
                     if (now == null) return;
@@ -902,6 +909,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
                     applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                     playAudioCheckBox.setSelected(now.playAudio);
+                    autoFillPianGuangLingYuSubSkillCheckbox.setSelected(now.autoFillPianGuangLingYuSubSkill);
                 });
                 scanDischargeCheckbox.setOnAction(e -> {
                     var selected = scanDischargeCheckbox.isSelected();
@@ -946,6 +954,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 playAudioCheckBox.setOnAction(e -> {
                     var opt = options.get();
                     opt.playAudio = playAudioCheckBox.isSelected();
+                    saveConfig();
+                });
+                autoFillPianGuangLingYuSubSkillCheckbox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.autoFillPianGuangLingYuSubSkill = autoFillPianGuangLingYuSubSkillCheckbox.isSelected();
                     saveConfig();
                 });
             }

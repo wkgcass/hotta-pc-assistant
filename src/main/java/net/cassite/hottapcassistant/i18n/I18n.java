@@ -300,6 +300,8 @@ public abstract class I18n {
 
     public abstract String cooldownPlayAudioCheckBox();
 
+    public abstract String cooldownAutoFillPianGuangLingYuSubSkillCheckbox();
+
     public abstract String scanDischargeConfigureTips();
 
     public abstract String positionOfDischargeTip();
