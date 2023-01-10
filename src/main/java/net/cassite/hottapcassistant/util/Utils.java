@@ -141,6 +141,11 @@ public class Utils {
         return robot.awtCapture(x, y, width, height);
     }
 
+    public static BufferedImage robotNativeCapture(int x, int y, int width, int height) {
+        checkAndInitRobot();
+        return robot.nativeCapture(x, y, width, height);
+    }
+
     public static void moveAndClickOnThread(double x, double y, Key key) {
         execRobotOnThread(r -> {
             r.mouseMove(x, y);

@@ -123,8 +123,7 @@ public class DischargeDetector {
             }
 
             long beforeCap = System.currentTimeMillis();
-            var img = Utils.robotAWTCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h);
-            var bImg = Utils.convertToBufferedImage(img);
+            var bImg = Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h);
             long afterCap = System.currentTimeMillis();
             if (afterCap - beforeCap >= 24) {
                 Logger.warn("screen capture costs too much time: " + (afterCap - beforeCap) + "ms");
@@ -176,7 +175,7 @@ public class DischargeDetector {
             }
 
             if (debug) {
-                int pointRadius = img.getWidth(null) / 15;
+                int pointRadius = bImg.getWidth() / 15;
                 var g = bImg.createGraphics();
                 for (var i = 0; i < colors.size() - 1; ++i) {
                     var p = points.get(i);
