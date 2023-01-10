@@ -15,8 +15,12 @@ import static com.sun.jna.platform.win32.WinGDI.*;
 import static com.sun.jna.platform.win32.WinNT.HANDLE;
 
 public class JNAScreenShot {
+    private static HDC windowDC;
+
     public static BufferedImage getScreenshot(Rectangle bounds) {
-        HDC windowDC = GDI.GetDC(USER.GetDesktopWindow());
+        if (windowDC == null) {
+            windowDC = GDI.GetDC(USER.GetDesktopWindow());
+        }
         HBITMAP outputBitmap = GDI.CreateCompatibleBitmap(windowDC, bounds.width, bounds.height);
         try {
             HDC blitDC = GDI.CreateCompatibleDC(windowDC);
