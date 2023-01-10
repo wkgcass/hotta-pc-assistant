@@ -9,6 +9,8 @@ open module net.cassite.hottapcassistant {
     requires vjson;
     requires com.github.kwhat.jnativehook;
     requires org.controlsfx.controls;
+    requires com.sun.jna;
+    requires com.sun.jna.platform;
     exports net.cassite.hottapcassistant;
     exports net.cassite.hottapcassistant.test;
 }
