@@ -10,6 +10,7 @@ import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class DischargeDetector {
     private final double capScale;
     private final List<Point> points;
     private final boolean debug;
+    private final boolean nativeCapture;
     private volatile boolean isPaused = false;
 
     private int lastDetectedPoints = 0;
@@ -26,11 +28,12 @@ public class DischargeDetector {
     private int skipDetectionCount = 0;
     private final Stabilizer stabilizer = new Stabilizer();
 
-    public DischargeDetector(Rect cap, double capScale, List<Point> points, boolean debug) {
+    public DischargeDetector(Rect cap, double capScale, List<Point> points, boolean nativeCapture, boolean debug) {
         this.cap = cap;
         this.capScale = capScale;
         this.points = points;
         this.debug = debug;
+        this.nativeCapture = nativeCapture;
     }
 
     public boolean isRunning() {
@@ -125,7 +128,13 @@ public class DischargeDetector {
             }
 
             long beforeCap = System.currentTimeMillis();
-            var bImg = Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale);
+            BufferedImage bImg;
+            if (nativeCapture) {
+                bImg = Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale);
+            } else {
+                var img = Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale);
+                bImg = Utils.convertToBufferedImage(img);
+            }
             long afterCap = System.currentTimeMillis();
             if (afterCap - beforeCap >= 24) {
                 Logger.warn("screen capture costs too much time: " + (afterCap - beforeCap) + "ms");

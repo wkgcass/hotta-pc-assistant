@@ -843,6 +843,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String cooldownScanDischargeUseNativeCaptureCheckBox() {
+        return "使用native屏幕捕捉（beta）";
+    }
+
+    @Override
     public String cooldownScanDischargeResetBtn() {
         return "重置连携充能检测配置";
     }

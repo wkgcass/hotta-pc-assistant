@@ -13,6 +13,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public Rect scanDischargeRect;
     public double scanDischargeCapScale;
     public List<Point> scanDischargeCriticalPoints;
+    public boolean scanDischargeNativeCapture;
     public boolean applyDischargeForYingZhi;
     public boolean playAudio;
     public boolean autoFillPianGuangLingYuSubSkill;
@@ -25,6 +26,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("scanDischargeCapScale", (o, it) -> o.scanDischargeCapScale = it, DoubleRule.get())
         .put("scanDischargeCriticalPoints", (o, it) -> o.scanDischargeCriticalPoints = it,
             new ArrayRule<List<Point>, Point>(ArrayList::new, List::add, Point.rule))
+        .put("scanDischargeNativeCapture", (o, it) -> o.scanDischargeNativeCapture = it, BoolRule.get())
         .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
         .put("playAudio", (o, it) -> o.playAudio = it, BoolRule.get())
         .put("autoFillPianGuangLingYuSubSkill", (o, it) -> o.autoFillPianGuangLingYuSubSkill = it, BoolRule.get())
@@ -53,6 +55,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         if (scanDischargeCriticalPoints != null) {
             ob.putArray("scanDischargeCriticalPoints", a -> scanDischargeCriticalPoints.forEach(e -> a.addInst(e.toJson())));
         }
+        ob.put("scanDischargeNativeCapture", scanDischargeNativeCapture);
         ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
         ob.put("playAudio", playAudio);
         ob.put("autoFillPianGuangLingYuSubSkill", autoFillPianGuangLingYuSubSkill);

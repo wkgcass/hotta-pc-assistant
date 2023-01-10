@@ -875,6 +875,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 }};
                 vbox.getChildren().add(scanDischargeDebugCheckbox);
                 vbox.getChildren().add(new VPadding(4));
+                var scanDischargeUseNativeCaptureCheckbox = new CheckBox(I18n.get().cooldownScanDischargeUseNativeCaptureCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(scanDischargeUseNativeCaptureCheckbox);
+                vbox.getChildren().add(new VPadding(4));
                 var scanDischargeResetConfigBtn = new Button(I18n.get().cooldownScanDischargeResetBtn()) {{
                     FontManager.setFont(this);
                 }};
@@ -907,6 +912,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         scanDischargeCheckbox.setSelected(true);
                     }
                     scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
+                    scanDischargeUseNativeCaptureCheckbox.setSelected(now.scanDischargeNativeCapture);
                     applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                     playAudioCheckBox.setSelected(now.playAudio);
                     autoFillPianGuangLingYuSubSkillCheckbox.setSelected(now.autoFillPianGuangLingYuSubSkill);
@@ -936,6 +942,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 scanDischargeDebugCheckbox.setOnAction(e -> {
                     var opt = options.get();
                     opt.scanDischargeDebug = scanDischargeDebugCheckbox.isSelected();
+                    saveConfig();
+                });
+                scanDischargeUseNativeCaptureCheckbox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.scanDischargeNativeCapture = scanDischargeUseNativeCaptureCheckbox.isSelected();
                     saveConfig();
                 });
                 scanDischargeResetConfigBtn.setOnAction(e -> {

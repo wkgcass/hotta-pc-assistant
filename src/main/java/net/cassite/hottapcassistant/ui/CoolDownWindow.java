@@ -79,6 +79,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 options.scanDischargeRect,
                 options.scanDischargeCapScale,
                 options.scanDischargeCriticalPoints,
+                options.scanDischargeNativeCapture,
                 options.scanDischargeDebug
             );
         }
