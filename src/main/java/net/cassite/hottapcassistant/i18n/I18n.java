@@ -1,12 +1,5 @@
 package net.cassite.hottapcassistant.i18n;
 
-import net.cassite.hottapcassistant.tool.WorldBossTimer;
-
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-
-import static java.time.temporal.ChronoField.*;
-
 public abstract class I18n {
     private static volatile I18n impl;
 
@@ -416,17 +409,9 @@ public abstract class I18n {
 
     public abstract String worldBossTimerInvalidSwitchLineCD();
 
-    protected static final DateTimeFormatter nextBossInfoTimeFormatter = new DateTimeFormatterBuilder()
-        .parseCaseInsensitive()
-        .append(new DateTimeFormatterBuilder()
-            .appendValue(HOUR_OF_DAY, 2)
-            .appendLiteral(':')
-            .appendValue(MINUTE_OF_HOUR, 2)
-            .optionalStart()
-            .toFormatter())
-        .toFormatter();
+    public abstract String worldBossTimerNextBossInfoDefaultTemplate();
 
-    public abstract String worldBossTimerNextBossInfo(WorldBossTimer.BossInfo last, long remainingMillis);
+    public abstract String worldBossTimerInvalidTemplate();
 
     public abstract String worldBossTimerNoDataToImport();
 

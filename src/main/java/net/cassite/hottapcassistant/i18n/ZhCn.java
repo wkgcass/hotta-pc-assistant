@@ -1,11 +1,5 @@
 package net.cassite.hottapcassistant.i18n;
 
-import net.cassite.hottapcassistant.tool.WorldBossTimer;
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
 public class ZhCn extends I18n {
     @Override
     public String id() {
@@ -1179,16 +1173,24 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String worldBossTimerNextBossInfo(WorldBossTimer.BossInfo last, long remainingMillis) {
-        if (remainingMillis > 0) {
-            return "预计下一个[" + last.name + "]将于" + nextBossInfoTimeFormatter.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(
-                last.lastKnownKillTs + last.spawnMinutes * 60L * 1000
-            ), ZoneId.systemDefault())) + "在" + last.line + "线刷新，剩余" + (remainingMillis / 1000 / 60) + "分钟";
-        } else {
-            return "预计下一个[" + last.name + "]将于" + nextBossInfoTimeFormatter.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(
-                last.lastKnownKillTs + last.spawnMinutes * 60L * 1000
-            ), ZoneId.systemDefault())) + "在" + last.line + "线刷新，已刷新" + (-remainingMillis / 1000 / 60) + "分钟";
-        }
+    public String worldBossTimerNextBossInfoDefaultTemplate() {
+        return """
+            msg = ('预计下一个[' + name + ']将于' + hh + ':' + mm + '在' + line + '线刷新，')
+            if: remainingMillis > 0; then {
+              msg += ('剩余') + (remainingMillis / 1000 / 60)
+            } else {
+              msg += ('已刷新') + (-remainingMillis / 1000 / 60)
+            }
+            msg += ('分钟')
+            if: msg.length < 35; then {
+              msg += ('，请换线的大佬喊一声再换')
+            }
+            """;
+    }
+
+    @Override
+    public String worldBossTimerInvalidTemplate() {
+        return "喊话模板配置错误";
     }
 
     @Override

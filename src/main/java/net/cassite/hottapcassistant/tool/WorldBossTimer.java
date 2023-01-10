@@ -25,6 +25,9 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.*;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
+import vjson.ex.ParserException;
+import vjson.pl.InterpreterBuilder;
+import vjson.util.Manager;
 import vjson.util.ObjectBuilder;
 
 import java.io.File;
@@ -91,6 +94,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         private final TableView<AccountInfo> accounts = new TableView<>();
         private final AnimationTimer etaTimer;
 
+        private final TextArea nextBossInfoTemplate;
+
         S() throws Exception {
             ScrollBar hScrollBar = (ScrollBar) table.lookup(".scroll-bar:horizontal");
             if (hScrollBar != null) {
@@ -152,6 +157,12 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 FontManager.setFont(this);
                 setPrefWidth(120);
                 setPrefHeight(60);
+            }};
+            nextBossInfoTemplate = new TextArea(I18n.get().worldBossTimerNextBossInfoDefaultTemplate()) {{
+                FontManager.setNoto(this);
+                setPrefWidth(120);
+                setPrefHeight(100);
+                setWrapText(false);
             }};
             var exportBtn = new Button(I18n.get().worldBossTimerExportBtn()) {{
                 FontManager.setFont(this);
@@ -285,7 +296,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                             new VPadding(5),
                             clearBtn,
                             new VPadding(60),
-                            copyNextBossInfoBtn
+                            copyNextBossInfoBtn,
+                            new VPadding(5),
+                            nextBossInfoTemplate
                         )
                     ),
                     new Separator() {{
@@ -412,22 +425,67 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             accounts.getColumns().addAll(lastLineColumn, nameColumn, lastSwitchLineTsColumn, etaColumn, commentColumn);
         }
 
+        private String lastUsedTemplate = null;
+
         private void copyNextBossInfo() {
             var selected = table.getSelectionModel().getSelectedItem();
             if (selected == null) {
                 return;
             }
+            var template = nextBossInfoTemplate.getText();
             var remainingMillis = selected.lastKnownKillTs + selected.spawnMinutes * 60L * 1000 - System.currentTimeMillis();
-            var s = I18n.get().worldBossTimerNextBossInfo(selected, remainingMillis);
-            var content = new ClipboardContent();
-            content.putString(s);
-            Clipboard.getSystemClipboard().setContent(content);
+            var spawnTime =
+                ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(selected.lastKnownKillTs + selected.spawnMinutes * 60L * 1000),
+                    ZoneId.systemDefault());
+            var hh = "" + spawnTime.getHour();
+            if (hh.length() < 2) {
+                hh = "0" + hh;
+            }
+            var mm = "" + spawnTime.getMinute();
+            if (mm.length() < 2) {
+                mm = "0" + mm;
+            }
+            String mainScript = "{" +
+                "var msg = ('')\n" +
+                "var name = ('" + selected.name + "')\n" +
+                "var hh = ('" + hh + "')\n" +
+                "var mm = ('" + mm + "')\n" +
+                "var line = " + selected.line + "\n" +
+                "var remainingMillis = " + remainingMillis + "\n" +
+                "#include \"template\"\n" +
+                "}\n";
+            Manager<String> manager = (name) -> {
+                if (name.equals("main")) return () -> mainScript;
+                else if (name.equals("template")) return () -> template;
+                return null;
+            };
+            String msg = null;
+            try {
+                var interpreter = new InterpreterBuilder().compile(manager, "main");
+                var explorer = interpreter.getExplorer();
+                var mem = interpreter.execute();
+                msg = (String) explorer.getVariable("msg", mem);
+            } catch (ParserException e) {
+                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().worldBossTimerInvalidTemplate() + ": " + e.getMessage()).show();
+            }
+            if (msg != null) {
+                var content = new ClipboardContent();
+                content.putString(msg);
+                Clipboard.getSystemClipboard().setContent(content);
+
+                if (lastUsedTemplate == null || !lastUsedTemplate.equals(template)) {
+                    save();
+                }
+                lastUsedTemplate = template;
+            }
         }
 
         private JSON.Object genConfig() {
             var config = new Config();
             config.list = new ArrayList<>(table.getItems());
             config.accounts = new ArrayList<>(accounts.getItems());
+            config.template = nextBossInfoTemplate.getText();
             return config.toJson();
         }
 
@@ -467,6 +525,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         private void init(Config c) {
             initList(c.list);
             initAccounts(c.accounts);
+            initTemplate(c.template);
         }
 
         private void initList(List<BossInfo> list) {
@@ -478,17 +537,25 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             if (list == null) return;
             accounts.setItems(FXCollections.observableList(list));
         }
+
+        private void initTemplate(String template) {
+            if (template != null && !template.isBlank()) {
+                nextBossInfoTemplate.setText(template);
+            }
+        }
     }
 
     private static class Config {
         List<BossInfo> list;
         List<AccountInfo> accounts;
+        String template;
 
         static final Rule<Config> rule = new ObjectRule<>(Config::new)
             .put("list", (o, it) -> o.list = it,
                 new ArrayRule<List<BossInfo>, BossInfo>(ArrayList::new, List::add, BossInfo.rule))
             .put("accounts", (o, it) -> o.accounts = it,
-                new ArrayRule<List<AccountInfo>, AccountInfo>(ArrayList::new, List::add, AccountInfo.rule));
+                new ArrayRule<List<AccountInfo>, AccountInfo>(ArrayList::new, List::add, AccountInfo.rule))
+            .put("template", (o, it) -> o.template = it, StringRule.get());
 
         JSON.Object toJson() {
             var ob = new ObjectBuilder();
@@ -497,6 +564,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             }
             if (accounts != null) {
                 ob.putArray("accounts", arr -> accounts.forEach(e -> arr.addInst(e.toJson())));
+            }
+            if (template != null) {
+                ob.put("template", template);
             }
             return ob.build();
         }
