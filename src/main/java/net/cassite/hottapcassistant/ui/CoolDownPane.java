@@ -1099,6 +1099,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 return false;
             }
 
+            var pointsFound = false;
             var points = new ArrayList<Point>();
             int widthAfterCut = ctx.getMaxX() - ctx.getMinX();
             pointAdjustLoop:
@@ -1152,6 +1153,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         continue pointAdjustLoop;
                     }
                 }
+                pointsFound = true;
                 break;
             }
 
@@ -1168,6 +1170,10 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 bImg.flush();
                 final var fBImg = bImg;
                 Platform.runLater(() -> Utils.copyImageToClipboard(fBImg));
+            }
+
+            if (!pointsFound) {
+                return false;
             }
 
             // cut rect and move the points
