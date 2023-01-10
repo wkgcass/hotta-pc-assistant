@@ -1,3 +1,7 @@
+/*
+ * copied and modified from https://stackoverflow.com/questions/24668407/how-to-take-a-screenshot-of-desktop-fast-with-java-in-windows-ffmpeg-etc
+ */
+
 package net.cassite.hottapcassistant.util;
 
 import com.sun.jna.Native;

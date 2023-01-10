@@ -9,11 +9,18 @@ import javafx.stage.Stage;
 import net.cassite.hottapcassistant.util.JNAScreenShot;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class NativeCaptureTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        var awtImg = JNAScreenShot.getScreenshot(new Rectangle(100, 200, 300, 400));
+        BufferedImage awtImg = null;
+        for (int i = 0; i < 100; ++i) {
+            long start = System.currentTimeMillis();
+            awtImg = JNAScreenShot.getScreenshot(new Rectangle(100, 200, 300, 400));
+            long end = System.currentTimeMillis();
+            System.out.println("cost: " + (end - start) + "ms");
+        }
         if (awtImg == null) {
             throw new Exception("capturing failed");
         }
