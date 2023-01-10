@@ -127,6 +127,10 @@ public class RobotWrapper {
         }
         if (bi == null) {
             bi = Utils.convertToBufferedImage(awtCapture(x, y, width, height));
+        } else {
+            if (nativeCaptureErrors.add("x")) {
+                Logger.info("native capture succeeded: " + bi);
+            }
         }
         return bi;
     }
