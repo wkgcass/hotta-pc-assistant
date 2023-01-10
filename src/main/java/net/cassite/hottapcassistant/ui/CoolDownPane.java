@@ -941,6 +941,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 scanDischargeResetConfigBtn.setOnAction(e -> {
                     var opt = options.get();
                     opt.scanDischargeRect = null;
+                    opt.scanDischargeCapScale = 0;
                     opt.scanDischargeCriticalPoints = null;
                     opt.scanDischarge = false;
                     saveConfig();
@@ -1193,6 +1194,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 rect.y + cutTop,
                 rect.w - cutLeft - cutRight + 1,
                 rect.h - cutTop - cutBot + 1);
+            opt.scanDischargeCapScale = screen.getOutputScaleX();
             for (var p : points) {
                 p.x -= (int) (cutLeft * screen.getOutputScaleX());
                 if (p.x < 0) {

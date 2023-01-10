@@ -16,6 +16,7 @@ import java.util.List;
 public class DischargeDetector {
     private volatile Thread thread;
     private final Rect cap;
+    private final double capScale;
     private final List<Point> points;
     private final boolean debug;
     private volatile boolean isPaused = false;
@@ -25,8 +26,9 @@ public class DischargeDetector {
     private int skipDetectionCount = 0;
     private final Stabilizer stabilizer = new Stabilizer();
 
-    public DischargeDetector(Rect cap, List<Point> points, boolean debug) {
+    public DischargeDetector(Rect cap, double capScale, List<Point> points, boolean debug) {
         this.cap = cap;
+        this.capScale = capScale;
         this.points = points;
         this.debug = debug;
     }
@@ -123,7 +125,7 @@ public class DischargeDetector {
             }
 
             long beforeCap = System.currentTimeMillis();
-            var bImg = Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h);
+            var bImg = Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale);
             long afterCap = System.currentTimeMillis();
             if (afterCap - beforeCap >= 24) {
                 Logger.warn("screen capture costs too much time: " + (afterCap - beforeCap) + "ms");

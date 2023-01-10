@@ -77,6 +77,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         } else {
             dischargeDetector = new DischargeDetector(
                 options.scanDischargeRect,
+                options.scanDischargeCapScale,
                 options.scanDischargeCriticalPoints,
                 options.scanDischargeDebug
             );
