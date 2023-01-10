@@ -23,5 +23,7 @@ public class NativeCaptureTest extends Application {
         var scene = new Scene(pane);
         primaryStage.setScene(scene);
         pane.getChildren().add(new ImageView(fxImg));
+
+        primaryStage.show();
     }
 }
