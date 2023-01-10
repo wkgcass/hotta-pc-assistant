@@ -1192,8 +1192,8 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             opt.scanDischargeRect = new Rect(
                 rect.x + cutLeft,
                 rect.y + cutTop,
-                rect.w - cutLeft - cutRight + 1,
-                rect.h - cutTop - cutBot + 1);
+                rect.w - cutLeft - cutRight + 2,
+                rect.h - cutTop - cutBot + 2);
             opt.scanDischargeCapScale = screen.getOutputScaleX();
             for (var p : points) {
                 p.x -= (int) (cutLeft * screen.getOutputScaleX());

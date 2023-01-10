@@ -102,7 +102,17 @@ public class RobotWrapper {
     public BufferedImage nativeCapture(int x, int y, int width, int height, double scale) {
         BufferedImage bi = null;
         try {
-            bi = JNAScreenShot.getScreenshot(new Rectangle((int) (x * scale), (int) (y * scale), (int) (width * scale) + 1, (int) (height * scale) + 1));
+            double doubleWidth = width * scale;
+            int intWidth = (int) doubleWidth;
+            if (doubleWidth != intWidth) {
+                ++intWidth;
+            }
+            double doubleHeight = height * scale;
+            int intHeight = (int) doubleHeight;
+            if (doubleHeight != intHeight) {
+                ++intHeight;
+            }
+            bi = JNAScreenShot.getScreenshot(new Rectangle((int) (x * scale), (int) (y * scale), intWidth, intHeight));
         } catch (Throwable t) {
             String msg = t.getMessage();
             if (msg == null) msg = "";
