@@ -1099,7 +1099,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 return false;
             }
 
-            var pointsFound = false;
+            var pointAdjustFound = 0;
             var points = new ArrayList<Point>();
             int widthAfterCut = ctx.getMaxX() - ctx.getMinX();
             pointAdjustLoop:
@@ -1153,7 +1153,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         continue pointAdjustLoop;
                     }
                 }
-                pointsFound = true;
+                pointAdjustFound = pointAdjust;
                 break;
             }
 
@@ -1167,12 +1167,19 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     g.setPaint(new java.awt.Color(rgb));
                     g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius * 2, pointRadius * 2);
                 }
+                g.setPaint(new java.awt.Color(255, 0, 0));
+                g.setFont(new Font(null, Font.BOLD, 16));
+                if (pointAdjustFound != 0) {
+                    g.drawString("adj:" + pointAdjustFound, 10, 20);
+                } else {
+                    g.drawString("adj:null", 10, 20);
+                }
                 bImg.flush();
                 final var fBImg = bImg;
                 Platform.runLater(() -> Utils.copyImageToClipboard(fBImg));
             }
 
-            if (!pointsFound) {
+            if (pointAdjustFound == 0) {
                 return false;
             }
 
