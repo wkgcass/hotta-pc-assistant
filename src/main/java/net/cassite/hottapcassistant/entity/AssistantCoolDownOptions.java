@@ -11,6 +11,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public boolean scanDischarge;
     public boolean scanDischargeDebug;
     public Rect scanDischargeRect;
+    public double scanDischargeCapScale;
     public List<Point> scanDischargeCriticalPoints;
     public boolean applyDischargeForYingZhi;
     public boolean playAudio;
@@ -21,6 +22,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("scanDischarge", (o, it) -> o.scanDischarge = it, BoolRule.get())
         .put("scanDischargeDebug", (o, it) -> o.scanDischargeDebug = it, BoolRule.get())
         .put("scanDischargeRect", (o, it) -> o.scanDischargeRect = it, Rect.rule)
+        .put("scanDischargeCapScale", (o, it) -> o.scanDischargeCapScale = it, DoubleRule.get())
         .put("scanDischargeCriticalPoints", (o, it) -> o.scanDischargeCriticalPoints = it,
             new ArrayRule<List<Point>, Point>(ArrayList::new, List::add, Point.rule))
         .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
@@ -37,7 +39,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     }
 
     public boolean canEnableDischarge() {
-        return scanDischargeRect != null && scanDischargeCriticalPoints != null;
+        return scanDischargeRect != null && scanDischargeCapScale != 0 && scanDischargeCriticalPoints != null;
     }
 
     public JSON.Object toJson() {
@@ -47,6 +49,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         if (scanDischargeRect != null) {
             ob.putInst("scanDischargeRect", scanDischargeRect.toJson());
         }
+        ob.put("scanDischargeCapScale", scanDischargeCapScale);
         if (scanDischargeCriticalPoints != null) {
             ob.putArray("scanDischargeCriticalPoints", a -> scanDischargeCriticalPoints.forEach(e -> a.addInst(e.toJson())));
         }

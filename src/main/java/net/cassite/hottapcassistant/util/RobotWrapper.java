@@ -9,6 +9,9 @@ import javafx.stage.Screen;
 import net.cassite.hottapcassistant.entity.Key;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RobotWrapper {
     private final Robot robot;
@@ -92,6 +95,40 @@ public class RobotWrapper {
         var ls = mi.getResolutionVariants();
         if (ls.isEmpty()) return null;
         return ls.get(ls.size() - 1);
+    }
+
+    private static final Set<String> nativeCaptureErrors = new HashSet<>();
+
+    public BufferedImage nativeCapture(int x, int y, int width, int height, double scale) {
+        BufferedImage bi = null;
+        try {
+            double doubleWidth = width * scale;
+            int intWidth = (int) doubleWidth;
+            if (doubleWidth != intWidth) {
+                ++intWidth;
+            }
+            double doubleHeight = height * scale;
+            int intHeight = (int) doubleHeight;
+            if (doubleHeight != intHeight) {
+                ++intHeight;
+            }
+            bi = JNAScreenShot.getScreenshot(new Rectangle((int) (x * scale), (int) (y * scale), intWidth, intHeight));
+        } catch (Throwable t) {
+            String msg = t.getMessage();
+            if (msg == null) msg = "";
+            if (nativeCaptureErrors.add(msg)) {
+                Logger.error("failed to capture using jna", t);
+            }
+        }
+        if (bi == null) {
+            if (nativeCaptureErrors.add("null")) {
+                Logger.error("failed to capture using jna: result is null");
+            }
+        }
+        if (bi == null) {
+            bi = Utils.convertToBufferedImage(awtCapture(x, y, width, height));
+        }
+        return bi;
     }
 
     public void mouseMove(double x, double y) {

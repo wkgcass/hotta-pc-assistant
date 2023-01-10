@@ -941,6 +941,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 scanDischargeResetConfigBtn.setOnAction(e -> {
                     var opt = options.get();
                     opt.scanDischargeRect = null;
+                    opt.scanDischargeCapScale = 0;
                     opt.scanDischargeCriticalPoints = null;
                     opt.scanDischarge = false;
                     saveConfig();
@@ -1099,6 +1100,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 return false;
             }
 
+            var pointAdjustFound = -1;
             var points = new ArrayList<Point>();
             int widthAfterCut = ctx.getMaxX() - ctx.getMinX();
             pointAdjustLoop:
@@ -1152,6 +1154,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                         continue pointAdjustLoop;
                     }
                 }
+                pointAdjustFound = pointAdjust;
                 break;
             }
 
@@ -1165,9 +1168,20 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     g.setPaint(new java.awt.Color(rgb));
                     g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius * 2, pointRadius * 2);
                 }
+                g.setPaint(new java.awt.Color(255, 0, 0));
+                g.setFont(new Font(null, Font.BOLD, 16));
+                if (pointAdjustFound != -1) {
+                    g.drawString("adj:" + pointAdjustFound, 10, 20);
+                } else {
+                    g.drawString("adj:null", 10, 20);
+                }
                 bImg.flush();
                 final var fBImg = bImg;
                 Platform.runLater(() -> Utils.copyImageToClipboard(fBImg));
+            }
+
+            if (pointAdjustFound == -1) {
+                return false;
             }
 
             // cut rect and move the points
@@ -1178,8 +1192,9 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             opt.scanDischargeRect = new Rect(
                 rect.x + cutLeft,
                 rect.y + cutTop,
-                rect.w - cutLeft - cutRight + 1,
-                rect.h - cutTop - cutBot + 1);
+                rect.w - cutLeft - cutRight + 2,
+                rect.h - cutTop - cutBot + 2);
+            opt.scanDischargeCapScale = screen.getOutputScaleX();
             for (var p : points) {
                 p.x -= (int) (cutLeft * screen.getOutputScaleX());
                 if (p.x < 0) {
