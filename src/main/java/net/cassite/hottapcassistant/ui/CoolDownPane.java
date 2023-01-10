@@ -1099,48 +1099,60 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 return false;
             }
 
-            int widthAfterCut = ctx.getMaxX() - ctx.getMinX();
-            int pointAdjust = widthAfterCut / 48;
-
-            int midX = ctx.getInitialX();
-            int topY = ctx.getInitialY() + pointAdjust;
-            int leftX = ctx.getMinX() + pointAdjust;
-            int rightX = ctx.getMaxX() - pointAdjust;
-            int botY = ctx.getMaxY() - pointAdjust;
-
             var points = new ArrayList<Point>();
-            var p0 = new Point(midX, topY);
-            points.add(p0);
-            double rightYDelta = (rightX - midX + 1) / Math.sqrt(3) * 0.98;
-            var p2 = new Point(rightX, topY + rightYDelta);
-            points.add(Point.midOf(p0, p2));
-            points.add(p2);
-            var p4 = new Point(rightX, botY - rightYDelta);
-            points.add(Point.midOf(p2, p4));
-            points.add(p4);
-            var p6 = new Point(midX, botY);
-            points.add(Point.midOf(p4, p6));
-            points.add(p6);
-            double leftYDelta = (midX - leftX + 1) / Math.sqrt(3) * 0.98;
-            var p8 = new Point(leftX, botY - leftYDelta);
-            points.add(Point.midOf(p6, p8));
-            points.add(p8);
-            var p10 = new Point(leftX, topY + leftYDelta);
-            points.add(Point.midOf(p8, p10));
-            points.add(p10);
-            points.add(Point.midOf(p0, p10));
-            try { // find the last critical point
-                int n = 1;
-                while (true) {
-                    var argb = img.getPixelReader().getArgb(midX - 2 * n, topY + n);
-                    if (!DischargeCheckContext.isChargeColor(argb)) {
-                        break;
+            int widthAfterCut = ctx.getMaxX() - ctx.getMinX();
+            pointAdjustLoop:
+            for (var pointAdjust : Arrays.asList(widthAfterCut / 24, widthAfterCut / 48, widthAfterCut / 96, widthAfterCut / 144, widthAfterCut / 192)) {
+                points.clear();
+
+                int midX = ctx.getInitialX();
+                int topY = ctx.getInitialY() + pointAdjust;
+                int leftX = ctx.getMinX() + pointAdjust;
+                int rightX = ctx.getMaxX() - pointAdjust;
+                int botY = ctx.getMaxY() - pointAdjust;
+
+                var p0 = new Point(midX, topY);
+                points.add(p0);
+                double rightYDelta = (rightX - midX + 1) / Math.sqrt(3) * 0.98;
+                var p2 = new Point(rightX, topY + rightYDelta);
+                points.add(Point.midOf(p0, p2));
+                points.add(p2);
+                var p4 = new Point(rightX, botY - rightYDelta);
+                points.add(Point.midOf(p2, p4));
+                points.add(p4);
+                var p6 = new Point(midX, botY);
+                points.add(Point.midOf(p4, p6));
+                points.add(p6);
+                double leftYDelta = (midX - leftX + 1) / Math.sqrt(3) * 0.98;
+                var p8 = new Point(leftX, botY - leftYDelta);
+                points.add(Point.midOf(p6, p8));
+                points.add(p8);
+                var p10 = new Point(leftX, topY + leftYDelta);
+                points.add(Point.midOf(p8, p10));
+                points.add(p10);
+                points.add(Point.midOf(p0, p10));
+                try { // find the last critical point
+                    int n = 1;
+                    while (true) {
+                        var argb = img.getPixelReader().getArgb(midX - 2 * n, topY + n);
+                        if (!DischargeCheckContext.isChargeColor(argb)) {
+                            break;
+                        }
+                        ++n;
+                    }
+                    points.add(new Point(midX - 2 * n, topY + n));
+                } catch (Exception e) {
+                    Logger.error("calculatePointsAndStore failure 2", e);
+                    continue;
+                }
+                for (int i = 0; i < points.size() - 1; ++i) {
+                    var p = points.get(i);
+                    var rgb = img.getPixelReader().getArgb((int) p.x, (int) p.y);
+                    if (!DischargeCheckContext.isChargeColor(rgb)) {
+                        continue pointAdjustLoop;
                     }
                 }
-                points.add(new Point(midX - 2 * n, topY + n));
-            } catch (Exception e) {
-                Logger.error("calculatePointsAndStore failure 2", e);
-                return false;
+                break;
             }
 
             if (opt.scanDischargeDebug) {
@@ -1156,13 +1168,6 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 bImg.flush();
                 final var fBImg = bImg;
                 Platform.runLater(() -> Utils.copyImageToClipboard(fBImg));
-            }
-            for (int i = 0; i < points.size() - 1; ++i) {
-                var p = points.get(i);
-                var rgb = img.getPixelReader().getArgb((int) p.x, (int) p.y);
-                if (!DischargeCheckContext.isChargeColor(rgb)) {
-                    return false;
-                }
             }
 
             // cut rect and move the points
