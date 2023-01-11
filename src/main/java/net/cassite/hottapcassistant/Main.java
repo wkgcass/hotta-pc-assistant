@@ -5,7 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import net.cassite.hottapcassistant.component.LoadingStage;
+import net.cassite.hottapcassistant.component.loading.LoadingItem;
+import net.cassite.hottapcassistant.component.loading.LoadingStage;
 import net.cassite.hottapcassistant.feed.FeedThread;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.ui.MainScreen;
@@ -14,6 +15,7 @@ import net.cassite.hottapcassistant.util.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main extends Application {
     private MainScreen mainScreen = null;
@@ -29,7 +31,15 @@ public class Main extends Application {
             new SimpleAlert(Alert.AlertType.WARNING, I18n.get().loadingFontFailed("noto")).show();
         }
 
-        LoadingStage.load(() -> {
+        var itemsToLoad = new ArrayList<LoadingItem>();
+        for (var path : ImageManager.ALL) {
+            itemsToLoad.add(new LoadingItem(2, path, () -> ImageManager.get().load(path)));
+        }
+        for (var path : AudioManager.ALL) {
+            itemsToLoad.add(new LoadingItem(1, path, () -> AudioManager.get().loadAudio(path)));
+        }
+
+        LoadingStage.load(itemsToLoad, () -> {
             stage.getIcons().add(ImageManager.get().load("images/icon/icon.jpg"));
             stage.setOnCloseRequest(e -> terminate());
 

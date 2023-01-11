@@ -1,4 +1,4 @@
-package net.cassite.hottapcassistant.component;
+package net.cassite.hottapcassistant.component.loading;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -8,27 +8,32 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.FontManager;
+import net.cassite.hottapcassistant.util.TaskManager;
+import net.cassite.hottapcassistant.util.Utils;
 
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 public class LoadingStage extends Stage {
     private final Label label = new Label() {{
         FontManager.setFont(this);
     }};
     private final ProgressBar progressBar = new ProgressBar();
+    private final List<LoadingItem> items;
     private final Runnable cb;
     private boolean isDone = false;
 
-    public static void load(Runnable cb) {
-        var s = new LoadingStage(cb);
+    public static void load(List<LoadingItem> items, Runnable cb) {
+        var s = new LoadingStage(items, cb);
         s.show();
         s.load();
     }
 
-    private LoadingStage(Runnable cb) {
+    private LoadingStage(List<LoadingItem> items, Runnable cb) {
+        this.items = items;
         this.cb = cb;
 
         setTitle(I18n.get().loadingStageTitle());
@@ -58,8 +63,11 @@ public class LoadingStage extends Stage {
     }
 
     private void load() {
-        double total = ImageManager.ALL.length * 2 + AudioManager.ALL.length;
-        loadImages(total, 0, () -> loadAudio(total, ImageManager.ALL.length * 2, () -> Platform.runLater(() -> {
+        long total = 0;
+        for (var item : items) {
+            total += item.weight();
+        }
+        loadItem(total, 0, items.iterator(), () -> Platform.runLater(() -> {
             isDone = true;
             label.setText(I18n.get().hintPressAlt());
             TaskManager.execute(() -> {
@@ -72,48 +80,23 @@ public class LoadingStage extends Stage {
                     Platform.runLater(cb);
                 });
             });
-        })));
+        }));
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private void loadImages(double total, double initial, Runnable cb) {
-        var ite = Arrays.asList(ImageManager.ALL).iterator();
-        loadImagesRecursive(total, initial, 1, ite, cb);
-    }
-
-    private void loadImagesRecursive(double total, double initial, int count, Iterator<String> ite, Runnable cb) {
+    private void loadItem(long total, long current, Iterator<LoadingItem> ite, Runnable cb) {
         if (!ite.hasNext()) {
             cb.run();
             return;
         }
-        var path = ite.next();
-        Utils.runOnFX(() -> label.setText(path));
+        var item = ite.next();
+        var name = item.name();
+        Utils.runOnFX(() -> label.setText(name));
         TaskManager.execute(() -> {
-            ImageManager.get().load(path);
+            item.loadFunc().run();
             Platform.runLater(() -> {
-                progressBar.setProgress((initial + count * 2.0) / total);
-                loadImagesRecursive(total, initial, count + 1, ite, cb);
-            });
-        });
-    }
-
-    private void loadAudio(double total, double initial, Runnable cb) {
-        var ite = Arrays.asList(AudioManager.ALL).iterator();
-        loadAudioRecursive(total, initial, 1, ite, cb);
-    }
-
-    private void loadAudioRecursive(double total, double initial, int count, Iterator<String> ite, Runnable cb) {
-        if (!ite.hasNext()) {
-            cb.run();
-            return;
-        }
-        var path = ite.next();
-        Utils.runOnFX(() -> label.setText(path));
-        TaskManager.execute(() -> {
-            AudioManager.get().loadAudio(path);
-            Platform.runLater(() -> {
-                progressBar.setProgress((initial + count * 1.0) / total);
-                loadAudioRecursive(total, initial, count + 1, ite, cb);
+                long newCurr = current + item.weight();
+                progressBar.setProgress(newCurr / (double) total);
+                loadItem(total, newCurr, ite, cb);
             });
         });
     }
