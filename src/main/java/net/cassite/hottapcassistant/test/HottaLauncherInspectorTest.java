@@ -357,14 +357,18 @@ public class HottaLauncherInspectorTest extends Application {
             .flatMap(resp -> resp.body().map(respBodyBuffer -> {
                 var respCode = resp.statusCode();
                 var respHeaders = resp.headers();
-                var respBody = respBodyBuffer.toString();
-                System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: " + respBody);
+                if (respBodyBuffer.length() > 1024) {
+                    System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: (length=" + respBodyBuffer.length() + ")");
+                } else {
+                    var respBody = respBodyBuffer.toString();
+                    System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: " + respBody);
+                }
 
                 req.response().setStatusCode(respCode);
                 for (var entry : respHeaders) {
                     req.response().putHeader(entry.getKey(), entry.getValue());
                 }
-                req.response().end(respBody);
+                req.response().end(respBodyBuffer);
                 return null;
             }))
             .recover(t -> {
