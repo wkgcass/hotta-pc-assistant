@@ -35,7 +35,9 @@ public class MultiHottaInstancesTest extends Application {
 
                 var handled = false;
                 if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunch")) {
-                    handled = handleClientRes(req, uri, headers);
+                    handled = proxyAdvToNormal(req, uri, headers);
+                } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/Launcher")) {
+                    handled = proxyNormal(req, uri, headers);
                 }
                 if (!handled) {
                     req.response().setStatusCode(404);
@@ -153,7 +155,7 @@ public class MultiHottaInstancesTest extends Application {
 
     private HttpClient client;
 
-    private boolean handleClientRes(HttpServerRequest req, String uri, MultiMap headers) {
+    private boolean proxyAdvToNormal(HttpServerRequest req, String uri, MultiMap headers) {
         uri = uri.substring("/clientRes/".length());
         int index = uri.indexOf("/");
         if (index == -1) {
@@ -162,6 +164,16 @@ public class MultiHottaInstancesTest extends Application {
         uri = uri.substring(index);
         uri = "/clientRes/Launcher24/" + uri;
 
+        proxy(req, uri, headers);
+        return true;
+    }
+
+    private boolean proxyNormal(HttpServerRequest req, String uri, MultiMap headers) {
+        proxy(req, uri, headers);
+        return true;
+    }
+
+    private void proxy(HttpServerRequest req, String uri, MultiMap headers) {
         client.request(new RequestOptions()
                 .setSsl(true)
                 .setMethod(HttpMethod.GET)
@@ -191,6 +203,5 @@ public class MultiHottaInstancesTest extends Application {
                 t.printStackTrace();
                 return null;
             });
-        return true;
     }
 }
