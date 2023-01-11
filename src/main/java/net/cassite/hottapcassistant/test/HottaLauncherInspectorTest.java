@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
-import java.util.List;
 import java.util.function.Function;
 
 public class HottaLauncherInspectorTest extends Application {
@@ -51,8 +50,10 @@ public class HottaLauncherInspectorTest extends Application {
 
         var vertx = Vertx.vertx(new VertxOptions()
             .setAddressResolverOptions(new AddressResolverOptions()
-                .setHostsValue(Buffer.buffer(""))
-                .setServers(List.of("8.8.8.8"))));
+                .setHostsValue(Buffer.buffer("" +
+                    "101.226.28.220  htcdn1.wmupd.com\n" +
+                    "139.215.233.204 htcdn2.wmupd.com\n"))
+            ));
         System.out.println("vertx instance created");
         client = vertx.createHttpClient(new HttpClientOptions()
             .setTrustOptions(TrustOptions.wrap(new X509TrustManager() {
