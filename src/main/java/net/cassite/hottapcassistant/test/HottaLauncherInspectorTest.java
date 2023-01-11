@@ -41,6 +41,8 @@ public class HottaLauncherInspectorTest extends Application {
                     resListXml(req);
                 } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/" + version + "/lastdiff.xml")) {
                     lastdiffXml(req);
+                } else if (method == HttpMethod.GET && uri.startsWith("/htydalphahd/client/Version.txt")) {
+                    versionTxt(req);
                 } else {
                     proxy(req, method, uri, headers, body);
                 }
@@ -318,6 +320,13 @@ public class HottaLauncherInspectorTest extends Application {
         System.out.println("custom resList.xml response\n" + body);
         req.response().setStatusCode(200);
         req.response().end(body);
+    }
+
+    private void versionTxt(HttpServerRequest req) {
+        var version = "2.4.73407";
+        System.out.println("custom version.txt response: " + version);
+        req.response().setStatusCode(200);
+        req.response().end(version);
     }
 
     private HttpClient client;
