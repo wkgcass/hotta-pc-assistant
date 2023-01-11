@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.List;
 import java.util.function.Function;
 
@@ -33,7 +34,11 @@ public class HottaLauncherInspectorTest extends Application {
                 String msg = "from: " + name + "\nmethod: " + method + "\nuri: " + uri + "\n" + headers + "\nbody: " + body;
                 System.out.println(msg);
 
-                proxy(req, method, uri, headers, body);
+                if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/Version/Windows/config.xml")) {
+                    advLaunchNullConfigXml(req);
+                } else {
+                    proxy(req, method, uri, headers, body);
+                }
 
                 return null;
             });
@@ -143,6 +148,48 @@ public class HottaLauncherInspectorTest extends Application {
                 return null;
             });
         }
+    }
+
+    private void advLaunchNullConfigXml(HttpServerRequest req) {
+        System.out.println("responding custom adv configXml");
+        req.response().setStatusCode(200);
+        Base64.getEncoder().encode(("" +
+            "{" +
+            /**/"\"appVersion\":\"0.0\"," +
+            /**/"\"minVersion\":\"0.0\"," +
+            /**/"\"gameResUrl\":[" +
+            /*----*/"\"https://htcdn1.wmupd.com/clientRes\"," +
+            /*----*/"\"https://htcdn2.wmupd.com/clientRes\"" +
+            /**/"]," +
+            /**/"\"gameGetServerListUrl\":[" +
+            /*----*/"\"https://htcdn1.wmupd.com/\"," +
+            /*----*/"\"https://htcdn2.wmupd.com/\"" +
+            /**/"]," +
+            /**/"\"branchName\":\"Launcher24\"," +
+            /**/"\"gameUpdateAssetUrl\":[" +
+            /*----*/"\"https://htcdn1.wmupd.com/clientRes\"," +
+            /*----*/"\"https://htcdn2.wmupd.com/clientRes\"" +
+            /**/"]" +
+            "}").getBytes());
+        req.response().send("""
+            <?xml version="1.0" ?>
+            <config>
+                    <AppVersion>0.0</AppVersion>
+                    <ResVersion>0.0.0</ResVersion>
+                    <UpdateResVersion>0.0</UpdateResVersion>
+                    <Section>0.0</Section>
+                    <PreReleaseBranch>Launcher24</PreReleaseBranch>
+                    <PreReleaseVersion>0.0.0</PreReleaseVersion>
+                    <ResConfig>x</ResConfig>
+                    <BaseVerson appVersion="2.4"/>
+                    <Extra>
+                            <speed>50</speed>
+                            <maxThreadCnt>5</maxThreadCnt>
+                            <minThreadCnt>1</minThreadCnt>
+                            <tagTaskThreadCnt>2</tagTaskThreadCnt>
+                    </Extra>
+            </config>
+            """);
     }
 
     private HttpClient client;
