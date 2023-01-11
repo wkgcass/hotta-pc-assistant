@@ -164,11 +164,11 @@ public class HottaLauncherInspectorTest extends Application {
         var body = """
             <?xml version="1.0" ?>
             <config>
-                    <AppVersion>2.4</AppVersion>
+                    <AppVersion>0.0</AppVersion>
                     <ResVersion>0.0.0</ResVersion>
-                    <UpdateResVersion>2.4</UpdateResVersion>
-                    <Section>2.4</Section>
-                    <BaseVerson appVersion="2.4"/>
+                    <UpdateResVersion>0.0</UpdateResVersion>
+                    <Section>0.0</Section>
+                    <BaseVerson appVersion="0.0"/>
                     <Extra>
                             <speed>50</speed>
                             <maxThreadCnt>5</maxThreadCnt>
