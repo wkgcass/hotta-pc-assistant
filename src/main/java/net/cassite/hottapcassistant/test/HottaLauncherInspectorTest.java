@@ -17,7 +17,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.function.Function;
 
-public class MultiHottaInstancesTest extends Application {
+public class HottaLauncherInspectorTest extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         System.out.println("started");
@@ -33,16 +33,8 @@ public class MultiHottaInstancesTest extends Application {
                 String msg = "from: " + name + "\nmethod: " + method + "\nuri: " + uri + "\n" + headers + "\nbody: " + body;
                 System.out.println(msg);
 
-                var handled = false;
-                if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunch")) {
-                    handled = proxyAdvToNormal(req, uri, headers);
-                } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/Launcher")) {
-                    handled = proxyNormal(req, uri, headers);
-                }
-                if (!handled) {
-                    req.response().setStatusCode(404);
-                    req.response().end("not found\r\n");
-                }
+                proxy(req, method, uri, headers, body);
+
                 return null;
             });
         };
@@ -155,35 +147,39 @@ public class MultiHottaInstancesTest extends Application {
 
     private HttpClient client;
 
-    private boolean proxyAdvToNormal(HttpServerRequest req, String uri, MultiMap headers) {
-        uri = uri.substring("/clientRes/".length());
-        int index = uri.indexOf("/");
-        if (index == -1) {
-            return false;
-        }
-        uri = uri.substring(index);
-        uri = "/clientRes/Launcher24/" + uri;
+//    private boolean proxyAdvToNormal(HttpServerRequest req, String uri, MultiMap headers) {
+//        uri = uri.substring("/clientRes/".length());
+//        int index = uri.indexOf("/");
+//        if (index == -1) {
+//            return false;
+//        }
+//        uri = uri.substring(index);
+//        uri = "/clientRes/Launcher24/" + uri;
+//
+//        proxy(req, uri, headers);
+//        return true;
+//    }
+//
+//    private boolean doProxy(HttpServerRequest req, String uri, MultiMap headers) {
+//        proxy(req, uri, headers);
+//        return true;
+//    }
 
-        proxy(req, uri, headers);
-        return true;
-    }
-
-    private boolean proxyNormal(HttpServerRequest req, String uri, MultiMap headers) {
-        proxy(req, uri, headers);
-        return true;
-    }
-
-    private void proxy(HttpServerRequest req, String uri, MultiMap headers) {
+    private void proxy(HttpServerRequest req, HttpMethod method, String uri, MultiMap headers, String body) {
         client.request(new RequestOptions()
                 .setSsl(true)
-                .setMethod(HttpMethod.GET)
+                .setMethod(method)
                 .setHost("htcdn1.wmupd.com")
                 .setPort(443)
                 .setURI(uri)
                 .setHeaders(headers)
             ).flatMap(creq -> {
                 System.out.println("sending new request");
-                return creq.send();
+                if (body == null || body.isEmpty()) {
+                    return creq.send();
+                } else {
+                    return creq.send(body);
+                }
             })
             .flatMap(resp -> resp.body().map(respBodyBuffer -> {
                 var respCode = resp.statusCode();
