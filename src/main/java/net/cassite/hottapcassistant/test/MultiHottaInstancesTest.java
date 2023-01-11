@@ -1,5 +1,7 @@
 package net.cassite.hottapcassistant.test;
 
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsServer;
 import javafx.application.Application;
@@ -12,6 +14,7 @@ import net.cassite.hottapcassistant.util.FontManager;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.net.InetSocketAddress;
+import java.util.function.Function;
 
 public class MultiHottaInstancesTest extends Application {
     @Override
@@ -20,7 +23,18 @@ public class MultiHottaInstancesTest extends Application {
             FontManager.setNoto(this);
         }};
 
-        var server = HttpsServer.create(new InetSocketAddress("127.0.0.1", 443), 128);
+        Function<String, HttpHandler> httpHandlerProvider = name -> exchange -> {
+            var bodyStream = exchange.getRequestBody();
+            var bytes = bodyStream.readAllBytes();
+            String msg = "from: " + name + "\nmethod: " + exchange.getRequestMethod() + "\nuri: " + exchange.getRequestURI() + "\nbody: " + new String(bytes);
+            Platform.runLater(() -> label.setText(msg));
+            System.out.println(msg);
+            exchange.sendResponseHeaders(200, 0);
+            exchange.getResponseBody().write(("hello world\r\n").getBytes());
+            exchange.getResponseBody().close();
+        };
+
+        var server443 = HttpsServer.create(new InetSocketAddress("127.0.0.1", 443), 128);
         var ctx = Utils.buildSSLContext(new String[]{"""
             -----BEGIN CERTIFICATE-----
             MIIDjjCCAnagAwIBAgIJAIvTzI2C9kiYMA0GCSqGSIb3DQEBCwUAMGkxCzAJBgNV
@@ -73,23 +87,18 @@ public class MultiHottaInstancesTest extends Application {
             ieKEfYB04kAQyPgdrDaD8p51H56wRlkYU9koxCGZx8s3s/LEa4EOI7/+ZJsOFdMp
             PwTmrmYRTwFwQjQPZPYaWhc=
             -----END PRIVATE KEY-----""");
-        server.setHttpsConfigurator(new HttpsConfigurator(ctx));
-        server.createContext("/", exchange -> {
-            var bodyStream = exchange.getRequestBody();
-            var bytes = bodyStream.readAllBytes();
-            String msg = "method: " + exchange.getRequestMethod() + "\nuri: " + exchange.getRequestURI() + "\nbody: " + new String(bytes);
-            Platform.runLater(() -> label.setText(msg));
-            System.out.println(msg);
-            exchange.sendResponseHeaders(200, 0);
-            exchange.getResponseBody().write(("hello world\r\n").getBytes());
-            exchange.getResponseBody().close();
-        });
-        server.start();
+        server443.setHttpsConfigurator(new HttpsConfigurator(ctx));
+        server443.createContext("/", httpHandlerProvider.apply("443"));
+        server443.start();
+
+        var server80 = HttpServer.create(new InetSocketAddress("127.0.0.1", 80), 128);
+        server80.createContext("/", httpHandlerProvider.apply("80"));
+        server80.start();
 
         primaryStage.setScene(new Scene(new Pane(label)));
         primaryStage.setWidth(800);
         primaryStage.setHeight(600);
-        primaryStage.setOnCloseRequest(e -> server.stop(0));
+        primaryStage.setOnCloseRequest(e -> server443.stop(0));
         primaryStage.show();
     }
 }
