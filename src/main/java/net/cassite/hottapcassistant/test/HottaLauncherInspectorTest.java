@@ -323,10 +323,17 @@ public class HottaLauncherInspectorTest extends Application {
     private HttpClient client;
 
     private void proxy(HttpServerRequest req, HttpMethod method, String uri, MultiMap headers, String body) {
+        var host = headers.get("host");
+        System.out.println("host header is " + host);
+        if (host == null) {
+            req.response().setStatusCode(404);
+            req.response().end("not found\r\n");
+            return;
+        }
         client.request(new RequestOptions()
                 .setSsl(true)
                 .setMethod(method)
-                .setHost("htcdn1.wmupd.com")
+                .setHost(host)
                 .setPort(443)
                 .setURI(uri)
                 .setHeaders(headers)
