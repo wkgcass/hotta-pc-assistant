@@ -40,6 +40,8 @@ dependencies {
     implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.1.2'
     implementation group: 'net.java.dev.jna', name: 'jna', version: '5.12.1'
     implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.12.1'
+    implementation group: 'io.vertx', name: 'vertx-core', version: '4.3.7'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.6'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
@@ -74,5 +76,6 @@ jlinkZip {
 task runTest(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = "net.cassite.hottapcassistant.test.TestMain"
+    systemProperty("IsDebug", System.getProperty("IsDebug", "false"))
     args = ["net.cassite.hottapcassistant.test." + System.getProperty("TestClass")]
 }
