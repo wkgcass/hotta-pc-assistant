@@ -11,7 +11,7 @@ open module net.cassite.hottapcassistant {
     requires org.controlsfx.controls;
     requires com.sun.jna;
     requires com.sun.jna.platform;
-    requires jdk.httpserver;
+    requires io.vertx.core;
     exports net.cassite.hottapcassistant;
     exports net.cassite.hottapcassistant.test;
 }

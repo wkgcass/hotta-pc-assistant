@@ -19,12 +19,8 @@ import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,14 +28,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.KeyFactory;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.DecimalFormat;
-import java.util.Base64;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -460,46 +449,5 @@ public class Utils {
         var content = new ClipboardContent();
         content.putImage(SwingFXUtils.toFXImage(bImg, null));
         Clipboard.getSystemClipboard().setContent(content);
-    }
-
-    public static SSLContext buildSSLContext(String[] certpem, String keypem) throws Exception {
-        KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(null);
-
-        String[] keysplit = keypem
-            .replace("-----BEGIN PRIVATE KEY-----", "")
-            .replace("-----END PRIVATE KEY-----", "").split("\n");
-        StringBuilder keyBuilder = new StringBuilder();
-        for (String k : keysplit) {
-            keyBuilder.append(k.trim());
-        }
-        String keyStr = keyBuilder.toString();
-        byte[] keyBytes = Base64.getDecoder().decode(keyStr);
-
-        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(keyBytes);
-        PrivateKey key = KeyFactory.getInstance("RSA").generatePrivate(pkcs8EncodedKeySpec);
-
-        X509Certificate[] x509certs = new X509Certificate[certpem.length];
-        for (int i = 0; i < certpem.length; i++) {
-            String strCert = certpem[i];
-            byte[] certBytes = strCert.getBytes();
-
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(certBytes));
-            x509certs[i] = cert;
-
-            ks.setCertificateEntry("cert" + i, cert);
-        }
-        ks.setKeyEntry("key", key, "changeit".toCharArray(), x509certs);
-
-        KeyManagerFactory kmf;
-        KeyManager[] kms;
-        kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(ks, "changeit".toCharArray());
-        kms = kmf.getKeyManagers();
-
-        var sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(kms, null, null);
-        return sslContext;
     }
 }
