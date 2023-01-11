@@ -34,11 +34,12 @@ public class HottaLauncherInspectorTest extends Application {
                 System.out.println(msg);
 
                 String branch = "AdvLaunch24";
+                String version = "2.4.1";
                 if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/config.xml")) {
                     configXml(req);
-                } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/2.4.2/ResList.xml")) {
+                } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/" + version + "/ResList.xml")) {
                     resListXml(req);
-                } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/2.4.2/lastdiff.xml")) {
+                } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/" + version + "/lastdiff.xml")) {
                     lastdiffXml(req);
                 } else {
                     proxy(req, method, uri, headers, body);
