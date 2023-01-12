@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.10'
-    id 'org.beryx.jlink' version '2.24.1'
+    id 'org.beryx.jlink' version '2.26.0'
 }
 
 group 'net.cassite'
@@ -41,10 +41,8 @@ dependencies {
     implementation group: 'net.java.dev.jna', name: 'jna', version: '5.12.1'
     implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.12.1'
     implementation group: 'io.vertx', name: 'vertx-core', version: '4.3.7'
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.6'
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.36'
+    implementation group: 'io.projectreactor.tools', name: 'blockhound', version: '1.0.6.RELEASE'
 }
 
 test {
@@ -57,6 +55,13 @@ jlink {
     launcher {
         name = 'app'
         jvmArgs = ['-Xmx320m', '-Djava.library.path=%TEMP%']
+    }
+    mergedModule {
+        additive = true
+        uses 'io.vertx.core.spi.VertxServiceProvider'
+        uses 'io.vertx.core.spi.VerticleFactory'
+        uses 'io.vertx.core.spi.JsonFactory'
+        uses 'io.vertx.core.spi.launcher.CommandFactory'
     }
 }
 
