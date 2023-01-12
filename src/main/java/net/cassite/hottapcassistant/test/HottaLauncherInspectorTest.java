@@ -364,7 +364,7 @@ public class HottaLauncherInspectorTest extends Application {
                 return;
             }
 
-            var md5 = "40af75a7f24f38a97976b5d77d29aed0".toCharArray();
+            var md5 = "88aa3c3ffb796f662b878bff89f69c38".toCharArray();
             var sb = new StringBuilder(string);
             var off = index + "Checksum=\"".length();
             for (int i = 0; i < md5.length; ++i) {
