@@ -41,6 +41,7 @@ public class ImageManager {
         "/images/icon/icon.ico",
         "/images/icon/icon.jpg",
         "/images/icon/message-helper-icon.png",
+        "/images/icon/multi-hotta-instance.png",
         "/images/icon/pause.png",
         "/images/icon/play-button.png",
         "/images/icon/reloading.png",

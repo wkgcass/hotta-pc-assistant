@@ -29,6 +29,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -102,6 +104,35 @@ public class Utils {
             }
         }
         Files.writeString(file, content);
+    }
+
+    public static boolean modifyHostsFile(Function<List<String>, List<String>> op) {
+        var f = new File("C:\\Windows\\System32\\Drivers\\etc\\hosts");
+        if (!f.exists() || !f.isFile()) {
+            Logger.error(f.getAbsolutePath() + " does not exist or is not a file");
+            return false;
+        }
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(f.toPath());
+        } catch (IOException e) {
+            Logger.error("reading " + f.getAbsolutePath() + " failed", e);
+            return false;
+        }
+        lines = new ArrayList<>(lines);
+        var backup = new ArrayList<>(lines);
+        lines = op.apply(lines);
+        if (lines.equals(backup)) { // no need to update because they are the same
+            return true;
+        }
+        var str = String.join("\n", lines);
+        try {
+            Utils.writeFile(f.toPath(), str);
+        } catch (IOException e) {
+            Logger.error("writing " + f.getAbsolutePath() + " failed", e);
+            return false;
+        }
+        return true;
     }
 
     private static volatile RobotWrapper robot;
@@ -449,5 +480,11 @@ public class Utils {
         var content = new ClipboardContent();
         content.putImage(SwingFXUtils.toFXImage(bImg, null));
         Clipboard.getSystemClipboard().setContent(content);
+    }
+
+    public static String returnNullIfBlank(String s) {
+        if (s == null) return null;
+        if (s.isBlank()) return null;
+        return s;
     }
 }

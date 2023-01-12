@@ -10,10 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.component.VPadding;
-import net.cassite.hottapcassistant.tool.LansBrainWash;
-import net.cassite.hottapcassistant.tool.MessageHelper;
-import net.cassite.hottapcassistant.tool.Tool;
-import net.cassite.hottapcassistant.tool.WorldBossTimer;
+import net.cassite.hottapcassistant.tool.*;
 import net.cassite.hottapcassistant.util.FontManager;
 
 import java.util.ArrayList;
@@ -25,6 +22,7 @@ public class ToolBoxPane extends Pane implements Terminate {
         add(WorldBossTimer::new);
         add(MessageHelper::new);
         add(LansBrainWash::new);
+        add(MultiHottaInstance::new);
     }};
     private final List<Tool> toolInstances = new ArrayList<>();
 

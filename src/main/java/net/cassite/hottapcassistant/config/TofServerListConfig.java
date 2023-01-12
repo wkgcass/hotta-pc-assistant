@@ -5,9 +5,7 @@ import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,31 +85,14 @@ public class TofServerListConfig {
     private static final String hostsFileSuffixComment = " # tof server, added by hotta-pc-assistant";
 
     public static boolean setHosts(List<TofServer> tofServers) {
-        var f = new File("C:\\Windows\\System32\\Drivers\\etc\\hosts");
-        if (!f.exists() || !f.isFile()) {
-            Logger.error(f.getAbsolutePath() + " does not exist or is not a file");
-            return false;
-        }
-        List<String> lines;
-        try {
-            lines = Files.readAllLines(f.toPath());
-        } catch (IOException e) {
-            Logger.error("reading " + f.getAbsolutePath() + " failed", e);
-            return false;
-        }
-        var ls = new ArrayList<>(lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
-        for (var s : tofServers) {
-            if (s.selected) {
-                ls.add(s.ip + "\t" + s.domain + hostsFileSuffixComment);
+        return Utils.modifyHostsFile(lines -> {
+            var ls = new ArrayList<>(lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
+            for (var s : tofServers) {
+                if (s.selected) {
+                    ls.add(s.ip + "\t" + s.domain + hostsFileSuffixComment);
+                }
             }
-        }
-        var str = String.join("\n", ls);
-        try {
-            Utils.writeFile(f.toPath(), str);
-        } catch (IOException e) {
-            Logger.error("writing " + f.getAbsolutePath() + " failed", e);
-            return false;
-        }
-        return true;
+            return ls;
+        });
     }
 }
