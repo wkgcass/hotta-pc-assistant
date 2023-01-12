@@ -35,7 +35,7 @@ public class HottaLauncherInspectorTest extends Application {
                 System.out.println(msg);
 
                 String branch = "AdvLaunch24";
-                String version = "2.4.1";
+                String version = "0.0.0";
                 if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/config.xml")) { // requires htcdn1 or htcdn2 .wmupd.com
                     configXml(req);
                 } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/" + version + "/ResList.xml")) {
@@ -167,11 +167,11 @@ public class HottaLauncherInspectorTest extends Application {
         var body = """
             <?xml version="1.0" ?>
             <config>
-                    <AppVersion>2.4</AppVersion>
-                    <ResVersion>2.4.1</ResVersion>
-                    <UpdateResVersion>2.4</UpdateResVersion>
-                    <Section>2.4</Section>
-                    <BaseVerson appVersion="2.4"/>
+                    <AppVersion>0.0</AppVersion>
+                    <ResVersion>0.0.0</ResVersion>
+                    <UpdateResVersion>0.0</UpdateResVersion>
+                    <Section>0.0</Section>
+                    <BaseVerson appVersion="0.0"/>
                     <Extra>
                             <speed>50</speed>
                             <maxThreadCnt>5</maxThreadCnt>
@@ -188,7 +188,7 @@ public class HottaLauncherInspectorTest extends Application {
     private void resListXml(HttpServerRequest req) {
         var body = """
             <?xml version="1.0" ?>
-            <ResList version="2.4.1" tag="">
+            <ResList version="0.0.0" tag="">
                     <Res filename="Hotta/Content/Paks/pakchunk0-WindowsNoEditor.pak" filesize="5107952619" md5="f481d1186f184d4ffcd42c157e885861" blockSize="10">
                             <Block index="0" start="0" size="536870912" md5="1a45f5e4782927501e4c21f1a9d64ecc"/>
                             <Block index="1" start="536870912" size="536870912" md5="93bfd4c1b04470654fd25462635c5e2f"/>
