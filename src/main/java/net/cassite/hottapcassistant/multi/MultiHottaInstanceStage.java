@@ -83,7 +83,7 @@ public class MultiHottaInstanceStage extends Stage {
         launchBtn.setOnAction(e -> launch());
 
         pane.getChildren().add(new HBox(
-            new HPadding(10),
+            new HPadding(30),
             new VBox(
                 new VPadding(20),
                 new Label(I18n.get().selectGameLocationDescriptionWithoutAutoSearching()) {{
@@ -180,9 +180,9 @@ public class MultiHottaInstanceStage extends Stage {
                         }
                     });
                 }},
-                new VPadding(20)
+                new VPadding(10)
             ),
-            new HPadding(10)
+            new HPadding(30)
         ));
     }
 
