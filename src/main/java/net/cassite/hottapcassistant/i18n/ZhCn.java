@@ -1256,6 +1256,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String multiInstanceSaveCaCert() {
+        return "获取根证书";
+    }
+
+    @Override
     public String multiInstanceEmptyFieldAlert() {
         return "存在空字段，请填充后再启动";
     }
@@ -1278,5 +1283,10 @@ public class ZhCn extends I18n {
     @Override
     public String selectGameLocationDescriptionWithoutAutoSearching() {
         return "请选择游戏路径，手动选择gameLauncher.exe所在路径";
+    }
+
+    @Override
+    public String failedSavingCaCertFile() {
+        return "保存CA证书失败";
     }
 }

@@ -3,10 +3,10 @@ package net.cassite.hottapcassistant.multi;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -17,10 +17,7 @@ import net.cassite.hottapcassistant.component.ImageButton;
 import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.tool.MultiHottaInstance;
-import net.cassite.hottapcassistant.util.FontManager;
-import net.cassite.hottapcassistant.util.GlobalValues;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.SimpleAlert;
+import net.cassite.hottapcassistant.util.*;
 
 import java.awt.*;
 import java.io.File;
@@ -163,6 +160,25 @@ public class MultiHottaInstanceStage extends Stage {
                 }},
                 new HBox(launchBtn) {{
                     setAlignment(Pos.CENTER);
+                }},
+                new VPadding(5),
+                new Hyperlink(I18n.get().multiInstanceSaveCaCert()) {{
+                    FontManager.setFont(this, 12);
+                    setOnAction(e -> {
+                        var chooser = new FileChooser();
+                        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("crt", "*.crt"));
+                        chooser.setInitialFileName("hotta-ca.crt");
+                        File f = chooser.showSaveDialog(this.getScene().getWindow());
+                        if (f == null) {
+                            return;
+                        }
+                        try {
+                            Utils.writeFile(f.toPath(), Certs.CA_CERT);
+                        } catch (IOException ex) {
+                            Logger.error("failed saving ca cert file", ex);
+                            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().failedSavingCaCertFile()).showAndWait();
+                        }
+                    });
                 }},
                 new VPadding(20)
             ),

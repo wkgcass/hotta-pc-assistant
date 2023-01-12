@@ -437,6 +437,8 @@ public abstract class I18n {
 
     public abstract String multiInstanceClientVersion();
 
+    public abstract String multiInstanceSaveCaCert();
+
     public abstract String multiInstanceEmptyFieldAlert();
 
     public abstract String multiInstanceCannotMakeLink();
@@ -446,4 +448,6 @@ public abstract class I18n {
     public abstract String multiInstanceLaunchProxyServerFailed();
 
     public abstract String selectGameLocationDescriptionWithoutAutoSearching();
+
+    public abstract String failedSavingCaCertFile();
 }
