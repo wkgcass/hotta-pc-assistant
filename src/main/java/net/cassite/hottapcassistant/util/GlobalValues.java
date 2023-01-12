@@ -1,5 +1,9 @@
 package net.cassite.hottapcassistant.util;
 
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.dns.AddressResolverOptions;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
@@ -11,10 +15,16 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public class GlobalValues {
     private GlobalValues() {
     }
+
+    public static final Vertx vertx = Vertx.vertx(new VertxOptions()
+        .setAddressResolverOptions(new AddressResolverOptions()
+            .setHostsValue(Buffer.buffer(""))
+            .setServers(List.of("114.114.114.114"))));
 
     public static final SimpleStringProperty savedPath = new SimpleStringProperty(null) {
         @Override

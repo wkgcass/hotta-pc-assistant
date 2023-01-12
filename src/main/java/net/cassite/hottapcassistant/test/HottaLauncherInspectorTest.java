@@ -1,7 +1,6 @@
 package net.cassite.hottapcassistant.test;
 
 import io.vertx.core.Handler;
-import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
@@ -11,14 +10,15 @@ import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.core.net.TrustOptions;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import net.cassite.hottapcassistant.multi.HottaLauncherProxyServer;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class HottaLauncherInspectorTest extends Application {
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public void start(Stage primaryStage) throws Exception {
         System.out.println("started");
@@ -49,7 +49,7 @@ public class HottaLauncherInspectorTest extends Application {
                 } /*else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/") && uri.endsWith("AllFiles.xml")) { // requires pmpcdn1.wmupd.com
                     allFilesXml(req);
                 } */ else {
-                    proxy(req, method, uri, headers, body);
+                    HottaLauncherProxyServer.proxy(client, "", req, method, uri, headers, body);
                 }
 
                 return null;
@@ -367,7 +367,7 @@ public class HottaLauncherInspectorTest extends Application {
     }
 
     private void allFilesXml(HttpServerRequest req) {
-        proxy(req.method(), req.uri(), req.headers(), null, (resp, respBodyBuffer) -> {
+        HottaLauncherProxyServer.request(client, "", req.method(), req.uri(), req.headers(), null, (resp, respBodyBuffer) -> {
             if (resp == null) {
                 req.response().setStatusCode(404);
                 req.response().end("not found\r\n");
@@ -411,61 +411,4 @@ public class HottaLauncherInspectorTest extends Application {
     }
 
     private HttpClient client;
-
-    private void proxy(HttpServerRequest req, HttpMethod method, String uri, MultiMap headers, String body) {
-        proxy(method, uri, headers, body, (resp, respBodyBuffer) -> {
-            if (resp == null) {
-                req.response().setStatusCode(404);
-                req.response().end("not found\r\n");
-                return;
-            }
-            var respCode = resp.statusCode();
-            var respHeaders = resp.headers();
-            if (respBodyBuffer.length() > 1024) {
-                System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: (length=" + respBodyBuffer.length() + ")");
-            } else {
-                var respBody = respBodyBuffer.toString();
-                System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: " + respBody);
-            }
-
-            req.response().setStatusCode(respCode);
-            for (var entry : respHeaders) {
-                req.response().putHeader(entry.getKey(), entry.getValue());
-            }
-            req.response().end(respBodyBuffer);
-        });
-    }
-
-    private void proxy(HttpMethod method, String uri, MultiMap headers, String body, BiConsumer<HttpClientResponse, Buffer> cb) {
-        var host = headers.get("host");
-        System.out.println("host header is " + host);
-        if (host == null) {
-            cb.accept(null, null);
-            return;
-        }
-        client.request(new RequestOptions()
-                .setSsl(true)
-                .setMethod(method)
-                .setHost(host)
-                .setPort(443)
-                .setURI(uri)
-                .setHeaders(headers)
-            ).flatMap(creq -> {
-                System.out.println("sending new request");
-                if (body == null || body.isEmpty()) {
-                    return creq.send();
-                } else {
-                    return creq.send(body);
-                }
-            })
-            .flatMap(resp -> resp.body().map(respBodyBuffer -> {
-                cb.accept(resp, respBodyBuffer);
-                return null;
-            }))
-            .recover(t -> {
-                System.out.println("failed to send request");
-                t.printStackTrace();
-                return null;
-            });
-    }
 }

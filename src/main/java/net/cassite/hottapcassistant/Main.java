@@ -59,6 +59,7 @@ public class Main extends Application {
         FeedThread.get().terminate();
         var mainScreen = this.mainScreen;
         if (mainScreen != null) mainScreen.terminate();
+        GlobalValues.vertx.close();
     }
 
     public static void main(String[] args) {

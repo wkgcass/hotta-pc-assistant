@@ -600,6 +600,7 @@ public class ZhCn extends I18n {
             CD指示器的暂停图标：Pause icons created by Hilmy Abiyyu A. - Flaticon
             CD指示器的恢复图标：Play button icons created by Roundicons - Flaticon
             聊天消息辅助图标：Keyboard icons created by Freepik - Flaticon
+            幻塔多开图标：Ui icons created by Graphics Plazza - Flaticon
             """;
     }
 
@@ -823,7 +824,7 @@ public class ZhCn extends I18n {
     @Override
     public String cooldownScanDischargeDesc() {
         return "连携充能检测功能会读取屏幕，以识别当前的充能值。\n" +
-            "该检测仅对屏幕指定区域进行截图操作（截图频率较高），不会读取游戏内存数据。";
+               "该检测仅对屏幕指定区域进行截图操作（截图频率较高），不会读取游戏内存数据。";
     }
 
     @Override
@@ -882,7 +883,7 @@ public class ZhCn extends I18n {
     @Override
     public String failedCalculatingCriticalPoints() {
         return "计算关键点失败，请重新框选。\n" +
-            "请注意，充能必须是差一点点充满的状态（90%以上）";
+               "请注意，充能必须是差一点点充满的状态（90%以上）";
     }
 
     @Override
@@ -984,7 +985,7 @@ public class ZhCn extends I18n {
     @Override
     public String invalidAssistantConfigFileAskForDeletion(String configFilePath) {
         return "幻塔PC助手配置文件异常。您可以修改文件" + configFilePath + "手动修复异常，" + "\n" +
-            "也可以直接删除该配置文件并以初始配置执行后续操作。";
+               "也可以直接删除该配置文件并以初始配置执行后续操作。";
     }
 
     @Override
@@ -1008,6 +1009,7 @@ public class ZhCn extends I18n {
             case "world-boss-timer" -> "世界Boss计时器";
             case "message-helper" -> "聊天消息辅助";
             case "lan's-brain-wash" -> "岚的洗脑循环";
+            case "multi-hotta-instance" -> "幻塔双开";
             default -> name;
         };
     }
@@ -1221,5 +1223,70 @@ public class ZhCn extends I18n {
     @Override
     public String brainWashLanRandTimeSliderDesc() {
         return "随机时间区间（单位：秒）";
+    }
+
+    @Override
+    public String selectBetaGameLocation() {
+        return "选择测试服路径";
+    }
+
+    @Override
+    public String selectOnlineGameLocation() {
+        return "选择正式服路径";
+    }
+
+    @Override
+    public String multiInstanceAdvBranch() {
+        return "分支";
+    }
+
+    @Override
+    public String multiInstanceResourceVersion() {
+        return "资源版本";
+    }
+
+    @Override
+    public String multiInstanceResourceSubVersion() {
+        return "资源子版本";
+    }
+
+    @Override
+    public String multiInstanceClientVersion() {
+        return "客户端版本";
+    }
+
+    @Override
+    public String multiInstanceSaveCaCert() {
+        return "获取根证书";
+    }
+
+    @Override
+    public String multiInstanceEmptyFieldAlert() {
+        return "存在空字段，请填充后再启动";
+    }
+
+    @Override
+    public String multiInstanceCannotMakeLink() {
+        return "创建链接文件失败";
+    }
+
+    @Override
+    public String multiInstanceCannotSetHostsFile() {
+        return "修改hosts文件失败，请检查本程序是否以管理员权限启动";
+    }
+
+    @Override
+    public String multiInstanceLaunchProxyServerFailed() {
+        return "启动代理服务失败，请确保本机443端口未被占用";
+    }
+
+    @Override
+    public String selectGameLocationDescriptionWithoutAutoSearching() {
+        return "请选择游戏路径，手动选择gameLauncher.exe所在路径";
+    }
+
+    @Override
+    public String failedSavingCaCertFile() {
+        return "保存CA证书失败";
     }
 }

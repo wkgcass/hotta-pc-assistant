@@ -424,4 +424,30 @@ public abstract class I18n {
     public abstract String brainWashLanFreqSliderDesc();
 
     public abstract String brainWashLanRandTimeSliderDesc();
+
+    public abstract String selectBetaGameLocation();
+
+    public abstract String selectOnlineGameLocation();
+
+    public abstract String multiInstanceAdvBranch();
+
+    public abstract String multiInstanceResourceVersion();
+
+    public abstract String multiInstanceResourceSubVersion();
+
+    public abstract String multiInstanceClientVersion();
+
+    public abstract String multiInstanceSaveCaCert();
+
+    public abstract String multiInstanceEmptyFieldAlert();
+
+    public abstract String multiInstanceCannotMakeLink();
+
+    public abstract String multiInstanceCannotSetHostsFile();
+
+    public abstract String multiInstanceLaunchProxyServerFailed();
+
+    public abstract String selectGameLocationDescriptionWithoutAutoSearching();
+
+    public abstract String failedSavingCaCertFile();
 }

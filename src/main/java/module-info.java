@@ -12,6 +12,7 @@ open module net.cassite.hottapcassistant {
     requires com.sun.jna;
     requires com.sun.jna.platform;
     requires io.vertx.core;
+    requires org.slf4j;
     exports net.cassite.hottapcassistant;
     exports net.cassite.hottapcassistant.test;
 }
