@@ -36,7 +36,9 @@ public class HottaLauncherInspectorTest extends Application {
 
                 String branch = "AdvLaunch24";
                 String version = "2.4.1";
-                if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/config.xml")) { // requires htcdn1 or htcdn2 .wmupd.com
+                if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/Version/Windows/config.xml")) {
+                    nullConfigXml(req);
+                } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/config.xml")) { // requires htcdn1 or htcdn2 .wmupd.com
                     configXml(req);
                 } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/" + version + "/ResList.xml")) {
                     resListXml(req);
@@ -44,9 +46,9 @@ public class HottaLauncherInspectorTest extends Application {
                     lastdiffXml(req);
                 } else if (method == HttpMethod.GET && uri.startsWith("/htydalphahd/client/Version.txt")) { // requires htydhd.wmupd.com
                     versionTxt(req);
-                } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/") && uri.endsWith("AllFiles.xml")) { // requires pmpcdn1.wmupd.com
+                } /*else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/") && uri.endsWith("AllFiles.xml")) { // requires pmpcdn1.wmupd.com
                     allFilesXml(req);
-                } else {
+                } */ else {
                     proxy(req, method, uri, headers, body);
                 }
 
@@ -161,6 +163,31 @@ public class HottaLauncherInspectorTest extends Application {
                 return null;
             });
         }
+    }
+
+    private void nullConfigXml(HttpServerRequest req) {
+        var body = """
+            <?xml version="1.0" ?>
+            <config>
+                    <AppVersion>1.0</AppVersion>
+                    <ResVersion>2.4.1</ResVersion>
+                    <UpdateResVersion>1.0</UpdateResVersion>
+                    <Section>2.4</Section>
+                    <PreReleaseBranch>AdvLaunch24</PreReleaseBranch>
+                    <PreReleaseVersion>2.4.1</PreReleaseVersion>
+                    <ResConfig>eyJhcHBWZXJzaW9uIjoiMi40IiwibWluVmVyc2lvbiI6IjIuNCIsImdhbWVSZXNVcmwiOlsiaHR0cHM6Ly9odGNkbjEud211cGQuY29tL2NsaWVudFJlcyIsImh0dHBzOi8vaHRjZG4yLndtdXBkLmNvbS9jbGllbnRSZXMiXSwiZ2FtZUdldFNlcnZlckxpc3RVcmwiOlsiaHR0cHM6Ly9odGNkbjEud211cGQuY29tLyIsImh0dHBzOi8vaHRjZG4yLndtdXBkLmNvbS8iXSwiYnJhbmNoTmFtZSI6IkFkdkxhdW5jaDI0IiwiZ2FtZVVwZGF0ZUFzc2V0VXJsIjpbImh0dHBzOi8vaHRjZG4xLndtdXBkLmNvbS9jbGllbnRSZXMiLCJodHRwczovL2h0Y2RuMi53bXVwZC5jb20vY2xpZW50UmVzIl19</ResConfig>
+                    <BaseVerson appVersion="1.0"/>
+                    <Extra>
+                            <speed>50</speed>
+                            <maxThreadCnt>5</maxThreadCnt>
+                            <minThreadCnt>1</minThreadCnt>
+                            <tagTaskThreadCnt>2</tagTaskThreadCnt>
+                    </Extra>
+            </config>
+            """;
+        System.out.println("custom null config.xml response\n" + body);
+        req.response().setStatusCode(200);
+        req.response().end(body);
     }
 
     private void configXml(HttpServerRequest req) {
