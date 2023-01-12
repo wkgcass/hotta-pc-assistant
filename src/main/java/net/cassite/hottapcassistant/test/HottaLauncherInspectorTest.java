@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class HottaLauncherInspectorTest extends Application {
@@ -35,14 +36,16 @@ public class HottaLauncherInspectorTest extends Application {
 
                 String branch = "AdvLaunch24";
                 String version = "2.4.1";
-                if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/config.xml")) {
+                if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/config.xml")) { // requires htcdn1 or htcdn2 .wmupd.com
                     configXml(req);
                 } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/" + version + "/ResList.xml")) {
                     resListXml(req);
                 } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/version/" + version + "/lastdiff.xml")) {
                     lastdiffXml(req);
-                } else if (method == HttpMethod.GET && uri.startsWith("/htydalphahd/client/Version.txt")) {
+                } else if (method == HttpMethod.GET && uri.startsWith("/htydalphahd/client/Version.txt")) { // requires htydhd.wmupd.com
                     versionTxt(req);
+                } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/") && uri.endsWith("AllFiles.xml")) { // requires pmpcdn1.wmupd.com
+                    allFilesXml(req);
                 } else {
                     proxy(req, method, uri, headers, body);
                 }
@@ -329,14 +332,81 @@ public class HottaLauncherInspectorTest extends Application {
         req.response().end(version);
     }
 
+    private void allFilesXml(HttpServerRequest req) {
+        proxy(req.method(), req.uri(), req.headers(), null, (resp, respBodyBuffer) -> {
+            if (resp == null) {
+                req.response().setStatusCode(404);
+                req.response().end("not found\r\n");
+                return;
+            }
+            req.response().setStatusCode(resp.statusCode());
+            for (var entry : resp.headers()) {
+                req.response().putHeader(entry.getKey(), entry.getValue());
+            }
+            if (resp.statusCode() != 200) {
+                req.response().end(respBodyBuffer);
+                return;
+            }
+
+            var string = respBodyBuffer.toString();
+            var file = "/Config/game/zh_cn/game_200105.cfg";
+            var index = string.indexOf(file);
+            if (index == -1) {
+                System.out.println(file + " not found in xml");
+                req.response().end(respBodyBuffer);
+                return;
+            }
+
+            index = string.lastIndexOf("Checksum", index);
+            if (index == -1) {
+                System.out.println("Checksum field not found in xml");
+                req.response().end(respBodyBuffer);
+                return;
+            }
+
+            var md5 = "0b46c38d2b992c791f8d5f2a85223960".toCharArray();
+            var sb = new StringBuilder(string);
+            var off = index + "Checksum=\"".length();
+            for (int i = 0; i < md5.length; ++i) {
+                sb.setCharAt(off + i, md5[i]);
+            }
+            string = sb.toString();
+            System.out.println("responding with modified response: " + string);
+            req.response().end(string);
+        });
+    }
+
     private HttpClient client;
 
     private void proxy(HttpServerRequest req, HttpMethod method, String uri, MultiMap headers, String body) {
+        proxy(method, uri, headers, body, (resp, respBodyBuffer) -> {
+            if (resp == null) {
+                req.response().setStatusCode(404);
+                req.response().end("not found\r\n");
+                return;
+            }
+            var respCode = resp.statusCode();
+            var respHeaders = resp.headers();
+            if (respBodyBuffer.length() > 1024) {
+                System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: (length=" + respBodyBuffer.length() + ")");
+            } else {
+                var respBody = respBodyBuffer.toString();
+                System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: " + respBody);
+            }
+
+            req.response().setStatusCode(respCode);
+            for (var entry : respHeaders) {
+                req.response().putHeader(entry.getKey(), entry.getValue());
+            }
+            req.response().end(respBodyBuffer);
+        });
+    }
+
+    private void proxy(HttpMethod method, String uri, MultiMap headers, String body, BiConsumer<HttpClientResponse, Buffer> cb) {
         var host = headers.get("host");
         System.out.println("host header is " + host);
         if (host == null) {
-            req.response().setStatusCode(404);
-            req.response().end("not found\r\n");
+            cb.accept(null, null);
             return;
         }
         client.request(new RequestOptions()
@@ -355,20 +425,7 @@ public class HottaLauncherInspectorTest extends Application {
                 }
             })
             .flatMap(resp -> resp.body().map(respBodyBuffer -> {
-                var respCode = resp.statusCode();
-                var respHeaders = resp.headers();
-                if (respBodyBuffer.length() > 1024) {
-                    System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: (length=" + respBodyBuffer.length() + ")");
-                } else {
-                    var respBody = respBodyBuffer.toString();
-                    System.out.println("resp code: " + respCode + "\n" + respHeaders + "\nresp body: " + respBody);
-                }
-
-                req.response().setStatusCode(respCode);
-                for (var entry : respHeaders) {
-                    req.response().putHeader(entry.getKey(), entry.getValue());
-                }
-                req.response().end(respBodyBuffer);
+                cb.accept(resp, respBodyBuffer);
                 return null;
             }))
             .recover(t -> {
