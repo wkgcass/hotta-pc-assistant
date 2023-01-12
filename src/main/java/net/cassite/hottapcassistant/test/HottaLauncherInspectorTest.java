@@ -35,7 +35,7 @@ public class HottaLauncherInspectorTest extends Application {
                 System.out.println(msg);
 
                 String branch = "AdvLaunch24";
-                String version = "2.4.1";
+                String version = "2.4.2";
                 if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/Version/Windows/config.xml")) {
                     nullConfigXml(req);
                 } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + branch + "/Version/Windows/config.xml")) { // requires htcdn1 or htcdn2 .wmupd.com
@@ -170,11 +170,11 @@ public class HottaLauncherInspectorTest extends Application {
             <?xml version="1.0" ?>
             <config>
                     <AppVersion>1.0</AppVersion>
-                    <ResVersion>2.4.1</ResVersion>
+                    <ResVersion>2.4.2</ResVersion>
                     <UpdateResVersion>1.0</UpdateResVersion>
                     <Section>2.4</Section>
                     <PreReleaseBranch>AdvLaunch24</PreReleaseBranch>
-                    <PreReleaseVersion>2.4.1</PreReleaseVersion>
+                    <PreReleaseVersion>2.4.2</PreReleaseVersion>
                     <ResConfig>eyJhcHBWZXJzaW9uIjoiMi40IiwibWluVmVyc2lvbiI6IjIuNCIsImdhbWVSZXNVcmwiOlsiaHR0cHM6Ly9odGNkbjEud211cGQuY29tL2NsaWVudFJlcyIsImh0dHBzOi8vaHRjZG4yLndtdXBkLmNvbS9jbGllbnRSZXMiXSwiZ2FtZUdldFNlcnZlckxpc3RVcmwiOlsiaHR0cHM6Ly9odGNkbjEud211cGQuY29tLyIsImh0dHBzOi8vaHRjZG4yLndtdXBkLmNvbS8iXSwiYnJhbmNoTmFtZSI6IkFkdkxhdW5jaDI0IiwiZ2FtZVVwZGF0ZUFzc2V0VXJsIjpbImh0dHBzOi8vaHRjZG4xLndtdXBkLmNvbS9jbGllbnRSZXMiLCJodHRwczovL2h0Y2RuMi53bXVwZC5jb20vY2xpZW50UmVzIl19</ResConfig>
                     <BaseVerson appVersion="1.0"/>
                     <Extra>
@@ -195,7 +195,7 @@ public class HottaLauncherInspectorTest extends Application {
             <?xml version="1.0" ?>
             <config>
                     <AppVersion>2.4</AppVersion>
-                    <ResVersion>2.4.1</ResVersion>
+                    <ResVersion>2.4.2</ResVersion>
                     <UpdateResVersion>2.4</UpdateResVersion>
                     <Section>2.4</Section>
                     <BaseVerson appVersion="2.4"/>
@@ -215,7 +215,7 @@ public class HottaLauncherInspectorTest extends Application {
     private void resListXml(HttpServerRequest req) {
         var body = """
             <?xml version="1.0" ?>
-            <ResList version="2.4.1" tag="">
+            <ResList version="2.4.2" tag="">
                     <Res filename="Hotta/Content/Paks/pakchunk0-WindowsNoEditor.pak" filesize="5107952619" md5="f481d1186f184d4ffcd42c157e885861" blockSize="10">
                             <Block index="0" start="0" size="536870912" md5="1a45f5e4782927501e4c21f1a9d64ecc"/>
                             <Block index="1" start="536870912" size="536870912" md5="93bfd4c1b04470654fd25462635c5e2f"/>
