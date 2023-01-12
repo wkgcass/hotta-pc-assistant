@@ -213,6 +213,7 @@ public class HottaLauncherInspectorTest extends Application {
     }
 
     private void resListXml(HttpServerRequest req) {
+        /*
         var body = """
             <?xml version="1.0" ?>
             <ResList version="2.4.2" tag="">
@@ -335,6 +336,12 @@ public class HottaLauncherInspectorTest extends Application {
                             <Block index="1" start="536870912" size="101675302" md5="59240e3a11b578e2fd746e3a81ecdc57"/>
                     </Res>
                     <Res filename="Hotta/Content/Paks/pakchunk9-WindowsNoEditor.sig" filesize="39504" md5="783a85e77ca601b18609fc0787d73ec1"/>
+            </ResList>
+            """;
+         */
+        var body = """
+            <?xml version="1.0" ?>
+            <ResList version="2.4.2" tag="">
             </ResList>
             """;
         System.out.println("custom resList.xml response\n" + body);
