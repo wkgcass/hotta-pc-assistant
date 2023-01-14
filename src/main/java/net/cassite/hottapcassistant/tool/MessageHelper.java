@@ -24,6 +24,9 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class MessageHelper extends AbstractTool implements Tool {
+    private static final Background background = new Background(new BackgroundFill(new Color(21 / 255d, 138 / 255d, 247 / 255d, 1), CornerRadii.EMPTY, Insets.EMPTY));
+    private static final Background blinkBackground = new Background(new BackgroundFill(new Color(234 / 255d, 117 / 255d, 8 / 255d, 1), CornerRadii.EMPTY, Insets.EMPTY));
+
     @Override
     protected String buildName() {
         return I18n.get().toolName("message-helper");
@@ -57,6 +60,7 @@ public class MessageHelper extends AbstractTool implements Tool {
         private static double lastX;
         private static double lastY;
         private static final LinkedList<String> history = new LinkedList<>();
+        private final Pane pane;
         private final TextField input;
         private ListIterator<String> ite = null;
 
@@ -113,8 +117,8 @@ public class MessageHelper extends AbstractTool implements Tool {
                 }
             });
 
-            var pane = new Pane();
-            pane.setBackground(new Background(new BackgroundFill(new Color(21 / 255d, 138 / 255d, 247 / 255d, 1), CornerRadii.EMPTY, Insets.EMPTY)));
+            pane = new Pane();
+            pane.setBackground(background);
             var scene = new Scene(pane);
             setScene(scene);
 
@@ -139,14 +143,46 @@ public class MessageHelper extends AbstractTool implements Tool {
             GlobalScreen.addNativeKeyListener(this);
         }
 
+        private boolean isBlinking = false;
+
         @Override
         public void nativeKeyReleased(NativeKeyEvent e) {
             if (e.getKeyCode() == NativeKeyEvent.VC_ENTER) {
+                if (input.isFocused()) {
+                    return;
+                }
                 Utils.runOnFX(() -> {
+                    blink();
                     setAlwaysOnTop(true);
                     Utils.runDelay(500, () -> setAlwaysOnTop(false));
                 });
             }
+        }
+
+        private void blink() {
+            if (isBlinking) {
+                return;
+            }
+            isBlinking = true;
+            Utils.runDelay(100, () -> {
+                pane.setBackground(blinkBackground);
+                Utils.runDelay(100, () -> {
+                    pane.setBackground(background);
+                    Utils.runDelay(100, () -> {
+                        pane.setBackground(blinkBackground);
+                        Utils.runDelay(100, () -> {
+                            pane.setBackground(background);
+                            Utils.runDelay(100, () -> {
+                                pane.setBackground(blinkBackground);
+                                Utils.runDelay(100, () -> {
+                                    pane.setBackground(background);
+                                    isBlinking = false;
+                                });
+                            });
+                        });
+                    });
+                });
+            });
         }
 
         private void addHistory(String s) {
