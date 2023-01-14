@@ -1081,7 +1081,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String worldBossTimerSpawnBtn() {
-        return "刷新";
+        return "击杀";
     }
 
     @Override

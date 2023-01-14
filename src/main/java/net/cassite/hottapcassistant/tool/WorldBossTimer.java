@@ -4,7 +4,6 @@ import javafx.animation.AnimationTimer;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -144,6 +143,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             var spawnBtn = new Button(I18n.get().worldBossTimerSpawnBtn()) {{
                 FontManager.setFont(this);
                 setPrefWidth(120);
+                setTextFill(Color.GREEN);
             }};
             var delBtn = new Button(I18n.get().worldBossTimerDelBtn()) {{
                 FontManager.setFont(this);
@@ -173,13 +173,13 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 setPrefWidth(120);
             }};
 
-            addBtn.setOnAction(e -> new AddStage(table).showAndWait());
+            addBtn.setOnAction(e -> new AddStage(table, this::save).showAndWait());
             editBtn.setOnAction(e -> {
                 var selected = table.getSelectionModel().getSelectedItem();
                 if (selected == null) {
                     return;
                 }
-                new AddStage(table, selected).showAndWait();
+                new AddStage(table, selected, this::save).showAndWait();
             });
             spawnBtn.setOnAction(e -> {
                 var selected = table.getSelectionModel().getSelectedItem();
@@ -188,7 +188,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
                 table.getItems().remove(selected);
                 selected.lastKnownKillTs = System.currentTimeMillis();
-                Utils.runDelay(100, () -> table.getItems().add(selected));
+                table.getItems().add(selected);
+                table.refresh();
+                save();
             });
             delBtn.setOnAction(e -> {
                 var selected = table.getSelectionModel().getSelectedItem();
@@ -196,8 +198,12 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     return;
                 }
                 table.getItems().remove(selected);
+                save();
             });
-            clearBtn.setOnAction(e -> table.getItems().clear());
+            clearBtn.setOnAction(e -> {
+                table.getItems().clear();
+                save();
+            });
             copyNextBossInfoBtn.setOnAction(e -> copyNextBossInfo());
             exportBtn.setOnAction(e -> {
                 var s = genConfig();
@@ -219,6 +225,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     return;
                 }
                 init(config);
+                save();
             });
 
             var accountAddBtn = new Button(I18n.get().worldBossTimerAddBtn()) {{
@@ -242,13 +249,13 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 setPrefWidth(120);
             }};
 
-            accountAddBtn.setOnAction(e -> new AddAccountStage(accounts).showAndWait());
+            accountAddBtn.setOnAction(e -> new AddAccountStage(accounts, this::save).showAndWait());
             accountEditBtn.setOnAction(e -> {
                 var selected = accounts.getSelectionModel().getSelectedItem();
                 if (selected == null) {
                     return;
                 }
-                new AddAccountStage(accounts, selected).showAndWait();
+                new AddAccountStage(accounts, selected, this::save).showAndWait();
             });
             accountSwitchLineBtn.setOnAction(e -> {
                 var selected = accounts.getSelectionModel().getSelectedItem();
@@ -257,7 +264,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
                 accounts.getItems().remove(selected);
                 selected.lastSwitchLineTs = System.currentTimeMillis();
-                Utils.runDelay(100, () -> accounts.getItems().add(selected));
+                accounts.getItems().add(selected);
+                accounts.refresh();
+                save();
             });
             accountDelBtn.setOnAction(e -> {
                 var selected = accounts.getSelectionModel().getSelectedItem();
@@ -265,8 +274,12 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     return;
                 }
                 accounts.getItems().remove(selected);
+                save();
             });
-            accountClearBtn.setOnAction(e -> accounts.getItems().clear());
+            accountClearBtn.setOnAction(e -> {
+                accounts.getItems().clear();
+                save();
+            });
 
             var pane = new Pane();
             var scene = new Scene(pane);
@@ -290,12 +303,12 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                             new VPadding(5),
                             editBtn,
                             new VPadding(5),
-                            spawnBtn,
-                            new VPadding(5),
                             delBtn,
                             new VPadding(5),
                             clearBtn,
                             new VPadding(60),
+                            spawnBtn,
+                            new VPadding(5),
                             copyNextBossInfoBtn,
                             new VPadding(5),
                             nextBossInfoTemplate
@@ -335,8 +348,6 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             });
 
             init();
-            table.getItems().addListener((ListChangeListener<BossInfo>) c -> save());
-            accounts.getItems().addListener((ListChangeListener<AccountInfo>) c -> save());
 
             setWidth(1024);
             setHeight(960);
@@ -447,14 +458,14 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 mm = "0" + mm;
             }
             String mainScript = "{" +
-                "var msg = ('')\n" +
-                "var name = ('" + selected.name + "')\n" +
-                "var hh = ('" + hh + "')\n" +
-                "var mm = ('" + mm + "')\n" +
-                "var line = " + selected.line + "\n" +
-                "var remainingMillis = " + remainingMillis + "\n" +
-                "#include \"template\"\n" +
-                "}\n";
+                                "var msg = ('')\n" +
+                                "var name = ('" + selected.name + "')\n" +
+                                "var hh = ('" + hh + "')\n" +
+                                "var mm = ('" + mm + "')\n" +
+                                "var line = " + selected.line + "\n" +
+                                "var remainingMillis = " + remainingMillis + "\n" +
+                                "#include \"template\"\n" +
+                                "}\n";
             Manager<String> manager = (name) -> {
                 if (name.equals("main")) return () -> mainScript;
                 else if (name.equals("template")) return () -> template;
@@ -575,13 +586,14 @@ public class WorldBossTimer extends AbstractTool implements Tool {
     private static class AddStage extends Stage {
         private static String lastBossName = null;
 
-        AddStage(TableView<BossInfo> table) {
-            this(table, null, 0, null, 0, 0, null);
+        AddStage(TableView<BossInfo> table, Runnable saveCB) {
+            this(table, null, 0, null, 0, 0, null, saveCB);
         }
 
         AddStage(TableView<BossInfo> table,
                  BossInfo oldInfo,
-                 int line, String name, long lastKill, int spawnMinutes, String comment) {
+                 int line, String name, long lastKill, int spawnMinutes, String comment,
+                 Runnable saveCB) {
             var current = LocalDateTime.now();
 
             var pane = new Pane();
@@ -732,7 +744,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 if (opt.isPresent()) {
                     table.getItems().remove(opt.get());
                 }
-                Utils.runDelay(100, () -> table.getItems().add(info));
+                table.getItems().add(info);
+                table.refresh();
+                saveCB.run();
 
                 close();
             });
@@ -763,19 +777,20 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             centerOnScreen();
         }
 
-        public AddStage(TableView<BossInfo> table, BossInfo info) {
-            this(table, info, info.line, info.name, info.lastKnownKillTs, info.spawnMinutes, info.comment);
+        public AddStage(TableView<BossInfo> table, BossInfo info, Runnable saveCB) {
+            this(table, info, info.line, info.name, info.lastKnownKillTs, info.spawnMinutes, info.comment, saveCB);
         }
     }
 
     private static class AddAccountStage extends Stage {
-        AddAccountStage(TableView<AccountInfo> table) {
-            this(table, null, 0, null, 0, 0, null);
+        AddAccountStage(TableView<AccountInfo> table, Runnable saveCB) {
+            this(table, null, 0, null, 0, 0, null, saveCB);
         }
 
         AddAccountStage(TableView<AccountInfo> table,
                         AccountInfo oldInfo,
-                        int line, String name, long lastSwitchTs, int cd, String comment) {
+                        int line, String name, long lastSwitchTs, int cd, String comment,
+                        Runnable saveCB) {
             var current = LocalDateTime.now();
 
             var pane = new Pane();
@@ -922,7 +937,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 if (opt.isPresent()) {
                     table.getItems().remove(opt.get());
                 }
-                Utils.runDelay(100, () -> table.getItems().add(info));
+                table.getItems().add(info);
+                saveCB.run();
 
                 close();
             });
@@ -953,8 +969,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             centerOnScreen();
         }
 
-        public AddAccountStage(TableView<AccountInfo> table, AccountInfo info) {
-            this(table, info, info.lastLine, info.name, info.lastSwitchLineTs, info.switchLineCDMinutes, info.comment);
+        public AddAccountStage(TableView<AccountInfo> table, AccountInfo info, Runnable saveCB) {
+            this(table, info, info.lastLine, info.name, info.lastSwitchLineTs, info.switchLineCDMinutes, info.comment, saveCB);
         }
     }
 
