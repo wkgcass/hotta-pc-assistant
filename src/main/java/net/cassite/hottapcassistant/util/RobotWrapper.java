@@ -52,7 +52,7 @@ public class RobotWrapper {
     public Image captureScreen(Screen screen) {
         Logger.debug("screen capture: " + screen);
         var bounds = screen.getBounds();
-        return capture0(null, bounds.getMinX(), bounds.getMinY(), (int) bounds.getWidth(), (int) bounds.getHeight());
+        return capture0(null, bounds.getMinX(), bounds.getMinY(), (int) bounds.getWidth(), (int) bounds.getHeight(), true, true);
     }
 
     public Image capture(double x, double y, int width, int height) {
@@ -60,12 +60,18 @@ public class RobotWrapper {
     }
 
     public Image capture(WritableImage img, double x, double y, int width, int height) {
-        Logger.debug("partial capture: (" + x + ", " + y + ") + (" + width + " * " + height + ")");
-        return capture0(img, x, y, width, height);
+        return capture(img, x, y, width, height, true, true);
     }
 
-    private Image capture0(WritableImage img, double x, double y, int width, int height) {
-        if (awtRobot != null) {
+    public Image capture(WritableImage img, double x, double y, int width, int height, boolean tryAwt, boolean printLog) {
+        if (printLog) {
+            Logger.debug("partial capture: (" + x + ", " + y + ") + (" + width + " * " + height + ")");
+        }
+        return capture0(img, x, y, width, height, tryAwt, printLog);
+    }
+
+    private Image capture0(WritableImage img, double x, double y, int width, int height, boolean tryAwt, boolean printLog) {
+        if (tryAwt && awtRobot != null) {
             var mi = awtRobot.createMultiResolutionScreenCapture(new Rectangle((int) x, (int) y, width, height));
             var ls = mi.getResolutionVariants();
             if (!ls.isEmpty()) {
@@ -81,12 +87,16 @@ public class RobotWrapper {
                     }
                 }
                 if (useAwt) {
-                    Logger.info("using awt captured image");
+                    if (printLog) {
+                        Logger.info("using awt captured image");
+                    }
                     return SwingFXUtils.toFXImage(Utils.convertToBufferedImage(i), img);
                 }
             }
         }
-        Logger.info("using javafx captured image");
+        if (printLog) {
+            Logger.info("using javafx captured image");
+        }
         return robot.getScreenCapture(img, x, y, width, height);
     }
 

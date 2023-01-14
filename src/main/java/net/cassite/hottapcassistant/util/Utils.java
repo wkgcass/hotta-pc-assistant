@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Utils {
     public static final DecimalFormat floatValueFormat = new DecimalFormat("0.000000");
@@ -144,11 +145,24 @@ public class Utils {
 
     public static <T> T execRobotOnThread(Function<RobotWrapper, T> f) {
         checkAndInitRobot();
+        return runOnFXAndReturn(() -> f.apply(robot));
+    }
+
+    public static java.awt.Image robotAWTCapture(int x, int y, int width, int height) {
+        checkAndInitRobot();
+        return robot.awtCapture(x, y, width, height);
+    }
+
+    public static BufferedImage robotNativeCapture(int x, int y, int width, int height, double scale) {
+        checkAndInitRobot();
+        return robot.nativeCapture(x, y, width, height, scale);
+    }
+
+    public static <T> T runOnFXAndReturn(Supplier<T> f) {
         boolean[] finished = new boolean[]{false};
         Object[] obj = new Object[]{null};
         Runnable r = () -> {
-            var v = f.apply(robot);
-            obj[0] = v;
+            obj[0] = f.get();
             finished[0] = true;
         };
         if (Platform.isFxApplicationThread()) {
@@ -165,16 +179,6 @@ public class Utils {
         }
         //noinspection unchecked
         return (T) obj[0];
-    }
-
-    public static java.awt.Image robotAWTCapture(int x, int y, int width, int height) {
-        checkAndInitRobot();
-        return robot.awtCapture(x, y, width, height);
-    }
-
-    public static BufferedImage robotNativeCapture(int x, int y, int width, int height, double scale) {
-        checkAndInitRobot();
-        return robot.nativeCapture(x, y, width, height, scale);
     }
 
     public static void moveAndClickOnThread(double x, double y, Key key) {

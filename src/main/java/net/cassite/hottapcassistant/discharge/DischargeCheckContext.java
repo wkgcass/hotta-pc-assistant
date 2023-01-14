@@ -61,7 +61,14 @@ public class DischargeCheckContext {
     }
 
     public static boolean isChargeColor(int color) {
-        final int delta = 22;
+        return isChargeColor(color, 22);
+    }
+
+    public static boolean isChargeColorRough(int color) {
+        return isChargeColor(color, 30);
+    }
+
+    private static boolean isChargeColor(int color, int delta) {
         int r = (color >> 16) & 0xff;
         if (Math.abs(chargeRed - r) > delta) return false;
         int g = (color >> 8) & 0xff;

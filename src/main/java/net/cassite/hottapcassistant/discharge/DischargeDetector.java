@@ -1,16 +1,17 @@
 package net.cassite.hottapcassistant.discharge;
 
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import net.cassite.hottapcassistant.entity.Point;
 import net.cassite.hottapcassistant.entity.Rect;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
+import net.cassite.hottapcassistant.util.image.BufferedImageBox;
+import net.cassite.hottapcassistant.util.image.FXWritableImageBox;
+import net.cassite.hottapcassistant.util.image.ImageBox;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,19 +22,27 @@ public class DischargeDetector {
     private final List<Point> points;
     private final boolean debug;
     private final boolean nativeCapture;
-    private volatile boolean isPaused = false;
+    private final boolean roughCapture;
+    private final WritableImage imgBuffer;
 
     private int lastDetectedPoints = 0;
+    private volatile boolean isPaused = false;
     private boolean fullCharge = false;
     private int skipDetectionCount = 0;
     private final Stabilizer stabilizer = new Stabilizer();
 
-    public DischargeDetector(Rect cap, double capScale, List<Point> points, boolean nativeCapture, boolean debug) {
+    public DischargeDetector(Rect cap, double capScale, List<Point> points, boolean nativeCapture, boolean roughCapture, boolean debug) {
         this.cap = cap;
         this.capScale = capScale;
         this.points = points;
         this.debug = debug;
         this.nativeCapture = nativeCapture;
+        this.roughCapture = roughCapture;
+        if (roughCapture) {
+            imgBuffer = new WritableImage((int) cap.w, (int) cap.h);
+        } else {
+            imgBuffer = null;
+        }
     }
 
     public boolean isRunning() {
@@ -128,12 +137,15 @@ public class DischargeDetector {
             }
 
             long beforeCap = System.currentTimeMillis();
-            BufferedImage bImg;
+            ImageBox bImg;
             if (nativeCapture) {
-                bImg = Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale);
+                bImg = new BufferedImageBox(Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale));
+            } else if (roughCapture) {
+                bImg = new FXWritableImageBox((WritableImage) Utils.execRobotOnThread(r -> r.capture(imgBuffer, cap.x, cap.y, (int) cap.w, (int) cap.h, false, false)),
+                    capScale);
             } else {
-                var img = Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale);
-                bImg = Utils.convertToBufferedImage(img);
+                var img = Utils.robotAWTCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h);
+                bImg = new BufferedImageBox(Utils.convertToBufferedImage(img));
             }
             long afterCap = System.currentTimeMillis();
             if (afterCap - beforeCap >= 24) {
@@ -173,11 +185,34 @@ public class DischargeDetector {
                 var rgb = bImg.getRGB((int) p.x, (int) p.y);
                 colors.add(rgb);
             }
+            if (debug) {
+                var sb = new StringBuilder();
+                sb.append("=================\n");
+                for (int i = 0; i < colors.size(); i++) {
+                    if (i < 10) {
+                        sb.append("0");
+                    }
+                    sb.append(i);
+                    int c = colors.get(i);
+                    var r = (c >> 16) & 0xff;
+                    var g = (c >> 8) & 0xff;
+                    var b = c & 0xff;
+                    sb.append(" ").append("r:").append(r).append(", g:").append(g).append(", b:").append(b).append("\n");
+                }
+                sb.append("=================");
+                Logger.debug(sb.toString());
+            }
             int matchCount = 0;
             for (; matchCount < points.size(); ++matchCount) {
                 var c = colors.get(matchCount);
-                if (!DischargeCheckContext.isChargeColor(c)) {
-                    break;
+                if (roughCapture) {
+                    if (!DischargeCheckContext.isChargeColorRough(c)) {
+                        break;
+                    }
+                } else {
+                    if (!DischargeCheckContext.isChargeColor(c)) {
+                        break;
+                    }
                 }
             }
             long afterMatchingPoints = System.currentTimeMillis();
@@ -190,18 +225,18 @@ public class DischargeDetector {
                 var g = bImg.createGraphics();
                 for (var i = 0; i < colors.size() - 1; ++i) {
                     var p = points.get(i);
-                    g.setPaint(new Color(colors.get(i)));
+                    g.setPaint(colors.get(i));
                     g.fillOval((int) (p.x - pointRadius), (int) (p.y - pointRadius), pointRadius * 2, pointRadius * 2);
                 }
-                g.setPaint(new Color(255, 0, 0));
-                g.setFont(new Font(null, Font.BOLD, 16));
+                g.setPaint(0xff0000);
+                g.setFont(null, true, 24);
                 g.drawString("match:" + matchCount, 10, 20);
                 g.drawString("c-p:" + Utils.roughFloatValueFormat.format(chargeColorPercentage * 100) + "%", 10, 40);
                 g.drawString("w-p:" + Utils.roughFloatValueFormat.format(whitePercentage * 100) + "%", 10, 60);
-                bImg.flush();
+                g.flush();
 
                 Platform.runLater(() -> {
-                    var fxImg = SwingFXUtils.toFXImage(bImg, null);
+                    var fxImg = bImg.toFXImage();
                     var content = new ClipboardContent();
                     content.putImage(fxImg);
                     Clipboard.getSystemClipboard().setContent(content);

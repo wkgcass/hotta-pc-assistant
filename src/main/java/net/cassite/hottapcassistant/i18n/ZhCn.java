@@ -843,6 +843,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String cooldownScanDischargeUseRoughCaptureCheckBox() {
+        return "使用不精确的屏幕捕捉（高DPI有影响）";
+    }
+
+    @Override
     public String cooldownScanDischargeResetBtn() {
         return "重置连携充能检测配置";
     }

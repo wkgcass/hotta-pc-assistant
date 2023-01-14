@@ -880,6 +880,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 }};
                 vbox.getChildren().add(scanDischargeUseNativeCaptureCheckbox);
                 vbox.getChildren().add(new VPadding(4));
+                var scanDischargeUseRoughCaptureCheckbox = new CheckBox(I18n.get().cooldownScanDischargeUseRoughCaptureCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(scanDischargeUseRoughCaptureCheckbox);
+                vbox.getChildren().add(new VPadding(4));
                 var scanDischargeResetConfigBtn = new Button(I18n.get().cooldownScanDischargeResetBtn()) {{
                     FontManager.setFont(this);
                 }};
@@ -913,6 +918,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     }
                     scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
                     scanDischargeUseNativeCaptureCheckbox.setSelected(now.scanDischargeNativeCapture);
+                    scanDischargeUseRoughCaptureCheckbox.setSelected(now.scanDischargeRoughCapture);
                     applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                     playAudioCheckBox.setSelected(now.playAudio);
                     autoFillPianGuangLingYuSubSkillCheckbox.setSelected(now.autoFillPianGuangLingYuSubSkill);
@@ -947,6 +953,17 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 scanDischargeUseNativeCaptureCheckbox.setOnAction(e -> {
                     var opt = options.get();
                     opt.scanDischargeNativeCapture = scanDischargeUseNativeCaptureCheckbox.isSelected();
+                    if (scanDischargeUseNativeCaptureCheckbox.isSelected()) {
+                        scanDischargeUseRoughCaptureCheckbox.setSelected(false);
+                    }
+                    saveConfig();
+                });
+                scanDischargeUseRoughCaptureCheckbox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.scanDischargeRoughCapture = scanDischargeUseRoughCaptureCheckbox.isSelected();
+                    if (scanDischargeUseRoughCaptureCheckbox.isSelected()) {
+                        scanDischargeUseNativeCaptureCheckbox.setSelected(false);
+                    }
                     saveConfig();
                 });
                 scanDischargeResetConfigBtn.setOnAction(e -> {

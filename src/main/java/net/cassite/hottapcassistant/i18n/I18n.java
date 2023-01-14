@@ -289,6 +289,8 @@ public abstract class I18n {
 
     public abstract String cooldownScanDischargeUseNativeCaptureCheckBox();
 
+    public abstract String cooldownScanDischargeUseRoughCaptureCheckBox();
+
     public abstract String cooldownScanDischargeResetBtn();
 
     public abstract String cooldownApplyDischargeForYingZhiCheckBox();
