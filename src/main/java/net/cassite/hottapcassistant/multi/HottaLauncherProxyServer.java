@@ -93,6 +93,8 @@ public class HottaLauncherProxyServer {
                 allFilesXml(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/200105/Version.ini")) {
                 versionIni(reqId, req);
+            } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/gameinfo.xml")) {
+                gameInfoXml(reqId, req);
             } else {
                 proxy(client, reqId, req, method, uri, headers, body);
             }
@@ -211,6 +213,20 @@ public class HottaLauncherProxyServer {
             """;
         body = body.trim() + "\n\n";
         Logger.info("custom Version.ini response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        req.response().setStatusCode(200);
+        req.response().end(body);
+    }
+
+    private void gameInfoXml(String reqId, HttpServerRequest req) {
+        var body = """
+            <?xml version="1.0" ?>
+            <GameInfo>
+                    <gamename>AdvLaunchNull</gamename>
+                    <multiplatform>True</multiplatform>
+            </GameInfo>
+            """;
+        body = body.trim() + "\n\n";
+        Logger.info("custom gameinfo.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
