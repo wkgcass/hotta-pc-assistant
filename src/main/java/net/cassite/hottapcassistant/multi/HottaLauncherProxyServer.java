@@ -91,6 +91,8 @@ public class HottaLauncherProxyServer {
                 versionTxt(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/200105/") && uri.endsWith("AllFiles.xml")) {
                 allFilesXml(reqId, req);
+            } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/200105/Version.ini")) {
+                versionIni(reqId, req);
             } else {
                 proxy(client, reqId, req, method, uri, headers, body);
             }
@@ -195,6 +197,20 @@ public class HottaLauncherProxyServer {
                    "    <Log></Log>\n" +
                    "</All_Files>\n";
         Logger.info("custom AllFiles.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        req.response().setStatusCode(200);
+        req.response().end(body);
+    }
+
+    private void versionIni(String reqId, HttpServerRequest req) {
+        var body = """
+            [VERSION]
+            Version=1.0.8.0109
+            Build=29800
+            FileListURL=https://pmpcdn1.wmupd.com/pmp/update/200105/1.0.8.0109/AllFiles.xml
+            [UPDATEINFO]
+            """;
+        body = body.trim() + "\n\n";
+        Logger.info("custom Version.ini response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
