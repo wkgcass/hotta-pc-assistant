@@ -1126,7 +1126,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String worldBossTimerMergeImportCheckBox() {
-        return "合并数据（不勾选则为替换数据）";
+        return "合并数据";
     }
 
     @Override

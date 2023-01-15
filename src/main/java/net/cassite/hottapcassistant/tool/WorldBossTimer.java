@@ -599,6 +599,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             if (list == null) return;
             if (merge) {
                 if (table.getItems() != null) {
+                    for (var info : list) {
+                        table.getItems().removeIf(i -> i.line == info.line && i.name.equals(info.name));
+                    }
                     table.getItems().addAll(list);
                     return;
                 }
@@ -610,6 +613,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             if (list == null) return;
             if (merge) {
                 if (accounts.getItems() != null) {
+                    for (var info : list) {
+                        table.getItems().removeIf(i -> i.name.equals(info.name));
+                    }
                     accounts.getItems().addAll(list);
                     return;
 
