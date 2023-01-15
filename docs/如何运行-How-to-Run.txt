@@ -1,21 +1,12 @@
 # 如何运行
 
-解压后进入 `bin/` 目录，找到 `app.bat` 文件，如果没有显示扩展名，则会看到 `app` 文件，格式为批处理文件。
-
-> 注: 如果没有显示扩展名，则可以看到两个名为 `app` 的文件，注意其图标或者文件格式说明，不要选择空白图标的文件
-
-右键 `app.bat` 文件，选择 `以管理员身份运行`。
-
-运行时会跳出黑框，显示一些日志，可以无视黑框，但是不要关闭它。
+解压后可以看到 `launch.bat` 文件，如果没有显示扩展名，则会看到 `launch` 文件，格式为批处理文件。
+双击 `launch.bat` 文件即可运行。运行后会跳出黑框，显示一些日志；你可以无视黑框，但是不要关闭它。
 
 # How to Run
 
-Go into `bin/` directory, find the file named `app.bat`.
+After extracting, you will see a file named `launch.bat`.
 If extension suffix is not shown, you would see a file named `app`, whose format is Windows Batch File.
 
-> Note: If extension suffix is not shown, you would see two files named `app`. Keep track of the icon or file description,
-> do not use the file with blank icon.
-
-Right click on `app.bat`, choose `Run with administrator`.
-
-A black terminal window would show after launching to display some logs, you may ignore it, but do not close it.
+Double-click the `launch.bat` file to run.
+A black terminal window would show after launching, to display some logs, you may ignore it, but do not close it.

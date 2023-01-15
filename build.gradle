@@ -70,6 +70,9 @@ tasks.jlinkZip.doFirst {
         from("docs") {
             include "如何运行-How-to-Run.txt"
         }
+        from("misc") {
+            include "launch.bat"
+        }
         into "${buildDir}/image/"
     }
 }
