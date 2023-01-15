@@ -69,7 +69,7 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
     public Skill useSkill(WeaponContext ctx) {
         if (cd > 0) {
             if (subSkillCount > 0) {
-                if (antiFalseTouch > 200) { // 2_000 * (1 - 0.9)
+                if (antiFalseTouch > 350) {
                     return null;
                 } else {
                     antiFalseTouch = 2_000;
@@ -80,7 +80,7 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
                 return null;
             }
         } else {
-            antiFalseTouch = 1_000;
+            antiFalseTouch = 2_000;
             return super.useSkill(ctx);
         }
     }
