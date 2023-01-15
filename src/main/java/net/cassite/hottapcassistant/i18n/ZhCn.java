@@ -1110,6 +1110,26 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String worldBossTimerIncludeBossTimerCheckBox() {
+        return "包含世界Boss计时数据";
+    }
+
+    @Override
+    public String worldBossTimerIncludeAccountTimerCheckBox() {
+        return "包含账号计时数据";
+    }
+
+    @Override
+    public String worldBossTimerIncludeMsgTemplateCheckBox() {
+        return "包含喊话消息模板";
+    }
+
+    @Override
+    public String worldBossTimerMergeImportCheckBox() {
+        return "合并数据（不勾选则为替换数据）";
+    }
+
+    @Override
     public String worldBossTimerSwitchLineBtn() {
         return "切线";
     }

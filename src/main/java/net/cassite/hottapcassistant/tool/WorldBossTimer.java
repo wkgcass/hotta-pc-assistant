@@ -5,6 +5,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -93,6 +94,11 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         private final TableView<AccountInfo> accounts = new TableView<>();
         private final AnimationTimer etaTimer;
 
+        private final CheckBox includeBossTimerCheckBox;
+        private final CheckBox includeAccountTimerCheckBox;
+        private final CheckBox includeMsgTemplateCheckBox;
+        private final CheckBox mergeImportCheckBox;
+
         private final TextArea nextBossInfoTemplate;
 
         S() throws Exception {
@@ -172,6 +178,19 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 FontManager.setFont(this);
                 setPrefWidth(120);
             }};
+            includeBossTimerCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeBossTimerCheckBox()) {{
+                FontManager.setFont(this);
+                setSelected(true);
+            }};
+            includeAccountTimerCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeAccountTimerCheckBox()) {{
+                FontManager.setFont(this);
+            }};
+            includeMsgTemplateCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeMsgTemplateCheckBox()) {{
+                FontManager.setFont(this);
+            }};
+            mergeImportCheckBox = new CheckBox(I18n.get().worldBossTimerMergeImportCheckBox()) {{
+                FontManager.setFont(this);
+            }};
 
             addBtn.setOnAction(e -> new AddStage(table, this::save).showAndWait());
             editBtn.setOnAction(e -> {
@@ -206,7 +225,11 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             });
             copyNextBossInfoBtn.setOnAction(e -> copyNextBossInfo());
             exportBtn.setOnAction(e -> {
-                var s = genConfig();
+                var s = genConfig(
+                    includeBossTimerCheckBox.isSelected(),
+                    includeAccountTimerCheckBox.isSelected(),
+                    includeMsgTemplateCheckBox.isSelected()
+                );
                 var content = new ClipboardContent();
                 content.putString(s.stringify());
                 Clipboard.getSystemClipboard().setContent(content);
@@ -224,7 +247,12 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     new SimpleAlert(Alert.AlertType.WARNING, I18n.get().worldBossTimerInvalidImportingData()).showAndWait();
                     return;
                 }
-                init(config);
+                init(config,
+                    includeBossTimerCheckBox.isSelected(),
+                    includeAccountTimerCheckBox.isSelected(),
+                    includeMsgTemplateCheckBox.isSelected(),
+                    mergeImportCheckBox.isSelected()
+                );
                 save();
             });
 
@@ -289,8 +317,16 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 new VBox(
                     new VPadding(10),
                     new HBox(
-                        new HPadding(10), exportBtn, new HPadding(10), importBtn
-                    ),
+                        new HPadding(10), exportBtn, new HPadding(10), importBtn,
+                        new Separator(Orientation.VERTICAL) {{
+                            setPadding(new Insets(0, 10, 0, 10));
+                        }}, includeBossTimerCheckBox,
+                        new HPadding(35), includeAccountTimerCheckBox,
+                        new HPadding(35), includeMsgTemplateCheckBox,
+                        new HPadding(35), mergeImportCheckBox
+                    ) {{
+                        setAlignment(Pos.CENTER_LEFT);
+                    }},
                     new Separator() {{
                         setPadding(new Insets(10, 0, 10, 10));
                     }},
@@ -493,10 +529,20 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
 
         private JSON.Object genConfig() {
+            return genConfig(true, true, true);
+        }
+
+        private JSON.Object genConfig(boolean includeBoss, boolean includeAccount, boolean includeTemplate) {
             var config = new Config();
-            config.list = new ArrayList<>(table.getItems());
-            config.accounts = new ArrayList<>(accounts.getItems());
-            config.template = nextBossInfoTemplate.getText();
+            if (includeBoss) {
+                config.list = new ArrayList<>(table.getItems());
+            }
+            if (includeAccount) {
+                config.accounts = new ArrayList<>(accounts.getItems());
+            }
+            if (includeTemplate) {
+                config.template = nextBossInfoTemplate.getText();
+            }
             return config.toJson();
         }
 
@@ -534,18 +580,41 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
 
         private void init(Config c) {
-            initList(c.list);
-            initAccounts(c.accounts);
-            initTemplate(c.template);
+            init(c, true, true, true, false);
         }
 
-        private void initList(List<BossInfo> list) {
+        private void init(Config c, boolean includeBoss, boolean includeAccount, boolean includeTemplate, boolean merge) {
+            if (includeBoss) {
+                initList(c.list, merge);
+            }
+            if (includeAccount) {
+                initAccounts(c.accounts, merge);
+            }
+            if (includeTemplate) {
+                initTemplate(c.template);
+            }
+        }
+
+        private void initList(List<BossInfo> list, boolean merge) {
             if (list == null) return;
+            if (merge) {
+                if (table.getItems() != null) {
+                    table.getItems().addAll(list);
+                    return;
+                }
+            }
             table.setItems(FXCollections.observableList(list));
         }
 
-        private void initAccounts(List<AccountInfo> list) {
+        private void initAccounts(List<AccountInfo> list, boolean merge) {
             if (list == null) return;
+            if (merge) {
+                if (accounts.getItems() != null) {
+                    accounts.getItems().addAll(list);
+                    return;
+
+                }
+            }
             accounts.setItems(FXCollections.observableList(list));
         }
 

@@ -385,6 +385,14 @@ public abstract class I18n {
 
     public abstract String worldBossTimerImportBtn();
 
+    public abstract String worldBossTimerIncludeBossTimerCheckBox();
+
+    public abstract String worldBossTimerIncludeAccountTimerCheckBox();
+
+    public abstract String worldBossTimerIncludeMsgTemplateCheckBox();
+
+    public abstract String worldBossTimerMergeImportCheckBox();
+
     public abstract String worldBossTimerSwitchLineBtn();
 
     public abstract String worldBossTimerOkBtn();
