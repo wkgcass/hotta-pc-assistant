@@ -39,14 +39,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.temporal.ChronoField.*;
 
 public class WorldBossTimer extends AbstractTool implements Tool {
     @Override
@@ -72,19 +68,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
     }
 
-    private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-        .parseCaseInsensitive()
-        .append(ISO_LOCAL_DATE)
-        .appendLiteral(' ')
-        .append(new DateTimeFormatterBuilder()
-            .appendValue(HOUR_OF_DAY, 2)
-            .appendLiteral(':')
-            .appendValue(MINUTE_OF_HOUR, 2)
-            .optionalStart()
-            .appendLiteral(':')
-            .appendValue(SECOND_OF_MINUTE, 2)
-            .toFormatter())
-        .toFormatter();
+    private static final DateTimeFormatter formatter = Utils.YYYYMMddHHiissDateTimeFormatter;
 
     private static class S extends Stage {
         static final Path recordFilePath = Path.of(AssistantConfig.assistantDirPath.toString(), "WorldBossTimer.vjson.txt");

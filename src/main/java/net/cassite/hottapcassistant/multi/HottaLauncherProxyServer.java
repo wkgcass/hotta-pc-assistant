@@ -7,9 +7,11 @@ import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.core.net.TrustOptions;
 import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.Logger;
+import net.cassite.hottapcassistant.util.Utils;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -87,6 +89,8 @@ public class HottaLauncherProxyServer {
                 lastdiffXml(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/htydalphahd/client/Version.txt")) {
                 versionTxt(reqId, req);
+            } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/200105/") && uri.endsWith("AllFiles.xml")) {
+                allFilesXml(reqId, req);
             } else {
                 proxy(client, reqId, req, method, uri, headers, body);
             }
@@ -178,6 +182,21 @@ public class HottaLauncherProxyServer {
         Logger.info("custom version.txt response: " + version + "\nreqId: " + reqId + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(version);
+    }
+
+    private void allFilesXml(String reqId, HttpServerRequest req) {
+        var now = ZonedDateTime.now();
+        var timeStr = Utils.YYYYMMddHHiissDateTimeFormatter.format(now);
+        var body = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\n" +
+                   "<All_Files>\n" +
+                   "    <BuildInfo Time=\"" + timeStr + "\"/>\n" +
+                   "    <ProductVersion Version=\"1.0.8.0109\"/>\n" +
+                   "    <Url BaseUrl=\"https://pmpcdn1.wmupd.com/pmp/update/200105\"/>\n" +
+                   "    <Log></Log>\n" +
+                   "</All_Files>\n";
+        Logger.info("custom AllFiles.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        req.response().setStatusCode(200);
+        req.response().end(body);
     }
 
     public static void proxy(HttpClient client, String reqId, HttpServerRequest req, HttpMethod method, String uri, MultiMap headers, String body) {

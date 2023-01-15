@@ -67,12 +67,15 @@ public class MultiHottaInstanceStage extends Stage {
 
         advBranchInput = new TextField() {{
             FontManager.setFont(this);
+            setText("AdvLaunch24");
         }};
         resVersionInput = new TextField() {{
             FontManager.setFont(this);
+            setText("2.4");
         }};
         resSubVersionInput = new TextField() {{
             FontManager.setFont(this);
+            setText("2.4.3");
         }};
         clientVersionInput = new TextField() {{
             FontManager.setFont(this);
