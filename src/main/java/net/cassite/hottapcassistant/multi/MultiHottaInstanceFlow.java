@@ -57,15 +57,43 @@ public class MultiHottaInstanceFlow {
                "</ResList>\n";
     }
 
+    public static String buildConfigXml(String version, String subVersion) {
+        return "<?xml version=\"1.0\" ?>\n" +
+               "<config>\n" +
+               "        <AppVersion>" + version + "</AppVersion>\n" +
+               "        <ResVersion>" + subVersion + "</ResVersion>\n" +
+               "        <UpdateResVersion>" + version + "</UpdateResVersion>\n" +
+               "        <Section>" + version + "</Section>\n" +
+               "        <BaseVerson appVersion=\"" + version + "\"/>\n" +
+               "        <Extra>\n" +
+               "                <speed>50</speed>\n" +
+               "                <maxThreadCnt>5</maxThreadCnt>\n" +
+               "                <minThreadCnt>1</minThreadCnt>\n" +
+               "                <tagTaskThreadCnt>2</tagTaskThreadCnt>\n" +
+               "        </Extra>\n" +
+               "</config>\n";
+    }
+
     public static void writeResListXml(String advLocation, String subVersion) throws IOException {
-        var dir = Path.of(advLocation, "WmGpLaunch", "UserData", "Patcher", "PatcherSDK");
+        var dir = makePatcherSDKDir(advLocation);
         var path = Path.of(dir.toString(), "ResList.xml");
+        Utils.writeFile(path, buildResListXml(subVersion));
+    }
+
+    public static void writeConfigXml(String advLocation, String version, String subVersion) throws IOException {
+        var dir = makePatcherSDKDir(advLocation);
+        var path = Path.of(dir.toString(), "config.xml");
+        Utils.writeFile(path, buildConfigXml(version, subVersion));
+    }
+
+    private static Path makePatcherSDKDir(String advLocation) throws IOException {
+        var dir = Path.of(advLocation, "WmGpLaunch", "UserData", "Patcher", "PatcherSDK");
         if (!dir.toFile().exists()) {
             var ok = dir.toFile().mkdirs();
             if (!ok) {
                 throw new IOException("failed creating PatcherSDK dir " + dir);
             }
         }
-        Utils.writeFile(path, buildResListXml(subVersion));
+        return dir;
     }
 }

@@ -143,20 +143,7 @@ public class HottaLauncherProxyServer {
     }
 
     private void configXml(String reqId, HttpServerRequest req) {
-        var body = "<?xml version=\"1.0\" ?>\n" +
-                   "<config>\n" +
-                   "        <AppVersion>" + version + "</AppVersion>\n" +
-                   "        <ResVersion>" + subVersion + "</ResVersion>\n" +
-                   "        <UpdateResVersion>" + version + "</UpdateResVersion>\n" +
-                   "        <Section>" + version + "</Section>\n" +
-                   "        <BaseVerson appVersion=\"" + version + "\"/>\n" +
-                   "        <Extra>\n" +
-                   "                <speed>50</speed>\n" +
-                   "                <maxThreadCnt>5</maxThreadCnt>\n" +
-                   "                <minThreadCnt>1</minThreadCnt>\n" +
-                   "                <tagTaskThreadCnt>2</tagTaskThreadCnt>\n" +
-                   "        </Extra>\n" +
-                   "</config>\n";
+        var body = MultiHottaInstanceFlow.buildConfigXml(version, subVersion);
         Logger.info("custom config.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);

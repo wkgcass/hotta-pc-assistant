@@ -269,6 +269,17 @@ public class MultiHottaInstanceStage extends Stage {
             }
             return true;
         }));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("config.xml"), () -> {
+            try {
+                MultiHottaInstanceFlow.writeConfigXml(config.betaPath, config.resVersion, config.resSubVersion);
+            } catch (IOException e) {
+                Logger.error("failed writing config.xml", e);
+                Utils.runOnFX(() ->
+                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingConfigXml()).showAndWait());
+                return false;
+            }
+            return true;
+        }));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("Client"), () -> {
             var clientPath = Path.of(config.betaPath, "Client");
             var clientFile = clientPath.toFile();

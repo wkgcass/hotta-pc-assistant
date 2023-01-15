@@ -461,6 +461,8 @@ public abstract class I18n {
 
     public abstract String multiInstanceFailedWritingResListXml();
 
+    public abstract String multiInstanceFailedWritingConfigXml();
+
     public abstract String multiInstanceCannotMakeLink();
 
     public abstract String multiInstanceCannotSetHostsFile();

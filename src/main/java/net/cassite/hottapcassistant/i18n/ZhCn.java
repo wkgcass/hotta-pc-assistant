@@ -1308,7 +1308,8 @@ public class ZhCn extends I18n {
     @Override
     public String multiInstanceLaunchStep(String step) {
         return switch (step) {
-            case "ResList.xml" -> "写入资源配置文件";
+            case "ResList.xml" -> "写入资源配置文件(1)";
+            case "config.xml" -> "写入资源配置文件(2)";
             case "Client" -> "链接客户度目录";
             case "hosts" -> "修改hosts文件";
             case "server" -> "启动代理服务器";
@@ -1319,7 +1320,12 @@ public class ZhCn extends I18n {
 
     @Override
     public String multiInstanceFailedWritingResListXml() {
-        return "写入资源配置失败";
+        return "写入资源配置文件ResList.xml失败";
+    }
+
+    @Override
+    public String multiInstanceFailedWritingConfigXml() {
+        return "写入资源配置文件config.xml失败";
     }
 
     @Override
