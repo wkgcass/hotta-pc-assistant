@@ -70,7 +70,7 @@ public class FeedThread extends Thread {
             }
             try {
                 //noinspection BusyWait
-                Thread.sleep(10 * 60_000);
+                Thread.sleep(2 * 60 * 60_000);
             } catch (InterruptedException ignore) {
             }
         }
@@ -223,9 +223,9 @@ public class FeedThread extends Thread {
         @Override
         public String toString() {
             return "GithubIssueComment{" +
-                "user=" + user +
-                ", body='" + body + '\'' +
-                '}';
+                   "user=" + user +
+                   ", body='" + body + '\'' +
+                   '}';
         }
     }
 
@@ -238,8 +238,8 @@ public class FeedThread extends Thread {
         @Override
         public String toString() {
             return "GithubUserRef{" +
-                "id=" + id +
-                '}';
+                   "id=" + id +
+                   '}';
         }
     }
 }
