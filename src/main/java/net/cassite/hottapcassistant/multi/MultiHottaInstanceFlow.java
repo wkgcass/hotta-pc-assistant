@@ -4,6 +4,7 @@ import net.cassite.hottapcassistant.util.Utils;
 import vjson.simple.SimpleString;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -48,5 +49,23 @@ public class MultiHottaInstanceFlow {
         if (code != 0) {
             throw new IOException("creating directory link failed: " + code);
         }
+    }
+
+    public static String buildResListXml(String subVersion) {
+        return "<?xml version=\"1.0\" ?>\n" +
+               "<ResList version=\"" + subVersion + "\" tag=\"\">\n" +
+               "</ResList>\n";
+    }
+
+    public static void writeResListXml(String advLocation, String subVersion) throws IOException {
+        var dir = Path.of(advLocation, "WmGpLaunch", "UserData", "Patcher", "PatcherSDK");
+        var path = Path.of(dir.toString(), "ResList.xml");
+        if (!dir.toFile().exists()) {
+            var ok = dir.toFile().mkdirs();
+            if (!ok) {
+                throw new IOException("failed creating PatcherSDK dir " + dir);
+            }
+        }
+        Utils.writeFile(path, buildResListXml(subVersion));
     }
 }

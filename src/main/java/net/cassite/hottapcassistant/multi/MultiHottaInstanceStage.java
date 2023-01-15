@@ -3,10 +3,10 @@ package net.cassite.hottapcassistant.multi;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -15,6 +15,8 @@ import javafx.stage.Stage;
 import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.component.ImageButton;
 import net.cassite.hottapcassistant.component.VPadding;
+import net.cassite.hottapcassistant.component.loading.LoadingItem;
+import net.cassite.hottapcassistant.component.loading.LoadingStage;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.tool.MultiHottaInstance;
 import net.cassite.hottapcassistant.util.*;
@@ -23,6 +25,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 public class MultiHottaInstanceStage extends Stage {
     private final MultiHottaInstance tool;
@@ -254,43 +257,74 @@ public class MultiHottaInstanceStage extends Stage {
             new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().multiInstanceEmptyFieldAlert()).showAndWait();
             return;
         }
-        var clientPath = Path.of(config.betaPath, "Client");
-        var clientFile = clientPath.toFile();
-        if (!clientFile.exists()) {
+        var items = new ArrayList<LoadingItem>();
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("ResList.xml"), () -> {
+            try {
+                MultiHottaInstanceFlow.writeResListXml(config.betaPath, config.resSubVersion);
+            } catch (IOException e) {
+                Logger.error("failed writing ResList.xml", e);
+                Utils.runOnFX(() ->
+                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingResListXml()).showAndWait());
+                return false;
+            }
+            return true;
+        }));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("Client"), () -> {
+            var clientPath = Path.of(config.betaPath, "Client");
+            var clientFile = clientPath.toFile();
+            if (clientFile.exists()) {
+                return true;
+            }
             var onlineClientPath = Path.of(config.onlinePath, "Client");
             try {
                 MultiHottaInstanceFlow.makeLink(clientPath.toAbsolutePath().toString(), onlineClientPath.toAbsolutePath().toString());
             } catch (IOException e) {
                 Logger.error("making link file failed", e);
-                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotMakeLink()).showAndWait();
-                return;
+                Utils.runOnFX(() ->
+                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotMakeLink()).showAndWait());
+                return false;
             }
-        }
-        if (!MultiHottaInstanceFlow.setHostsFile()) {
-            Logger.error("setting hosts file failed");
-            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotSetHostsFile()).showAndWait();
-            return;
-        }
-        if (proxyServer == null) {
+            return true;
+        }));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("hosts"), () -> {
+            if (!MultiHottaInstanceFlow.setHostsFile()) {
+                Logger.error("setting hosts file failed");
+                Utils.runOnFX(() ->
+                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotSetHostsFile()).showAndWait());
+                return false;
+            }
+            return true;
+        }));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("server"), () -> {
+            if (proxyServer != null) {
+                return true;
+            }
             var proxyServer = new HottaLauncherProxyServer(config.advBranch, config.resVersion, config.resSubVersion, config.clientVersion);
             try {
                 proxyServer.start();
             } catch (Exception e) {
                 proxyServer.destroy();
                 Logger.error("launching proxy server failed", e);
-                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceLaunchProxyServerFailed()).showAndWait();
-                return;
+                Utils.runOnFX(() ->
+                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceLaunchProxyServerFailed()).showAndWait());
+                return false;
             }
             this.proxyServer = proxyServer;
-        }
-        try {
-            Desktop.getDesktop().open(Path.of(config.betaPath, "gameLauncher.exe").toFile());
-        } catch (IOException e) {
-            Logger.error("failed launching game", e);
-            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().launchGameFailed()).showAndWait();
-        }
-
-        tool.save(config);
+            return true;
+        }));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("launch"), () -> {
+            try {
+                Desktop.getDesktop().open(Path.of(config.betaPath, "gameLauncher.exe").toFile());
+            } catch (IOException e) {
+                Logger.error("failed launching game", e);
+                Utils.runOnFX(() ->
+                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().launchGameFailed()).showAndWait());
+                return false;
+            }
+            return true;
+        }));
+        LoadingStage.load(items, () -> tool.save(config), x -> {
+        });
     }
 
     public void terminate() {

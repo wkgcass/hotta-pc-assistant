@@ -457,6 +457,10 @@ public abstract class I18n {
 
     public abstract String multiInstanceEmptyFieldAlert();
 
+    public abstract String multiInstanceLaunchStep(String step);
+
+    public abstract String multiInstanceFailedWritingResListXml();
+
     public abstract String multiInstanceCannotMakeLink();
 
     public abstract String multiInstanceCannotSetHostsFile();

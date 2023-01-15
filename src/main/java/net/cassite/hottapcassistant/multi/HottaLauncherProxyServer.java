@@ -163,9 +163,7 @@ public class HottaLauncherProxyServer {
     }
 
     private void resListXml(String reqId, HttpServerRequest req) {
-        var body = "<?xml version=\"1.0\" ?>\n" +
-                   "<ResList version=\"" + subVersion + "\" tag=\"\">\n" +
-                   "</ResList>\n";
+        var body = MultiHottaInstanceFlow.buildResListXml(subVersion);
         Logger.info("custom resList.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);

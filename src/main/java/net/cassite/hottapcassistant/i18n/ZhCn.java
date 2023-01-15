@@ -1306,6 +1306,23 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String multiInstanceLaunchStep(String step) {
+        return switch (step) {
+            case "ResList.xml" -> "写入资源配置文件";
+            case "Client" -> "链接客户度目录";
+            case "hosts" -> "修改hosts文件";
+            case "server" -> "启动代理服务器";
+            case "launch" -> "启动";
+            default -> step;
+        };
+    }
+
+    @Override
+    public String multiInstanceFailedWritingResListXml() {
+        return "写入资源配置失败";
+    }
+
+    @Override
     public String multiInstanceCannotMakeLink() {
         return "创建链接文件失败";
     }

@@ -16,6 +16,7 @@ import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LoadingStage extends Stage {
     private final Label label = new Label() {{
@@ -24,17 +25,19 @@ public class LoadingStage extends Stage {
     private final ProgressBar progressBar = new ProgressBar();
     private final List<LoadingItem> items;
     private final Runnable cb;
+    private final Consumer<LoadingItem> failedCB;
     private boolean isDone = false;
 
-    public static void load(List<LoadingItem> items, Runnable cb) {
-        var s = new LoadingStage(items, cb);
+    public static void load(List<LoadingItem> items, Runnable cb, Consumer<LoadingItem> failedCB) {
+        var s = new LoadingStage(items, cb, failedCB);
         s.show();
         s.load();
     }
 
-    private LoadingStage(List<LoadingItem> items, Runnable cb) {
+    private LoadingStage(List<LoadingItem> items, Runnable cb, Consumer<LoadingItem> failedCB) {
         this.items = items;
         this.cb = cb;
+        this.failedCB = failedCB;
 
         setTitle(I18n.get().loadingStageTitle());
         setWidth(670);
@@ -58,7 +61,7 @@ public class LoadingStage extends Stage {
             if (isDone) {
                 return;
             }
-            System.exit(1);
+            failedCB.accept(null);
         });
     }
 
@@ -69,16 +72,9 @@ public class LoadingStage extends Stage {
         }
         loadItem(total, 0, items.iterator(), () -> Platform.runLater(() -> {
             isDone = true;
-            label.setText(I18n.get().hintPressAlt());
-            TaskManager.execute(() -> {
-                try {
-                    Thread.sleep(120);
-                } catch (InterruptedException ignore) {
-                }
-                Platform.runLater(() -> {
-                    close();
-                    Platform.runLater(cb);
-                });
+            Platform.runLater(() -> {
+                close();
+                Platform.runLater(cb);
             });
         }));
     }
@@ -92,8 +88,13 @@ public class LoadingStage extends Stage {
         var name = item.name();
         Utils.runOnFX(() -> label.setText(name));
         TaskManager.execute(() -> {
-            item.loadFunc().run();
+            var ok = item.loadFunc().getAsBoolean();
             Platform.runLater(() -> {
+                if (!ok) {
+                    close();
+                    failedCB.accept(item);
+                    return;
+                }
                 long newCurr = current + item.weight();
                 progressBar.setProgress(newCurr / (double) total);
                 loadItem(total, newCurr, ite, cb);

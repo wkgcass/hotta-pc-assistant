@@ -38,6 +38,7 @@ public class Main extends Application {
         for (var path : AudioManager.ALL) {
             itemsToLoad.add(new LoadingItem(1, path, () -> AudioManager.get().loadAudio(path)));
         }
+        itemsToLoad.add(new LoadingItem(1, I18n.get().hintPressAlt(), () -> Utils.delay(120)));
 
         LoadingStage.load(itemsToLoad, () -> {
             stage.getIcons().add(ImageManager.get().load("images/icon/icon.jpg"));
@@ -50,7 +51,7 @@ public class Main extends Application {
 
             MainScreen.initStage(stage);
             stage.show();
-        });
+        }, x -> System.exit(1));
     }
 
     private void terminate() {
