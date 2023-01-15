@@ -321,9 +321,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                         new Separator(Orientation.VERTICAL) {{
                             setPadding(new Insets(0, 10, 0, 10));
                         }}, includeBossTimerCheckBox,
-                        new HPadding(35), includeAccountTimerCheckBox,
-                        new HPadding(35), includeMsgTemplateCheckBox,
-                        new HPadding(35), mergeImportCheckBox
+                        new HPadding(25), includeAccountTimerCheckBox,
+                        new HPadding(25), includeMsgTemplateCheckBox,
+                        new HPadding(25), mergeImportCheckBox
                     ) {{
                         setAlignment(Pos.CENTER_LEFT);
                     }},
