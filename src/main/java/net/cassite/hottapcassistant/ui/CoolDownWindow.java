@@ -8,6 +8,7 @@ import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -50,6 +51,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private final List<Group> buffs = new ArrayList<>();
     private final List<Group> row2 = new ArrayList<>();
     private final DischargeDetector dischargeDetector;
+    private final boolean hideWhenMouseEnter;
 
     private final Scale scale = new Scale(1, 1);
     private final int totalIndicatorCount;
@@ -83,6 +85,11 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 options.scanDischargeRoughCapture,
                 options.scanDischargeDebug
             );
+        }
+        if (options != null) {
+            this.hideWhenMouseEnter = options.hideWhenMouseEnter;
+        } else {
+            this.hideWhenMouseEnter = false;
         }
 
         GlobalScreenUtils.enable(this);
@@ -235,6 +242,19 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             group.getChildren().add(sep);
         }
         group.getChildren().add(descLabel);
+
+        for (var n : group.getChildren()) {
+            var enterFunc = n.getOnMouseEntered();
+            n.setOnMouseEntered(e -> {
+                if (enterFunc != null) enterFunc.handle(e);
+                mouseEnterHide(n);
+            });
+            var exitFunc = n.getOnMouseExited();
+            n.setOnMouseExited(e -> {
+                if (exitFunc != null) exitFunc.handle(e);
+                mouseExitShow(n);
+            });
+        }
 
         var dragHandler = new DragHandler(xy -> {
             setX(xy[0]);
@@ -587,6 +607,20 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 }
             }
         }
+    }
+
+    private void mouseEnterHide(Node n) {
+        if (!hideWhenMouseEnter) {
+            return;
+        }
+        if (keys.contains(KeyCode.ALT)) {
+            return;
+        }
+        n.setOpacity(0);
+    }
+
+    private void mouseExitShow(Node n) {
+        n.setOpacity(1);
     }
 
     @Override

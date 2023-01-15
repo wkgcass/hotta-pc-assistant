@@ -295,6 +295,8 @@ public abstract class I18n {
 
     public abstract String cooldownApplyDischargeForYingZhiCheckBox();
 
+    public abstract String hideWhenMouseEnterCheckBox();
+
     public abstract String cooldownPlayAudioCheckBox();
 
     public abstract String cooldownAutoFillPianGuangLingYuSubSkillCheckbox();

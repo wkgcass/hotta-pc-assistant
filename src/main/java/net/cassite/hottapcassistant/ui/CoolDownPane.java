@@ -892,10 +892,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 vbox.getChildren().add(new Separator() {{
                     setPadding(new Insets(5, 0, 5, 0));
                 }});
-                var applyDischargeForYingZhiCheckBox = new CheckBox(I18n.get().cooldownApplyDischargeForYingZhiCheckBox()) {{
+                vbox.getChildren().add(new Separator() {{
+                    setPadding(new Insets(5, 0, 5, 0));
+                }});
+                var hideWhenMouseEnterCheckBox = new CheckBox(I18n.get().hideWhenMouseEnterCheckBox()) {{
                     FontManager.setFont(this);
                 }};
-                vbox.getChildren().add(applyDischargeForYingZhiCheckBox);
+                vbox.getChildren().add(hideWhenMouseEnterCheckBox);
                 vbox.getChildren().add(new Separator() {{
                     setPadding(new Insets(5, 0, 5, 0));
                 }});
@@ -906,6 +909,10 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 vbox.getChildren().add(new Separator() {{
                     setPadding(new Insets(5, 0, 5, 0));
                 }});
+                var applyDischargeForYingZhiCheckBox = new CheckBox(I18n.get().cooldownApplyDischargeForYingZhiCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(applyDischargeForYingZhiCheckBox);
                 var autoFillPianGuangLingYuSubSkillCheckbox = new CheckBox(I18n.get().cooldownAutoFillPianGuangLingYuSubSkillCheckbox()) {{
                     FontManager.setFont(this);
                 }};
@@ -974,6 +981,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     opt.scanDischarge = false;
                     saveConfig();
                     scanDischargeCheckbox.setSelected(false);
+                });
+                hideWhenMouseEnterCheckBox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.hideWhenMouseEnter = hideWhenMouseEnterCheckBox.isSelected();
+                    saveConfig();
                 });
                 applyDischargeForYingZhiCheckBox.setOnAction(e -> {
                     var opt = options.get();

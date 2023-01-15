@@ -15,8 +15,9 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public List<Point> scanDischargeCriticalPoints;
     public boolean scanDischargeNativeCapture;
     public boolean scanDischargeRoughCapture;
-    public boolean applyDischargeForYingZhi;
+    public boolean hideWhenMouseEnter;
     public boolean playAudio;
+    public boolean applyDischargeForYingZhi;
     public boolean autoFillPianGuangLingYuSubSkill;
     public double lastWindowScale;
 
@@ -29,8 +30,9 @@ public class AssistantCoolDownOptions implements WeaponArgs {
             new ArrayRule<List<Point>, Point>(ArrayList::new, List::add, Point.rule))
         .put("scanDischargeNativeCapture", (o, it) -> o.scanDischargeNativeCapture = it, BoolRule.get())
         .put("scanDischargeRoughCapture", (o, it) -> o.scanDischargeRoughCapture = it, BoolRule.get())
-        .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
+        .put("hideWhenMouseEnter", (o, it) -> o.hideWhenMouseEnter = it, BoolRule.get())
         .put("playAudio", (o, it) -> o.playAudio = it, BoolRule.get())
+        .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
         .put("autoFillPianGuangLingYuSubSkill", (o, it) -> o.autoFillPianGuangLingYuSubSkill = it, BoolRule.get())
         .put("lastWindowScale", (o, it) -> o.lastWindowScale = it, DoubleRule.get());
 
@@ -59,8 +61,9 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         }
         ob.put("scanDischargeNativeCapture", scanDischargeNativeCapture);
         ob.put("scanDischargeRoughCapture", scanDischargeRoughCapture);
-        ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
+        ob.put("hideWhenMouseEnter", hideWhenMouseEnter);
         ob.put("playAudio", playAudio);
+        ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
         ob.put("autoFillPianGuangLingYuSubSkill", autoFillPianGuangLingYuSubSkill);
         ob.put("lastWindowScale", lastWindowScale);
         return ob.build();
