@@ -6,6 +6,7 @@ import vjson.CharStream;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
 import vjson.parser.ParserOptions;
+import vjson.simple.SimpleString;
 
 import java.io.IOException;
 import java.net.URI;
@@ -201,7 +202,7 @@ public class FeedThread extends Thread {
             return;
         }
 
-        Logger.info("get body from github issue 1 comments[" + index + "]: " + bodyStr);
+        Logger.info("get body from github issue 1 comments[" + index + "]: " + new SimpleString(bodyStr).stringify());
 
         try {
             parsers[metadata.version - 1].parse(bodyStr);
