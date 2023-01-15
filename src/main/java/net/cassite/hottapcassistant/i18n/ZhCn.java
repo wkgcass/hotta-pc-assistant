@@ -863,6 +863,16 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String lockCDWindowPositionCheckBox() {
+        return "锁定指示器窗口（按住ALT键时允许拖动）";
+    }
+
+    @Override
+    public String onlyShowFirstLineBuffCheckBox() {
+        return "仅显示第一行buff栏（按住ALT键时恢复显示）";
+    }
+
+    @Override
     public String cooldownPlayAudioCheckBox() {
         return "播放拟态语音";
     }

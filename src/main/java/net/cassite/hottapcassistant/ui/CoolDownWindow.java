@@ -53,6 +53,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private final List<Group> row2 = new ArrayList<>();
     private final DischargeDetector dischargeDetector;
     private final boolean hideWhenMouseEnter;
+    private final boolean lockWindow;
+    private final boolean onlyShowFirstLineBuff;
 
     private final Scale scale = new Scale(1, 1);
     private final int totalIndicatorCount;
@@ -91,8 +93,12 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         }
         if (options != null) {
             this.hideWhenMouseEnter = options.hideWhenMouseEnter;
+            this.lockWindow = options.lockCDWindowPosition;
+            this.onlyShowFirstLineBuff = options.onlyShowFirstLineBuff;
         } else {
             this.hideWhenMouseEnter = false;
+            this.lockWindow = false;
+            this.onlyShowFirstLineBuff = false;
         }
 
         GlobalScreenUtils.enable(this);
@@ -274,6 +280,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         hideHiddenButtons();
 
         var dragHandler = new DragHandler(xy -> {
+            if (lockWindow && !keys.contains(KeyCode.ALT)) {
+                return;
+            }
             setX(xy[0]);
             setY(xy[1]);
         }, () -> new double[]{getX(), getY()});
@@ -390,10 +399,14 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 int i = row2.indexOf(n);
                 n.setLayoutX(10 + r + (2 * r + margin) * (i + 5));
                 n.setLayoutY(10 + r + (2 * r + marginV));
+                if (onlyShowFirstLineBuff) {
+                    n.setVisible(false);
+                }
             } else {
                 int i = row1.indexOf(n);
                 n.setLayoutX(10 + r + (2 * r + margin) * (i + 5));
                 n.setLayoutY(10 + r);
+                n.setVisible(true);
             }
         }
     }
@@ -465,10 +478,13 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         pauseResumeBtn.setVisible(true);
         resetBtn.setVisible(true);
         controlButtonSeparator.setVisible(true);
+        for (var n : buffs) {
+            n.setVisible(true);
+        }
     }
 
     private boolean needToHideControlButtons() {
-        return hideWhenMouseEnter;
+        return hideWhenMouseEnter || onlyShowFirstLineBuff;
     }
 
     private void hideHiddenButtons() {
@@ -477,6 +493,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             resetBtn.setVisible(false);
             controlButtonSeparator.setVisible(false);
         }
+        setBuffPosition();
     }
 
     @Override

@@ -297,6 +297,10 @@ public abstract class I18n {
 
     public abstract String hideWhenMouseEnterCheckBox();
 
+    public abstract String lockCDWindowPositionCheckBox();
+
+    public abstract String onlyShowFirstLineBuffCheckBox();
+
     public abstract String cooldownPlayAudioCheckBox();
 
     public abstract String cooldownAutoFillPianGuangLingYuSubSkillCheckbox();

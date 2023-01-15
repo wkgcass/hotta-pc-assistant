@@ -16,6 +16,8 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public boolean scanDischargeNativeCapture;
     public boolean scanDischargeRoughCapture;
     public boolean hideWhenMouseEnter;
+    public boolean lockCDWindowPosition;
+    public boolean onlyShowFirstLineBuff;
     public boolean playAudio;
     public boolean applyDischargeForYingZhi;
     public boolean autoFillPianGuangLingYuSubSkill;
@@ -31,6 +33,8 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("scanDischargeNativeCapture", (o, it) -> o.scanDischargeNativeCapture = it, BoolRule.get())
         .put("scanDischargeRoughCapture", (o, it) -> o.scanDischargeRoughCapture = it, BoolRule.get())
         .put("hideWhenMouseEnter", (o, it) -> o.hideWhenMouseEnter = it, BoolRule.get())
+        .put("lockCDWindowPosition", (o, it) -> o.lockCDWindowPosition = it, BoolRule.get())
+        .put("onlyShowFirstLineBuff", (o, it) -> o.onlyShowFirstLineBuff = it, BoolRule.get())
         .put("playAudio", (o, it) -> o.playAudio = it, BoolRule.get())
         .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
         .put("autoFillPianGuangLingYuSubSkill", (o, it) -> o.autoFillPianGuangLingYuSubSkill = it, BoolRule.get())
@@ -62,6 +66,8 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         ob.put("scanDischargeNativeCapture", scanDischargeNativeCapture);
         ob.put("scanDischargeRoughCapture", scanDischargeRoughCapture);
         ob.put("hideWhenMouseEnter", hideWhenMouseEnter);
+        ob.put("lockCDWindowPosition", lockCDWindowPosition);
+        ob.put("onlyShowFirstLineBuff", onlyShowFirstLineBuff);
         ob.put("playAudio", playAudio);
         ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
         ob.put("autoFillPianGuangLingYuSubSkill", autoFillPianGuangLingYuSubSkill);

@@ -899,6 +899,16 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     FontManager.setFont(this);
                 }};
                 vbox.getChildren().add(hideWhenMouseEnterCheckBox);
+                vbox.getChildren().add(new VPadding(4));
+                var lockCDWindowPositionCheckBox = new CheckBox(I18n.get().lockCDWindowPositionCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(lockCDWindowPositionCheckBox);
+                vbox.getChildren().add(new VPadding(4));
+                var onlyShowFirstLineBuffCheckBox = new CheckBox(I18n.get().onlyShowFirstLineBuffCheckBox()) {{
+                    FontManager.setFont(this);
+                }};
+                vbox.getChildren().add(onlyShowFirstLineBuffCheckBox);
                 vbox.getChildren().add(new Separator() {{
                     setPadding(new Insets(5, 0, 5, 0));
                 }});
@@ -927,6 +937,8 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     scanDischargeUseNativeCaptureCheckbox.setSelected(now.scanDischargeNativeCapture);
                     scanDischargeUseRoughCaptureCheckbox.setSelected(now.scanDischargeRoughCapture);
                     hideWhenMouseEnterCheckBox.setSelected(now.hideWhenMouseEnter);
+                    lockCDWindowPositionCheckBox.setSelected(now.lockCDWindowPosition);
+                    onlyShowFirstLineBuffCheckBox.setSelected(now.onlyShowFirstLineBuff);
                     playAudioCheckBox.setSelected(now.playAudio);
                     applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                     autoFillPianGuangLingYuSubSkillCheckbox.setSelected(now.autoFillPianGuangLingYuSubSkill);
@@ -986,6 +998,16 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 hideWhenMouseEnterCheckBox.setOnAction(e -> {
                     var opt = options.get();
                     opt.hideWhenMouseEnter = hideWhenMouseEnterCheckBox.isSelected();
+                    saveConfig();
+                });
+                lockCDWindowPositionCheckBox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.lockCDWindowPosition = lockCDWindowPositionCheckBox.isSelected();
+                    saveConfig();
+                });
+                onlyShowFirstLineBuffCheckBox.setOnAction(e -> {
+                    var opt = options.get();
+                    opt.onlyShowFirstLineBuff = onlyShowFirstLineBuffCheckBox.isSelected();
                     saveConfig();
                 });
                 applyDischargeForYingZhiCheckBox.setOnAction(e -> {
