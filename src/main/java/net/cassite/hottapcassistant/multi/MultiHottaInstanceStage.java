@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_VERSION;
+import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_SUB_VERSION;
+
 public class MultiHottaInstanceStage extends Stage {
     private final MultiHottaInstance tool;
     private HottaLauncherProxyServer proxyServer = null;
@@ -34,8 +37,6 @@ public class MultiHottaInstanceStage extends Stage {
     private final TextField selectBetaLocationInput;
     private final TextField selectOnlineLocationInput;
     private final TextField advBranchInput;
-    private final TextField resVersionInput;
-    private final TextField resSubVersionInput;
     private final TextField clientVersionInput;
 
     public MultiHottaInstanceStage(MultiHottaInstance tool) {
@@ -71,14 +72,6 @@ public class MultiHottaInstanceStage extends Stage {
         advBranchInput = new TextField() {{
             FontManager.setFont(this);
             setText("AdvLaunch24");
-        }};
-        resVersionInput = new TextField() {{
-            FontManager.setFont(this);
-            setText("2.4");
-        }};
-        resSubVersionInput = new TextField() {{
-            FontManager.setFont(this);
-            setText("2.4.3");
         }};
         clientVersionInput = new TextField() {{
             FontManager.setFont(this);
@@ -133,26 +126,6 @@ public class MultiHottaInstanceStage extends Stage {
                 ),
                 new VPadding(10),
                 new HBox(
-                    new Label(I18n.get().multiInstanceResourceVersion()) {{
-                        FontManager.setFont(this);
-                        setPrefWidth(80);
-                        setPadding(new Insets(5, 0, 0, 0));
-                    }},
-                    new HPadding(5),
-                    resVersionInput
-                ),
-                new VPadding(10),
-                new HBox(
-                    new Label(I18n.get().multiInstanceResourceSubVersion()) {{
-                        FontManager.setFont(this);
-                        setPrefWidth(80);
-                        setPadding(new Insets(5, 0, 0, 0));
-                    }},
-                    new HPadding(5),
-                    resSubVersionInput
-                ),
-                new VPadding(10),
-                new HBox(
                     new Label(I18n.get().multiInstanceClientVersion()) {{
                         FontManager.setFont(this);
                         setPrefWidth(80);
@@ -203,12 +176,6 @@ public class MultiHottaInstanceStage extends Stage {
         if (config.advBranch != null) {
             advBranchInput.setText(config.advBranch);
         }
-        if (config.resVersion != null) {
-            resVersionInput.setText(config.resVersion);
-        }
-        if (config.resSubVersion != null) {
-            resSubVersionInput.setText(config.resSubVersion);
-        }
         if (config.clientVersion != null) {
             clientVersionInput.setText(config.clientVersion);
         }
@@ -237,8 +204,6 @@ public class MultiHottaInstanceStage extends Stage {
         config.betaPath = selectBetaLocationInput.getText();
         config.onlinePath = selectOnlineLocationInput.getText();
         config.advBranch = advBranchInput.getText();
-        config.resVersion = resVersionInput.getText();
-        config.resSubVersion = resSubVersionInput.getText();
         config.clientVersion = clientVersionInput.getText();
         config.clearEmptyFields();
         return config;
@@ -260,7 +225,7 @@ public class MultiHottaInstanceStage extends Stage {
         var items = new ArrayList<LoadingItem>();
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("ResList.xml"), () -> {
             try {
-                MultiHottaInstanceFlow.writeResListXml(config.betaPath, config.resSubVersion);
+                MultiHottaInstanceFlow.writeResListXml(config.betaPath, RES_SUB_VERSION);
             } catch (IOException e) {
                 Logger.error("failed writing ResList.xml", e);
                 Utils.runOnFX(() ->
@@ -271,7 +236,7 @@ public class MultiHottaInstanceStage extends Stage {
         }));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("config.xml"), () -> {
             try {
-                MultiHottaInstanceFlow.writeConfigXml(config.betaPath, config.resVersion, config.resSubVersion);
+                MultiHottaInstanceFlow.writeConfigXml(config.betaPath, RES_VERSION, RES_SUB_VERSION);
             } catch (IOException e) {
                 Logger.error("failed writing config.xml", e);
                 Utils.runOnFX(() ->
@@ -310,7 +275,7 @@ public class MultiHottaInstanceStage extends Stage {
             if (proxyServer != null) {
                 return true;
             }
-            var proxyServer = new HottaLauncherProxyServer(config.advBranch, config.resVersion, config.resSubVersion, config.clientVersion);
+            var proxyServer = new HottaLauncherProxyServer(config.advBranch, RES_VERSION, RES_SUB_VERSION, config.clientVersion);
             try {
                 proxyServer.start();
             } catch (Exception e) {

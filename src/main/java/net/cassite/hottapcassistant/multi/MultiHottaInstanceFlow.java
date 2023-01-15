@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class MultiHottaInstanceFlow {
+    public static final String RES_VERSION = "114.514";
+    public static final String RES_SUB_VERSION = RES_VERSION + ".1919810";
+
     private MultiHottaInstanceFlow() {
     }
 
