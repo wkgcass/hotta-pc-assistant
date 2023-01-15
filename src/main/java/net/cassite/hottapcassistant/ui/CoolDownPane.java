@@ -926,8 +926,9 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     scanDischargeDebugCheckbox.setSelected(now.scanDischargeDebug);
                     scanDischargeUseNativeCaptureCheckbox.setSelected(now.scanDischargeNativeCapture);
                     scanDischargeUseRoughCaptureCheckbox.setSelected(now.scanDischargeRoughCapture);
-                    applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
+                    hideWhenMouseEnterCheckBox.setSelected(now.hideWhenMouseEnter);
                     playAudioCheckBox.setSelected(now.playAudio);
+                    applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                     autoFillPianGuangLingYuSubSkillCheckbox.setSelected(now.autoFillPianGuangLingYuSubSkill);
                 });
                 scanDischargeCheckbox.setOnAction(e -> {

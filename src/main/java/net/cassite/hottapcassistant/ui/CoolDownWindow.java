@@ -609,6 +609,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         }
     }
 
+    private final Map<Node, HideOnMouseEnterTimer> hidingNodes = new HashMap<>();
+
     private void mouseEnterHide(Node n) {
         if (!hideWhenMouseEnter) {
             return;
@@ -616,11 +618,52 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (keys.contains(KeyCode.ALT)) {
             return;
         }
+        var timer = hidingNodes.get(n);
+        if (timer != null) {
+            timer.start = 0;
+            timer.startShowDelay = false;
+        } else {
+            timer = new HideOnMouseEnterTimer(n);
+            hidingNodes.put(n, timer);
+        }
+        timer.start();
         n.setOpacity(0);
     }
 
     private void mouseExitShow(Node n) {
-        n.setOpacity(1);
+        if (!hideWhenMouseEnter) {
+            return;
+        }
+        var timer = hidingNodes.get(n);
+        if (timer == null) {
+            return;
+        }
+        timer.startShowDelay = true;
+    }
+
+    private class HideOnMouseEnterTimer extends AnimationTimer {
+        private final Node n;
+        long start;
+        boolean startShowDelay = false;
+
+        private HideOnMouseEnterTimer(Node n) {
+            this.n = n;
+        }
+
+        @Override
+        public void handle(long now) {
+            if (start == 0 || start > now) {
+                if (startShowDelay) {
+                    start = now;
+                }
+                return;
+            }
+            if (now - start >= 300_000_000) {
+                n.setOpacity(1);
+                hidingNodes.remove(n);
+                stop();
+            }
+        }
     }
 
     @Override
