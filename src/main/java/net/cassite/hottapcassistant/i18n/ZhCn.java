@@ -859,7 +859,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String hideWhenMouseEnterCheckBox() {
-        return "自动躲避鼠标（鼠标进入时隐藏计数器，按住ALT键才可进入）";
+        return "自动躲避鼠标（鼠标进入时隐藏计数器，按住ALT键才可进入或者点击）";
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -58,6 +59,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
     private final WeaponCoolDown chargePercentage;
     private final ImageView pauseResumeBtn;
+    private final ImageView resetBtn;
+    private final Node controlButtonSeparator;
 
     public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
                           InputData weaponSkill, InputData[] melee, InputData[] evade,
@@ -127,7 +130,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         initPauseResumeBtn(true);
         group.getChildren().add(pauseResumeBtn);
 
-        var resetBtn = new ImageView(ImageManager.get().load("/images/icon/reloading.png"));
+        resetBtn = new ImageView(ImageManager.get().load("/images/icon/reloading.png"));
         resetBtn.setLayoutX(10 + (2 * r + margin) + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
         resetBtn.setLayoutY(10 + (WeaponCoolDown.MAX_RADIUS - WeaponCoolDown.MIN_RADIUS) + 2);
         resetBtn.setFitWidth(2 * (WeaponCoolDown.MIN_RADIUS - 2));
@@ -219,6 +222,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         }
         {
             var sep = new Line();
+            controlButtonSeparator = sep;
             sep.setStrokeWidth(2);
             sep.setStartX(0);
             sep.setStartY(r / 2);
@@ -244,6 +248,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         group.getChildren().add(descLabel);
 
         for (var n : group.getChildren()) {
+            if (resetBtn == n || pauseResumeBtn == n || controlButtonSeparator == n) {
+                continue;
+            }
             var enterFunc = n.getOnMouseEntered();
             n.setOnMouseEntered(e -> {
                 if (enterFunc != null) enterFunc.handle(e);
@@ -254,7 +261,17 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                 if (exitFunc != null) exitFunc.handle(e);
                 mouseExitShow(n);
             });
+            var clickFunc = n.getOnMouseClicked();
+            n.setOnMouseClicked(e -> {
+                if (hideWhenMouseEnter) {
+                    if (!keys.contains(KeyCode.ALT)) {
+                        return;
+                    }
+                }
+                clickFunc.handle(e);
+            });
         }
+        hideHiddenButtons();
 
         var dragHandler = new DragHandler(xy -> {
             setX(xy[0]);
@@ -395,11 +412,23 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private static final double weaponMiddleX = 10 + r + (2 * r + margin) * 3 - margin / 2;
 
     private void setTextForDescLabel(String s) {
-        if (s.equals(descLabel.getText())) return;
+        if (s.isBlank()) {
+            descLabel.setVisible(false);
+            return;
+        }
+        if (hideWhenMouseEnter) {
+            if (!keys.contains(KeyCode.ALT)) {
+                return;
+            }
+        }
+        if (s.equals(descLabel.getText())) {
+            descLabel.setVisible(true);
+            return;
+        }
         descLabel.setText(s);
-        if (s.isBlank()) return;
         var bounds = Utils.calculateTextBounds(descLabel);
         descLabel.setLayoutX(weaponMiddleX - bounds.getWidth() / 2);
+        descLabel.setVisible(true);
     }
 
     private final Set<KeyCode> keys = new HashSet<>();
@@ -412,6 +441,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         var key = KeyCode.valueOf(e.getKeyCode());
         if (key == null) return;
         handlePressed(key, null);
+        if (key == KeyCode.ALT) {
+            Platform.runLater(this::showHiddenButtons);
+        }
     }
 
     @Override
@@ -423,6 +455,27 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (keys.contains(key)) {
             handle(key, null);
             keys.remove(key);
+            if (key == KeyCode.ALT) {
+                Platform.runLater(this::hideHiddenButtons);
+            }
+        }
+    }
+
+    private void showHiddenButtons() {
+        pauseResumeBtn.setVisible(true);
+        resetBtn.setVisible(true);
+        controlButtonSeparator.setVisible(true);
+    }
+
+    private boolean needToHideControlButtons() {
+        return hideWhenMouseEnter;
+    }
+
+    private void hideHiddenButtons() {
+        if (needToHideControlButtons()) {
+            pauseResumeBtn.setVisible(false);
+            resetBtn.setVisible(false);
+            controlButtonSeparator.setVisible(false);
         }
     }
 
