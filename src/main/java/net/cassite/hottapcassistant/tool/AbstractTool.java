@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import net.cassite.hottapcassistant.ui.JSONJavaObject;
 import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.StackTraceAlert;
+import net.cassite.hottapcassistant.util.Utils;
 import vjson.JSON;
 import vjson.deserializer.rule.Rule;
 
@@ -155,7 +156,7 @@ public abstract class AbstractTool implements Tool {
         }
         var str = config.toJson().pretty();
         try {
-            Files.writeString(configPath, str);
+            Utils.writeFile(configPath, str);
         } catch (IOException e) {
             Logger.error("failed saving config for " + getName(), e);
         }
