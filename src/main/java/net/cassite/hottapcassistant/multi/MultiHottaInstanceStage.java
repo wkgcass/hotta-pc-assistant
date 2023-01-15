@@ -296,7 +296,7 @@ public class MultiHottaInstanceStage extends Stage {
             Utils.delay(1_000);
             return true;
         }));
-        LoadingStage.load(items, 300, () -> tool.save(config), x -> {
+        LoadingStage.load(items, 120, () -> tool.save(config), x -> {
         });
     }
 
