@@ -37,7 +37,6 @@ public class MultiHottaInstanceStage extends Stage {
     private final TextField selectBetaLocationInput;
     private final TextField selectOnlineLocationInput;
     private final TextField advBranchInput;
-    private final TextField clientVersionInput;
 
     public MultiHottaInstanceStage(MultiHottaInstance tool) {
         this.tool = tool;
@@ -72,9 +71,6 @@ public class MultiHottaInstanceStage extends Stage {
         advBranchInput = new TextField() {{
             FontManager.setFont(this);
             setText("AdvLaunch24");
-        }};
-        clientVersionInput = new TextField() {{
-            FontManager.setFont(this);
         }};
         var launchBtn = new ImageButton("images/launchgame-btn/launchgame", "png") {{
             setScale(0.7);
@@ -124,16 +120,6 @@ public class MultiHottaInstanceStage extends Stage {
                     new HPadding(5),
                     advBranchInput
                 ),
-                new VPadding(10),
-                new HBox(
-                    new Label(I18n.get().multiInstanceClientVersion()) {{
-                        FontManager.setFont(this);
-                        setPrefWidth(80);
-                        setPadding(new Insets(5, 0, 0, 0));
-                    }},
-                    new HPadding(5),
-                    clientVersionInput
-                ),
                 new Separator() {{
                     setPadding(new Insets(20, 0, 20, 0));
                 }},
@@ -176,9 +162,6 @@ public class MultiHottaInstanceStage extends Stage {
         if (config.advBranch != null) {
             advBranchInput.setText(config.advBranch);
         }
-        if (config.clientVersion != null) {
-            clientVersionInput.setText(config.clientVersion);
-        }
     }
 
     private void selectLocation(TextField input) {
@@ -204,7 +187,6 @@ public class MultiHottaInstanceStage extends Stage {
         config.betaPath = selectBetaLocationInput.getText();
         config.onlinePath = selectOnlineLocationInput.getText();
         config.advBranch = advBranchInput.getText();
-        config.clientVersion = clientVersionInput.getText();
         config.clearEmptyFields();
         return config;
     }
@@ -222,7 +204,21 @@ public class MultiHottaInstanceStage extends Stage {
             new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().multiInstanceEmptyFieldAlert()).showAndWait();
             return;
         }
+        var clientVersion = new String[]{null};
         var items = new ArrayList<LoadingItem>();
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("clientVersion"), () -> {
+            String v;
+            try {
+                v = MultiHottaInstanceFlow.readClientVersion(config.onlinePath);
+            } catch (IOException e) {
+                Logger.error("failed retrieving client version", e);
+                Utils.runOnFX(() ->
+                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedRetrievingClientVersion()).showAndWait());
+                return false;
+            }
+            clientVersion[0] = v;
+            return true;
+        }));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("ResList.xml"), () -> {
             try {
                 MultiHottaInstanceFlow.writeResListXml(config.betaPath, RES_SUB_VERSION);
@@ -275,7 +271,7 @@ public class MultiHottaInstanceStage extends Stage {
             if (proxyServer != null) {
                 return true;
             }
-            var proxyServer = new HottaLauncherProxyServer(config.advBranch, RES_VERSION, RES_SUB_VERSION, config.clientVersion);
+            var proxyServer = new HottaLauncherProxyServer(config.advBranch, RES_VERSION, RES_SUB_VERSION, clientVersion[0]);
             try {
                 proxyServer.start();
             } catch (Exception e) {
@@ -297,9 +293,10 @@ public class MultiHottaInstanceStage extends Stage {
                     new SimpleAlert(Alert.AlertType.ERROR, I18n.get().launchGameFailed()).showAndWait());
                 return false;
             }
+            Utils.delay(1_000);
             return true;
         }));
-        LoadingStage.load(items, () -> tool.save(config), x -> {
+        LoadingStage.load(items, 300, () -> tool.save(config), x -> {
         });
     }
 

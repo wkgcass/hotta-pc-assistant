@@ -24,18 +24,24 @@ public class LoadingStage extends Stage {
     }};
     private final ProgressBar progressBar = new ProgressBar();
     private final List<LoadingItem> items;
+    private final long delay;
     private final Runnable cb;
     private final Consumer<LoadingItem> failedCB;
     private boolean isDone = false;
 
     public static void load(List<LoadingItem> items, Runnable cb, Consumer<LoadingItem> failedCB) {
-        var s = new LoadingStage(items, cb, failedCB);
+        load(items, 0, cb, failedCB);
+    }
+
+    public static void load(List<LoadingItem> items, long delay, Runnable cb, Consumer<LoadingItem> failedCB) {
+        var s = new LoadingStage(items, delay, cb, failedCB);
         s.show();
         s.load();
     }
 
-    private LoadingStage(List<LoadingItem> items, Runnable cb, Consumer<LoadingItem> failedCB) {
+    private LoadingStage(List<LoadingItem> items, long delay, Runnable cb, Consumer<LoadingItem> failedCB) {
         this.items = items;
+        this.delay = delay;
         this.cb = cb;
         this.failedCB = failedCB;
 
@@ -89,6 +95,11 @@ public class LoadingStage extends Stage {
         Utils.runOnFX(() -> label.setText(name));
         TaskManager.execute(() -> {
             var ok = item.loadFunc().getAsBoolean();
+            if (ok) {
+                if (delay > 0) {
+                    Utils.delay(delay);
+                }
+            }
             Platform.runLater(() -> {
                 if (!ok) {
                     close();

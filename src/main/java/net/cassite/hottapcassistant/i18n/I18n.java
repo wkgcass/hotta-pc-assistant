@@ -447,17 +447,13 @@ public abstract class I18n {
 
     public abstract String multiInstanceAdvBranch();
 
-    public abstract String multiInstanceResourceVersion();
-
-    public abstract String multiInstanceResourceSubVersion();
-
-    public abstract String multiInstanceClientVersion();
-
     public abstract String multiInstanceSaveCaCert();
 
     public abstract String multiInstanceEmptyFieldAlert();
 
     public abstract String multiInstanceLaunchStep(String step);
+
+    public abstract String multiInstanceFailedRetrievingClientVersion();
 
     public abstract String multiInstanceFailedWritingResListXml();
 

@@ -1281,21 +1281,6 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String multiInstanceResourceVersion() {
-        return "资源版本";
-    }
-
-    @Override
-    public String multiInstanceResourceSubVersion() {
-        return "资源子版本";
-    }
-
-    @Override
-    public String multiInstanceClientVersion() {
-        return "客户端版本";
-    }
-
-    @Override
     public String multiInstanceSaveCaCert() {
         return "获取根证书";
     }
@@ -1308,6 +1293,7 @@ public class ZhCn extends I18n {
     @Override
     public String multiInstanceLaunchStep(String step) {
         return switch (step) {
+            case "clientVersion" -> "获取客户端版本";
             case "ResList.xml" -> "写入资源配置文件(1)";
             case "config.xml" -> "写入资源配置文件(2)";
             case "Client" -> "链接客户度目录";
@@ -1316,6 +1302,11 @@ public class ZhCn extends I18n {
             case "launch" -> "启动";
             default -> step;
         };
+    }
+
+    @Override
+    public String multiInstanceFailedRetrievingClientVersion() {
+        return "获取客户端版本失败，请确认正式服路径是否设置正确";
     }
 
     @Override

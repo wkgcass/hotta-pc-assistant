@@ -4,6 +4,7 @@ import net.cassite.hottapcassistant.util.Utils;
 import vjson.simple.SimpleString;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -98,5 +99,20 @@ public class MultiHottaInstanceFlow {
             }
         }
         return dir;
+    }
+
+    public static String readClientVersion(String location) throws IOException {
+        var dir = Path.of(location, "Client", "WindowsNoEditor", "Hotta", "Binaries", "Win64");
+        if (!dir.toFile().exists()) {
+            throw new IOException(dir + " does not exist");
+        }
+        var path = Path.of(dir.toString(), "Win_pc_version.txt");
+        if (!path.toFile().exists()) {
+            var dummyVersion = "114.514.1919810";
+            Utils.writeFile(path, dummyVersion);
+            return dummyVersion;
+        } else {
+            return Files.readString(path);
+        }
     }
 }
