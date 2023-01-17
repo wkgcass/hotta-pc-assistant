@@ -8,10 +8,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import net.cassite.hottapcassistant.component.HPadding;
-import net.cassite.hottapcassistant.component.VPadding;
+import io.vproxy.vfx.ui.layout.HPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
 import net.cassite.hottapcassistant.tool.*;
-import net.cassite.hottapcassistant.util.FontManager;
+import io.vproxy.vfx.manager.font.FontManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class ToolBoxPane extends Pane implements Terminate {
             imageView.setPreserveRatio(true);
 
             var label = new Label(name) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
 
             var vbox = new VBox();

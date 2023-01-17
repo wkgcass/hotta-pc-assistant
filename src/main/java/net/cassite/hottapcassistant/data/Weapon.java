@@ -1,8 +1,8 @@
 package net.cassite.hottapcassistant.data;
 
+import io.vproxy.vfx.manager.audio.AudioGroup;
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.entity.WeaponArgs;
-import net.cassite.hottapcassistant.util.AudioGroup;
 
 public interface Weapon extends WithThreadStartStop, WithExtraData {
     String getId();

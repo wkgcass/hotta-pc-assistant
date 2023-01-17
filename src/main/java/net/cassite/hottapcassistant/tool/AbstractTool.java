@@ -1,11 +1,11 @@
 package net.cassite.hottapcassistant.tool;
 
+import io.vproxy.vfx.ui.alert.StackTraceAlert;
+import io.vproxy.vfx.util.IOUtils;
+import io.vproxy.vfx.util.Logger;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.ui.JSONJavaObject;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.StackTraceAlert;
-import net.cassite.hottapcassistant.util.Utils;
 import vjson.JSON;
 import vjson.deserializer.rule.Rule;
 
@@ -45,7 +45,7 @@ public abstract class AbstractTool implements Tool {
             stage = buildStage();
             load();
         } catch (Exception e) {
-            new StackTraceAlert(e).showAndWait();
+            StackTraceAlert.showAndWait(e);
             stage = null;
             return;
         }
@@ -156,7 +156,7 @@ public abstract class AbstractTool implements Tool {
         }
         var str = config.toJson().pretty();
         try {
-            Utils.writeFile(configPath, str);
+            IOUtils.writeFile(configPath, str);
         } catch (IOException e) {
             Logger.error("failed saving config for " + getName(), e);
         }

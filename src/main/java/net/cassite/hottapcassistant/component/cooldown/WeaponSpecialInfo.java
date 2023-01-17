@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.component.cooldown;
 
+import io.vproxy.vfx.util.FXUtils;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -7,7 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
-import net.cassite.hottapcassistant.util.Utils;
 
 public class WeaponSpecialInfo extends Group implements WithId, WithDesc {
     private static final int INNER_RADIUS = WeaponCoolDown.INNER_RADIUS;
@@ -68,7 +68,7 @@ public class WeaponSpecialInfo extends Group implements WithId, WithDesc {
         }
         textPane.setVisible(true);
         text.setText(str);
-        var rect = Utils.calculateTextBounds(text);
+        var rect = FXUtils.calculateTextBounds(text);
         text.setLayoutX(-rect.getWidth() / 2);
         text.setLayoutY(-rect.getHeight() / 2);
     }

@@ -1,5 +1,7 @@
 package net.cassite.hottapcassistant.entity;
 
+import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.entity.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import vjson.JSON;
 import vjson.deserializer.rule.ArrayRule;

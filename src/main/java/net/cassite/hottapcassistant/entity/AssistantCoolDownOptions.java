@@ -1,5 +1,7 @@
 package net.cassite.hottapcassistant.entity;
 
+import io.vproxy.vfx.entity.Point;
+import io.vproxy.vfx.entity.Rect;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
 import vjson.util.ObjectBuilder;

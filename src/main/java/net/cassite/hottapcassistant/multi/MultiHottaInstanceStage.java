@@ -1,25 +1,28 @@
 package net.cassite.hottapcassistant.multi;
 
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.button.ImageButton;
+import io.vproxy.vfx.ui.layout.HPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.loading.LoadingItem;
+import io.vproxy.vfx.ui.loading.LoadingStage;
+import io.vproxy.vfx.util.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import net.cassite.hottapcassistant.component.HPadding;
-import net.cassite.hottapcassistant.component.ImageButton;
-import net.cassite.hottapcassistant.component.VPadding;
-import net.cassite.hottapcassistant.component.loading.LoadingItem;
-import net.cassite.hottapcassistant.component.loading.LoadingStage;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.tool.MultiHottaInstance;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.GlobalValues;
 
 import java.awt.*;
 import java.io.File;
@@ -27,8 +30,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_VERSION;
 import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_SUB_VERSION;
+import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_VERSION;
 
 public class MultiHottaInstanceStage extends Stage {
     private final MultiHottaInstance tool;
@@ -46,17 +49,17 @@ public class MultiHottaInstanceStage extends Stage {
         setScene(scene);
 
         selectBetaLocationInput = new TextField() {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         selectBetaLocationInput.setEditable(false);
         selectBetaLocationInput.setPrefWidth(500);
         var selectBetaLocationButton = new Button(I18n.get().selectButton()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         selectBetaLocationButton.setOnAction(e -> selectLocation(selectBetaLocationInput));
 
         selectOnlineLocationInput = new TextField() {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
             if (GlobalValues.gamePath.get() != null) {
                 setText(GlobalValues.gamePath.get());
             }
@@ -64,12 +67,12 @@ public class MultiHottaInstanceStage extends Stage {
         selectOnlineLocationInput.setEditable(false);
         selectOnlineLocationInput.setPrefWidth(500);
         var selectOnlineLocationButton = new Button(I18n.get().selectButton()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         selectOnlineLocationButton.setOnAction(e -> selectLocation(selectOnlineLocationInput));
 
         advBranchInput = new TextField() {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
             setText("AdvLaunch24");
         }};
         var launchBtn = new ImageButton("images/launchgame-btn/launchgame", "png") {{
@@ -82,12 +85,12 @@ public class MultiHottaInstanceStage extends Stage {
             new VBox(
                 new VPadding(20),
                 new Label(I18n.get().selectGameLocationDescriptionWithoutAutoSearching()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }},
                 new VPadding(10),
                 new HBox(
                     new Label(I18n.get().selectBetaGameLocation()) {{
-                        FontManager.setFont(this);
+                        FontManager.get().setFont(this);
                     }},
                     new HPadding(5),
                     selectBetaLocationInput,
@@ -99,7 +102,7 @@ public class MultiHottaInstanceStage extends Stage {
                 new VPadding(10),
                 new HBox(
                     new Label(I18n.get().selectOnlineGameLocation()) {{
-                        FontManager.setFont(this);
+                        FontManager.get().setFont(this);
                     }},
                     new HPadding(5),
                     selectOnlineLocationInput,
@@ -113,7 +116,7 @@ public class MultiHottaInstanceStage extends Stage {
                 }},
                 new HBox(
                     new Label(I18n.get().multiInstanceAdvBranch()) {{
-                        FontManager.setFont(this);
+                        FontManager.get().setFont(this);
                         setPrefWidth(80);
                         setPadding(new Insets(5, 0, 0, 0));
                     }},
@@ -128,7 +131,7 @@ public class MultiHottaInstanceStage extends Stage {
                 }},
                 new VPadding(5),
                 new Hyperlink(I18n.get().multiInstanceSaveCaCert()) {{
-                    FontManager.setFont(this, 12);
+                    FontManager.get().setFont(this, 12);
                     setOnAction(e -> {
                         var chooser = new FileChooser();
                         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("crt", "*.crt"));
@@ -138,10 +141,10 @@ public class MultiHottaInstanceStage extends Stage {
                             return;
                         }
                         try {
-                            Utils.writeFile(f.toPath(), Certs.CA_CERT);
+                            IOUtils.writeFile(f.toPath(), Certs.CA_CERT);
                         } catch (IOException ex) {
                             Logger.error("failed saving ca cert file", ex);
-                            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().failedSavingCaCertFile()).showAndWait();
+                            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().failedSavingCaCertFile());
                         }
                     });
                 }},
@@ -172,11 +175,11 @@ public class MultiHottaInstanceStage extends Stage {
             return;
         }
         if (!f.getName().equalsIgnoreCase("gameLauncher.exe")) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGameFile()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGameFile());
             return;
         }
         if (!f.isFile()) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGameFile()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGameFile());
             return;
         }
         input.setText(f.getParentFile().getAbsolutePath());
@@ -201,7 +204,7 @@ public class MultiHottaInstanceStage extends Stage {
     private synchronized void launch() {
         var config = buildConfig();
         if (config.hasEmptyField()) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().multiInstanceEmptyFieldAlert()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().multiInstanceEmptyFieldAlert());
             return;
         }
         var clientVersion = new String[]{null};
@@ -212,8 +215,8 @@ public class MultiHottaInstanceStage extends Stage {
                 v = MultiHottaInstanceFlow.readClientVersion(config.onlinePath);
             } catch (IOException e) {
                 Logger.error("failed retrieving client version", e);
-                Utils.runOnFX(() ->
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedRetrievingClientVersion()).showAndWait());
+                FXUtils.runOnFX(() ->
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedRetrievingClientVersion()));
                 return false;
             }
             clientVersion[0] = v;
@@ -224,8 +227,8 @@ public class MultiHottaInstanceStage extends Stage {
                 MultiHottaInstanceFlow.writeResListXml(config.betaPath, RES_SUB_VERSION);
             } catch (IOException e) {
                 Logger.error("failed writing ResList.xml", e);
-                Utils.runOnFX(() ->
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingResListXml()).showAndWait());
+                FXUtils.runOnFX(() ->
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingResListXml()));
                 return false;
             }
             return true;
@@ -235,8 +238,8 @@ public class MultiHottaInstanceStage extends Stage {
                 MultiHottaInstanceFlow.writeConfigXml(config.betaPath, RES_VERSION, RES_SUB_VERSION);
             } catch (IOException e) {
                 Logger.error("failed writing config.xml", e);
-                Utils.runOnFX(() ->
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingConfigXml()).showAndWait());
+                FXUtils.runOnFX(() ->
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingConfigXml()));
                 return false;
             }
             return true;
@@ -252,8 +255,8 @@ public class MultiHottaInstanceStage extends Stage {
                 MultiHottaInstanceFlow.makeLink(clientPath.toAbsolutePath().toString(), onlineClientPath.toAbsolutePath().toString());
             } catch (IOException e) {
                 Logger.error("making link file failed", e);
-                Utils.runOnFX(() ->
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotMakeLink()).showAndWait());
+                FXUtils.runOnFX(() ->
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotMakeLink()));
                 return false;
             }
             return true;
@@ -261,8 +264,8 @@ public class MultiHottaInstanceStage extends Stage {
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("hosts"), () -> {
             if (!MultiHottaInstanceFlow.setHostsFile()) {
                 Logger.error("setting hosts file failed");
-                Utils.runOnFX(() ->
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotSetHostsFile()).showAndWait());
+                FXUtils.runOnFX(() ->
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotSetHostsFile()));
                 return false;
             }
             return true;
@@ -277,8 +280,8 @@ public class MultiHottaInstanceStage extends Stage {
             } catch (Exception e) {
                 proxyServer.destroy();
                 Logger.error("launching proxy server failed", e);
-                Utils.runOnFX(() ->
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().multiInstanceLaunchProxyServerFailed()).showAndWait());
+                FXUtils.runOnFX(() ->
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceLaunchProxyServerFailed()));
                 return false;
             }
             this.proxyServer = proxyServer;
@@ -289,14 +292,21 @@ public class MultiHottaInstanceStage extends Stage {
                 Desktop.getDesktop().open(Path.of(config.betaPath, "gameLauncher.exe").toFile());
             } catch (IOException e) {
                 Logger.error("failed launching game", e);
-                Utils.runOnFX(() ->
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().launchGameFailed()).showAndWait());
+                FXUtils.runOnFX(() ->
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed()));
                 return false;
             }
-            Utils.delay(1_000);
+            MiscUtils.threadSleep(1_000);
             return true;
         }));
-        LoadingStage.load(items, 120, () -> tool.save(config), x -> {
+        var loadingStage = new LoadingStage(I18n.get().toolName("multi-hotta-instance"));
+        loadingStage.setItems(items);
+        loadingStage.setInterval(120);
+        loadingStage.load(new Callback<>() {
+            @Override
+            protected void succeeded0(Void unused) {
+                tool.save(config);
+            }
         });
     }
 

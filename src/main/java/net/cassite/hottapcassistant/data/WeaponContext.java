@@ -1,10 +1,10 @@
 package net.cassite.hottapcassistant.data;
 
+import io.vproxy.vfx.util.Logger;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.weapon.*;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.ArrayList;

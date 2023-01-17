@@ -1,7 +1,7 @@
 package net.cassite.hottapcassistant.multi;
 
+import io.vproxy.vfx.util.MiscUtils;
 import net.cassite.hottapcassistant.ui.JSONJavaObject;
-import net.cassite.hottapcassistant.util.Utils;
 import vjson.JSON;
 import vjson.deserializer.rule.ObjectRule;
 import vjson.deserializer.rule.Rule;
@@ -19,9 +19,9 @@ public class MultiHottaInstanceConfig implements JSONJavaObject {
         .put("advBranch", (o, it) -> o.advBranch = it, StringRule.get());
 
     public void clearEmptyFields() {
-        betaPath = Utils.returnNullIfBlank(betaPath);
-        onlinePath = Utils.returnNullIfBlank(onlinePath);
-        advBranch = Utils.returnNullIfBlank(advBranch);
+        betaPath = MiscUtils.returnNullIfBlank(betaPath);
+        onlinePath = MiscUtils.returnNullIfBlank(onlinePath);
+        advBranch = MiscUtils.returnNullIfBlank(advBranch);
     }
 
     @Override

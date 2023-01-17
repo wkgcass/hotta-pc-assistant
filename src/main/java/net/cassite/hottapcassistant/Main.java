@@ -1,20 +1,30 @@
 package net.cassite.hottapcassistant;
 
+import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
+import io.vproxy.vfx.manager.audio.AudioManager;
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.font.FontProvider;
+import io.vproxy.vfx.manager.font.FontUsage;
+import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.manager.internal_i18n.InternalI18n;
+import io.vproxy.vfx.manager.task.TaskManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.loading.LoadingItem;
+import io.vproxy.vfx.ui.loading.LoadingStage;
+import io.vproxy.vfx.util.Callback;
+import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import net.cassite.hottapcassistant.component.loading.LoadingItem;
-import net.cassite.hottapcassistant.component.loading.LoadingStage;
 import net.cassite.hottapcassistant.feed.FeedThread;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.ui.MainScreen;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.Consts;
+import net.cassite.hottapcassistant.util.GlobalValues;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main extends Application {
@@ -24,39 +34,49 @@ public class Main extends Application {
     public void start(Stage stage) {
         var font = Font.loadFont(getClass().getResourceAsStream("/font/SmileySans-Oblique.otf"), 1);
         if (font == null) {
-            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().loadingFontFailed("smiley")).show();
+            SimpleAlert.show(Alert.AlertType.WARNING, I18n.get().loadingFontFailed("smiley"));
         }
         font = Font.loadFont(getClass().getResourceAsStream("/font/NotoSansSC-Regular.otf"), 1);
         if (font == null) {
-            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().loadingFontFailed("noto")).show();
+            SimpleAlert.show(Alert.AlertType.WARNING, I18n.get().loadingFontFailed("noto"));
         }
 
         var itemsToLoad = new ArrayList<LoadingItem>();
-        for (var path : ImageManager.ALL) {
+        for (var path : Consts.ALL_IMAGE) {
             itemsToLoad.add(new LoadingItem(2, path, () -> ImageManager.get().load(path)));
         }
-        for (var path : AudioManager.ALL) {
+        for (var path : Consts.ALL_CLIP) {
             itemsToLoad.add(new LoadingItem(1, path, () -> AudioManager.get().loadAudio(path)));
         }
-        itemsToLoad.add(new LoadingItem(1, I18n.get().hintPressAlt(), () -> Utils.delay(120)));
+        itemsToLoad.add(new LoadingItem(1, I18n.get().hintPressAlt(), () -> MiscUtils.threadSleep(120)));
 
-        LoadingStage.load(itemsToLoad, () -> {
-            stage.getIcons().add(ImageManager.get().load("images/icon/icon.jpg"));
-            stage.setOnCloseRequest(e -> terminate());
+        var loadingStage = new LoadingStage(I18n.get().loadingStageTitle());
+        loadingStage.setItems(itemsToLoad);
+        loadingStage.load(new Callback<>() {
+            @Override
+            protected void succeeded0(Void unused) {
+                stage.getIcons().add(ImageManager.get().load("images/icon/icon.jpg"));
+                stage.setOnCloseRequest(e -> terminate());
 
-            mainScreen = new MainScreen();
-            var root = mainScreen;
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
+                mainScreen = new MainScreen();
+                var root = mainScreen;
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
 
-            MainScreen.initStage(stage);
-            stage.show();
-        }, x -> System.exit(1));
+                MainScreen.initStage(stage);
+                stage.show();
+            }
+
+            @Override
+            protected void failed0(LoadingItem loadingItem) {
+                System.exit(1);
+            }
+        });
     }
 
     private void terminate() {
         GlobalScreenUtils.unregister();
-        TaskManager.terminate();
+        TaskManager.get().terminate();
         FeedThread.get().terminate();
         var mainScreen = this.mainScreen;
         if (mainScreen != null) mainScreen.terminate();
@@ -64,45 +84,27 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        try {
-            File f = File.createTempFile("JNativeHook", ".dll");
-            f.deleteOnExit();
-            String dllname = f.getName();
-            dllname = dllname.substring(0, dllname.length() - ".dll".length());
-
-            var libpaths = System.getProperty("java.library.path", "");
-            if (libpaths.contains(f.getParentFile().getAbsolutePath())) {
-                System.setProperty("jnativehook.lib.name", dllname);
-            }
-
-            Logger.info("dllname: " + dllname);
-            Logger.info("java.library.path: " + libpaths);
-
-            var dllStream = Main.class.getResourceAsStream("/dll/JNativeHook_x64.dll");
-            if (dllStream == null) {
-                Logger.error("JNativeHook_x64.dll not found, program might not work");
-            } else {
-                try (dllStream) {
-                    try (var fos = new FileOutputStream(f)) {
-                        var buf = new byte[1048576];
-                        while (true) {
-                            int n = dllStream.read(buf);
-                            if (n == -1) {
-                                break;
-                            }
-                            fos.write(buf, 0, n);
-                        }
-                    }
-                } catch (IOException e) {
-                    Logger.error("extracting JNativeHook_x64.dll failed", e);
+        InternalI18n.setInstance(I18n.get());
+        //noinspection Convert2Lambda
+        FontManager.get().setFontProvider(new FontProvider() {
+            @Override
+            public String name(FontUsage fontUsage) {
+                if (fontUsage == Consts.NotoFont) {
+                    return "Noto Sans Regular";
+                } else {
+                    return "Smiley Sans Oblique";
                 }
             }
-        } catch (IOException e) {
-            Logger.error("creating tmp file for jnative hook libs failed", e);
+        });
+
+        var dllPath = "/dll/JNativeHook_x64.dll";
+        var dllStream = Main.class.getResourceAsStream(dllPath);
+        if (dllStream == null) {
+            Logger.error(dllPath + " not found, program might not work");
+        } else {
+            GlobalScreenUtils.releaseJNativeHookNativeToTmpDir("dll", dllStream);
         }
-
         FeedThread.get().start();
-
         launch();
     }
 }

@@ -1,5 +1,13 @@
 package net.cassite.hottapcassistant.tool;
 
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.layout.HPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.util.IOUtils;
+import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,11 +26,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import net.cassite.hottapcassistant.component.HPadding;
-import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.Consts;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
 import vjson.ex.ParserException;
@@ -68,7 +74,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
     }
 
-    private static final DateTimeFormatter formatter = Utils.YYYYMMddHHiissDateTimeFormatter;
+    private static final DateTimeFormatter formatter = MiscUtils.YYYYMMddHHiissDateTimeFormatter;
 
     private static class S extends Stage {
         static final Path recordFilePath = Path.of(AssistantConfig.assistantDirPath.toString(), "WorldBossTimer.vjson.txt");
@@ -123,57 +129,57 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             etaTimer.start();
 
             var addBtn = new Button(I18n.get().worldBossTimerAddBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var editBtn = new Button(I18n.get().worldBossTimerEditBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var spawnBtn = new Button(I18n.get().worldBossTimerSpawnBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
                 setTextFill(Color.GREEN);
             }};
             var delBtn = new Button(I18n.get().worldBossTimerDelBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var clearBtn = new Button(I18n.get().worldBossTimerClearBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var copyNextBossInfoBtn = new Button(I18n.get().worldBossTimerCopyBossInfoBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
                 setPrefHeight(60);
             }};
             nextBossInfoTemplate = new TextArea(I18n.get().worldBossTimerNextBossInfoDefaultTemplate()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(120);
                 setPrefHeight(100);
                 setWrapText(false);
             }};
             var exportBtn = new Button(I18n.get().worldBossTimerExportBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var importBtn = new Button(I18n.get().worldBossTimerImportBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             includeBossTimerCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeBossTimerCheckBox()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setSelected(true);
             }};
             includeAccountTimerCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeAccountTimerCheckBox()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             includeMsgTemplateCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeMsgTemplateCheckBox()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             mergeImportCheckBox = new CheckBox(I18n.get().worldBossTimerMergeImportCheckBox()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
 
             addBtn.setOnAction(e -> new AddStage(table, this::save).showAndWait());
@@ -221,14 +227,14 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             importBtn.setOnAction(e -> {
                 String s = (String) Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
                 if (s == null) {
-                    new SimpleAlert(Alert.AlertType.WARNING, I18n.get().worldBossTimerNoDataToImport()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().worldBossTimerNoDataToImport());
                     return;
                 }
                 Config config;
                 try {
                     config = JSON.deserialize(s, Config.rule);
                 } catch (Exception ee) {
-                    new SimpleAlert(Alert.AlertType.WARNING, I18n.get().worldBossTimerInvalidImportingData()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().worldBossTimerInvalidImportingData());
                     return;
                 }
                 init(config,
@@ -241,23 +247,23 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             });
 
             var accountAddBtn = new Button(I18n.get().worldBossTimerAddBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var accountEditBtn = new Button(I18n.get().worldBossTimerEditBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var accountSwitchLineBtn = new Button(I18n.get().worldBossTimerSwitchLineBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var accountDelBtn = new Button(I18n.get().worldBossTimerDelBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
             var accountClearBtn = new Button(I18n.get().worldBossTimerClearBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(120);
             }};
 
@@ -498,7 +504,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 var mem = interpreter.execute();
                 msg = (String) explorer.getVariable("msg", mem);
             } catch (ParserException e) {
-                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().worldBossTimerInvalidTemplate() + ": " + e.getMessage()).show();
+                SimpleAlert.show(Alert.AlertType.ERROR, I18n.get().worldBossTimerInvalidTemplate() + ": " + e.getMessage());
             }
             if (msg != null) {
                 var content = new ClipboardContent();
@@ -534,7 +540,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             var config = genConfig();
             var str = config.pretty();
             try {
-                Utils.writeFile(recordFilePath, str);
+                IOUtils.writeFile(recordFilePath, str);
             } catch (IOException e) {
                 Logger.error("failed saving config file to " + recordFilePath, e);
             }
@@ -660,44 +666,44 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             setScene(scene);
 
             var lineLabel = new Label(I18n.get().worldBossTimerLineCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var nameLabel = new Label(I18n.get().worldBossTimerNameCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var lastKillLabel = new Label(I18n.get().worldBossTimerLastKillCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var spawnMinutesLabel = new Label(I18n.get().worldBossTimerSpawnMinutesCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var commentLabel = new Label(I18n.get().worldBossTimerCommentCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var lineInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && line != 0) {
                     setText("" + line);
                 }
             }};
             var nameInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && name != null) {
                     setText(name);
@@ -706,7 +712,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
             }};
             var lastKillInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && lastKill != 0) {
                     setText(ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastKill), ZoneId.systemDefault()).format(formatter));
@@ -715,7 +721,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
             }};
             var spawnMinutesInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && spawnMinutes != 0) {
                     setText("" + spawnMinutes);
@@ -724,7 +730,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
             }};
             var commentInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && comment != null) {
                     setText(comment);
@@ -734,54 +740,54 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             }};
 
             var okBtn = new Button(I18n.get().worldBossTimerOkBtn()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
             }};
             okBtn.setPrefWidth(120);
             okBtn.setOnAction(e -> {
                 if (lineInput.getText().isBlank()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLine()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLine());
                     return;
                 }
                 if (nameInput.getText().isBlank()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingName()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingName());
                     return;
                 }
                 if (lastKillInput.getText().isBlank()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLastKill()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLastKill());
                     return;
                 }
                 if (spawnMinutesInput.getText().isBlank()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingSpawnMinutes()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingSpawnMinutes());
                     return;
                 }
                 int vLine;
                 try {
                     vLine = Integer.parseInt(lineInput.getText().trim());
                 } catch (NumberFormatException ex) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLine()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLine());
                     return;
                 }
                 LocalDateTime vLastKill;
                 try {
                     vLastKill = LocalDateTime.parse(lastKillInput.getText().trim(), formatter);
                 } catch (DateTimeParseException ex) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLastKill()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLastKill());
                     return;
                 }
                 int vSpawnMinutes;
                 try {
                     vSpawnMinutes = Integer.parseInt(spawnMinutesInput.getText().trim());
                 } catch (NumberFormatException ex) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidSpawnMinutes()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidSpawnMinutes());
                     return;
                 }
 
                 if (vLine < 1) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLine()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLine());
                     return;
                 }
                 if (vSpawnMinutes < 0) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidSpawnMinutes()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidSpawnMinutes());
                     return;
                 }
 
@@ -857,51 +863,51 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             setScene(scene);
 
             var lineLabel = new Label(I18n.get().worldBossTimerLineCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var nameLabel = new Label(I18n.get().worldBossTimerAccountNameCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var lastSwitchLineTsLabel = new Label(I18n.get().worldBossTimerLastSwitchLineTsCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var switchLineCDLabel = new Label(I18n.get().worldBossTimerSwitchLineCDMinutes()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var commentLabel = new Label(I18n.get().worldBossTimerCommentCol()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
             var lineInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && line != 0) {
                     setText("" + line);
                 }
             }};
             var nameInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && name != null) {
                     setText(name);
                 }
             }};
             var lastSwitchLineCDInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && lastSwitchTs != 0) {
                     setText(ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSwitchTs), ZoneId.systemDefault()).format(formatter));
@@ -910,7 +916,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
             }};
             var cdInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && cd != 0) {
                     setText("" + cd);
@@ -919,7 +925,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
             }};
             var commentInput = new TextField() {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(250);
                 if (oldInfo != null && comment != null) {
                     setText(comment);
@@ -929,54 +935,54 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             }};
 
             var okBtn = new Button(I18n.get().worldBossTimerOkBtn()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
             }};
             okBtn.setPrefWidth(120);
             okBtn.setOnAction(e -> {
                 if (lineInput.getText().isBlank()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLine()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLine());
                     return;
                 }
                 if (nameInput.getText().isBlank()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingName()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingName());
                     return;
                 }
                 if (lastSwitchLineCDInput.getText().isBlank()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLastSwitchLineTs()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLastSwitchLineTs());
                     return;
                 }
                 if (cdInput.getText().isBlank()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingSwitchLineCD()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingSwitchLineCD());
                     return;
                 }
                 int vLine;
                 try {
                     vLine = Integer.parseInt(lineInput.getText().trim());
                 } catch (NumberFormatException ex) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLine()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLine());
                     return;
                 }
                 LocalDateTime vLastSwitchLineCD;
                 try {
                     vLastSwitchLineCD = LocalDateTime.parse(lastSwitchLineCDInput.getText().trim(), formatter);
                 } catch (DateTimeParseException ex) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLastSwitchLineTs()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLastSwitchLineTs());
                     return;
                 }
                 int vCD;
                 try {
                     vCD = Integer.parseInt(cdInput.getText().trim());
                 } catch (NumberFormatException ex) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidSwitchLineCD()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidSwitchLineCD());
                     return;
                 }
 
                 if (vLine < 1) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLine()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidLine());
                     return;
                 }
                 if (vCD < 0) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidSwitchLineCD()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerInvalidSwitchLineCD());
                     return;
                 }
 

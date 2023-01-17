@@ -6,10 +6,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.stage.StageStyle;
-import net.cassite.hottapcassistant.component.VPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
 import net.cassite.hottapcassistant.entity.TofServer;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.FontManager;
+import io.vproxy.vfx.manager.font.FontManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class UIServerChooser extends Dialog<List<TofServer>> {
         ls.setMouseTransparent(true);
         ls.setDisable(true);
         var checkbox = new CheckBox(I18n.get().enableHostsFileModificationForGlobalServer()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         boolean checkboxSelected = false;
         for (var s : servers) {

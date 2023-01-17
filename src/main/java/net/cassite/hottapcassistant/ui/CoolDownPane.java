@@ -1,5 +1,20 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.vfx.entity.Rect;
+import io.vproxy.vfx.entity.Point;
+import io.vproxy.vfx.entity.input.InputData;
+import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.entity.input.KeyCode;
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.task.TaskManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.alert.StackTraceAlert;
+import io.vproxy.vfx.ui.layout.HPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.shapes.MovableRect;
+import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -24,9 +39,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import net.cassite.hottapcassistant.component.HPadding;
-import net.cassite.hottapcassistant.component.VPadding;
-import net.cassite.hottapcassistant.component.shapes.MovableRect;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.config.InputConfig;
 import net.cassite.hottapcassistant.data.Matrix;
@@ -37,10 +49,11 @@ import net.cassite.hottapcassistant.data.simulacra.DummySimulacra;
 import net.cassite.hottapcassistant.discharge.DischargeCheckAlgorithm;
 import net.cassite.hottapcassistant.discharge.DischargeCheckContext;
 import net.cassite.hottapcassistant.discharge.SimpleDischargeCheckAlgorithm;
-import net.cassite.hottapcassistant.entity.Point;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.Consts;
+import net.cassite.hottapcassistant.util.GlobalValues;
+import net.cassite.hottapcassistant.util.Utils;
 
 import java.awt.*;
 import java.nio.file.Path;
@@ -248,7 +261,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             buttonsVBox.getChildren().add(hbox);
 
             var label = new Label(I18n.get().cooldownConfigurationLabel()) {{
-                FontManager.setFont(this, 14);
+                FontManager.get().setFont(this, 14);
             }};
             label.setPadding(new Insets(3, 0, 0, 0));
 
@@ -266,19 +279,19 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             });
             equipConfig.setPrefWidth(WIDTH_HEIGHT);
             var saveButton = new Button(I18n.get().cooldownConfigurationSave()) {{
-                FontManager.setFont(this, 13);
+                FontManager.get().setFont(this, 13);
             }};
             saveButton.setOnAction(e -> {
                 var name = equipConfig.getValue();
                 if (name == null || name.isBlank()) return;
                 if (configurationNames.contains(name)) {
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().cooldownConfigurationDuplicate()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().cooldownConfigurationDuplicate());
                     return;
                 }
                 newConfiguration(name);
             });
             var deleteButton = new Button(I18n.get().cooldownConfigurationDelete()) {{
-                FontManager.setFont(this, 13);
+                FontManager.get().setFont(this, 13);
             }};
             deleteButton.setOnAction(e -> {
                 var name = equipConfig.getValue();
@@ -305,13 +318,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             buttonsVBox.getChildren().add(hbox);
 
             var startBtn = new Button(I18n.get().startCoolDown()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             startBtn.setPrefWidth(WIDTH_HEIGHT);
             startBtn.setOnAction(e -> start());
 
             var stopBtn = new Button(I18n.get().stopCoolDown()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             stopBtn.setPrefWidth(WIDTH_HEIGHT);
             stopBtn.setDisable(true);
@@ -332,7 +345,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             buttonsVBox.getChildren().add(hbox);
 
             var optionsBtn = new Button(I18n.get().cooldownOptionsBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             optionsBtn.setPrefWidth(WIDTH_HEIGHT);
             optionsBtn.setOnAction(e -> {
@@ -344,10 +357,10 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             });
 
             var tipsBtn = new Button(I18n.get().cooldownTipsButton()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             tipsBtn.setPrefWidth(WIDTH_HEIGHT);
-            tipsBtn.setOnAction(e -> new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().cooldownTips(), FontManager::setNoto).show());
+            tipsBtn.setOnAction(e -> SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().cooldownTips(), Consts.NotoFont));
 
             hbox.getChildren().addAll(optionsBtn, new HPadding(4), tipsBtn);
         }
@@ -464,13 +477,13 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         var set = new HashSet<Integer>();
         for (var weapon : weapons) {
             if (weapon.get() == null) {
-                new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().weaponNotSelected()).showAndWait();
+                SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().weaponNotSelected());
                 return;
             }
             set.add(weapon.get().id);
         }
         if (set.size() != 3 || (set.contains(16) && set.contains(17))) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().duplicatedWeapon()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().duplicatedWeapon());
             return;
         }
         set.clear();
@@ -480,7 +493,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             var rr = r.get();
             if (rr != null) {
                 if (!set.add(rr.id) && rr.id != 0) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().duplicatedRelics()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().duplicatedRelics());
                     return;
                 }
                 relics[i] = rr.make();
@@ -533,7 +546,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         this.window = window;
         setWindowPosition(window);
         window.show();
-        Utils.iconifyWindow(getScene().getWindow());
+        FXUtils.iconifyWindow(getScene().getWindow());
     }
 
     private void saveConfig() {
@@ -669,7 +682,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         try {
             ass = AssistantConfig.readAssistant(true);
         } catch (Exception e) {
-            new StackTraceAlert(e).show();
+            StackTraceAlert.show(I18n.get().readAssistantConfigFailed(), e);
             return false;
         }
         loadFromConfig(ass.cooldown);
@@ -684,7 +697,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     Logger.error("failed reading input config", e);
                     input = Collections.emptyList();
                 } else {
-                    new StackTraceAlert(e).show();
+                    StackTraceAlert.show(I18n.get().readInputConfigFailed(), e);
                     return false;
                 }
             }
@@ -861,32 +874,32 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
 
             {
                 var scanDischargeDesc = new Label(I18n.get().cooldownScanDischargeDesc()) {{
-                    FontManager.setNoto(this);
+                    FontManager.get().setFont(Consts.NotoFont, this);
                 }};
                 vbox.getChildren().add(scanDischargeDesc);
                 vbox.getChildren().add(new VPadding(4));
                 var scanDischargeCheckbox = new CheckBox(I18n.get().cooldownScanDischargeCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(scanDischargeCheckbox);
                 vbox.getChildren().add(new VPadding(4));
                 var scanDischargeDebugCheckbox = new CheckBox(I18n.get().cooldownScanDischargeDebugCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(scanDischargeDebugCheckbox);
                 vbox.getChildren().add(new VPadding(4));
                 var scanDischargeUseNativeCaptureCheckbox = new CheckBox(I18n.get().cooldownScanDischargeUseNativeCaptureCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(scanDischargeUseNativeCaptureCheckbox);
                 vbox.getChildren().add(new VPadding(4));
                 var scanDischargeUseRoughCaptureCheckbox = new CheckBox(I18n.get().cooldownScanDischargeUseRoughCaptureCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(scanDischargeUseRoughCaptureCheckbox);
                 vbox.getChildren().add(new VPadding(4));
                 var scanDischargeResetConfigBtn = new Button(I18n.get().cooldownScanDischargeResetBtn()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(scanDischargeResetConfigBtn);
                 vbox.getChildren().add(new Separator() {{
@@ -896,35 +909,35 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     setPadding(new Insets(5, 0, 5, 0));
                 }});
                 var hideWhenMouseEnterCheckBox = new CheckBox(I18n.get().hideWhenMouseEnterCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(hideWhenMouseEnterCheckBox);
                 vbox.getChildren().add(new VPadding(4));
                 var lockCDWindowPositionCheckBox = new CheckBox(I18n.get().lockCDWindowPositionCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(lockCDWindowPositionCheckBox);
                 vbox.getChildren().add(new VPadding(4));
                 var onlyShowFirstLineBuffCheckBox = new CheckBox(I18n.get().onlyShowFirstLineBuffCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(onlyShowFirstLineBuffCheckBox);
                 vbox.getChildren().add(new Separator() {{
                     setPadding(new Insets(5, 0, 5, 0));
                 }});
                 var playAudioCheckBox = new CheckBox(I18n.get().cooldownPlayAudioCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(playAudioCheckBox);
                 vbox.getChildren().add(new Separator() {{
                     setPadding(new Insets(5, 0, 5, 0));
                 }});
                 var applyDischargeForYingZhiCheckBox = new CheckBox(I18n.get().cooldownApplyDischargeForYingZhiCheckBox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(applyDischargeForYingZhiCheckBox);
                 var autoFillPianGuangLingYuSubSkillCheckbox = new CheckBox(I18n.get().cooldownAutoFillPianGuangLingYuSubSkillCheckbox()) {{
-                    FontManager.setFont(this);
+                    FontManager.get().setFont(this);
                 }};
                 vbox.getChildren().add(autoFillPianGuangLingYuSubSkillCheckbox);
 
@@ -1032,18 +1045,18 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
         }
 
         private void chooseScanDischargeRectStep1(Consumer<Boolean> cb) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().scanDischargeConfigureTips()).showAndWait();
-            TaskManager.execute(() -> {
-                Utils.delay(3_000);
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().scanDischargeConfigureTips());
+            TaskManager.get().execute(() -> {
+                MiscUtils.threadSleep(3_000);
                 Platform.runLater(() -> chooseScanDischargeRectStep2(cb));
             });
         }
 
         @SuppressWarnings("DuplicatedCode")
         private void chooseScanDischargeRectStep2(Consumer<Boolean> cb) {
-            Screen screen = Utils.getScreenOf(getScene().getWindow());
+            Screen screen = FXUtils.getScreenOf(getScene().getWindow());
             if (screen == null) {
-                new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
+                SimpleAlert.showAndWait(Alert.AlertType.WARNING, "cannot find any display");
                 cb.accept(false);
                 return;
             }
@@ -1070,11 +1083,11 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
             scanDischargeRect.setHeight(128);
 
             var desc = new Label(I18n.get().scanDischargeScreenDescription()) {{
-                FontManager.setFont(this, 48);
+                FontManager.get().setFont(this, 48);
                 setTextFill(Color.RED);
             }};
             {
-                var wh = Utils.calculateTextBounds(desc);
+                var wh = FXUtils.calculateTextBounds(desc);
                 desc.setLayoutX(0);
                 desc.setLayoutY(img.getHeight() / screen.getOutputScaleY() - wh.getHeight() - 110);
             }
@@ -1086,7 +1099,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                     if (calculatePointsAndStore(img, scanDischargeRect.makeRect(), fScreen)) {
                         cb.accept(true);
                     } else {
-                        Platform.runLater(() -> new SimpleAlert(Alert.AlertType.WARNING, I18n.get().failedCalculatingCriticalPoints()).show());
+                        Platform.runLater(() -> SimpleAlert.show(Alert.AlertType.WARNING, I18n.get().failedCalculatingCriticalPoints()));
                         cb.accept(false);
                     }
                     stage.close();

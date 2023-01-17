@@ -5,9 +5,9 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
 import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.core.net.TrustOptions;
+import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import net.cassite.hottapcassistant.util.GlobalValues;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.Utils;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
@@ -175,7 +175,7 @@ public class HottaLauncherProxyServer {
 
     private void allFilesXml(String reqId, HttpServerRequest req) {
         var now = ZonedDateTime.now();
-        var timeStr = Utils.YYYYMMddHHiissDateTimeFormatter.format(now);
+        var timeStr = MiscUtils.YYYYMMddHHiissDateTimeFormatter.format(now);
         var body = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\n" +
                    "<All_Files>\n" +
                    "    <BuildInfo Time=\"" + timeStr + "\"/>\n" +

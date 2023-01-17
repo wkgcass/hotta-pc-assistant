@@ -1,6 +1,6 @@
 package net.cassite.hottapcassistant.data;
 
-import net.cassite.hottapcassistant.util.AudioGroup;
+import io.vproxy.vfx.manager.audio.AudioGroup;
 
 public interface Skill {
     boolean hitTarget();

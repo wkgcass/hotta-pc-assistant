@@ -1,5 +1,8 @@
 package net.cassite.hottapcassistant.component.keybinding;
 
+import io.vproxy.vfx.component.keychooser.KeyChooser;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.util.Logger;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,8 +12,6 @@ import javafx.scene.control.*;
 import net.cassite.hottapcassistant.entity.KeyBinding;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.ui.Pointer;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.SimpleAlert;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class UIKeyBindingList extends TableView<KeyBinding> {
@@ -118,14 +119,14 @@ public class UIKeyBindingList extends TableView<KeyBinding> {
                 if (cell.getTableRow().getItem() == null) {
                     return;
                 }
-                var chooser = new UIKeyChooser();
+                var chooser = new KeyChooser();
                 var keyOpt = chooser.choose();
                 if (keyOpt.isPresent()) {
                     var key = keyOpt.get();
                     var o = cell.getTableRow().getItem();
                     if (!key.isValid()) {
                         Logger.debug("unsupported key: " + key.key);
-                        new SimpleAlert(Alert.AlertType.ERROR, I18n.get().unsupportedKeyErrorMessage()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().unsupportedKeyErrorMessage());
                     } else {
                         o.key = key;
                         cell.setItem(Pointer.of(o));
@@ -166,7 +167,7 @@ public class UIKeyBindingList extends TableView<KeyBinding> {
                     try {
                         dv = Double.parseDouble(v);
                     } catch (NumberFormatException ex) {
-                        new SimpleAlert(Alert.AlertType.ERROR, I18n.get().notFloatingPointValue()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().notFloatingPointValue());
                         inputBox.setText(Utils.floatValueFormat.format(row.scale));
                         return;
                     }

@@ -1,17 +1,17 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import net.cassite.hottapcassistant.component.keybinding.UIKeyBindingList;
 import net.cassite.hottapcassistant.config.InputConfig;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.FontManager;
 import net.cassite.hottapcassistant.util.GlobalValues;
-import net.cassite.hottapcassistant.util.SimpleAlert;
 import net.cassite.hottapcassistant.util.StyleUtils;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -37,22 +37,21 @@ public class InputSettingsPane extends WithConfirmPane {
         content.getChildren().add(ls);
 
         var openInputIni = new Button(I18n.get().openInputIni()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         openInputIni.setOnAction(e -> {
             try {
                 Desktop.getDesktop().open(new File(getInputConfig().path));
             } catch (IOException ignore) {
-                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().openFileFailed()).show();
+                SimpleAlert.show(Alert.AlertType.ERROR, I18n.get().openFileFailed());
             }
         });
         insertElementToBottom(openInputIni);
         var aboutAxisMappings = new Button(I18n.get().aboutEmptyTableOrMissingFields()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
-        aboutAxisMappings.setOnAction(e -> {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().detailAboutEmptyTableOrMissingFields()).showAndWait();
-        });
+        aboutAxisMappings.setOnAction(e ->
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().detailAboutEmptyTableOrMissingFields()));
         insertElementToBottom(aboutAxisMappings);
     }
 

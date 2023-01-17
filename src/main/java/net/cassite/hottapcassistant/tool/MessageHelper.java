@@ -3,6 +3,11 @@ package net.cassite.hottapcassistant.tool;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import io.vproxy.vfx.control.drag.DragHandler;
+import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.util.FXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
@@ -18,7 +23,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.*;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -75,7 +79,7 @@ public class MessageHelper extends AbstractTool implements Tool {
                 centerOnScreen();
             }
             input = new TextField() {{
-                FontManager.setFont(this, 24);
+                FontManager.get().setFont(this, 24);
                 setPrefWidth(1000);
                 setPrefHeight(56);
             }};
@@ -124,10 +128,18 @@ public class MessageHelper extends AbstractTool implements Tool {
 
             pane.getChildren().add(input);
 
-            var dragHandler = new DragHandler(xy -> {
-                setX(xy[0]);
-                setY(xy[1]);
-            }, () -> new double[]{getX(), getY()});
+            var dragHandler = new DragHandler() {
+                @Override
+                protected void set(double x, double y) {
+                    setX(x);
+                    setY(y);
+                }
+
+                @Override
+                protected double[] get() {
+                    return new double[]{getX(), getY()};
+                }
+            };
             pane.setOnMousePressed(dragHandler);
             pane.setOnMouseDragged(dragHandler);
             xProperty().addListener((ob, old, now) -> {
@@ -151,10 +163,10 @@ public class MessageHelper extends AbstractTool implements Tool {
                 if (input.isFocused()) {
                     return;
                 }
-                Utils.runOnFX(() -> {
+                FXUtils.runOnFX(() -> {
                     blink();
                     setAlwaysOnTop(true);
-                    Utils.runDelay(500, () -> setAlwaysOnTop(false));
+                    FXUtils.runDelay(500, () -> setAlwaysOnTop(false));
                 });
             }
         }
@@ -164,17 +176,17 @@ public class MessageHelper extends AbstractTool implements Tool {
                 return;
             }
             isBlinking = true;
-            Utils.runDelay(100, () -> {
+            FXUtils.runDelay(100, () -> {
                 pane.setBackground(blinkBackground);
-                Utils.runDelay(100, () -> {
+                FXUtils.runDelay(100, () -> {
                     pane.setBackground(background);
-                    Utils.runDelay(100, () -> {
+                    FXUtils.runDelay(100, () -> {
                         pane.setBackground(blinkBackground);
-                        Utils.runDelay(100, () -> {
+                        FXUtils.runDelay(100, () -> {
                             pane.setBackground(background);
-                            Utils.runDelay(100, () -> {
+                            FXUtils.runDelay(100, () -> {
                                 pane.setBackground(blinkBackground);
-                                Utils.runDelay(100, () -> {
+                                FXUtils.runDelay(100, () -> {
                                     pane.setBackground(background);
                                     isBlinking = false;
                                 });

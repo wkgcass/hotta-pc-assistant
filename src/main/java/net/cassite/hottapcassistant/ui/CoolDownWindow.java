@@ -5,6 +5,14 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
+import io.vproxy.vfx.control.drag.DragHandler;
+import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
+import io.vproxy.vfx.entity.input.InputData;
+import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.entity.input.KeyCode;
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.util.FXUtils;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.scene.Cursor;
@@ -28,11 +36,8 @@ import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.discharge.DischargeDetector;
 import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
-import net.cassite.hottapcassistant.entity.InputData;
-import net.cassite.hottapcassistant.entity.Key;
-import net.cassite.hottapcassistant.entity.KeyCode;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -196,7 +201,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         scale.xProperty().addListener((ob, old, now) -> resizeWindow());
 
         descLabel = new Text() {{
-            FontManager.setFont(this, 24);
+            FontManager.get().setFont(this, 24);
             setFill(Color.WHITE);
             setStrokeWidth(0.5);
             setStroke(Color.BLACK);
@@ -279,13 +284,21 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         }
         hideHiddenButtons();
 
-        var dragHandler = new DragHandler(xy -> {
-            if (lockWindow && !keys.contains(KeyCode.ALT)) {
-                return;
+        var dragHandler = new DragHandler() {
+            @Override
+            protected void set(double x, double y) {
+                if (lockWindow && !keys.contains(KeyCode.ALT)) {
+                    return;
+                }
+                setX(x);
+                setY(y);
             }
-            setX(xy[0]);
-            setY(xy[1]);
-        }, () -> new double[]{getX(), getY()});
+
+            @Override
+            protected double[] get() {
+                return new double[]{getX(), getY()};
+            }
+        };
         group.setOnMousePressed(dragHandler);
         group.setOnMouseDragged(dragHandler);
 
@@ -439,7 +452,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
             return;
         }
         descLabel.setText(s);
-        var bounds = Utils.calculateTextBounds(descLabel);
+        var bounds = FXUtils.calculateTextBounds(descLabel);
         descLabel.setLayoutX(weaponMiddleX - bounds.getWidth() / 2);
         descLabel.setVisible(true);
     }

@@ -4,8 +4,8 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.resonance.ThunderResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.AudioGroup;
-import net.cassite.hottapcassistant.util.Logger;
+import io.vproxy.vfx.manager.audio.AudioGroup;
+import io.vproxy.vfx.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.LinkedList;

@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.component.cooldown;
 
+import io.vproxy.vfx.util.FXUtils;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -153,7 +154,7 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
         var needCalculate = cdNumber.getText() == null || cdNumber.getText().length() != str.length();
         cdNumber.setText(str);
         if (needCalculate) {
-            var rect = Utils.calculateTextBounds(cdNumber);
+            var rect = FXUtils.calculateTextBounds(cdNumber);
             double x = -rect.getWidth() / 2;
             double y = -rect.getHeight() / 2;
             cdNumber.setLayoutX(x);

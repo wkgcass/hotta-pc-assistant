@@ -1,5 +1,8 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.ui.alert.StackTraceAlert;
+import io.vproxy.vfx.ui.layout.HPadding;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -9,11 +12,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import net.cassite.hottapcassistant.component.HPadding;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.FontManager;
 import net.cassite.hottapcassistant.util.GlobalValues;
-import net.cassite.hottapcassistant.util.StackTraceAlert;
 
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ public abstract class WithConfirmPane extends BorderPane implements EnterCheck, 
         setBottom(bottomButtons);
 
         Button resetBtn = new Button(I18n.get().resetButton()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         resetBtn.setPrefWidth(120);
         resetBtn.setOnAction(e -> {
@@ -49,11 +49,11 @@ public abstract class WithConfirmPane extends BorderPane implements EnterCheck, 
                 reset();
                 unsetModified();
             } catch (Exception ex) {
-                new StackTraceAlert(ex).show();
+                StackTraceAlert.show(ex);
             }
         });
         okBtn = new Button(I18n.get().applyButton()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         okBtn.setPrefWidth(120);
         okBtn.setOnAction(e -> {
@@ -64,7 +64,7 @@ public abstract class WithConfirmPane extends BorderPane implements EnterCheck, 
                 confirm();
                 unsetModified();
             } catch (Exception ex) {
-                new StackTraceAlert(ex).show();
+                StackTraceAlert.show(ex);
             }
         });
         okBtn.setDisable(true);
@@ -94,7 +94,7 @@ public abstract class WithConfirmPane extends BorderPane implements EnterCheck, 
             reset();
             unsetModified();
         } catch (Exception e) {
-            new StackTraceAlert(e).show();
+            StackTraceAlert.show(e);
             return false;
         }
         return true;

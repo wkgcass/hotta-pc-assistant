@@ -1,5 +1,10 @@
 package net.cassite.hottapcassistant.fish;
 
+import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.manager.task.TaskManager;
+import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
@@ -7,17 +12,14 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import net.cassite.hottapcassistant.entity.AssistantFishing;
-import net.cassite.hottapcassistant.entity.Key;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.TaskManager;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.Set;
 import java.util.function.Consumer;
 
 public class FishRobot {
-    private static final float[] GreenLightColor = Utils.toHSB(Color.color(200f / 255, 253f / 255, 225f / 255));
-    private static final float[] GreenLightColor2 = Utils.toHSB(Color.color(112f / 255, 250f / 255, 183f / 255));
+    private static final float[] GreenLightColor = FXUtils.toHSB(Color.color(200f / 255, 253f / 255, 225f / 255));
+    private static final float[] GreenLightColor2 = FXUtils.toHSB(Color.color(112f / 255, 250f / 255, 183f / 255));
     private static final Color YellowSliderColor = Color.color(255f / 255, 176f / 255, 64f / 255);
     private static final Set<Color> PositionBarColors = Set.of(
         Color.color(1, 1, 1),
@@ -112,13 +114,13 @@ public class FishRobot {
 
         display.doShow(config);
 
-        TaskManager.execute(this::exec);
+        TaskManager.get().execute(this::exec);
     }
 
     public void stop() {
         if (!status.isStopped() && status != Status.STOPPING) {
             setStatus(Status.STOPPING);
-            Utils.runOnFX(display::close);
+            FXUtils.runOnFX(display::close);
         }
     }
 
@@ -177,10 +179,10 @@ public class FishRobot {
     }
 
     private boolean notTheSame(float[] a, Color bb) {
-        float[] b = Utils.toHSB(bb);
+        float[] b = FXUtils.toHSB(bb);
         return !(Math.abs(a[0] - b[0]) < 0.2)
-            || !(Math.abs(a[1] - b[1]) < 0.2)
-            || !(Math.abs(a[2] - b[2]) < 0.2);
+               || !(Math.abs(a[1] - b[1]) < 0.2)
+               || !(Math.abs(a[2] - b[2]) < 0.2);
     }
 
     private void cast() {
@@ -240,7 +242,7 @@ public class FishRobot {
     }
 
     private void displayPosBar(int[] bar, int pos) {
-        Utils.runOnFX(() -> {
+        FXUtils.runOnFX(() -> {
             if (bar != null) {
                 display.updatePosBar(pos, bar[0], bar[1], screenScaleX);
             } else {
@@ -270,7 +272,7 @@ public class FishRobot {
         for (int x = 0; x < imgW; ++x) {
             for (int y = 0; y < imgH; ++y) {
                 var color = reader.getColor(x, y);
-                if (Utils.almostEquals(color, YellowSliderColor)) {
+                if (MiscUtils.almostEquals(color, YellowSliderColor)) {
                     if (checkBarLeftToRight(x, y, img)) {
                         leftX = x;
                         leftY = y;
@@ -287,7 +289,7 @@ public class FishRobot {
         for (int x = imgW - 1; x >= 0; --x) {
             for (int y = 0; y < imgH; ++y) {
                 var color = reader.getColor(x, y);
-                if (Utils.almostEquals(color, YellowSliderColor)) {
+                if (MiscUtils.almostEquals(color, YellowSliderColor)) {
                     if (checkBarRightToLeft(x, y, img)) {
                         rightX = x;
                         rightY = y;
@@ -314,7 +316,7 @@ public class FishRobot {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 var color = reader.getColor(xx + x, yy + y);
-                if (!Utils.almostEquals(color, YellowSliderColor)) {
+                if (!MiscUtils.almostEquals(color, YellowSliderColor)) {
                     return false;
                 }
             }
@@ -334,7 +336,7 @@ public class FishRobot {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 var color = reader.getColor(xx - x, yy + y);
-                if (!Utils.almostEquals(color, YellowSliderColor)) {
+                if (!MiscUtils.almostEquals(color, YellowSliderColor)) {
                     return false;
                 }
             }
@@ -349,7 +351,7 @@ public class FishRobot {
         for (int x = 0; x < imgW; ++x) {
             for (int y = 0; y < imgH; ++y) {
                 var color = reader.getColor(x, y);
-                if (Utils.almostIn(color, PositionBarColors)) {
+                if (MiscUtils.almostIn(color, PositionBarColors)) {
                     if (checkPos(x, y, img)) {
                         return x;
                     }
@@ -367,7 +369,7 @@ public class FishRobot {
         var reader = img.getPixelReader();
         for (int y = 1; y < height; ++y) {
             var color = reader.getColor(xx, yy + y);
-            if (!Utils.almostIn(color, PositionBarColors)) {
+            if (!MiscUtils.almostIn(color, PositionBarColors)) {
                 return false;
             }
         }
@@ -406,7 +408,7 @@ public class FishRobot {
                 return;
             }
         }
-        Utils.runOnFX(() -> percentageInformer.accept(p));
+        FXUtils.runOnFX(() -> percentageInformer.accept(p));
 
         img = Utils.execRobotOnThread(r -> r.capture(buf2,
             captureXOffset + config.posBarRect.x,
@@ -463,7 +465,7 @@ public class FishRobot {
         for (int x = 0; x < imgW; ++x) {
             for (int y = 0; y < imgH; ++y) {
                 var readerColor = reader.getColor(x, y);
-                if (Utils.almostEquals(readerColor, color)) {
+                if (MiscUtils.almostEquals(readerColor, color)) {
                     ++cnt;
                 }
             }

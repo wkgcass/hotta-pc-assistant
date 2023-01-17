@@ -1,8 +1,9 @@
 package net.cassite.hottapcassistant.config;
 
-import net.cassite.hottapcassistant.entity.Key;
+import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.util.IOUtils;
+import io.vproxy.vfx.util.Logger;
 import net.cassite.hottapcassistant.entity.KeyBinding;
-import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.JSON;
 import vjson.ex.ParserException;
@@ -306,6 +307,6 @@ public class InputConfig {
                 lines.set(kb.lineIndex, kb.toString());
             }
         }
-        Utils.writeFile(path, String.join("\n", lines));
+        IOUtils.writeFile(path, String.join("\n", lines));
     }
 }

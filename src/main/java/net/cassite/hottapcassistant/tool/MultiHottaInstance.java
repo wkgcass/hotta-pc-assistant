@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.tool;
 
+import io.vproxy.vfx.manager.image.ImageManager;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.config.AssistantConfig;
@@ -7,7 +8,6 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.multi.MultiHottaInstanceConfig;
 import net.cassite.hottapcassistant.multi.MultiHottaInstanceStage;
 import net.cassite.hottapcassistant.ui.JSONJavaObject;
-import net.cassite.hottapcassistant.util.ImageManager;
 
 import java.nio.file.Path;
 

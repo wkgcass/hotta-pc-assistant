@@ -1,16 +1,18 @@
 package net.cassite.hottapcassistant.discharge;
 
+import io.vproxy.vfx.entity.Point;
+import io.vproxy.vfx.entity.Rect;
+import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
+import io.vproxy.vfx.util.imagewrapper.BufferedImageBox;
+import io.vproxy.vfx.util.imagewrapper.FXWritableImageBox;
+import io.vproxy.vfx.util.imagewrapper.ImageBox;
 import javafx.application.Platform;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import net.cassite.hottapcassistant.entity.Point;
-import net.cassite.hottapcassistant.entity.Rect;
-import net.cassite.hottapcassistant.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
-import net.cassite.hottapcassistant.util.image.BufferedImageBox;
-import net.cassite.hottapcassistant.util.image.FXWritableImageBox;
-import net.cassite.hottapcassistant.util.image.ImageBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +119,7 @@ public class DischargeDetector {
         while (thread != null) {
             if (isPaused) {
                 lastPaused = true;
-                Utils.delay(500);
+                MiscUtils.threadSleep(500);
                 continue;
             }
             long now = System.currentTimeMillis();
@@ -126,7 +128,7 @@ public class DischargeDetector {
                 lastBeginTs = now;
             }
             if (now - lastBeginTs < 25) {
-                Utils.delay(25 - (now - lastBeginTs));
+                MiscUtils.threadSleep(25 - (now - lastBeginTs));
             } else if (now - lastBeginTs >= 25) {
                 Logger.warn("last discharge detection cost too much time: " + (now - lastBeginTs) + "ms");
             }
@@ -139,13 +141,14 @@ public class DischargeDetector {
             long beforeCap = System.currentTimeMillis();
             ImageBox bImg;
             if (nativeCapture) {
-                bImg = new BufferedImageBox(Utils.robotNativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale));
+                bImg = new BufferedImageBox(Utils.execRobotDirectlyNoLog(r -> r.nativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale)));
             } else if (roughCapture) {
-                bImg = new FXWritableImageBox((WritableImage) Utils.execRobotOnThread(r -> r.capture(imgBuffer, cap.x, cap.y, (int) cap.w, (int) cap.h, false, false)),
+                bImg = new FXWritableImageBox(
+                    (WritableImage) Utils.execRobotOnThreadNoLog(r -> r.capture(imgBuffer, cap.x, cap.y, (int) cap.w, (int) cap.h, false)),
                     capScale);
             } else {
-                var img = Utils.robotAWTCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h);
-                bImg = new BufferedImageBox(Utils.convertToBufferedImage(img));
+                var img = Utils.execRobotDirectlyNoLog(r -> r.awtCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h));
+                bImg = new BufferedImageBox(FXUtils.convertToBufferedImage(img));
             }
             long afterCap = System.currentTimeMillis();
             if (afterCap - beforeCap >= 24) {
