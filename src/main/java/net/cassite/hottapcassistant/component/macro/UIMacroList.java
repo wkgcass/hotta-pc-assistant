@@ -1,16 +1,16 @@
 package net.cassite.hottapcassistant.component.macro;
 
+import io.vproxy.vfx.component.keychooser.KeyChooser;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.util.Logger;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
-import net.cassite.hottapcassistant.component.keybinding.UIKeyChooser;
 import net.cassite.hottapcassistant.entity.AssistantMacroData;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.ui.Pointer;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.SimpleAlert;
 
 public class UIMacroList extends TableView<AssistantMacroData> {
     public UIMacroList(Runnable modifiedCallback) {
@@ -134,14 +134,14 @@ public class UIMacroList extends TableView<AssistantMacroData> {
                 if (cell.getTableRow().getItem() == null) {
                     return;
                 }
-                var chooser = new UIKeyChooser();
+                var chooser = new KeyChooser();
                 var keyOpt = chooser.choose();
                 if (keyOpt.isPresent()) {
                     var key = keyOpt.get();
                     var o = cell.getTableRow().getItem();
                     if (!key.isValid() || (key.key != null && key.key.java == null)) {
                         Logger.debug("unsupported key: " + key.key);
-                        new SimpleAlert(Alert.AlertType.ERROR, I18n.get().unsupportedKeyErrorMessage()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().unsupportedKeyErrorMessage());
                     } else {
                         o.key = key;
                         cell.setItem(Pointer.of(o));

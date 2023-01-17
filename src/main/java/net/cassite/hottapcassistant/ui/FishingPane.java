@@ -3,6 +3,19 @@ package net.cassite.hottapcassistant.ui;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import io.vproxy.vfx.component.keychooser.KeyChooser;
+import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
+import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.manager.task.TaskManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.alert.StackTraceAlert;
+import io.vproxy.vfx.ui.layout.HPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.shapes.MovablePoint;
+import io.vproxy.vfx.ui.shapes.MovableRect;
+import io.vproxy.vfx.util.FXUtils;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,17 +29,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import net.cassite.hottapcassistant.component.HPadding;
-import net.cassite.hottapcassistant.component.VPadding;
-import net.cassite.hottapcassistant.component.keybinding.UIKeyChooser;
-import net.cassite.hottapcassistant.component.shapes.MovablePoint;
-import net.cassite.hottapcassistant.component.shapes.MovableRect;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.entity.AssistantFishing;
-import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.fish.FishRobot;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.Utils;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.util.Objects;
@@ -60,9 +67,9 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         {
             var hbox = new HBox();
             var statusLabel = new Label(I18n.get().fishingStatus()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
-            FontManager.setFont(statusValue);
+            FontManager.get().setFont(statusValue);
             hbox.getChildren().addAll(statusLabel, new HPadding(2), statusValue);
             vbox.getChildren().add(hbox);
             setStatus(FishRobot.Status.STOPPED);
@@ -77,7 +84,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         {
             var switchHBox = new HBox();
             var switchBtnLabel = new Label(I18n.get().fishingSwitchButtonLabel()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             switchHBox.getChildren().addAll(switchBtnLabel, new HPadding(5), switchButton);
             vbox.getChildren().add(switchHBox);
@@ -87,10 +94,10 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
         {
             var macroAlertLabel = new Label(I18n.get().macroAlertLabel()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             var knowConsequenceCheckBox = new CheckBox(I18n.get().knowConsequencePrompt()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             vbox.getChildren().addAll(macroAlertLabel, new VPadding(5), knowConsequenceCheckBox, new VPadding(5));
 
@@ -125,19 +132,19 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
         {
             var startKeyLabel = new Label(I18n.get().fishingStartKey()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(60);
             }};
             var stopKeyLabel = new Label(I18n.get().fishingStopKey()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(60);
             }};
             var leftKeyLabel = new Label(I18n.get().fishingLeftKey()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(60);
             }};
             var rightKeyLabel = new Label(I18n.get().fishingRightKey()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setPrefWidth(60);
             }};
 
@@ -166,18 +173,18 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         {
             var hbox = new HBox();
             var resetBtn = new Button(I18n.get().resetFishing()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             resetBtn.setPrefWidth(120);
             resetBtn.setOnAction(e -> reset());
             var configBtn = new Button(I18n.get().configureFishing()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             configBtn.setPrefWidth(120);
             configBtn.setOnAction(e -> configure());
 
             var configStep1Btn = new Button(I18n.get().configureFishingOnlyStep1()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             configStep1Btn.setPrefWidth(120);
             configStep1Btn.setOnAction(e -> configureStep1(null));
@@ -194,7 +201,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
         {
             vbox.getChildren().add(new Label(I18n.get().configureFishingHelpMsg()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }});
         }
 
@@ -246,7 +253,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
     }
 
     private void initKeyLabel(Label label, Consumer<Key> keyCallback) {
-        FontManager.setFont(label);
+        FontManager.get().setFont(label);
         label.setMinWidth(100);
         label.setBackground(new Background(
             new BackgroundFill(Color.color(0.7f, 0.7f, 0.7f), CornerRadii.EMPTY, Insets.EMPTY)
@@ -254,7 +261,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         label.setAlignment(Pos.CENTER);
         label.setCursor(Cursor.HAND);
         label.setOnMouseClicked(e -> {
-            var keyOpt = new UIKeyChooser(false).choose();
+            var keyOpt = new KeyChooser(false).choose();
             if (keyOpt.isEmpty()) return;
             var key = keyOpt.get();
             if (key.button != null) {
@@ -276,7 +283,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
             var a = AssistantConfig.readAssistant(true);
             fishing = a.fishing;
         } catch (Throwable t) {
-            new StackTraceAlert(t).show();
+            StackTraceAlert.show(I18n.get().readAssistantConfigFailed(), t);
             return false;
         }
         if (fishing == null) {
@@ -321,10 +328,10 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
     private void start() {
         if (!fishing.isValid()) {
-            Utils.runOnFX(this::configure);
+            FXUtils.runOnFX(this::configure);
             return;
         }
-        Utils.runOnFX(() -> {
+        FXUtils.runOnFX(() -> {
             var screen = getScreen();
             if (screen == null) {
                 return;
@@ -341,7 +348,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         try {
             AssistantConfig.updateAssistant(config -> config.fishing = fishing);
         } catch (Throwable t) {
-            new StackTraceAlert(t).show();
+            StackTraceAlert.show(I18n.get().writeAssistantConfigFailed(), t);
         }
     }
 
@@ -357,9 +364,9 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
     private void configure() {
         configureStep1(() -> {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().fishingConfigureTips2()).showAndWait();
-            Utils.iconifyWindow(getScene().getWindow());
-            TaskManager.execute(() -> {
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().fishingConfigureTips2());
+            FXUtils.iconifyWindow(getScene().getWindow());
+            TaskManager.get().execute(() -> {
                 try {
                     Thread.sleep(3_000);
                 } catch (InterruptedException ignore) {
@@ -386,9 +393,9 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
             return;
         }
         isConfiguring = true;
-        new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().fishingConfigureTips1()).showAndWait();
-        Utils.iconifyWindow(getScene().getWindow());
-        TaskManager.execute(() -> {
+        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().fishingConfigureTips1());
+        FXUtils.iconifyWindow(getScene().getWindow());
+        TaskManager.get().execute(() -> {
             try {
                 Thread.sleep(3_000);
             } catch (InterruptedException ignore) {
@@ -409,7 +416,7 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
     }
 
     private void postConfigure() {
-        Utils.showWindow(getScene().getWindow());
+        FXUtils.showWindow(getScene().getWindow());
         isConfiguring = false;
     }
 
@@ -450,11 +457,11 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
             castingPoint.from(fishing.castingPoint);
         }
         var desc = new Label(I18n.get().fishingConfiguringScreenDescription()) {{
-            FontManager.setFont(this, 48);
+            FontManager.get().setFont(this, 48);
             setTextFill(Color.RED);
         }};
         {
-            var wh = Utils.calculateTextBounds(desc);
+            var wh = FXUtils.calculateTextBounds(desc);
             desc.setLayoutX(0);
             desc.setLayoutY(img.getHeight() / screen.getOutputScaleY() - wh.getHeight() - 110);
         }
@@ -503,14 +510,14 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
 
     private Screen getScreen() {
         var window = this.getScene().getWindow();
-        return Utils.getScreenOf(window);
+        return FXUtils.getScreenOf(window);
     }
 
     @SuppressWarnings("DuplicatedCode")
     private void configurePosBarAndStamina(Consumer<Boolean> cb) {
         Screen screen = getScreen();
         if (screen == null) {
-            new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.WARNING, "cannot find any display");
             cb.accept(false);
             return;
         }
@@ -548,13 +555,13 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
             staminaRect.from(fishing.fishStaminaRect);
         }
         var desc = new Label(I18n.get().fishingConfiguringScreenDescription()) {{
-            FontManager.setFont(this, 48);
+            FontManager.get().setFont(this, 48);
             setTextFill(Color.RED);
         }};
         {
-            var wh = Utils.calculateTextBounds(desc);
+            var wh = FXUtils.calculateTextBounds(desc);
             desc.setLayoutX(0);
-            desc.setLayoutY(img.getHeight()/screen.getOutputScaleY() - wh.getHeight() - 110);
+            desc.setLayoutY(img.getHeight() / screen.getOutputScaleY() - wh.getHeight() - 110);
         }
         imagePane.getChildren().addAll(desc, posBarRect, staminaRect);
 

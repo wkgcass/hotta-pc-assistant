@@ -5,6 +5,16 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
+import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
+import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.entity.input.KeyCode;
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.task.TaskManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.alert.StackTraceAlert;
+import io.vproxy.vfx.ui.layout.HPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.util.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -17,14 +27,18 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import net.cassite.hottapcassistant.component.HPadding;
-import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.component.macro.UIMacroList;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.config.InputConfig;
-import net.cassite.hottapcassistant.entity.*;
+import net.cassite.hottapcassistant.entity.Assistant;
+import net.cassite.hottapcassistant.entity.AssistantMacro;
+import net.cassite.hottapcassistant.entity.AssistantMacroData;
+import net.cassite.hottapcassistant.entity.KeyBinding;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.GlobalValues;
+import net.cassite.hottapcassistant.util.RobotWrapper;
+import net.cassite.hottapcassistant.util.StyleUtils;
+import net.cassite.hottapcassistant.util.Utils;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.awt.*;
@@ -48,19 +62,19 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
         var topVBox = new VBox();
         var switchHBox = new HBox();
         var switchBtnLabel = new Label(I18n.get().macroSwitchButtonLabel()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         switchHBox.getChildren().addAll(switchBtnLabel, new HPadding(5), switchButton);
         switchHBox.setPadding(new Insets(10, 0, 10, 0));
         var macroAlertLabel = new Label(I18n.get().macroAlertLabel()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         var knowConsequenceCheckBox = new CheckBox(I18n.get().knowConsequencePrompt()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         var rememberHBox = new HBox();
         var rememberBtnLabel = new Label(I18n.get().rememberMousePositionButtonLabel()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         rememberHBox.getChildren().addAll(rememberBtnLabel, new HPadding(5), rememberMousePositionSwitchButton);
         topVBox.getChildren().addAll(
@@ -115,7 +129,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
         setCenter(ls);
 
         var reloadMacro = new Button(I18n.get().reloadMacro()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         reloadMacro.setOnAction(e -> {
             switchButton.setSelected(false);
@@ -123,7 +137,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
         });
         reloadMacro.setPrefWidth(120);
         var editMacro = new Button(I18n.get().editMacro()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }};
         editMacro.setOnAction(e -> {
             var file = AssistantConfig.assistantFilePath.toFile();
@@ -137,7 +151,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
             try {
                 Desktop.getDesktop().open(file);
             } catch (Throwable ignore) {
-                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().openFileFailed()).show();
+                SimpleAlert.show(Alert.AlertType.ERROR, I18n.get().openFileFailed());
             }
         });
         editMacro.setPrefWidth(120);
@@ -229,7 +243,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
 
     private void runMacro(AssistantMacroData m) {
         if (m != null) {
-            TaskManager.execute(() -> {
+            TaskManager.get().execute(() -> {
                 Logger.debug("before macro execution: " + m.name);
                 m.exec();
                 Logger.debug("after macro executioin: " + m.name);
@@ -276,7 +290,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
         Logger.info("mouse is released");
         var pos = lastMousePosition;
         if (pos != null) {
-            TaskManager.execute(() -> {
+            TaskManager.get().execute(() -> {
                 try {
                     Thread.sleep(50); // the game has a short delay before releasing the mouse
                 } catch (InterruptedException ignore) {
@@ -347,7 +361,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
         try {
             a = AssistantConfig.readAssistant(true);
         } catch (Throwable t) {
-            new StackTraceAlert(t).show();
+            StackTraceAlert.show(I18n.get().readAssistantConfigFailed(), t);
             return false;
         }
         macro = a.macro;
@@ -393,7 +407,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
         try {
             AssistantConfig.updateAssistant(config -> config.macro = macro);
         } catch (Throwable t) {
-            new StackTraceAlert(t).show();
+            StackTraceAlert.show(I18n.get().writeAssistantConfigFailed(), t);
         }
     }
 }

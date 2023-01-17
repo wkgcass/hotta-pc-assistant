@@ -4,6 +4,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.dns.AddressResolverOptions;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.util.Logger;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
@@ -58,7 +60,7 @@ public class GlobalValues {
             throw e;
         }
         if (ass.version == null) {
-            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().swapConfigFailedMissingVersionInConfig()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().swapConfigFailedMissingVersionInConfig());
             return false;
         }
         if (useVersion.get() == GameVersion.CN) {
@@ -74,14 +76,14 @@ public class GlobalValues {
         var targetDir = savedPath.get() + "_" + name;
         var targetDirFile = new File(targetDir);
         if (targetDirFile.exists() && !targetDirFile.isDirectory()) {
-            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().swapConfigFailedTargetFileIsNotDir()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().swapConfigFailedTargetFileIsNotDir());
             return false;
         }
 
         var moveToDir = savedPath.get() + "_" + ass.version.name();
         var moveToDirFile = new File(moveToDir);
         if (moveToDirFile.exists()) {
-            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().swapConfigFailedPathToMoveToIsOccupied()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().swapConfigFailedPathToMoveToIsOccupied());
             return false;
         }
 
@@ -99,7 +101,7 @@ public class GlobalValues {
             }
         } else {
             if (!savedFile.mkdirs()) {
-                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().swapConfigFailedCreatingSavedDirFailed()).showAndWait();
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().swapConfigFailedCreatingSavedDirFailed());
                 return false;
             }
         }
@@ -119,12 +121,12 @@ public class GlobalValues {
 
     public static boolean checkCNGamePath() {
         if (gamePath.get() == null) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().gamePathNotSet()).show();
+            SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().gamePathNotSet());
             return false;
         }
         var f = new File(gamePath.get());
         if (!f.isDirectory()) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().gamePathIsNotDirectory()).show();
+            SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().gamePathIsNotDirectory());
             return false;
         }
         return checkSavedPath();
@@ -132,12 +134,12 @@ public class GlobalValues {
 
     public static boolean checkGlobalServerGamePath() {
         if (globalServerGamePath.get() == null) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().gamePathNotSet()).show();
+            SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().gamePathNotSet());
             return false;
         }
         var f = new File(globalServerGamePath.get());
         if (!f.isDirectory()) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().gamePathIsNotDirectory()).show();
+            SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().gamePathIsNotDirectory());
             return false;
         }
         return checkSavedPath();
@@ -145,12 +147,12 @@ public class GlobalValues {
 
     private static boolean checkSavedPath() {
         if (savedPath.get() == null) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().savedPathNotSet()).show();
+            SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().savedPathNotSet());
             return false;
         }
         var f = new File(savedPath.get());
         if (!f.isDirectory()) {
-            new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().savedPathIsNotDirectory()).show();
+            SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().savedPathIsNotDirectory());
             return false;
         }
         return true;

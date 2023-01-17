@@ -1,4 +1,5 @@
 open module net.cassite.hottapcassistant {
+    requires io.vproxy.vfx;
     requires kotlin.stdlib;
     requires javafx.controls;
     requires javafx.swing;

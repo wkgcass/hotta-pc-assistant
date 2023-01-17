@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.multi;
 
+import io.vproxy.vfx.util.IOUtils;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.simple.SimpleString;
 
@@ -81,13 +82,13 @@ public class MultiHottaInstanceFlow {
     public static void writeResListXml(String advLocation, String subVersion) throws IOException {
         var dir = makePatcherSDKDir(advLocation);
         var path = Path.of(dir.toString(), "ResList.xml");
-        Utils.writeFile(path, buildResListXml(subVersion));
+        IOUtils.writeFile(path, buildResListXml(subVersion));
     }
 
     public static void writeConfigXml(String advLocation, String version, String subVersion) throws IOException {
         var dir = makePatcherSDKDir(advLocation);
         var path = Path.of(dir.toString(), "config.xml");
-        Utils.writeFile(path, buildConfigXml(version, subVersion));
+        IOUtils.writeFile(path, buildConfigXml(version, subVersion));
     }
 
     private static Path makePatcherSDKDir(String advLocation) throws IOException {
@@ -109,7 +110,7 @@ public class MultiHottaInstanceFlow {
         var path = Path.of(dir.toString(), "Win_pc_version.txt");
         if (!path.toFile().exists()) {
             var dummyVersion = "114.514.1919810";
-            Utils.writeFile(path, dummyVersion);
+            IOUtils.writeFile(path, dummyVersion);
             return dummyVersion;
         } else {
             return Files.readString(path);

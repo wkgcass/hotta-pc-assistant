@@ -1,11 +1,11 @@
 package net.cassite.hottapcassistant.component.setting;
 
+import io.vproxy.vfx.ui.alert.SimpleAlert;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.SimpleAlert;
 
 import java.util.Objects;
 
@@ -58,7 +58,7 @@ public class UISettingList extends TableView<Setting> {
                             v = Double.parseDouble(text);
                         }
                     } catch (NumberFormatException ex) {
-                        new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().invalidNumberValue()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidNumberValue());
                         input.setText(setting.formatValue());
                         return;
                     }
@@ -111,13 +111,13 @@ public class UISettingList extends TableView<Setting> {
                 Runnable applyHandler = () -> {
                     String v = box.getValue();
                     if (!v.contains("x")) {
-                        new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue());
                         box.setValue((String) setting.value);
                         return;
                     }
                     String[] split = v.split("x");
                     if (split.length != 2) {
-                        new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue());
                         box.setValue((String) setting.value);
                         return;
                     }
@@ -127,7 +127,7 @@ public class UISettingList extends TableView<Setting> {
                         x = Integer.parseInt(split[0]);
                         y = Integer.parseInt(split[1]);
                     } catch (NumberFormatException ex) {
-                        new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionIntegerValue()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionIntegerValue());
                         box.setValue((String) setting.value);
                         return;
                     }
@@ -136,7 +136,7 @@ public class UISettingList extends TableView<Setting> {
                         return;
                     }
                     if (x <= 0 || y <= 0) {
-                        new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionIntegerValue()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionIntegerValue());
                         box.setValue((String) setting.value);
                         return;
                     }

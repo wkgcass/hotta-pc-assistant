@@ -1,15 +1,16 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.util.FXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.FontManager;
-import net.cassite.hottapcassistant.util.Utils;
+import net.cassite.hottapcassistant.util.Consts;
 import net.cassite.hottapcassistant.util.Version;
 
 import java.util.List;
@@ -38,13 +39,13 @@ public class AboutPane extends StackPane {
     }
 
     private final Label latestVersion = new Label() {{
-        FontManager.setNoto(this);
+        FontManager.get().setFont(Consts.NotoFont, this);
     }};
     private final Label latestReleaseTime = new Label() {{
-        FontManager.setNoto(this);
+        FontManager.get().setFont(Consts.NotoFont, this);
     }};
     private final Label lastSyncTime = new Label() {{
-        FontManager.setNoto(this);
+        FontManager.get().setFont(Consts.NotoFont, this);
     }};
 
     public AboutPane() {
@@ -54,7 +55,7 @@ public class AboutPane extends StackPane {
             new VBox() {{
                 getChildren().addAll(
                     new Label(I18n.get().version() + ": " + Version.version) {{
-                        FontManager.setNoto(this);
+                        FontManager.get().setFont(Consts.NotoFont, this);
                     }},
                     new VPadding(2),
                     latestVersion,
@@ -68,18 +69,18 @@ public class AboutPane extends StackPane {
                 setPadding(new Insets(10, 0, 10, 0));
             }},
             new Label(I18n.get().about()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
             }},
             new Separator() {{
                 setPadding(new Insets(10, 0, 10, 0));
             }},
             new Label(I18n.get().contributor() + "\n" + generate()) {{
-                FontManager.setNoto(this);
+                FontManager.get().setFont(Consts.NotoFont, this);
             }});
 
         getChildren().add(vbox);
 
-        Feed.updated.addListener((ob, old, now) -> Utils.runOnFX(this::updateFeed));
+        Feed.updated.addListener((ob, old, now) -> FXUtils.runOnFX(this::updateFeed));
         updateFeed();
     }
 

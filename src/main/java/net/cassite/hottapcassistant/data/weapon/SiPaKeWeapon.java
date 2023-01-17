@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.resonance.FireResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.AudioGroup;
+import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class SiPaKeWeapon extends AbstractWeapon implements Weapon, FireResonance {

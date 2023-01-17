@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.feed;
 
-import net.cassite.hottapcassistant.util.Logger;
+import io.vproxy.vfx.util.IOUtils;
+import io.vproxy.vfx.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.CharStream;
 import vjson.JSON;
@@ -129,7 +130,7 @@ public class FeedThread extends Thread {
         }
         Logger.info("calling github for issue 1 comments, retrieved http body: " + httpBody);
         try {
-            Utils.writeFile(Path.of(System.getProperty("java.io.tmpdir"), "hotta-pc-assistant", "req-1"), httpBody);
+            IOUtils.writeFile(Path.of(System.getProperty("java.io.tmpdir"), "hotta-pc-assistant", "req-1"), httpBody);
         } catch (Throwable t) {
             Logger.error("failed storing github issue 1 comments response to file", t);
             // fallthrough

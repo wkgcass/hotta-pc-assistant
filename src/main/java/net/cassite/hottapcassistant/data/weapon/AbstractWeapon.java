@@ -1,13 +1,13 @@
 package net.cassite.hottapcassistant.data.weapon;
 
+import io.vproxy.vfx.manager.audio.AudioGroup;
+import io.vproxy.vfx.manager.task.TaskManager;
+import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.skill.NormalSkill;
 import net.cassite.hottapcassistant.entity.WeaponArgs;
-import net.cassite.hottapcassistant.util.AudioGroup;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.TaskManager;
-import net.cassite.hottapcassistant.util.Utils;
 
 public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtraData implements Weapon {
     protected String name;
@@ -165,8 +165,8 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
         revertSkillIfNeeded(ctx);
         handlingRevertibleSkill = true;
         var oldVersion = ++revertibleSkillStateVersion;
-        TaskManager.execute(() -> {
-            Utils.delay(attackPointTime);
+        TaskManager.get().execute(() -> {
+            MiscUtils.threadSleep(attackPointTime);
             if (oldVersion != revertibleSkillStateVersion) {
                 Logger.debug("the skill of " + getName() + " was reverted");
                 return;

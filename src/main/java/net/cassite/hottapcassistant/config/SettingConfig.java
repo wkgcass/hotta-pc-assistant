@@ -1,13 +1,13 @@
 package net.cassite.hottapcassistant.config;
 
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.util.IOUtils;
+import io.vproxy.vfx.util.Logger;
 import javafx.scene.control.Alert;
 import net.cassite.hottapcassistant.component.setting.Setting;
 import net.cassite.hottapcassistant.component.setting.SettingType;
 import net.cassite.hottapcassistant.entity.GameAssistant;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.SimpleAlert;
-import net.cassite.hottapcassistant.util.Utils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,7 +50,7 @@ public class SettingConfig {
             double min = 0;
             double max = 3;
             if (d < min || d > max) {
-                new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().fightRangeOutOfBounds(min, max)).showAndWait();
+                SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().fightRangeOutOfBounds(min, max));
                 return false;
             }
             return true;
@@ -158,7 +158,7 @@ public class SettingConfig {
             ++modified;
         }
         if (modified != 0) {
-            Utils.writeFile(settingsPath, String.join("\n", lines));
+            IOUtils.writeFile(settingsPath, String.join("\n", lines));
         }
     }
 
@@ -180,7 +180,7 @@ public class SettingConfig {
             var type = availableSettings.get(key);
             String value = split[1].trim();
             if (!type.check(value)) {
-                new SimpleAlert(Alert.AlertType.WARNING, I18n.get().invalidConfigInFile(key, value)).show();
+                SimpleAlert.show(Alert.AlertType.WARNING, I18n.get().invalidConfigInFile(key, value));
                 continue;
             }
             Object v = type.parse(value);
@@ -226,7 +226,7 @@ public class SettingConfig {
                 settingsFile.set(s.lineIndex, s.toString());
             }
         }
-        Utils.writeFile(settingsPath, String.join("\n", settingsFile));
+        IOUtils.writeFile(settingsPath, String.join("\n", settingsFile));
         if (modified) {
             final var fFullscreenMode = fullscreenMode;
             final var fResolutionSizeX = resolutionSizeX;

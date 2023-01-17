@@ -2,7 +2,7 @@ package net.cassite.hottapcassistant.config;
 
 import net.cassite.hottapcassistant.entity.TofServer;
 import net.cassite.hottapcassistant.feed.Feed;
-import net.cassite.hottapcassistant.util.Logger;
+import io.vproxy.vfx.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.io.IOException;

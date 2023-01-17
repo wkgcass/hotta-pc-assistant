@@ -5,7 +5,7 @@ import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.misc.TriggerLiuQuanCheXinStar1;
 import net.cassite.hottapcassistant.data.skill.ZhongJieZheSkill;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.AudioGroup;
+import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class ZhongJieZheWeapon extends AbstractWeapon implements Weapon, TriggerLiuQuanCheXinStar1 {

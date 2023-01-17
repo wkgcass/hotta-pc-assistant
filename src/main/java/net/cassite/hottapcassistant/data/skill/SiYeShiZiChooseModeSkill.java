@@ -1,7 +1,7 @@
 package net.cassite.hottapcassistant.data.skill;
 
+import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.data.Skill;
-import net.cassite.hottapcassistant.util.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class SiYeShiZiChooseModeSkill implements Skill {

@@ -1343,4 +1343,69 @@ public class ZhCn extends I18n {
     public String failedSavingCaCertFile() {
         return "保存CA证书失败";
     }
+
+    @Override
+    public String initRobotFailed() {
+        return "初始化Robot失败";
+    }
+
+    @Override
+    public String readAssistantConfigFailed() {
+        return "读取助手配置文件失败";
+    }
+
+    @Override
+    public String readInputConfigFailed() {
+        return "读取输入配置失败";
+    }
+
+    @Override
+    public String writeAssistantConfigFailed() {
+        return "写入助手配置文件失败";
+    }
+
+    @Override
+    public String alertInfoTitle() {
+        return "信息";
+    }
+
+    @Override
+    public String alertWarningTitle() {
+        return "警告";
+    }
+
+    @Override
+    public String alertErrorTitle() {
+        return "错误";
+    }
+
+    @Override
+    public String cannotFindAnyDisplay() {
+        return "找不到显示器";
+    }
+
+    @Override
+    public String stacktraceAlertTitle() {
+        return "异常";
+    }
+
+    @Override
+    public String stacktraceAlertHeaderText() {
+        return "检测到抛出异常";
+    }
+
+    @Override
+    public String stacktraceAlertLabel() {
+        return "异常栈为：";
+    }
+
+    @Override
+    public String keyChooserLeftMouseButton() {
+        return "左键";
+    }
+
+    @Override
+    public String keyChooserRightMouseButton() {
+        return "右键";
+    }
 }

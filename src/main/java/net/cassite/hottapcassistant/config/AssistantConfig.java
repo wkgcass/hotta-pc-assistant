@@ -1,13 +1,13 @@
 package net.cassite.hottapcassistant.config;
 
+import io.vproxy.vfx.util.IOUtils;
+import io.vproxy.vfx.util.Logger;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import net.cassite.hottapcassistant.entity.Assistant;
 import net.cassite.hottapcassistant.entity.GameAssistant;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.Logger;
-import net.cassite.hottapcassistant.util.Utils;
 import vjson.CharStream;
 import vjson.JSON;
 import vjson.cs.LineColCharStream;
@@ -90,7 +90,7 @@ public class AssistantConfig {
     public static void writeAssistant(Assistant assistant) throws IOException {
         var sb = new StringBuilder();
         assistant.toJson().scriptify(sb, new ScriptifyContext(2));
-        Utils.writeFile(assistantFilePath, sb.toString());
+        IOUtils.writeFile(assistantFilePath, sb.toString());
     }
 
     public static void updateAssistant(Consumer<Assistant> f) throws Exception {
@@ -123,7 +123,7 @@ public class AssistantConfig {
     public void writeGameAssistant(GameAssistant assistant) throws IOException {
         var sb = new StringBuilder();
         assistant.toJson().scriptify(sb, new ScriptifyContext(2));
-        Utils.writeFile(Path.of(path), sb.toString());
+        IOUtils.writeFile(Path.of(path), sb.toString());
     }
 
     public void updateGameAssistant(Consumer<GameAssistant> f) throws IOException {

@@ -1,7 +1,7 @@
 package net.cassite.hottapcassistant.feed;
 
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.util.Logger;
+import io.vproxy.vfx.util.Logger;
 import vjson.CharStream;
 import vjson.JSON;
 import vjson.deserializer.rule.LongRule;

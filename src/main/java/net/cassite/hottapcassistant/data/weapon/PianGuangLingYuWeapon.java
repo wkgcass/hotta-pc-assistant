@@ -7,7 +7,7 @@ import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
 import net.cassite.hottapcassistant.entity.WeaponArgs;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.AudioGroup;
+import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {

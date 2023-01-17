@@ -1,5 +1,9 @@
 package net.cassite.hottapcassistant.tool;
 
+import io.vproxy.vfx.manager.audio.AudioManager;
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.ui.layout.HPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
@@ -14,11 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
-import net.cassite.hottapcassistant.component.HPadding;
-import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.AudioManager;
-import net.cassite.hottapcassistant.util.FontManager;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.*;
@@ -78,11 +78,11 @@ public class LansBrainWash extends AbstractTool implements Tool {
             randTimeSlider.setPrefWidth(500);
 
             var startBtn = new Button(I18n.get().brainWashLanStartBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             startBtn.setOnAction(e -> start());
             var stopBtn = new Button(I18n.get().brainWashLanStopBtn()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
                 setDisable(true);
             }};
             stopBtn.setOnAction(e -> stop());
@@ -111,7 +111,7 @@ public class LansBrainWash extends AbstractTool implements Tool {
                 new VBox(
                     new VPadding(20),
                     new Label(I18n.get().brainWashLanFreqSliderDesc()) {{
-                        FontManager.setFont(this);
+                        FontManager.get().setFont(this);
                     }},
                     new VPadding(5),
                     freqSlider,
@@ -119,7 +119,7 @@ public class LansBrainWash extends AbstractTool implements Tool {
                         setPadding(new Insets(10, 0, 10, 0));
                     }},
                     new Label(I18n.get().brainWashLanRandTimeSliderDesc()) {{
-                        FontManager.setFont(this);
+                        FontManager.get().setFont(this);
                     }},
                     randTimeSlider,
                     new VPadding(5),

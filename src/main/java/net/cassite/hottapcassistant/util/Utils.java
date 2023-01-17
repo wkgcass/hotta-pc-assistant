@@ -1,25 +1,24 @@
 package net.cassite.hottapcassistant.util;
 
-import javafx.animation.AnimationTimer;
+import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.manager.audio.AudioGroup;
+import io.vproxy.vfx.manager.audio.AudioManager;
+import io.vproxy.vfx.manager.audio.AudioWrapper;
+import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.alert.StackTraceAlert;
+import io.vproxy.vfx.util.IOUtils;
+import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import net.cassite.hottapcassistant.config.TofServerListConfig;
-import net.cassite.hottapcassistant.entity.Key;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -27,36 +26,16 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DecimalFormat;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.temporal.ChronoField.*;
-
 public class Utils {
     public static final DecimalFormat floatValueFormat = new DecimalFormat("0.000000");
     public static final DecimalFormat roughFloatValueFormat = new DecimalFormat("0.0");
-    public static final DateTimeFormatter YYYYMMddHHiissDateTimeFormatter = new DateTimeFormatterBuilder()
-        .parseCaseInsensitive()
-        .append(ISO_LOCAL_DATE)
-        .appendLiteral(' ')
-        .append(new DateTimeFormatterBuilder()
-            .appendValue(HOUR_OF_DAY, 2)
-            .appendLiteral(':')
-            .appendValue(MINUTE_OF_HOUR, 2)
-            .optionalStart()
-            .appendLiteral(':')
-            .appendValue(SECOND_OF_MINUTE, 2)
-            .toFormatter())
-        .toFormatter();
 
     private Utils() {
     }
@@ -87,44 +66,6 @@ public class Utils {
         return b ? "True" : "False";
     }
 
-    public static void writeFile(Path file, String content) throws IOException {
-        Logger.info("write to file: " + file);
-        File f = file.toFile();
-        if (f.exists()) {
-            if (!f.isFile()) {
-                throw new IOException(file + " is not a regular file");
-            }
-            File bak = new File(file + ".bak");
-            boolean needBak = true;
-            if (bak.exists()) {
-                if (bak.isFile()) {
-                    try {
-                        //noinspection ResultOfMethodCallIgnored
-                        bak.delete();
-                    } catch (Throwable ignore) {
-                    }
-                } else {
-                    needBak = false; // cannot make backup because the .bak is not a regular file
-                }
-            }
-            if (needBak) {
-                try {
-                    //noinspection ResultOfMethodCallIgnored
-                    f.renameTo(bak);
-                } catch (Throwable ignore) {
-                }
-            }
-        } else {
-            var parent = f.getParentFile();
-            if (!parent.exists()) {
-                if (!parent.mkdirs()) {
-                    throw new IOException("mkdirs " + parent + " failed");
-                }
-            }
-        }
-        Files.writeString(file, content);
-    }
-
     public static boolean modifyHostsFile(Function<List<String>, List<String>> op) {
         var f = new File("C:\\Windows\\System32\\Drivers\\etc\\hosts");
         if (!f.exists() || !f.isFile()) {
@@ -146,7 +87,7 @@ public class Utils {
         }
         var str = String.join("\n", lines);
         try {
-            Utils.writeFile(f.toPath(), str);
+            IOUtils.writeFile(f.toPath(), str);
         } catch (IOException e) {
             Logger.error("writing " + f.getAbsolutePath() + " failed", e);
             return false;
@@ -155,6 +96,7 @@ public class Utils {
     }
 
     private static volatile RobotWrapper robot;
+    private static volatile RobotWrapper robotNoLog;
 
     public static void execRobot(Consumer<RobotWrapper> f) {
         checkAndInitRobot();
@@ -166,14 +108,24 @@ public class Utils {
         return runOnFXAndReturn(() -> f.apply(robot));
     }
 
-    public static java.awt.Image robotAWTCapture(int x, int y, int width, int height) {
+    public static void execRobotNoLog(Consumer<RobotWrapper> f) {
         checkAndInitRobot();
-        return robot.awtCapture(x, y, width, height);
+        Platform.runLater(() -> f.accept(robotNoLog));
     }
 
-    public static BufferedImage robotNativeCapture(int x, int y, int width, int height, double scale) {
+    public static <T> T execRobotOnThreadNoLog(Function<RobotWrapper, T> f) {
         checkAndInitRobot();
-        return robot.nativeCapture(x, y, width, height, scale);
+        return runOnFXAndReturn(() -> f.apply(robotNoLog));
+    }
+
+    public static <T> T execRobotDirectly(Function<RobotWrapper, T> f) {
+        checkAndInitRobot();
+        return f.apply(robot);
+    }
+
+    public static <T> T execRobotDirectlyNoLog(Function<RobotWrapper, T> f) {
+        checkAndInitRobot();
+        return f.apply(robotNoLog);
     }
 
     public static <T> T runOnFXAndReturn(Supplier<T> f) {
@@ -204,7 +156,7 @@ public class Utils {
             r.mouseMove(x, y);
             return null;
         });
-        delay(100);
+        MiscUtils.threadSleep(100);
         clickOnThread(key);
     }
 
@@ -213,7 +165,7 @@ public class Utils {
             r.press(key);
             return null;
         });
-        delay(50);
+        MiscUtils.threadSleep(50);
         execRobotOnThread(r -> {
             r.release(key);
             return null;
@@ -228,7 +180,8 @@ public class Utils {
                     Throwable[] ex = new Throwable[]{null};
                     Runnable r = () -> {
                         try {
-                            robot = new RobotWrapper();
+                            robot = new RobotWrapper(true);
+                            robotNoLog = new RobotWrapper(false);
                         } catch (Throwable t) {
                             ex[0] = t;
                         } finally {
@@ -248,7 +201,7 @@ public class Utils {
                         }
                         if (done[0]) {
                             if (ex[0] != null) {
-                                new StackTraceAlert(ex[0]).show();
+                                StackTraceAlert.show(I18n.get().initRobotFailed(), ex[0]);
                             }
                             break;
                         }
@@ -258,95 +211,8 @@ public class Utils {
         }
     }
 
-    public static Rectangle2D calculateTextBounds(Label label) {
-        Text text = new Text(label.getText());
-        text.setFont(label.getFont());
-        return calculateTextBounds(text);
-    }
-
-    public static Rectangle2D calculateTextBounds(Text text) {
-        double textWidth;
-        double textHeight;
-        {
-            textWidth = text.getLayoutBounds().getWidth();
-            textHeight = text.getLayoutBounds().getHeight();
-        }
-        return new Rectangle2D(0, 0, textWidth, textHeight);
-    }
-
-    public static void runOnFX(Runnable r) {
-        if (Platform.isFxApplicationThread()) {
-            r.run();
-        } else {
-            Platform.runLater(r);
-        }
-    }
-
-    public static void runLater(int n, Runnable r) {
-        if (n <= 0) {
-            runOnFX(r);
-            return;
-        }
-        Platform.runLater(() -> runLater(n - 1, r));
-    }
-
-    public static void runDelay(int millis, Runnable r) {
-        var ptr = new AnimationTimer[1];
-        ptr[0] = new AnimationTimer() {
-            private long begin;
-
-            @Override
-            public void handle(long now) {
-                if (begin == 0) {
-                    begin = now;
-                    return;
-                }
-                if (now - begin < millis * 1_000_000L) {
-                    return;
-                }
-                ptr[0].stop();
-
-                r.run();
-            }
-        };
-        ptr[0].start();
-    }
-
-    public static boolean almostEquals(Color a, Color b) {
-        return Math.abs(a.getRed() - b.getRed()) < 0.02 && Math.abs(a.getGreen() - b.getGreen()) < 0.02 && Math.abs(a.getBlue() - b.getBlue()) < 0.02;
-    }
-
-    public static boolean almostIn(Color color, Set<Color> colors) {
-        for (var c : colors) {
-            if (almostEquals(color, c)) return true;
-        }
-        return false;
-    }
-
-    public static void showWindow(Window window) {
-        try {
-            ((Stage) window).setIconified(false);
-            ((Stage) window).setAlwaysOnTop(true);
-            Platform.runLater(() -> ((Stage) window).setAlwaysOnTop(false));
-        } catch (Throwable ignore) {
-        }
-    }
-
-    public static void iconifyWindow(Window window) {
-        try {
-            ((Stage) window).setIconified(true);
-        } catch (Throwable ignore) {
-        }
-    }
-
-    public static float[] toHSB(Color color) {
-        float[] ff = new float[3];
-        java.awt.Color.RGBtoHSB((int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255), ff);
-        return ff;
-    }
-
     public static String readClassPath(String location) throws IOException {
-        try (var inputStream = TofServerListConfig.class.getClassLoader().getResourceAsStream(location)) {
+        try (var inputStream = Utils.class.getClassLoader().getResourceAsStream(location)) {
             if (inputStream == null) {
                 Logger.warn("unable to find file " + location + " in classpath");
                 return "";
@@ -437,7 +303,7 @@ public class Utils {
             }
             if (ret != null) {
                 if (!ret && alert) {
-                    new SimpleAlert(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name)).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name));
                 }
                 return ret;
             }
@@ -448,7 +314,7 @@ public class Utils {
             addrs = InetAddress.getAllByName(name + ".lock.hotta-pc-assistant.special.cassite.net");
         } catch (UnknownHostException ignore) {
             if (alert) {
-                new SimpleAlert(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name)).showAndWait();
+                SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name));
             }
             return false;
         }
@@ -461,52 +327,14 @@ public class Utils {
             }
         }
         if (alert) {
-            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name)).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name));
         }
         return false;
-    }
-
-    public static void delay(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException ignore) {
-        }
-    }
-
-    public static Screen getScreenOf(Window window) {
-        if (window == null) return null;
-        var screenOb = Screen.getScreensForRectangle(window.getX(), window.getY(), window.getWidth(), window.getHeight());
-        Screen screen;
-        if (screenOb.isEmpty()) {
-            screen = Screen.getPrimary();
-        } else {
-            screen = screenOb.get(0);
-        }
-        if (screen == null) {
-            new SimpleAlert(Alert.AlertType.WARNING, "cannot find any display").showAndWait();
-            return null;
-        }
-        return screen;
-    }
-
-    public static BufferedImage convertToBufferedImage(java.awt.Image awtImage) {
-        if (awtImage instanceof BufferedImage) return (BufferedImage) awtImage;
-        BufferedImage bImage = new BufferedImage(awtImage.getWidth(null), awtImage.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D bGr = bImage.createGraphics();
-        bGr.drawImage(awtImage, 0, 0, null);
-        bGr.dispose();
-        return bImage;
     }
 
     public static void copyImageToClipboard(BufferedImage bImg) {
         var content = new ClipboardContent();
         content.putImage(SwingFXUtils.toFXImage(bImg, null));
         Clipboard.getSystemClipboard().setContent(content);
-    }
-
-    public static String returnNullIfBlank(String s) {
-        if (s == null) return null;
-        if (s.isBlank()) return null;
-        return s;
     }
 }

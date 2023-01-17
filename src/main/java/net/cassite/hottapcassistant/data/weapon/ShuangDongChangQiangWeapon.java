@@ -5,7 +5,7 @@ import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponCategory;
 import net.cassite.hottapcassistant.data.WeaponElement;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.AudioGroup;
+import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class ShuangDongChangQiangWeapon extends AbstractWeapon implements Weapon {

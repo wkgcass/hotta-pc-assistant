@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.entity;
 
+import io.vproxy.vfx.entity.input.InputData;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.simple.SimpleString;
 

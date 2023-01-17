@@ -15,7 +15,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.FontManager;
+import io.vproxy.vfx.manager.font.FontManager;
 import net.cassite.hottapcassistant.util.Version;
 
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class MainScreen extends BorderPane {
             } else {
                 setLabelUnselected(inst);
             }
-            FontManager.setFont(label, 18);
+            FontManager.get().setFont(label, 18);
             label.setAlignment(Pos.CENTER);
 
             pane.setCursor(Cursor.HAND);

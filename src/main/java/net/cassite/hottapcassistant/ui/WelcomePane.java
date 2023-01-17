@@ -1,5 +1,12 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.button.ImageButton;
+import io.vproxy.vfx.ui.layout.HPadding;
+import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.util.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,16 +23,13 @@ import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.StageStyle;
-import net.cassite.hottapcassistant.component.HPadding;
-import net.cassite.hottapcassistant.component.ImageButton;
-import net.cassite.hottapcassistant.component.VPadding;
 import net.cassite.hottapcassistant.component.serverlist.UIServerChooser;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.config.TofServerListConfig;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.util.*;
+import net.cassite.hottapcassistant.util.GlobalValues;
 
 import java.awt.*;
 import java.io.File;
@@ -71,15 +75,15 @@ public class WelcomePane extends StackPane {
         {
             var selectLocationGroup = new VBox();
             var selectLocationDesc = new Label(I18n.get().selectSavedLocationDescription()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationGroup.setAlignment(Pos.CENTER);
             selectLocationGroup.getChildren().add(selectLocationDesc);
             var selectLocationLabel = new Label(I18n.get().selectSavedLocation()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectSavedLocationInput = new TextField() {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectSavedLocationInput.setEditable(false);
             selectSavedLocationInput.setPrefWidth(500);
@@ -99,7 +103,7 @@ public class WelcomePane extends StackPane {
                 }
             });
             var selectLocationButton = new Button(I18n.get().selectButton()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationButton.setOnAction(e -> {
                 var chooser = new DirectoryChooser();
@@ -108,13 +112,13 @@ public class WelcomePane extends StackPane {
                     return;
                 }
                 if (!f.isDirectory()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().chosenWrongSavedDirectory()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().chosenWrongSavedDirectory());
                     return;
                 }
                 selectSavedLocationInput.setText(f.getAbsolutePath());
             });
             var selectLocationAutoButton = new Button(I18n.get().autoSearchButton()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationAutoButton.setOnAction(e -> autoSearchSavedPath(true));
             var selectLocationHBox = new HBox(selectLocationLabel,
@@ -147,15 +151,15 @@ public class WelcomePane extends StackPane {
                 }
             });
             var selectLocationDesc = new Label(I18n.get().selectGameLocationDescription()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationGroup.setAlignment(Pos.CENTER);
             selectLocationGroup.getChildren().add(selectLocationDesc);
             var selectLocationLabel = new Label(I18n.get().selectGameLocation()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectGameLocationInput = new TextField() {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectGameLocationInput.setEditable(false);
             selectGameLocationInput.setPrefWidth(500);
@@ -173,7 +177,7 @@ public class WelcomePane extends StackPane {
                 }
             });
             var selectLocationButton = new Button(I18n.get().selectButton()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationButton.setOnAction(e -> {
                 var chooser = new FileChooser();
@@ -183,17 +187,17 @@ public class WelcomePane extends StackPane {
                     return;
                 }
                 if (!f.getName().equalsIgnoreCase("gameLauncher.exe")) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGameFile()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGameFile());
                     return;
                 }
                 if (!f.isFile()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGameFile()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGameFile());
                     return;
                 }
                 selectGameLocationInput.setText(f.getParentFile().getAbsolutePath());
             });
             var selectLocationAutoButton = new Button(I18n.get().autoSearchButton()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationAutoButton.setOnAction(e -> autoSearchGamePath(true));
             var selectLocationHBox = new HBox(
@@ -228,15 +232,15 @@ public class WelcomePane extends StackPane {
                 }
             });
             var selectLocationDesc = new Label(I18n.get().selectGlobalServerGameLocationDescription()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationGroup.setAlignment(Pos.CENTER);
             selectLocationGroup.getChildren().add(selectLocationDesc);
             var selectLocationLabel = new Label(I18n.get().selectGlobalServerGameLocation()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectGlobalServerGameLocationInput = new TextField() {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectGlobalServerGameLocationInput.setEditable(false);
             selectGlobalServerGameLocationInput.setPrefWidth(500);
@@ -257,7 +261,7 @@ public class WelcomePane extends StackPane {
                 }
             });
             var selectLocationButton = new Button(I18n.get().selectButton()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationButton.setOnAction(e -> {
                 var chooser = new FileChooser();
@@ -267,23 +271,23 @@ public class WelcomePane extends StackPane {
                     return;
                 }
                 if (!f.getName().equalsIgnoreCase("tof_launcher.exe")) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGlobalServerGameFile()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGlobalServerGameFile());
                     return;
                 }
                 if (!f.isFile()) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGlobalServerGameFile()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGlobalServerGameFile());
                     return;
                 }
                 var launcherDir = f.getParentFile();
                 var tofDir = launcherDir.getParentFile();
                 if (tofDir == null) {
-                    new SimpleAlert(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGlobalServerGameFileNoParentDir()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().chosenWrongGlobalServerGameFileNoParentDir());
                     return;
                 }
                 selectGlobalServerGameLocationInput.setText(tofDir.getAbsolutePath());
             });
             var selectLocationAutoButton = new Button(I18n.get().autoSearchButton()) {{
-                FontManager.setFont(this);
+                FontManager.get().setFont(this);
             }};
             selectLocationAutoButton.setOnAction(e -> autoSearchGlobalServerGamePath(true));
             var selectLocationHBox = new HBox(
@@ -323,7 +327,7 @@ public class WelcomePane extends StackPane {
                 } catch (Throwable t) {
                     Logger.error("failed downloading game", t);
                     Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().openBrowserForDownloadingFailed(url)).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().openBrowserForDownloadingFailed(url));
                 }
             });
 
@@ -338,7 +342,7 @@ public class WelcomePane extends StackPane {
                     Desktop.getDesktop().open(Path.of(GlobalValues.gamePath.get(), "gameLauncher.exe").toFile());
                 } catch (Throwable t) {
                     Logger.error("failed launching game", t);
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().launchGameFailed()).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
                 }
             });
             group.getChildren().add(downloadBtn);
@@ -374,7 +378,7 @@ public class WelcomePane extends StackPane {
                 } catch (Throwable t) {
                     Logger.error("failed downloading global server game", t);
                     Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
-                    new SimpleAlert(Alert.AlertType.ERROR, I18n.get().openBrowserForDownloadingFailed(url)).showAndWait();
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().openBrowserForDownloadingFailed(url));
                 }
             });
 
@@ -420,7 +424,7 @@ public class WelcomePane extends StackPane {
         var dialog = new Dialog<ButtonType>();
         dialog.initStyle(StageStyle.UTILITY);
         dialog.getDialogPane().setContent(new Label(I18n.get().chooseGameVersionDesc()) {{
-            FontManager.setFont(this);
+            FontManager.get().setFont(this);
         }});
         var cnVersion = new ButtonType(I18n.get().chooseCNVersion(), ButtonBar.ButtonData.OK_DONE);
         var globalVersion = new ButtonType(I18n.get().chooseGlobalVersion(), ButtonBar.ButtonData.OK_DONE);
@@ -463,7 +467,7 @@ public class WelcomePane extends StackPane {
         try {
             swapped = GlobalValues.swapConfig();
         } catch (Exception e) {
-            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().swapConfigFailed()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().swapConfigFailed());
             return;
         }
         if (swapped) {
@@ -489,7 +493,7 @@ public class WelcomePane extends StackPane {
                 servers = TofServerListConfig.read();
             } catch (IOException e) {
                 Logger.error("failed reading tof server list", e);
-                new SimpleAlert(Alert.AlertType.ERROR, I18n.get().failedReadingTofServerList()).showAndWait();
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().failedReadingTofServerList());
             }
             try {
                 var ass = AssistantConfig.readAssistant();
@@ -509,7 +513,7 @@ public class WelcomePane extends StackPane {
                 if (res.isPresent()) {
                     var b = TofServerListConfig.setHosts(res.get());
                     if (!b) {
-                        new SimpleAlert(Alert.AlertType.ERROR, I18n.get().failedWritingHostsFile()).showAndWait();
+                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().failedWritingHostsFile());
                     }
                     try {
                         AssistantConfig.updateAssistant(ass -> {
@@ -527,7 +531,7 @@ public class WelcomePane extends StackPane {
             Desktop.getDesktop().open(Path.of(GlobalValues.globalServerGamePath.get(), "Launcher", "tof_launcher.exe").toFile());
         } catch (Throwable t) {
             Logger.error("failed launching global server game", t);
-            new SimpleAlert(Alert.AlertType.ERROR, I18n.get().launchGameFailed()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
         }
     }
 
@@ -595,7 +599,7 @@ public class WelcomePane extends StackPane {
             }
         }
         if (alert) {
-            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().autoSearchFailed()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().autoSearchFailed());
         }
     }
 
@@ -607,7 +611,7 @@ public class WelcomePane extends StackPane {
             return;
         }
         if (alert) {
-            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().autoSearchFailed()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().autoSearchFailed());
         }
     }
 
@@ -621,7 +625,7 @@ public class WelcomePane extends StackPane {
             }
         }
         if (alert) {
-            new SimpleAlert(Alert.AlertType.WARNING, I18n.get().autoSearchFailed()).showAndWait();
+            SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().autoSearchFailed());
         }
     }
 }
