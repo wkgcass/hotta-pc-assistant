@@ -67,7 +67,11 @@ public class Utils {
     }
 
     public static boolean modifyHostsFile(Function<List<String>, List<String>> op) {
-        var f = new File("C:\\Windows\\System32\\Drivers\\etc\\hosts");
+        var winDir = System.getenv("windir");
+        if (winDir == null || winDir.isBlank()) {
+            winDir = "C:\\Windows";
+        }
+        var f = new File(winDir + "\\System32\\Drivers\\etc\\hosts");
         if (!f.exists() || !f.isFile()) {
             Logger.error(f.getAbsolutePath() + " does not exist or is not a file");
             return false;
