@@ -5,6 +5,7 @@ import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.util.Logger;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
@@ -21,7 +22,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
         var shiftColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameShift(), kb -> kb);
         var keyColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameKey(), kb -> kb);
 
-        enableColumn.setMaxWidth(60);
+        enableColumn.setMaxWidth(30);
         enableColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setSelected(kb.enabled);
@@ -32,7 +33,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             return checkBox;
         });
         macroColumn.setMinWidth(100);
-        ctrlColumn.setMaxWidth(60);
+        ctrlColumn.setMaxWidth(30);
         ctrlColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setSelected(kb.ctrl);
@@ -42,7 +43,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             });
             return checkBox;
         });
-        altColumn.setMaxWidth(60);
+        altColumn.setMaxWidth(30);
         altColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setSelected(kb.alt);
@@ -52,7 +53,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             });
             return checkBox;
         });
-        shiftColumn.setMaxWidth(60);
+        shiftColumn.setMaxWidth(30);
         shiftColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setSelected(kb.shift);
@@ -63,6 +64,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             return checkBox;
         });
         keyColumn.setMinWidth(100);
+        keyColumn.setAlignment(Pos.CENTER);
         keyColumn.setNodeBuilder(kb -> {
             var label = new Label();
             label.setCursor(Cursor.HAND);
