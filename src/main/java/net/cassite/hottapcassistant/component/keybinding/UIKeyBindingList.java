@@ -2,180 +2,111 @@ package net.cassite.hottapcassistant.component.keybinding;
 
 import io.vproxy.vfx.component.keychooser.KeyChooser;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.table.VTableColumn;
+import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.util.Logger;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import net.cassite.hottapcassistant.entity.KeyBinding;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.ui.Pointer;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class UIKeyBindingList extends TableView<KeyBinding> {
+public class UIKeyBindingList extends VTableView<KeyBinding> {
     public UIKeyBindingList(Runnable modifiedCallback) {
-        setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        var actionColumn = new VTableColumn<KeyBinding, String>(I18n.get().hotkeyColumnNameAction(),
+            kb -> I18n.get().inputActionMapping(kb.action));
+        var ctrlColumn = new VTableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameCtrl(), kb -> kb);
+        var altColumn = new VTableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameAlt(), kb -> kb);
+        var shiftColumn = new VTableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameShift(), kb -> kb);
+        var keyColumn = new VTableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameKey(), kb -> kb);
+        var scaleColumn = new VTableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameScale(), kb -> kb);
 
-        ScrollBar hScrollBar = (ScrollBar) lookup(".scroll-bar:horizontal");
-        if (hScrollBar != null) {
-            hScrollBar.setVisible(false);
-        }
-
-        var actionColumn = new TableColumn<KeyBinding, String>(I18n.get().hotkeyColumnNameAction());
-        var ctrlColumn = new TableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameCtrl());
-        var altColumn = new TableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameAlt());
-        var shiftColumn = new TableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameShift());
-        var keyColumn = new TableColumn<KeyBinding, Pointer<KeyBinding>>(I18n.get().hotkeyColumnNameKey());
-        var scaleColumn = new TableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameScale());
-
-        actionColumn.setSortable(false);
         actionColumn.setMinWidth(100);
-        actionColumn.setCellValueFactory(f -> new SimpleStringProperty(I18n.get().inputActionMapping(f.getValue().action)));
-        ctrlColumn.setSortable(false);
-        ctrlColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>(f.getValue()));
-        ctrlColumn.setCellFactory(param -> {
-            var cell = new TableCell<KeyBinding, KeyBinding>();
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    return;
-                }
-                var row = cell.getTableRow().getItem();
-                var checkBox = new CheckBox();
-                cell.setGraphic(checkBox);
-                checkBox.setDisable(now.isAxis);
-                checkBox.setSelected(now.ctrl);
-                checkBox.setOnAction(e -> {
-                    row.ctrl = checkBox.isSelected();
-                    modifiedCallback.run();
-                });
+        actionColumn.setComparator(String::compareTo);
+        ctrlColumn.setMaxWidth(80);
+        ctrlColumn.setAlignment(Pos.CENTER);
+        ctrlColumn.setNodeBuilder(kb -> {
+            var checkBox = new CheckBox();
+            checkBox.setDisable(kb.isAxis);
+            checkBox.setSelected(kb.ctrl);
+            checkBox.setOnAction(e -> {
+                kb.ctrl = checkBox.isSelected();
+                modifiedCallback.run();
             });
-            return cell;
+            return checkBox;
         });
-        altColumn.setSortable(false);
-        altColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>(f.getValue()));
-        altColumn.setCellFactory(param -> {
-            var cell = new TableCell<KeyBinding, KeyBinding>();
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    return;
-                }
-                var row = cell.getTableRow().getItem();
-                var checkBox = new CheckBox();
-                cell.setGraphic(checkBox);
-                checkBox.setDisable(now.isAxis);
-                checkBox.setSelected(now.alt);
-                checkBox.setOnAction(e -> {
-                    row.alt = checkBox.isSelected();
-                    modifiedCallback.run();
-                });
+        altColumn.setMaxWidth(80);
+        altColumn.setAlignment(Pos.CENTER);
+        altColumn.setNodeBuilder(kb -> {
+            var checkBox = new CheckBox();
+            checkBox.setDisable(kb.isAxis);
+            checkBox.setSelected(kb.alt);
+            checkBox.setOnAction(e -> {
+                kb.alt = checkBox.isSelected();
+                modifiedCallback.run();
             });
-            return cell;
+            return checkBox;
         });
-        shiftColumn.setSortable(false);
-        shiftColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>(f.getValue()));
-        shiftColumn.setCellFactory(param -> {
-            var cell = new TableCell<KeyBinding, KeyBinding>();
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    return;
-                }
-                var row = cell.getTableRow().getItem();
-                var checkBox = new CheckBox();
-                cell.setGraphic(checkBox);
-                checkBox.setDisable(now.isAxis);
-                checkBox.setSelected(now.shift);
-                checkBox.setOnAction(e -> {
-                    row.shift = checkBox.isSelected();
-                    modifiedCallback.run();
-                });
+        shiftColumn.setMaxWidth(80);
+        shiftColumn.setAlignment(Pos.CENTER);
+        shiftColumn.setNodeBuilder(kb -> {
+            var checkBox = new CheckBox();
+            checkBox.setDisable(kb.isAxis);
+            checkBox.setSelected(kb.shift);
+            checkBox.setOnAction(e -> {
+                kb.shift = checkBox.isSelected();
+                modifiedCallback.run();
             });
-            return cell;
+            return checkBox;
         });
-        keyColumn.setSortable(false);
         keyColumn.setMinWidth(100);
-        keyColumn.setCellValueFactory(f -> new SimpleObjectProperty<>(Pointer.of(f.getValue())));
-        keyColumn.setCellFactory(param -> {
-            var cell = new TableCell<KeyBinding, Pointer<KeyBinding>>();
-            cell.setAlignment(Pos.CENTER);
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setText(null);
-                    cell.setCursor(Cursor.DEFAULT);
-                    return;
-                }
-                cell.setCursor(Cursor.HAND);
-                if (now.item.key == null) {
-                    cell.setText("");
-                } else {
-                    cell.setText(now.item.key.toString());
-                }
-            });
+        keyColumn.setAlignment(Pos.CENTER);
+        keyColumn.setNodeBuilder(kb -> {
+            var cell = new Label();
+            cell.setCursor(Cursor.HAND);
+            cell.setText(kb.key.toString());
             cell.setOnMouseClicked(e -> {
-                if (cell.getTableRow().getItem() == null) {
-                    return;
-                }
                 var chooser = new KeyChooser();
                 var keyOpt = chooser.choose();
                 if (keyOpt.isPresent()) {
                     var key = keyOpt.get();
-                    var o = cell.getTableRow().getItem();
                     if (!key.isValid()) {
                         Logger.debug("unsupported key: " + key.key);
                         SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().unsupportedKeyErrorMessage());
                     } else {
-                        o.key = key;
-                        cell.setItem(Pointer.of(o));
+                        kb.key = key;
+                        cell.setText(key.toString());
                         modifiedCallback.run();
                     }
                 }
             });
             return cell;
         });
-        scaleColumn.setSortable(false);
         scaleColumn.setMinWidth(100);
-        scaleColumn.setCellValueFactory(f -> new SimpleObjectProperty<>(f.getValue()));
-        scaleColumn.setCellFactory(param -> {
-            var cell = new TableCell<KeyBinding, KeyBinding>();
-            cell.itemProperty().addListener((ob, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    cell.setText(null);
+        scaleColumn.setNodeBuilder(kb -> {
+            if (!kb.isAxis) {
+                return new Label();
+            }
+            var inputBox = new TextField();
+            inputBox.setText(Utils.floatValueFormat.format(kb.scale));
+            inputBox.setOnAction(e -> {
+                var v = inputBox.getText().trim();
+                double dv;
+                try {
+                    dv = Double.parseDouble(v);
+                } catch (NumberFormatException ex) {
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().notFloatingPointValue());
+                    inputBox.setText(Utils.floatValueFormat.format(kb.scale));
                     return;
                 }
-                var row = cell.getTableRow().getItem();
-                if (!cell.getTableRow().getItem().isAxis) {
-                    cell.setGraphic(null);
-                    cell.setText("");
-                    return;
-                }
-                var inputBox = new TextField();
-                cell.setGraphic(inputBox);
-                cell.setText(null);
-                if (!now.isAxis) {
-                    inputBox.setText("");
-                } else {
-                    inputBox.setText(Utils.floatValueFormat.format(now.scale));
-                }
-                inputBox.setOnAction(e -> {
-                    var v = inputBox.getText().trim();
-                    double dv;
-                    try {
-                        dv = Double.parseDouble(v);
-                    } catch (NumberFormatException ex) {
-                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().notFloatingPointValue());
-                        inputBox.setText(Utils.floatValueFormat.format(row.scale));
-                        return;
-                    }
-                    row.scale = dv;
-                    modifiedCallback.run();
-                });
+                kb.scale = dv;
+                modifiedCallback.run();
             });
-            return cell;
+            return inputBox;
         });
 
         //noinspection unchecked

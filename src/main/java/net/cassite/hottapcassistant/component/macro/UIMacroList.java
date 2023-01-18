@@ -2,154 +2,97 @@ package net.cassite.hottapcassistant.component.macro;
 
 import io.vproxy.vfx.component.keychooser.KeyChooser;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.table.VTableColumn;
+import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.util.Logger;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import net.cassite.hottapcassistant.entity.AssistantMacroData;
 import net.cassite.hottapcassistant.i18n.I18n;
-import net.cassite.hottapcassistant.ui.Pointer;
 
-public class UIMacroList extends TableView<AssistantMacroData> {
+public class UIMacroList extends VTableView<AssistantMacroData> {
     public UIMacroList(Runnable modifiedCallback) {
-        setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        var enableColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().macroColumnNameEnable(), kb -> kb);
+        var macroColumn = new VTableColumn<AssistantMacroData, String>(I18n.get().macroColumnNameName(), kb -> kb.name);
+        var ctrlColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameCtrl(), kb -> kb);
+        var altColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameAlt(), kb -> kb);
+        var shiftColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameShift(), kb -> kb);
+        var keyColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameKey(), kb -> kb);
 
-        ScrollBar hScrollBar = (ScrollBar) lookup(".scroll-bar:horizontal");
-        if (hScrollBar != null) {
-            hScrollBar.setVisible(false);
-        }
-
-        var enableColumn = new TableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().macroColumnNameEnable());
-        var macroColumn = new TableColumn<AssistantMacroData, String>(I18n.get().macroColumnNameName());
-        var ctrlColumn = new TableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameCtrl());
-        var altColumn = new TableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameAlt());
-        var shiftColumn = new TableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameShift());
-        var keyColumn = new TableColumn<AssistantMacroData, Pointer<AssistantMacroData>>(I18n.get().hotkeyColumnNameKey());
-
-        enableColumn.setSortable(false);
-        enableColumn.setCellValueFactory(f -> new SimpleObjectProperty<>(f.getValue()));
-        enableColumn.setCellFactory(param -> {
-            var cell = new TableCell<AssistantMacroData, AssistantMacroData>();
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    return;
-                }
-                var row = cell.getTableRow().getItem();
-                var checkBox = new CheckBox();
-                cell.setGraphic(checkBox);
-                checkBox.setSelected(now.enabled);
-                checkBox.setOnAction(e -> {
-                    row.enabled = checkBox.isSelected();
-                    modifiedCallback.run();
-                });
+        enableColumn.setMaxWidth(80);
+        enableColumn.setAlignment(Pos.CENTER_RIGHT);
+        enableColumn.setNodeBuilder(kb -> {
+            var checkBox = new CheckBox();
+            checkBox.setSelected(kb.enabled);
+            checkBox.setOnAction(e -> {
+                kb.enabled = checkBox.isSelected();
+                modifiedCallback.run();
             });
-            return cell;
+            return checkBox;
         });
-        macroColumn.setSortable(false);
         macroColumn.setMinWidth(100);
-        macroColumn.setCellValueFactory(f -> new SimpleStringProperty(f.getValue().name));
-        ctrlColumn.setSortable(false);
-        ctrlColumn.setCellValueFactory(f -> new SimpleObjectProperty<>(f.getValue()));
-        ctrlColumn.setCellFactory(param -> {
-            var cell = new TableCell<AssistantMacroData, AssistantMacroData>();
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    return;
-                }
-                var row = cell.getTableRow().getItem();
-                var checkBox = new CheckBox();
-                cell.setGraphic(checkBox);
-                checkBox.setSelected(now.ctrl);
-                checkBox.setOnAction(e -> {
-                    row.ctrl = checkBox.isSelected();
-                    modifiedCallback.run();
-                });
+        ctrlColumn.setMaxWidth(80);
+        ctrlColumn.setAlignment(Pos.CENTER);
+        ctrlColumn.setNodeBuilder(kb -> {
+            var checkBox = new CheckBox();
+            checkBox.setSelected(kb.ctrl);
+            checkBox.setOnAction(e -> {
+                kb.ctrl = checkBox.isSelected();
+                modifiedCallback.run();
             });
-            return cell;
+            return checkBox;
         });
-        altColumn.setSortable(false);
-        altColumn.setCellValueFactory(f -> new SimpleObjectProperty<>(f.getValue()));
-        altColumn.setCellFactory(param -> {
-            var cell = new TableCell<AssistantMacroData, AssistantMacroData>();
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    return;
-                }
-                var row = cell.getTableRow().getItem();
-                var checkBox = new CheckBox();
-                cell.setGraphic(checkBox);
-                checkBox.setSelected(now.alt);
-                checkBox.setOnAction(e -> {
-                    row.alt = checkBox.isSelected();
-                    modifiedCallback.run();
-                });
+        altColumn.setMaxWidth(80);
+        altColumn.setAlignment(Pos.CENTER);
+        altColumn.setNodeBuilder(kb -> {
+            var checkBox = new CheckBox();
+            checkBox.setSelected(kb.alt);
+            checkBox.setOnAction(e -> {
+                kb.alt = checkBox.isSelected();
+                modifiedCallback.run();
             });
-            return cell;
+            return checkBox;
         });
-        shiftColumn.setSortable(false);
-        shiftColumn.setCellValueFactory(f -> new SimpleObjectProperty<>(f.getValue()));
-        shiftColumn.setCellFactory(param -> {
-            var cell = new TableCell<AssistantMacroData, AssistantMacroData>();
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    return;
-                }
-                var row = cell.getTableRow().getItem();
-                var checkBox = new CheckBox();
-                cell.setGraphic(checkBox);
-                checkBox.setSelected(now.shift);
-                checkBox.setOnAction(e -> {
-                    row.shift = checkBox.isSelected();
-                    modifiedCallback.run();
-                });
+        shiftColumn.setMaxWidth(80);
+        shiftColumn.setAlignment(Pos.CENTER);
+        shiftColumn.setNodeBuilder(kb -> {
+            var checkBox = new CheckBox();
+            checkBox.setSelected(kb.shift);
+            checkBox.setOnAction(e -> {
+                kb.shift = checkBox.isSelected();
+                modifiedCallback.run();
             });
-            return cell;
+            return checkBox;
         });
-        keyColumn.setSortable(false);
         keyColumn.setMinWidth(100);
-        keyColumn.setCellValueFactory(f -> new SimpleObjectProperty<>(Pointer.of(f.getValue())));
-        keyColumn.setCellFactory(param -> {
-            var cell = new TableCell<AssistantMacroData, Pointer<AssistantMacroData>>();
-            cell.setAlignment(Pos.CENTER);
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setText(null);
-                    cell.setCursor(Cursor.DEFAULT);
-                    return;
-                }
-                cell.setCursor(Cursor.HAND);
-                if (now.item.key == null) {
-                    cell.setText("");
-                } else {
-                    cell.setText(now.item.key.toString());
-                }
-            });
-            cell.setOnMouseClicked(e -> {
-                if (cell.getTableRow().getItem() == null) {
-                    return;
-                }
+        keyColumn.setAlignment(Pos.CENTER);
+        keyColumn.setNodeBuilder(kb -> {
+            var label = new Label();
+            label.setCursor(Cursor.HAND);
+            if (kb.key == null) {
+                label.setText("");
+            } else {
+                label.setText(kb.key.toString());
+            }
+            label.setOnMouseClicked(e -> {
                 var chooser = new KeyChooser();
                 var keyOpt = chooser.choose();
                 if (keyOpt.isPresent()) {
                     var key = keyOpt.get();
-                    var o = cell.getTableRow().getItem();
                     if (!key.isValid() || (key.key != null && key.key.java == null)) {
                         Logger.debug("unsupported key: " + key.key);
                         SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().unsupportedKeyErrorMessage());
                     } else {
-                        o.key = key;
-                        cell.setItem(Pointer.of(o));
+                        kb.key = key;
+                        label.setText(key.toString());
                         modifiedCallback.run();
                     }
                 }
             });
-            return cell;
+            return label;
         });
 
         //noinspection unchecked

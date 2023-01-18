@@ -16,7 +16,6 @@ import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.util.Logger;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -37,7 +36,6 @@ import net.cassite.hottapcassistant.entity.KeyBinding;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.RobotWrapper;
-import net.cassite.hottapcassistant.util.StyleUtils;
 import net.cassite.hottapcassistant.util.Utils;
 import org.controlsfx.control.ToggleSwitch;
 
@@ -125,8 +123,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
             flushConfig();
         });
 
-        StyleUtils.setNoFocusBlur(ls);
-        setCenter(ls);
+        setCenter(ls.getNode());
 
         var reloadMacro = new Button(I18n.get().reloadMacro()) {{
             FontManager.get().setFont(this);
@@ -372,7 +369,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
             macro.macros = new ArrayList<>();
         }
         rememberMousePositionSwitchButton.setSelected(macro.rememberMousePosition);
-        ls.setItems(FXCollections.observableList(macro.macros));
+        ls.setItems(macro.macros);
         return true;
     }
 

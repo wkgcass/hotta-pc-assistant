@@ -1,6 +1,5 @@
 package net.cassite.hottapcassistant.component.setting;
 
-import javafx.scene.Node;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.function.Function;
@@ -10,7 +9,6 @@ public class Setting {
     public SettingType type;
     public Object value;
 
-    public Node node;
     public String source;
     public int lineIndex = -1;
     public Function<Object, Boolean> additionalCheck = null;

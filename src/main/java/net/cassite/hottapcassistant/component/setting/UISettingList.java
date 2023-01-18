@@ -1,44 +1,30 @@
 package net.cassite.hottapcassistant.component.setting;
 
 import io.vproxy.vfx.ui.alert.SimpleAlert;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleStringProperty;
+import io.vproxy.vfx.ui.table.VTableColumn;
+import io.vproxy.vfx.ui.table.VTableView;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import net.cassite.hottapcassistant.i18n.I18n;
 
 import java.util.Objects;
 
-public class UISettingList extends TableView<Setting> {
+public class UISettingList extends VTableView<Setting> {
     private final Runnable modifiedCallback;
 
     public UISettingList(Runnable modifiedCallback) {
         this.modifiedCallback = modifiedCallback;
-        setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        ScrollBar hScrollBar = (ScrollBar) lookup(".scroll-bar:horizontal");
-        if (hScrollBar != null) {
-            hScrollBar.setVisible(false);
-        }
-        var nameColumn = new TableColumn<Setting, String>(I18n.get().settingColumnNameName());
-        var valueColumn = new TableColumn<Setting, Setting>(I18n.get().settingColumnNameValue());
+        var nameColumn = new VTableColumn<Setting, String>(I18n.get().settingColumnNameName(),
+            s -> I18n.get().configNameMapping(s.name));
+        var valueColumn = new VTableColumn<Setting, Setting>(I18n.get().settingColumnNameValue(), s -> s);
 
-        nameColumn.setSortable(false);
-        nameColumn.setCellValueFactory(f -> new SimpleStringProperty(I18n.get().configNameMapping(f.getValue().name)));
-        valueColumn.setSortable(false);
-        valueColumn.setCellValueFactory(f -> new ReadOnlyObjectWrapper<>(f.getValue()));
-        valueColumn.setCellFactory(param -> {
-            var cell = new TableCell<Setting, Setting>();
-            cell.itemProperty().addListener((o, old, now) -> {
-                if (cell.getTableRow() == null || cell.getTableRow().getItem() == null || now == null) {
-                    cell.setGraphic(null);
-                    return;
-                }
-                now.node = generateNode(now);
-                cell.setGraphic(now.node);
-            });
-            return cell;
-        });
+        nameColumn.setComparator(String::compareTo);
+        nameColumn.setMaxWidth(250);
+        valueColumn.setNodeBuilder(this::generateNode);
 
         //noinspection unchecked
         getColumns().addAll(nameColumn, valueColumn);
