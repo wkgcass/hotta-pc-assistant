@@ -230,10 +230,11 @@ public class FishRobot {
             captureXOffset + config.posBarRect.x,
             captureXOffset + config.posBarRect.y,
             (int) config.posBarRect.w,
-            (int) config.posBarRect.h
+            (int) config.posBarRect.h,
+            true
         ));
         var bar = findBar(img);
-        displayPosBar(bar, -1);
+        displayPosBar(bar, -1, 1);
         int midPos = midOf(bar);
         if (midPos < 0) {
             return;
@@ -241,12 +242,12 @@ public class FishRobot {
         setStatus(Status.MANAGING_POS);
     }
 
-    private void displayPosBar(int[] bar, int pos) {
+    private void displayPosBar(int[] bar, int pos, double scale) {
         FXUtils.runOnFX(() -> {
             if (bar != null) {
-                display.updatePosBar(pos, bar[0], bar[1], screenScaleX);
+                display.updatePosBar(pos, bar[0], bar[1], scale);
             } else {
-                display.updatePosBar(pos, -1, -1, screenScaleX);
+                display.updatePosBar(pos, -1, -1, scale);
             }
         });
     }
@@ -348,12 +349,21 @@ public class FishRobot {
         var imgW = (int) img.getWidth();
         var imgH = (int) img.getHeight();
         var reader = img.getPixelReader();
-        for (int x = 0; x < imgW; ++x) {
-            for (int y = 0; y < imgH; ++y) {
-                var color = reader.getColor(x, y);
-                if (MiscUtils.almostIn(color, PositionBarColors)) {
-                    if (checkPos(x, y, img)) {
-                        return x;
+
+        var midX = imgW / 2;
+        var midY = imgH / 2;
+        for (int dY = 0; dY < midY; ++dY) {
+            for (int yyy = 0; yyy < 2; ++yyy) {
+                var y = yyy == 0 ? midY - dY : midY + dY;
+                for (int dX = 0; dX < midX; ++dX) {
+                    for (int xxx = 0; xxx < 2; ++xxx) {
+                        int x = xxx == 0 ? midX - dX : midX + dX;
+                        var color = reader.getColor(x, y);
+                        if (MiscUtils.almostIn(color, PositionBarColors)) {
+                            if (checkPos(x, y, img)) {
+                                return x;
+                            }
+                        }
                     }
                 }
             }
@@ -362,12 +372,16 @@ public class FishRobot {
     }
 
     private boolean checkPos(final int xx, final int yy, Image img) {
-        final int height = 2;
+        final int checkTotalHeight = 2;
+        final int hLower = checkTotalHeight / 2;
+        final int hHigher = checkTotalHeight - hLower;
 
         var imgH = (int) img.getHeight();
-        if (yy + height >= imgH) return false;
+        if (yy + hHigher >= imgH) return false;
+        if (yy - hLower < 0) return false;
         var reader = img.getPixelReader();
-        for (int y = 1; y < height; ++y) {
+        for (int y = -hLower; y < hHigher; ++y) {
+            if (y == 0) continue;
             var color = reader.getColor(xx, yy + y);
             if (!MiscUtils.almostIn(color, PositionBarColors)) {
                 return false;
@@ -383,7 +397,8 @@ public class FishRobot {
             captureXOffset + config.fishStaminaRect.x,
             captureXOffset + config.fishStaminaRect.y,
             (int) config.fishStaminaRect.w,
-            (int) config.fishStaminaRect.h
+            (int) config.fishStaminaRect.h,
+            true
         ));
 
         double p;
@@ -414,13 +429,15 @@ public class FishRobot {
             captureXOffset + config.posBarRect.x,
             captureXOffset + config.posBarRect.y,
             (int) config.posBarRect.w,
-            (int) config.posBarRect.h
+            (int) config.posBarRect.h,
+            true
         ));
 
         var posbar = findBar(img);
         int bar = midOf(posbar);
         int pos = findPos(img);
-        displayPosBar(posbar, pos);
+        var noScale = Math.abs((int) config.posBarRect.w - img.getWidth()) < 0.01;
+        displayPosBar(posbar, pos, noScale ? 1 : screenScaleX);
         if (bar == -1) {
             return;
         }
