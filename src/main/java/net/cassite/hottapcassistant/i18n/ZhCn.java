@@ -7,21 +7,6 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String levelInformation() {
-        return "信息";
-    }
-
-    @Override
-    public String levelError() {
-        return "错误";
-    }
-
-    @Override
-    public String levelWarning() {
-        return "警告";
-    }
-
-    @Override
     public String loadingFontFailed(String name) {
         return "加载" + name + "字体失败";
     }
@@ -164,16 +149,6 @@ public class ZhCn extends I18n {
     @Override
     public String hotkeyColumnNameScale() {
         return "速率";
-    }
-
-    @Override
-    public String leftMouseButton() {
-        return "鼠标左键";
-    }
-
-    @Override
-    public String rightMouseButton() {
-        return "鼠标右键";
     }
 
     @Override
@@ -1401,12 +1376,12 @@ public class ZhCn extends I18n {
 
     @Override
     public String keyChooserLeftMouseButton() {
-        return "左键";
+        return "鼠标左键";
     }
 
     @Override
     public String keyChooserRightMouseButton() {
-        return "右键";
+        return "鼠标右键";
     }
 
     @Override

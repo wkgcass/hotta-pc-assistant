@@ -19,12 +19,6 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     abstract public String id();
 
-    abstract public String levelInformation();
-
-    abstract public String levelError();
-
-    abstract public String levelWarning();
-
     abstract public String loadingFontFailed(String name);
 
     abstract public String titleMainScreen();
@@ -92,10 +86,6 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     abstract public String hotkeyColumnNameKey();
 
     abstract public String hotkeyColumnNameScale();
-
-    abstract public String leftMouseButton();
-
-    abstract public String rightMouseButton();
 
     abstract public String keyChooserDesc();
 

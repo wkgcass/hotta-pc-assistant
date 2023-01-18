@@ -18,7 +18,8 @@ public class UISettingList extends VTableView<Setting> {
     public UISettingList(Runnable modifiedCallback) {
         this.modifiedCallback = modifiedCallback;
 
-        var nameColumn = new VTableColumn<Setting, String>(I18n.get().settingColumnNameName(), s -> s.name);
+        var nameColumn = new VTableColumn<Setting, String>(I18n.get().settingColumnNameName(),
+            s -> I18n.get().configNameMapping(s.name));
         var valueColumn = new VTableColumn<Setting, Setting>(I18n.get().settingColumnNameValue(), s -> s);
 
         nameColumn.setComparator(String::compareTo);

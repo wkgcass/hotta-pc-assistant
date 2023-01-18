@@ -17,7 +17,8 @@ import net.cassite.hottapcassistant.util.Utils;
 
 public class UIKeyBindingList extends VTableView<KeyBinding> {
     public UIKeyBindingList(Runnable modifiedCallback) {
-        var actionColumn = new VTableColumn<KeyBinding, String>(I18n.get().hotkeyColumnNameAction(), kb -> kb.action);
+        var actionColumn = new VTableColumn<KeyBinding, String>(I18n.get().hotkeyColumnNameAction(),
+            kb -> I18n.get().inputActionMapping(kb.action));
         var ctrlColumn = new VTableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameCtrl(), kb -> kb);
         var altColumn = new VTableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameAlt(), kb -> kb);
         var shiftColumn = new VTableColumn<KeyBinding, KeyBinding>(I18n.get().hotkeyColumnNameShift(), kb -> kb);
@@ -26,6 +27,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
 
         actionColumn.setMinWidth(100);
         actionColumn.setComparator(String::compareTo);
+        ctrlColumn.setMaxWidth(60);
         ctrlColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setDisable(kb.isAxis);
@@ -36,6 +38,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
             });
             return checkBox;
         });
+        altColumn.setMaxWidth(60);
         altColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setDisable(kb.isAxis);
@@ -46,6 +49,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
             });
             return checkBox;
         });
+        shiftColumn.setMaxWidth(60);
         shiftColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setDisable(kb.isAxis);
