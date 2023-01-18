@@ -14,7 +14,7 @@ public class UIServerList extends VTableView<TofServer> {
 
         checkColumn.setMinWidth(60);
         checkColumn.setPrefWidth(60);
-        checkColumn.setMaxWidth(50);
+        checkColumn.setMaxWidth(80);
         checkColumn.setNodeBuilder(s -> {
             var checkbox = new CheckBox();
             checkbox.setSelected(s.selected);

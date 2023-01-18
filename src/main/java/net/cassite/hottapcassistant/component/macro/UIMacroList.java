@@ -22,7 +22,8 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
         var shiftColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameShift(), kb -> kb);
         var keyColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameKey(), kb -> kb);
 
-        enableColumn.setMaxWidth(50);
+        enableColumn.setMaxWidth(80);
+        enableColumn.setAlignment(Pos.CENTER_RIGHT);
         enableColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setSelected(kb.enabled);
@@ -33,7 +34,8 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             return checkBox;
         });
         macroColumn.setMinWidth(100);
-        ctrlColumn.setMaxWidth(50);
+        ctrlColumn.setMaxWidth(80);
+        ctrlColumn.setAlignment(Pos.CENTER);
         ctrlColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setSelected(kb.ctrl);
@@ -43,7 +45,8 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             });
             return checkBox;
         });
-        altColumn.setMaxWidth(50);
+        altColumn.setMaxWidth(80);
+        altColumn.setAlignment(Pos.CENTER);
         altColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setSelected(kb.alt);
@@ -53,7 +56,8 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             });
             return checkBox;
         });
-        shiftColumn.setMaxWidth(50);
+        shiftColumn.setMaxWidth(80);
+        shiftColumn.setAlignment(Pos.CENTER);
         shiftColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setSelected(kb.shift);
