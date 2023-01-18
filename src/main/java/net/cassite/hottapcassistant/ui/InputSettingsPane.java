@@ -9,7 +9,6 @@ import net.cassite.hottapcassistant.component.keybinding.UIKeyBindingList;
 import net.cassite.hottapcassistant.config.InputConfig;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.GlobalValues;
-import net.cassite.hottapcassistant.util.StyleUtils;
 
 import java.awt.*;
 import java.io.File;
@@ -21,20 +20,19 @@ public class InputSettingsPane extends WithConfirmPane {
 
     public InputSettingsPane() {
         ls = new UIKeyBindingList(this::setModified);
-        StyleUtils.setNoFocusBlur(ls);
         widthProperty().addListener((ob, old, now) -> {
             if (now == null) {
                 return;
             }
-            ls.setPrefWidth(now.doubleValue() - 4);
+            ls.getNode().setPrefWidth(now.doubleValue() - 4);
         });
         heightProperty().addListener((ob, old, now) -> {
             if (now == null) {
                 return;
             }
-            ls.setPrefHeight(now.doubleValue() - 50);
+            ls.getNode().setPrefHeight(now.doubleValue() - 50);
         });
-        content.getChildren().add(ls);
+        content.getChildren().add(ls.getNode());
 
         var openInputIni = new Button(I18n.get().openInputIni()) {{
             FontManager.get().setFont(this);

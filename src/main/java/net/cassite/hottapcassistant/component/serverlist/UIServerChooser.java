@@ -24,8 +24,8 @@ public class UIServerChooser extends Dialog<List<TofServer>> {
         var vbox = new VBox();
         var ls = new UIServerList();
         ls.setItems(FXCollections.observableList(servers));
-        ls.setMouseTransparent(true);
-        ls.setDisable(true);
+        ls.getNode().setMouseTransparent(true);
+        ls.getNode().setDisable(true);
         var checkbox = new CheckBox(I18n.get().enableHostsFileModificationForGlobalServer()) {{
             FontManager.get().setFont(this);
         }};
@@ -38,11 +38,11 @@ public class UIServerChooser extends Dialog<List<TofServer>> {
         }
         checkbox.selectedProperty().addListener((ob, old, now) -> {
             if (now == null) return;
-            ls.setMouseTransparent(!now);
-            ls.setDisable(!now);
+            ls.getNode().setMouseTransparent(!now);
+            ls.getNode().setDisable(!now);
         });
         checkbox.setSelected(checkboxSelected);
-        vbox.getChildren().addAll(checkbox, new VPadding(5), ls);
+        vbox.getChildren().addAll(checkbox, new VPadding(5), ls.getNode());
 
         setResultConverter(t -> {
             if (t != ButtonType.OK) return null;

@@ -37,7 +37,6 @@ import net.cassite.hottapcassistant.entity.KeyBinding;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.RobotWrapper;
-import net.cassite.hottapcassistant.util.StyleUtils;
 import net.cassite.hottapcassistant.util.Utils;
 import org.controlsfx.control.ToggleSwitch;
 
@@ -125,8 +124,7 @@ public class MacroPane extends BorderPane implements NativeKeyListener, NativeMo
             flushConfig();
         });
 
-        StyleUtils.setNoFocusBlur(ls);
-        setCenter(ls);
+        setCenter(ls.getNode());
 
         var reloadMacro = new Button(I18n.get().reloadMacro()) {{
             FontManager.get().setFont(this);
