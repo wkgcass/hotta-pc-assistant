@@ -5,12 +5,12 @@ import io.vproxy.vfx.manager.image.ImageManager;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.table.VTableColumn;
+import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.util.IOUtils;
 import io.vproxy.vfx.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.animation.AnimationTimer;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -80,8 +80,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         static final Path recordFilePath = Path.of(AssistantConfig.assistantDirPath.toString(), "WorldBossTimer.vjson.txt");
         static final File recordFile = recordFilePath.toFile();
 
-        private final TableView<BossInfo> table = new TableView<>();
-        private final TableView<AccountInfo> accounts = new TableView<>();
+        private final VTableView<BossInfo> table = new VTableView<>();
+        private final VTableView<AccountInfo> accounts = new VTableView<>();
         private final AnimationTimer etaTimer;
 
         private final CheckBox includeBossTimerCheckBox;
@@ -92,11 +92,6 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         private final TextArea nextBossInfoTemplate;
 
         S() throws Exception {
-            ScrollBar hScrollBar = (ScrollBar) table.lookup(".scroll-bar:horizontal");
-            if (hScrollBar != null) {
-                hScrollBar.setVisible(false);
-            }
-
             initTableStructure();
             initAccountsStructure();
             etaTimer = new AnimationTimer() {
@@ -184,25 +179,24 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
             addBtn.setOnAction(e -> new AddStage(table, this::save).showAndWait());
             editBtn.setOnAction(e -> {
-                var selected = table.getSelectionModel().getSelectedItem();
+                var selected = table.getSelectedItem();
                 if (selected == null) {
                     return;
                 }
                 new AddStage(table, selected, this::save).showAndWait();
             });
             spawnBtn.setOnAction(e -> {
-                var selected = table.getSelectionModel().getSelectedItem();
+                var selected = table.getSelectedItem();
                 if (selected == null) {
                     return;
                 }
                 table.getItems().remove(selected);
                 selected.lastKnownKillTs = System.currentTimeMillis();
                 table.getItems().add(selected);
-                table.refresh();
                 save();
             });
             delBtn.setOnAction(e -> {
-                var selected = table.getSelectionModel().getSelectedItem();
+                var selected = table.getSelectedItem();
                 if (selected == null) {
                     return;
                 }
@@ -269,25 +263,24 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
             accountAddBtn.setOnAction(e -> new AddAccountStage(accounts, this::save).showAndWait());
             accountEditBtn.setOnAction(e -> {
-                var selected = accounts.getSelectionModel().getSelectedItem();
+                var selected = accounts.getSelectedItem();
                 if (selected == null) {
                     return;
                 }
                 new AddAccountStage(accounts, selected, this::save).showAndWait();
             });
             accountSwitchLineBtn.setOnAction(e -> {
-                var selected = accounts.getSelectionModel().getSelectedItem();
+                var selected = accounts.getSelectedItem();
                 if (selected == null) {
                     return;
                 }
                 accounts.getItems().remove(selected);
                 selected.lastSwitchLineTs = System.currentTimeMillis();
                 accounts.getItems().add(selected);
-                accounts.refresh();
                 save();
             });
             accountDelBtn.setOnAction(e -> {
-                var selected = accounts.getSelectionModel().getSelectedItem();
+                var selected = accounts.getSelectedItem();
                 if (selected == null) {
                     return;
                 }
@@ -322,7 +315,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     }},
                     new HBox(
                         new HPadding(10),
-                        table,
+                        table.getNode(),
                         new HPadding(10),
                         new VBox(
                             addBtn,
@@ -345,7 +338,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     }},
                     new HBox(
                         new HPadding(10),
-                        accounts,
+                        accounts.getNode(),
                         new HPadding(10),
                         new VBox(
                             accountAddBtn,
@@ -364,13 +357,13 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
             pane.widthProperty().addListener((ob, old, now) -> {
                 if (now == null) return;
-                table.setPrefWidth(now.doubleValue() - 10 - 120 - 10 - 10);
-                accounts.setPrefWidth(now.doubleValue() - 10 - 120 - 10 - 10);
+                table.getNode().setPrefWidth(now.doubleValue() - 10 - 120 - 10 - 10);
+                accounts.getNode().setPrefWidth(now.doubleValue() - 10 - 120 - 10 - 10);
             });
             pane.heightProperty().addListener((ob, old, now) -> {
                 if (now == null) return;
-                table.setPrefHeight(now.doubleValue() - 10 - 10 - 280);
-                accounts.setPrefHeight(200);
+                table.getNode().setPrefHeight(now.doubleValue() - 10 - 10 - 280);
+                accounts.getNode().setPrefHeight(200);
             });
 
             init();
@@ -381,40 +374,30 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
 
         private void initTableStructure() {
-            var lineColumn = new TableColumn<BossInfo, Integer>(I18n.get().worldBossTimerLineCol());
-            var nameColumn = new TableColumn<BossInfo, String>(I18n.get().worldBossTimerNameCol());
-            var lastKillColumn = new TableColumn<BossInfo, String>(I18n.get().worldBossTimerLastKillCol());
-            var etaColumn = new TableColumn<BossInfo, Long>(I18n.get().worldBossTimerETACol());
-            var commentColumn = new TableColumn<BossInfo, String>(I18n.get().worldBossTimerCommentCol());
+            var lineColumn = new VTableColumn<BossInfo, Integer>(I18n.get().worldBossTimerLineCol(), i -> i.line);
+            var nameColumn = new VTableColumn<BossInfo, String>(I18n.get().worldBossTimerNameCol(), i -> i.name);
+            var lastKillColumn = new VTableColumn<BossInfo, Long>(I18n.get().worldBossTimerLastKillCol(), i -> i.lastKnownKillTs);
+            var etaColumn = new VTableColumn<BossInfo, BossInfo>(I18n.get().worldBossTimerETACol(), i -> i);
+            var commentColumn = new VTableColumn<BossInfo, String>(I18n.get().worldBossTimerCommentCol(), i -> i.comment);
 
-            lineColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().line));
             lineColumn.setMinWidth(50);
-            nameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().name));
+            lineColumn.setComparator(Integer::compareTo);
             nameColumn.setMinWidth(120);
-            lastKillColumn.setCellValueFactory(param ->
-                new ReadOnlyObjectWrapper<>(
-                    formatter.format(ZonedDateTime.ofInstant(
-                        Instant.ofEpochMilli(param.getValue().lastKnownKillTs),
-                        ZoneId.systemDefault()))));
+            nameColumn.setComparator(String::compareTo);
             lastKillColumn.setMinWidth(200);
-            etaColumn.setCellFactory(param -> {
-                var cell = new TableCell<BossInfo, Long>();
-                cell.itemProperty().addListener((o, old, now) -> {
-                    if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
-                        cell.setGraphic(null);
-                        return;
-                    }
-                    cell.setGraphic(cell.getTableRow().getItem().timerLabel);
-                });
-                return cell;
-            });
-            etaColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
-                Instant.ofEpochMilli(param.getValue().lastKnownKillTs)
-                    .plusSeconds(param.getValue().spawnMinutes * 60L)
-                    .toEpochMilli()));
+            lastKillColumn.setTextBuilder(l -> formatter.format(ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(l),
+                ZoneId.systemDefault())));
+            lastKillColumn.setComparator(Long::compareTo);
+            lastKillColumn.setAlignment(Pos.CENTER);
+            etaColumn.setNodeBuilder(i -> i.timerLabel);
             etaColumn.setMinWidth(200);
-            commentColumn.setCellValueFactory(param ->
-                new ReadOnlyObjectWrapper<>(param.getValue().comment == null ? "" : param.getValue().comment));
+            etaColumn.setComparator((a, b) -> {
+                var aa = a.lastKnownKillTs + a.spawnMinutes * 60_000L;
+                var bb = b.lastKnownKillTs + b.spawnMinutes * 60_000L;
+                return Long.compare(aa, bb);
+            });
+            etaColumn.setAlignment(Pos.CENTER);
             commentColumn.setMinWidth(250);
 
             //noinspection unchecked
@@ -422,40 +405,30 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
 
         private void initAccountsStructure() {
-            var lastLineColumn = new TableColumn<AccountInfo, Integer>(I18n.get().worldBossTimerLastLineCol());
-            var nameColumn = new TableColumn<AccountInfo, String>(I18n.get().worldBossTimerAccountNameCol());
-            var lastSwitchLineTsColumn = new TableColumn<AccountInfo, String>(I18n.get().worldBossTimerLastSwitchLineTsCol());
-            var etaColumn = new TableColumn<AccountInfo, Long>(I18n.get().worldBossTimerAccountETACol());
-            var commentColumn = new TableColumn<AccountInfo, String>(I18n.get().worldBossTimerCommentCol());
+            var lastLineColumn = new VTableColumn<AccountInfo, Integer>(I18n.get().worldBossTimerLastLineCol(), i -> i.lastLine);
+            var nameColumn = new VTableColumn<AccountInfo, String>(I18n.get().worldBossTimerAccountNameCol(), i -> i.name);
+            var lastSwitchLineTsColumn = new VTableColumn<AccountInfo, Long>(I18n.get().worldBossTimerLastSwitchLineTsCol(), i -> i.lastSwitchLineTs);
+            var etaColumn = new VTableColumn<AccountInfo, AccountInfo>(I18n.get().worldBossTimerAccountETACol(), i -> i);
+            var commentColumn = new VTableColumn<AccountInfo, String>(I18n.get().worldBossTimerCommentCol(), i -> i.comment);
 
-            lastLineColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().lastLine));
             lastLineColumn.setMinWidth(50);
-            nameColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().name));
+            lastLineColumn.setComparator(Integer::compareTo);
             nameColumn.setMinWidth(120);
-            lastSwitchLineTsColumn.setCellValueFactory(param ->
-                new ReadOnlyObjectWrapper<>(
-                    formatter.format(ZonedDateTime.ofInstant(
-                        Instant.ofEpochMilli(param.getValue().lastSwitchLineTs),
-                        ZoneId.systemDefault()))));
+            nameColumn.setComparator(String::compareTo);
             lastSwitchLineTsColumn.setMinWidth(200);
-            etaColumn.setCellFactory(param -> {
-                var cell = new TableCell<AccountInfo, Long>();
-                cell.itemProperty().addListener((o, old, now) -> {
-                    if (cell.getTableRow() == null || cell.getTableRow().getItem() == null) {
-                        cell.setGraphic(null);
-                        return;
-                    }
-                    cell.setGraphic(cell.getTableRow().getItem().timerLabel);
-                });
-                return cell;
-            });
-            etaColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
-                Instant.ofEpochMilli(param.getValue().lastSwitchLineTs)
-                    .plusSeconds(param.getValue().switchLineCDMinutes * 60L)
-                    .toEpochMilli()));
+            lastSwitchLineTsColumn.setTextBuilder(l -> formatter.format(ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(l),
+                ZoneId.systemDefault())));
+            lastSwitchLineTsColumn.setComparator(Long::compareTo);
+            lastSwitchLineTsColumn.setAlignment(Pos.CENTER);
+            etaColumn.setNodeBuilder(i -> i.timerLabel);
             etaColumn.setMinWidth(200);
-            commentColumn.setCellValueFactory(param ->
-                new ReadOnlyObjectWrapper<>(param.getValue().comment == null ? "" : param.getValue().comment));
+            etaColumn.setComparator((a, b) -> {
+                var aa = a.lastSwitchLineTs + a.switchLineCDMinutes * 60_000L;
+                var bb = b.lastSwitchLineTs + b.switchLineCDMinutes * 60_000L;
+                return Long.compare(aa, bb);
+            });
+            etaColumn.setAlignment(Pos.CENTER);
             commentColumn.setMinWidth(250);
 
             //noinspection unchecked
@@ -465,7 +438,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         private String lastUsedTemplate = null;
 
         private void copyNextBossInfo() {
-            var selected = table.getSelectionModel().getSelectedItem();
+            var selected = table.getSelectedItem();
             if (selected == null) {
                 return;
             }
@@ -483,11 +456,16 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             if (mm.length() < 2) {
                 mm = "0" + mm;
             }
+            var ss = "" + spawnTime.getSecond();
+            if (ss.length() < 2) {
+                ss = "0" + ss;
+            }
             String mainScript = "{" +
                                 "var msg = ('')\n" +
                                 "var name = ('" + selected.name + "')\n" +
                                 "var hh = ('" + hh + "')\n" +
                                 "var mm = ('" + mm + "')\n" +
+                                "var ss = ('" + ss + "')\n" +
                                 "var line = " + selected.line + "\n" +
                                 "var remainingMillis = " + remainingMillis + "\n" +
                                 "#include \"template\"\n" +
@@ -596,7 +574,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     return;
                 }
             }
-            table.setItems(FXCollections.observableList(list));
+            table.setItems(list);
         }
 
         private void initAccounts(List<AccountInfo> list, boolean merge) {
@@ -611,7 +589,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
                 }
             }
-            accounts.setItems(FXCollections.observableList(list));
+            accounts.setItems(list);
         }
 
         private void initTemplate(String template) {
@@ -651,11 +629,11 @@ public class WorldBossTimer extends AbstractTool implements Tool {
     private static class AddStage extends Stage {
         private static String lastBossName = null;
 
-        AddStage(TableView<BossInfo> table, Runnable saveCB) {
+        AddStage(VTableView<BossInfo> table, Runnable saveCB) {
             this(table, null, 0, null, 0, 0, null, saveCB);
         }
 
-        AddStage(TableView<BossInfo> table,
+        AddStage(VTableView<BossInfo> table,
                  BossInfo oldInfo,
                  int line, String name, long lastKill, int spawnMinutes, String comment,
                  Runnable saveCB) {
@@ -810,7 +788,6 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     table.getItems().remove(opt.get());
                 }
                 table.getItems().add(info);
-                table.refresh();
                 saveCB.run();
 
                 close();
@@ -842,17 +819,17 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             centerOnScreen();
         }
 
-        public AddStage(TableView<BossInfo> table, BossInfo info, Runnable saveCB) {
+        public AddStage(VTableView<BossInfo> table, BossInfo info, Runnable saveCB) {
             this(table, info, info.line, info.name, info.lastKnownKillTs, info.spawnMinutes, info.comment, saveCB);
         }
     }
 
     private static class AddAccountStage extends Stage {
-        AddAccountStage(TableView<AccountInfo> table, Runnable saveCB) {
+        AddAccountStage(VTableView<AccountInfo> table, Runnable saveCB) {
             this(table, null, 0, null, 0, 0, null, saveCB);
         }
 
-        AddAccountStage(TableView<AccountInfo> table,
+        AddAccountStage(VTableView<AccountInfo> table,
                         AccountInfo oldInfo,
                         int line, String name, long lastSwitchTs, int cd, String comment,
                         Runnable saveCB) {
@@ -1034,7 +1011,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             centerOnScreen();
         }
 
-        public AddAccountStage(TableView<AccountInfo> table, AccountInfo info, Runnable saveCB) {
+        public AddAccountStage(VTableView<AccountInfo> table, AccountInfo info, Runnable saveCB) {
             this(table, info, info.lastLine, info.name, info.lastSwitchLineTs, info.switchLineCDMinutes, info.comment, saveCB);
         }
     }

@@ -1408,4 +1408,9 @@ public class ZhCn extends I18n {
     public String keyChooserRightMouseButton() {
         return "右键";
     }
+
+    @Override
+    public String emptyTableLabel() {
+        return "没有数据";
+    }
 }
