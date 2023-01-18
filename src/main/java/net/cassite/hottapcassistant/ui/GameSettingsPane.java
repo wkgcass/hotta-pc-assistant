@@ -21,7 +21,6 @@ public class GameSettingsPane extends WithConfirmPane {
     public GameSettingsPane() {
         ls = new UISettingList(this::setModified);
         widthProperty().addListener((ob, old, now) -> {
-            System.out.println("GameSettingsPane.width = " + now);
             if (now == null) {
                 return;
             }
