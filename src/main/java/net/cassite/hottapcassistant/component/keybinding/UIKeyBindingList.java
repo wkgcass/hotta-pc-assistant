@@ -27,7 +27,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
 
         actionColumn.setMinWidth(100);
         actionColumn.setComparator(String::compareTo);
-        ctrlColumn.setMaxWidth(30);
+        ctrlColumn.setMaxWidth(50);
         ctrlColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setDisable(kb.isAxis);
@@ -38,7 +38,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
             });
             return checkBox;
         });
-        altColumn.setMaxWidth(30);
+        altColumn.setMaxWidth(50);
         altColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setDisable(kb.isAxis);
@@ -49,7 +49,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
             });
             return checkBox;
         });
-        shiftColumn.setMaxWidth(30);
+        shiftColumn.setMaxWidth(50);
         shiftColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
             checkBox.setDisable(kb.isAxis);
