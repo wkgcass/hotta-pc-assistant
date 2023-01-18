@@ -21,6 +21,7 @@ public class InputSettingsPane extends WithConfirmPane {
     public InputSettingsPane() {
         ls = new UIKeyBindingList(this::setModified);
         widthProperty().addListener((ob, old, now) -> {
+            System.out.println("InputSettingsPane.width = " + now);
             if (now == null) {
                 return;
             }
