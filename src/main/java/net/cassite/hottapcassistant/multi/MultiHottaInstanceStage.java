@@ -222,6 +222,17 @@ public class MultiHottaInstanceStage extends Stage {
             clientVersion[0] = v;
             return true;
         }));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("UserData"), () -> {
+            try {
+                MultiHottaInstanceFlow.replaceUserDataDir(config.betaPath, config.onlinePath);
+            } catch (IOException e) {
+                Logger.error("failed replacing UserData", e);
+                FXUtils.runOnFX(() ->
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedReplacingUserDataDir()));
+                return false;
+            }
+            return true;
+        }));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("ResList.xml"), () -> {
             try {
                 MultiHottaInstanceFlow.writeResListXml(config.betaPath, RES_SUB_VERSION);

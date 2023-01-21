@@ -43,7 +43,9 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("lastWindowScale", (o, it) -> o.lastWindowScale = it, DoubleRule.get());
 
     public static AssistantCoolDownOptions empty() {
-        return new AssistantCoolDownOptions();
+        var ret = new AssistantCoolDownOptions();
+        ret.autoFillPianGuangLingYuSubSkill = true;
+        return ret;
     }
 
     public boolean scanDischargeEnabled() {

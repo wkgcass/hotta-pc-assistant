@@ -116,4 +116,16 @@ public class MultiHottaInstanceFlow {
             return Files.readString(path);
         }
     }
+
+    public static void replaceUserDataDir(String advLocation, String onlineLocation) throws IOException {
+        var advPath = Path.of(advLocation, "WmGpLaunch", "UserData");
+        var advFile = advPath.toFile();
+        if (advFile.exists()) {
+            var ok = IOUtils.deleteDirectory(advPath.toFile());
+            if (!ok) {
+                throw new IOException("failed deleting UserData directory: " + advLocation);
+            }
+        }
+        IOUtils.copyDirectory(Path.of(onlineLocation, "WmGpLaunch", "UserData"), advPath);
+    }
 }

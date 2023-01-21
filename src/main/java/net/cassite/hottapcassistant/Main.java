@@ -21,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.feed.FeedThread;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow;
 import net.cassite.hottapcassistant.ui.MainScreen;
 import net.cassite.hottapcassistant.util.Consts;
 import net.cassite.hottapcassistant.util.GlobalValues;
@@ -104,7 +105,18 @@ public class Main extends Application {
         } else {
             GlobalScreenUtils.releaseJNativeHookNativeToTmpDir("dll", dllStream);
         }
+
+        cleanupLastRun();
+
         FeedThread.get().start();
         launch();
+    }
+
+    private static void cleanupLastRun() {
+        try {
+            MultiHottaInstanceFlow.unsetHostsFile();
+        } catch (Throwable t) {
+            Logger.error("failed clean up hosts related to multi-hotta-instances");
+        }
     }
 }

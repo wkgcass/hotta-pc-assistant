@@ -132,6 +132,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String alertChangeSavedDirectory() {
+        return "通常不需要修改游戏配置文件路径，一般仅在切换测试服/台服时才需要修改。如果真的要修改，请按住ALT键再点击该按钮";
+    }
+
+    @Override
     public String chosenWrongSavedDirectory() {
         return "选择路径错误，请选择文件夹";
     }
@@ -1269,6 +1274,7 @@ public class ZhCn extends I18n {
     public String multiInstanceLaunchStep(String step) {
         return switch (step) {
             case "clientVersion" -> "获取客户端版本";
+            case "UserData" -> "替换用户文件";
             case "ResList.xml" -> "写入资源配置文件(1)";
             case "config.xml" -> "写入资源配置文件(2)";
             case "Client" -> "链接客户度目录";
@@ -1282,6 +1288,11 @@ public class ZhCn extends I18n {
     @Override
     public String multiInstanceFailedRetrievingClientVersion() {
         return "获取客户端版本失败，请确认正式服路径是否设置正确";
+    }
+
+    @Override
+    public String multiInstanceFailedReplacingUserDataDir() {
+        return "替换用户文件失败";
     }
 
     @Override

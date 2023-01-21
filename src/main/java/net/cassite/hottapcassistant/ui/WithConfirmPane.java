@@ -75,6 +75,7 @@ public abstract class WithConfirmPane extends BorderPane implements EnterCheck, 
     protected void setModified() {
         this.isModified = true;
         okBtn.setDisable(false);
+        okBtn.requestFocus();
     }
 
     private void unsetModified() {

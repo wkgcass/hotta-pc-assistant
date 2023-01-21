@@ -67,6 +67,8 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String selectSavedLocation();
 
+    public abstract String alertChangeSavedDirectory();
+
     public abstract String chosenWrongSavedDirectory();
 
     abstract public String hotkeyColumnNameAction();
@@ -444,6 +446,8 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     public abstract String multiInstanceLaunchStep(String step);
 
     public abstract String multiInstanceFailedRetrievingClientVersion();
+
+    public abstract String multiInstanceFailedReplacingUserDataDir();
 
     public abstract String multiInstanceFailedWritingResListXml();
 

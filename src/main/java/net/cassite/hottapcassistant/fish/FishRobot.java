@@ -20,12 +20,16 @@ import java.util.function.Consumer;
 public class FishRobot {
     private static final float[] GreenLightColor = FXUtils.toHSB(Color.color(200f / 255, 253f / 255, 225f / 255));
     private static final float[] GreenLightColor2 = FXUtils.toHSB(Color.color(112f / 255, 250f / 255, 183f / 255));
-    private static final Color YellowSliderColor = Color.color(255f / 255, 176f / 255, 64f / 255);
+    private static final Set<Color> YellowSliderColors = Set.of(
+        Color.color(255f / 255, 176f / 255, 64f / 255),
+        Color.color(255f / 255, 176f / 255, 27f / 255)
+    );
     private static final Set<Color> PositionBarColors = Set.of(
         Color.color(1, 1, 1),
         Color.color(153f / 255, 128f / 255, 124f / 255),
         Color.color(202f / 255, 171f / 255, 162f / 255));
     private static final Color FishStaminaColor = Color.color(140f / 255, 1, 1);
+    private static final Color FishStaminaColor2 = Color.color(116f / 255, 1, 1);
     private static final Color FishStaminaEmptyColor = Color.color(73f / 255, 73f / 255, 73f / 255);
 
     public enum Status {
@@ -273,7 +277,7 @@ public class FishRobot {
         for (int x = 0; x < imgW; ++x) {
             for (int y = 0; y < imgH; ++y) {
                 var color = reader.getColor(x, y);
-                if (MiscUtils.almostEquals(color, YellowSliderColor)) {
+                if (MiscUtils.almostIn(color, YellowSliderColors)) {
                     if (checkBarLeftToRight(x, y, img)) {
                         leftX = x;
                         leftY = y;
@@ -290,7 +294,7 @@ public class FishRobot {
         for (int x = imgW - 1; x >= 0; --x) {
             for (int y = 0; y < imgH; ++y) {
                 var color = reader.getColor(x, y);
-                if (MiscUtils.almostEquals(color, YellowSliderColor)) {
+                if (MiscUtils.almostIn(color, YellowSliderColors)) {
                     if (checkBarRightToLeft(x, y, img)) {
                         rightX = x;
                         rightY = y;
@@ -317,7 +321,7 @@ public class FishRobot {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 var color = reader.getColor(xx + x, yy + y);
-                if (!MiscUtils.almostEquals(color, YellowSliderColor)) {
+                if (!MiscUtils.almostIn(color, YellowSliderColors)) {
                     return false;
                 }
             }
@@ -337,7 +341,7 @@ public class FishRobot {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 var color = reader.getColor(xx - x, yy + y);
-                if (!MiscUtils.almostEquals(color, YellowSliderColor)) {
+                if (!MiscUtils.almostIn(color, YellowSliderColors)) {
                     return false;
                 }
             }
@@ -403,7 +407,7 @@ public class FishRobot {
 
         double p;
         {
-            int s = pixelCount(img, FishStaminaColor);
+            int s = pixelCount(img, FishStaminaColor, FishStaminaColor2);
             int e = pixelCount(img, FishStaminaEmptyColor);
             if (s == 0 && e == 0) {
                 if (totalManagingCount > 50) {
@@ -474,7 +478,7 @@ public class FishRobot {
         releaseLeftOrRight();
     }
 
-    private int pixelCount(Image img, Color color) {
+    private int pixelCount(Image img, Color... color) {
         int cnt = 0;
         var imgW = (int) img.getWidth();
         var imgH = (int) img.getHeight();
@@ -482,8 +486,11 @@ public class FishRobot {
         for (int x = 0; x < imgW; ++x) {
             for (int y = 0; y < imgH; ++y) {
                 var readerColor = reader.getColor(x, y);
-                if (MiscUtils.almostEquals(readerColor, color)) {
-                    ++cnt;
+                for (var c : color) {
+                    if (MiscUtils.almostEquals(readerColor, c)) {
+                        ++cnt;
+                        break;
+                    }
                 }
             }
         }

@@ -105,7 +105,11 @@ public class WelcomePane extends StackPane {
             var selectLocationButton = new Button(I18n.get().selectButton()) {{
                 FontManager.get().setFont(this);
             }};
-            selectLocationButton.setOnAction(e -> {
+            selectLocationButton.setOnMouseReleased(e -> {
+                if (!e.isAltDown() && !selectSavedLocationInput.getText().isBlank()) {
+                    SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().alertChangeSavedDirectory());
+                    return;
+                }
                 var chooser = new DirectoryChooser();
                 File f = chooser.showDialog(this.getScene().getWindow());
                 if (f == null) {
