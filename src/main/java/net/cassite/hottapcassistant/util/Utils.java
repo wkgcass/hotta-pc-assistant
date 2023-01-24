@@ -16,6 +16,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.paint.Color;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
 
@@ -29,6 +30,7 @@ import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -340,5 +342,13 @@ public class Utils {
         var content = new ClipboardContent();
         content.putImage(SwingFXUtils.toFXImage(bImg, null));
         Clipboard.getSystemClipboard().setContent(content);
+    }
+
+    public static boolean almostIn(Color color, Set<Color> colors) {
+        return MiscUtils.almostIn(color, colors, 0.04);
+    }
+
+    public static boolean almostEquals(Color a, Color b) {
+        return MiscUtils.almostEquals(a, b, 0.04);
     }
 }

@@ -4,7 +4,6 @@ import io.vproxy.vfx.entity.input.Key;
 import io.vproxy.vfx.manager.task.TaskManager;
 import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.Logger;
-import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
@@ -277,7 +276,7 @@ public class FishRobot {
         for (int x = 0; x < imgW; ++x) {
             for (int y = 0; y < imgH; ++y) {
                 var color = reader.getColor(x, y);
-                if (MiscUtils.almostIn(color, YellowSliderColors)) {
+                if (Utils.almostIn(color, YellowSliderColors)) {
                     if (checkBarLeftToRight(x, y, img)) {
                         leftX = x;
                         leftY = y;
@@ -294,7 +293,7 @@ public class FishRobot {
         for (int x = imgW - 1; x >= 0; --x) {
             for (int y = 0; y < imgH; ++y) {
                 var color = reader.getColor(x, y);
-                if (MiscUtils.almostIn(color, YellowSliderColors)) {
+                if (Utils.almostIn(color, YellowSliderColors)) {
                     if (checkBarRightToLeft(x, y, img)) {
                         rightX = x;
                         rightY = y;
@@ -321,7 +320,7 @@ public class FishRobot {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 var color = reader.getColor(xx + x, yy + y);
-                if (!MiscUtils.almostIn(color, YellowSliderColors)) {
+                if (!Utils.almostIn(color, YellowSliderColors)) {
                     return false;
                 }
             }
@@ -341,7 +340,7 @@ public class FishRobot {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 var color = reader.getColor(xx - x, yy + y);
-                if (!MiscUtils.almostIn(color, YellowSliderColors)) {
+                if (!Utils.almostIn(color, YellowSliderColors)) {
                     return false;
                 }
             }
@@ -363,7 +362,7 @@ public class FishRobot {
                     for (int xxx = 0; xxx < 2; ++xxx) {
                         int x = xxx == 0 ? midX - dX : midX + dX;
                         var color = reader.getColor(x, y);
-                        if (MiscUtils.almostIn(color, PositionBarColors)) {
+                        if (Utils.almostIn(color, PositionBarColors)) {
                             if (checkPos(x, y, img)) {
                                 return x;
                             }
@@ -387,7 +386,7 @@ public class FishRobot {
         for (int y = -hLower; y < hHigher; ++y) {
             if (y == 0) continue;
             var color = reader.getColor(xx, yy + y);
-            if (!MiscUtils.almostIn(color, PositionBarColors)) {
+            if (!Utils.almostIn(color, PositionBarColors)) {
                 return false;
             }
         }
@@ -487,7 +486,7 @@ public class FishRobot {
             for (int y = 0; y < imgH; ++y) {
                 var readerColor = reader.getColor(x, y);
                 for (var c : color) {
-                    if (MiscUtils.almostEquals(readerColor, c)) {
+                    if (Utils.almostEquals(readerColor, c)) {
                         ++cnt;
                         break;
                     }
