@@ -181,6 +181,8 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String configureFishingHelpMsg();
 
+    public abstract String fishTutorialLinkDesc();
+
     public abstract String fishingConfiguringScreenDescription();
 
     public abstract String fishingSwitchButtonLabel();
@@ -216,6 +218,8 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     public abstract String fishingStatusBeforeReeling();
 
     public abstract String fishingStatusAfterReeling();
+
+    public abstract String fishingOpenBrowserForTutorialFailed(String url);
 
     public abstract String about();
 
@@ -335,6 +339,10 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String cooldownTips();
 
+    public abstract String cooldownTutorialLink();
+
+    public abstract String cooldownOpenBrowserForTutorialFailed(String url);
+
     public abstract String invalidAssistantConfigFileAskForDeletion(String configFilePath);
 
     public abstract String modifyInvalidAssistantConfigBtn();
@@ -441,6 +449,8 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String multiInstanceSaveCaCert();
 
+    public abstract String multiInstanceTutorialLink();
+
     public abstract String multiInstanceEmptyFieldAlert();
 
     public abstract String multiInstanceLaunchStep(String step);
@@ -459,6 +469,8 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String multiInstanceLaunchProxyServerFailed();
 
+    public abstract String multiInstancesOpenBrowserForTutorialFailed(String url);
+
     public abstract String selectGameLocationDescriptionWithoutAutoSearching();
 
     public abstract String failedSavingCaCertFile();
@@ -470,4 +482,6 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     public abstract String readInputConfigFailed();
 
     public abstract String writeAssistantConfigFailed();
+
+    public abstract String confirm();
 }

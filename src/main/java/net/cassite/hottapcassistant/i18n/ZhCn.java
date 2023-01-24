@@ -462,8 +462,12 @@ public class ZhCn extends I18n {
             第二步配置鱼的耐力条和黄色滑块的位置
             第二步需要钓鱼一次，所以建议进行完整配置时换用绿鱼饵。
             由于每次钓鱼的位置都可能不一样，所以这里提供仅进行第一步配置的按钮，仅配置第一步不需要消耗任何道具。
-
             如果钓鱼时指示器显示游标飘忽不定，可能是程序将背景的白色误判为了游标，尝试转动视角改变顶部背景再试一次""";
+    }
+
+    @Override
+    public String fishTutorialLinkDesc() {
+        return "点这里查看钓鱼工具教学视频";
     }
 
     @Override
@@ -560,6 +564,11 @@ public class ZhCn extends I18n {
     @Override
     public String fishingStatusAfterReeling() {
         return "收杆后";
+    }
+
+    @Override
+    public String fishingOpenBrowserForTutorialFailed(String url) {
+        return "打开浏览器失败，你可以手动输入该URL查看钓鱼教程：" + url + "，也可尝试直接粘贴，程序已尝试将该url放到你的剪贴板里";
     }
 
     @Override
@@ -983,6 +992,16 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String cooldownTutorialLink() {
+        return "点这里查看CD指示器教学视频";
+    }
+
+    @Override
+    public String cooldownOpenBrowserForTutorialFailed(String url) {
+        return "打开浏览器失败，你可以手动输入该URL查看CD指示器教学：" + url + "，也可尝试直接粘贴，程序已尝试将该url放到你的剪贴板里";
+    }
+
+    @Override
     public String invalidAssistantConfigFileAskForDeletion(String configFilePath) {
         return "幻塔PC助手配置文件异常。您可以修改文件" + configFilePath + "手动修复异常，" + "\n" +
                "也可以直接删除该配置文件并以初始配置执行后续操作。";
@@ -1266,6 +1285,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String multiInstanceTutorialLink() {
+        return "点这里查看幻塔双开工具教学视频";
+    }
+
+    @Override
     public String multiInstanceEmptyFieldAlert() {
         return "存在空字段，请填充后再启动";
     }
@@ -1321,6 +1345,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String multiInstancesOpenBrowserForTutorialFailed(String url) {
+        return "打开浏览器失败，你可以手动输入该URL查看多开教学：" + url + "，也可尝试直接粘贴，程序已尝试将该url放到你的剪贴板里";
+    }
+
+    @Override
     public String selectGameLocationDescriptionWithoutAutoSearching() {
         return "请选择游戏路径，手动选择gameLauncher.exe所在路径";
     }
@@ -1348,6 +1377,11 @@ public class ZhCn extends I18n {
     @Override
     public String writeAssistantConfigFailed() {
         return "写入助手配置文件失败";
+    }
+
+    @Override
+    public String confirm() {
+        return "确定";
     }
 
     @Override

@@ -16,13 +16,18 @@ import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.ui.shapes.MovablePoint;
 import io.vproxy.vfx.ui.shapes.MovableRect;
 import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.vfx.util.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
@@ -36,6 +41,9 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 import org.controlsfx.control.ToggleSwitch;
 
+import java.awt.*;
+import java.net.URL;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -206,8 +214,28 @@ public class FishingPane extends StackPane implements NativeKeyListener, EnterCh
         }
 
         {
+            vbox.getChildren().add(new VPadding(5));
+        }
+
+        {
+            vbox.getChildren().add(new Hyperlink(I18n.get().fishTutorialLinkDesc()) {{
+                FontManager.get().setFont(this, 12);
+                setOnAction(e -> {
+                    var url = "https://www.bilibili.com/video/BV1fT411m7xR/";
+                    try {
+                        Desktop.getDesktop().browse(new URL(url).toURI());
+                    } catch (Throwable t) {
+                        Logger.error("failed opening fishing tutorial link", t);
+                        Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
+                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().fishingOpenBrowserForTutorialFailed(url));
+                    }
+                });
+            }});
+        }
+
+        {
             var sep = new Separator();
-            sep.setPadding(new Insets(10, 0, 10, 0));
+            sep.setPadding(new Insets(5, 0, 10, 0));
             vbox.getChildren().add(sep);
         }
 

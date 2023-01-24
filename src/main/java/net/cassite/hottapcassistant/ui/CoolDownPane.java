@@ -360,7 +360,7 @@ public class CoolDownPane extends StackPane implements EnterCheck, Terminate {
                 FontManager.get().setFont(this);
             }};
             tipsBtn.setPrefWidth(WIDTH_HEIGHT);
-            tipsBtn.setOnAction(e -> SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().cooldownTips(), Consts.NotoFont));
+            tipsBtn.setOnAction(e -> new CoolDownTips().show());
 
             hbox.getChildren().addAll(optionsBtn, new HPadding(4), tipsBtn);
         }

@@ -15,6 +15,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -27,8 +29,10 @@ import net.cassite.hottapcassistant.util.GlobalValues;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Map;
 
 import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_SUB_VERSION;
 import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_VERSION;
@@ -129,7 +133,21 @@ public class MultiHottaInstanceStage extends Stage {
                 new HBox(launchBtn) {{
                     setAlignment(Pos.CENTER);
                 }},
-                new VPadding(5),
+                new VPadding(3),
+                new Hyperlink(I18n.get().multiInstanceTutorialLink()) {{
+                    FontManager.get().setFont(this, 12);
+                    setOnAction(e -> {
+                        var url = "https://www.bilibili.com/video/BV1Bv4y1C7HN/";
+                        try {
+                            Desktop.getDesktop().browse(new URL(url).toURI());
+                        } catch (Throwable t) {
+                            Logger.error("failed opening multi-hotta-instances tutorial link", t);
+                            Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
+                            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstancesOpenBrowserForTutorialFailed(url));
+                        }
+                    });
+                }},
+                new VPadding(2),
                 new Hyperlink(I18n.get().multiInstanceSaveCaCert()) {{
                     FontManager.get().setFont(this, 12);
                     setOnAction(e -> {
