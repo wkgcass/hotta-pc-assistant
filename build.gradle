@@ -43,7 +43,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31"
     implementation 'io.vproxy:vjson:1.4.4'
     implementation 'com.github.kwhat:jnativehook:2.2.2'
-    implementation group: 'io.vproxy', name: 'vfx', version: '1.1.0'
+    implementation group: 'io.vproxy', name: 'vfx', version: '1.1.2'
     implementation group: 'org.controlsfx', name: 'controlsfx', version: '11.1.2'
     implementation group: 'net.java.dev.jna', name: 'jna', version: '5.12.1'
     implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.12.1'
