@@ -420,7 +420,7 @@ public class FishRobot {
 
         if (p < 0.01 && totalManagingCount > 50) {
             ++staminaDrainManagingCount;
-            if (staminaDrainManagingCount > 20) {
+            if (staminaDrainManagingCount > 60) {
                 exitManaging();
                 setStatus(Status.BEFORE_REELING);
                 return;
