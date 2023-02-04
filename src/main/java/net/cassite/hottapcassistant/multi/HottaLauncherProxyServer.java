@@ -14,7 +14,6 @@ import java.security.cert.X509Certificate;
 import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 
 public class HottaLauncherProxyServer {
     private static final String reqSplitTag = "\n--------------------------------------";
@@ -217,34 +216,11 @@ public class HottaLauncherProxyServer {
     }
 
     public static void proxy(HttpClient client, String reqId, HttpServerRequest req, HttpMethod method, String uri, MultiMap headers, String body) {
-        request(client, reqId, method, uri, headers, body, (resp, respBodyBuffer) -> {
-            if (resp == null) {
-                req.response().setStatusCode(404);
-                req.response().end("not found\r\n");
-                return;
-            }
-            var respCode = resp.statusCode();
-            var respHeaders = resp.headers();
-            if (respBodyBuffer.length() > 1024) {
-                Logger.info("reqId: " + reqId + "\nresp code: " + respCode + "\n" + respHeaders + "\nresp body: (length=" + respBodyBuffer.length() + ")" + respEndLogTag);
-            } else {
-                var respBody = respBodyBuffer.toString();
-                Logger.info("reqId: " + reqId + "\nresp code: " + respCode + "\n" + respHeaders + "\nresp body: " + respBody + respEndLogTag);
-            }
-
-            req.response().setStatusCode(respCode);
-            for (var entry : respHeaders) {
-                req.response().putHeader(entry.getKey(), entry.getValue());
-            }
-            req.response().end(respBodyBuffer);
-        });
-    }
-
-    public static void request(HttpClient client, String reqId, HttpMethod method, String uri, MultiMap headers, String body, BiConsumer<HttpClientResponse, Buffer> cb) {
         var host = headers.get("host");
         Logger.debug("reqId: " + reqId + ", host header is " + host);
         if (host == null) {
-            cb.accept(null, null);
+            req.response().setStatusCode(404);
+            req.response().end("not found\r\n");
             return;
         }
         client.request(new RequestOptions()
@@ -262,10 +238,15 @@ public class HottaLauncherProxyServer {
                     return creq.send(body);
                 }
             })
-            .flatMap(resp -> resp.body().map(respBodyBuffer -> {
-                cb.accept(resp, respBodyBuffer);
+            .map(resp -> {
+                Logger.info("proxy the request: reqId: " + reqId + "\nresp code: " + resp.statusCode() + "\n" + resp.headers());
+                req.response().setStatusCode(resp.statusCode());
+                for (var entry : resp.headers()) {
+                    req.response().putHeader(entry.getKey(), entry.getValue());
+                }
+                resp.pipe().to(req.response());
                 return null;
-            }))
+            })
             .recover(t -> {
                 Logger.error("reqId: " + reqId + ", failed to send request", t);
                 return null;

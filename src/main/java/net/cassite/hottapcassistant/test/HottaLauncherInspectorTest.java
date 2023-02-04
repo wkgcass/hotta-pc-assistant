@@ -366,49 +366,5 @@ public class HottaLauncherInspectorTest extends Application {
         req.response().end(version);
     }
 
-    private void allFilesXml(HttpServerRequest req) {
-        HottaLauncherProxyServer.request(client, "", req.method(), req.uri(), req.headers(), null, (resp, respBodyBuffer) -> {
-            if (resp == null) {
-                req.response().setStatusCode(404);
-                req.response().end("not found\r\n");
-                return;
-            }
-            req.response().setStatusCode(resp.statusCode());
-            for (var entry : resp.headers()) {
-                req.response().putHeader(entry.getKey(), entry.getValue());
-            }
-            if (resp.statusCode() != 200) {
-                req.response().end(respBodyBuffer);
-                return;
-            }
-
-            var string = respBodyBuffer.toString();
-            var file = "/Config/game/zh_cn/game_200105.cfg";
-            var index = string.indexOf(file);
-            if (index == -1) {
-                System.out.println(file + " not found in xml");
-                req.response().end(respBodyBuffer);
-                return;
-            }
-
-            index = string.lastIndexOf("Checksum", index);
-            if (index == -1) {
-                System.out.println("Checksum field not found in xml");
-                req.response().end(respBodyBuffer);
-                return;
-            }
-
-            var md5 = "88aa3c3ffb796f662b878bff89f69c38".toCharArray();
-            var sb = new StringBuilder(string);
-            var off = index + "Checksum=\"".length();
-            for (int i = 0; i < md5.length; ++i) {
-                sb.setCharAt(off + i, md5[i]);
-            }
-            string = sb.toString();
-            System.out.println("responding with modified response: " + string);
-            req.response().end(string);
-        });
-    }
-
     private HttpClient client;
 }
