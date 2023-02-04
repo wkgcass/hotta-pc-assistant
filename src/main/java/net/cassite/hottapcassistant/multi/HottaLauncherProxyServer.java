@@ -239,7 +239,7 @@ public class HottaLauncherProxyServer {
                 }
             })
             .map(resp -> {
-                Logger.info("proxy the request: reqId: " + reqId + "\nresp code: " + resp.statusCode() + "\n" + resp.headers());
+                Logger.info("proxy the response: reqId: " + reqId + "\nresp code: " + resp.statusCode() + "\n" + resp.headers() + respEndLogTag);
                 req.response().setStatusCode(resp.statusCode());
                 for (var entry : resp.headers()) {
                     req.response().putHeader(entry.getKey(), entry.getValue());
