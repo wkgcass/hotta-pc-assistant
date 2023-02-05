@@ -1433,4 +1433,14 @@ public class ZhCn extends I18n {
     public String emptyTableLabel() {
         return "没有数据";
     }
+
+    @Override
+    public String cancelButton() {
+        return "取消";
+    }
+
+    @Override
+    public String alertOkButton() {
+        return "确认";
+    }
 }

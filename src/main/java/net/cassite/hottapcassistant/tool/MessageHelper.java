@@ -79,7 +79,7 @@ public class MessageHelper extends AbstractTool implements Tool {
                 centerOnScreen();
             }
             input = new TextField() {{
-                FontManager.get().setFont(this, 24);
+                FontManager.get().setFont(this, settings -> settings.setSize(24));
                 setPrefWidth(1000);
                 setPrefHeight(56);
             }};

@@ -1,9 +1,12 @@
 package net.cassite.hottapcassistant.component.keybinding;
 
 import io.vproxy.vfx.component.keychooser.KeyChooser;
+import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
+import io.vproxy.vfx.ui.wrapper.FusionW;
+import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.Logger;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -27,10 +30,12 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
 
         actionColumn.setMinWidth(100);
         actionColumn.setComparator(String::compareTo);
+        actionColumn.setAlignment(Pos.CENTER_RIGHT);
         ctrlColumn.setMaxWidth(80);
         ctrlColumn.setAlignment(Pos.CENTER);
         ctrlColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
+            FXUtils.disableFocusColor(checkBox);
             checkBox.setDisable(kb.isAxis);
             checkBox.setSelected(kb.ctrl);
             checkBox.setOnAction(e -> {
@@ -43,6 +48,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
         altColumn.setAlignment(Pos.CENTER);
         altColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
+            FXUtils.disableFocusColor(checkBox);
             checkBox.setDisable(kb.isAxis);
             checkBox.setSelected(kb.alt);
             checkBox.setOnAction(e -> {
@@ -55,6 +61,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
         shiftColumn.setAlignment(Pos.CENTER);
         shiftColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
+            FXUtils.disableFocusColor(checkBox);
             checkBox.setDisable(kb.isAxis);
             checkBox.setSelected(kb.shift);
             checkBox.setOnAction(e -> {
@@ -66,7 +73,9 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
         keyColumn.setMinWidth(100);
         keyColumn.setAlignment(Pos.CENTER);
         keyColumn.setNodeBuilder(kb -> {
-            var cell = new Label();
+            var cell = new Label() {{
+                setTextFill(Theme.current().normalTextColor());
+            }};
             cell.setCursor(Cursor.HAND);
             cell.setText(kb.key.toString());
             cell.setOnMouseClicked(e -> {
@@ -93,7 +102,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
             }
             var inputBox = new TextField();
             inputBox.setText(Utils.floatValueFormat.format(kb.scale));
-            inputBox.setOnAction(e -> {
+            inputBox.setOnMouseExited(e -> {
                 var v = inputBox.getText().trim();
                 double dv;
                 try {
@@ -106,7 +115,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
                 kb.scale = dv;
                 modifiedCallback.run();
             });
-            return inputBox;
+            return new FusionW(inputBox);
         });
 
         //noinspection unchecked

@@ -39,7 +39,7 @@ public class CoolDownTips extends Stage {
         }});
         vbox.getChildren().add(new VPadding(5));
         vbox.getChildren().add(new Hyperlink(I18n.get().cooldownTutorialLink()) {{
-            FontManager.get().setFont(this, 12);
+            FontManager.get().setFont(this, settings -> settings.setSize(12));
             setOnAction(e -> {
                 var url = "https://www.acfun.cn/v/ac40130001";
                 try {

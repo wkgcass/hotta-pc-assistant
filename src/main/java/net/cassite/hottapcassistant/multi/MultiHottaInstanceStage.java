@@ -135,7 +135,7 @@ public class MultiHottaInstanceStage extends Stage {
                 }},
                 new VPadding(3),
                 new Hyperlink(I18n.get().multiInstanceTutorialLink()) {{
-                    FontManager.get().setFont(this, 12);
+                    FontManager.get().setFont(this, settings -> settings.setSize(12));
                     setOnAction(e -> {
                         var url = "https://www.bilibili.com/video/BV1Bv4y1C7HN/";
                         try {
@@ -149,7 +149,7 @@ public class MultiHottaInstanceStage extends Stage {
                 }},
                 new VPadding(2),
                 new Hyperlink(I18n.get().multiInstanceSaveCaCert()) {{
-                    FontManager.get().setFont(this, 12);
+                    FontManager.get().setFont(this, settings -> settings.setSize(12));
                     setOnAction(e -> {
                         var chooser = new FileChooser();
                         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("crt", "*.crt"));

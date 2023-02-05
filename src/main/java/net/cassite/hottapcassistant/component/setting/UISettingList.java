@@ -3,6 +3,9 @@ package net.cassite.hottapcassistant.component.setting;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
+import io.vproxy.vfx.ui.wrapper.FusionW;
+import io.vproxy.vfx.util.FXUtils;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
@@ -24,6 +27,7 @@ public class UISettingList extends VTableView<Setting> {
 
         nameColumn.setComparator(String::compareTo);
         nameColumn.setMaxWidth(250);
+        nameColumn.setAlignment(Pos.CENTER_RIGHT);
         valueColumn.setNodeBuilder(this::generateNode);
 
         //noinspection unchecked
@@ -63,10 +67,11 @@ public class UISettingList extends VTableView<Setting> {
                     if (!now) applyHandler.run();
                 });
                 input.setOnAction(e -> applyHandler.run());
-                yield input;
+                yield new FusionW(input);
             }
             case BOOL, BOOL_0_1 -> {
                 var box = new CheckBox();
+                FXUtils.disableFocusColor(box);
                 box.setSelected((boolean) setting.value);
                 box.setOnAction(e -> {
                     setting.value = box.isSelected();
@@ -76,6 +81,7 @@ public class UISettingList extends VTableView<Setting> {
             }
             case RESOLUTION -> {
                 var box = new ComboBox<String>();
+                FXUtils.disableFocusColor(box);
                 box.setEditable(true);
                 box.setValue((String) setting.value);
                 box.getItems().addAll(

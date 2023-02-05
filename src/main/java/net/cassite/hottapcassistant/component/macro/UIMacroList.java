@@ -4,12 +4,13 @@ import io.vproxy.vfx.component.keychooser.KeyChooser;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
+import io.vproxy.vfx.ui.wrapper.ThemeLabel;
+import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.Logger;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import net.cassite.hottapcassistant.entity.AssistantMacroData;
 import net.cassite.hottapcassistant.i18n.I18n;
 
@@ -23,9 +24,10 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
         var keyColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameKey(), kb -> kb);
 
         enableColumn.setMaxWidth(80);
-        enableColumn.setAlignment(Pos.CENTER_RIGHT);
+        enableColumn.setAlignment(Pos.CENTER);
         enableColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
+            FXUtils.disableFocusColor(checkBox);
             checkBox.setSelected(kb.enabled);
             checkBox.setOnAction(e -> {
                 kb.enabled = checkBox.isSelected();
@@ -38,6 +40,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
         ctrlColumn.setAlignment(Pos.CENTER);
         ctrlColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
+            FXUtils.disableFocusColor(checkBox);
             checkBox.setSelected(kb.ctrl);
             checkBox.setOnAction(e -> {
                 kb.ctrl = checkBox.isSelected();
@@ -49,6 +52,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
         altColumn.setAlignment(Pos.CENTER);
         altColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
+            FXUtils.disableFocusColor(checkBox);
             checkBox.setSelected(kb.alt);
             checkBox.setOnAction(e -> {
                 kb.alt = checkBox.isSelected();
@@ -60,6 +64,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
         shiftColumn.setAlignment(Pos.CENTER);
         shiftColumn.setNodeBuilder(kb -> {
             var checkBox = new CheckBox();
+            FXUtils.disableFocusColor(checkBox);
             checkBox.setSelected(kb.shift);
             checkBox.setOnAction(e -> {
                 kb.shift = checkBox.isSelected();
@@ -70,7 +75,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
         keyColumn.setMinWidth(100);
         keyColumn.setAlignment(Pos.CENTER);
         keyColumn.setNodeBuilder(kb -> {
-            var label = new Label();
+            var label = new ThemeLabel();
             label.setCursor(Cursor.HAND);
             if (kb.key == null) {
                 label.setText("");

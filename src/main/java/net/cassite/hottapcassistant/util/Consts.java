@@ -42,6 +42,7 @@ public class Consts {
         "/images/global-launch-btn/launch-normal.png",
         "/images/icon/icon.ico",
         "/images/icon/icon.jpg",
+        "/images/icon/menu.png",
         "/images/icon/message-helper-icon.png",
         "/images/icon/multi-hotta-instance.png",
         "/images/icon/pause.png",

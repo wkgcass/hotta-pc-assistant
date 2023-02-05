@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.component.serverlist;
 
 import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
+import io.vproxy.vfx.util.FXUtils;
 import javafx.scene.control.CheckBox;
 import net.cassite.hottapcassistant.entity.TofServer;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -16,7 +17,9 @@ public class UIServerList extends VTableView<TofServer> {
         checkColumn.setPrefWidth(60);
         checkColumn.setMaxWidth(80);
         checkColumn.setNodeBuilder(s -> {
-            var checkbox = new CheckBox();
+            var checkbox = new CheckBox() {{
+                FXUtils.disableFocusColor(this);
+            }};
             checkbox.setSelected(s.selected);
             checkbox.setOnAction(e -> s.selected = checkbox.isSelected());
             return checkbox;
@@ -24,5 +27,7 @@ public class UIServerList extends VTableView<TofServer> {
 
         //noinspection unchecked
         getColumns().addAll(checkColumn, regionColumn, nameColumn);
+
+        getNode().setPrefHeight(700);
     }
 }

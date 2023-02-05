@@ -201,7 +201,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         scale.xProperty().addListener((ob, old, now) -> resizeWindow());
 
         descLabel = new Text() {{
-            FontManager.get().setFont(this, 24);
+            FontManager.get().setFont(this, settings -> settings.setSize(24));
             setFill(Color.WHITE);
             setStrokeWidth(0.5);
             setStroke(Color.BLACK);
