@@ -232,6 +232,7 @@ public class ZhCn extends I18n {
             case "UI_Weapon" -> "武器界面";
             case "UI_Weapon_BreakFate" -> "命运突围-武器界面";
             case "WeaponSkill" -> "武器技能";
+            case "SkillAdditional" -> "额外技能";
             case "WeaponSkill_BreakFate" -> "命运突围-武器技能";
             case "Vines" -> "攀爬";
             case "LookUpRate" -> "视角[上]下";

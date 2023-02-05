@@ -39,6 +39,7 @@ public class InputConfig {
         "Evade",
         "Evade_Key",
         "WeaponSkill",
+        "SkillAdditional",
         "SwitchTarget",
         "Interaction",
         "Jump",
@@ -92,6 +93,33 @@ public class InputConfig {
     );
 
     public List<KeyBinding> read() throws IOException {
+        var kbList = read0();
+        if (kbList.isEmpty()) return kbList;
+        if (kbList.stream().anyMatch(kb -> kb.action.equals("SkillAdditional"))) {
+            return kbList;
+        }
+        Path path = Path.of(this.path);
+        var lines = new ArrayList<>(Files.readAllLines(path));
+        for (int i = 0; i < lines.size(); ++i) {
+            var line = lines.get(i).trim();
+            if (!line.startsWith("[") || !line.endsWith("]")) {
+                continue;
+            }
+            line = line.substring(1, line.length() - 1).trim();
+            if (!line.equals("/Script/Engine.InputSettings")) {
+                continue;
+            }
+            var newKb = new KeyBinding();
+            newKb.action = "SkillAdditional";
+            newKb.key = new Key("X");
+            lines.add(i + 1, newKb.toString());
+            break;
+        }
+        IOUtils.writeFile(path, String.join("\n", lines));
+        return read0();
+    }
+
+    private List<KeyBinding> read0() throws IOException {
         var actions = new ArrayList<KeyBinding>();
         var lines = Files.readAllLines(Path.of(path));
         for (int i = 0; i < lines.size(); i++) {
