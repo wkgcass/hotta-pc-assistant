@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.util;
 
 import io.vproxy.vfx.manager.font.FontUsage;
+import javafx.scene.paint.Color;
 
 public class Consts {
     public static final FontUsage NormalFont = new FontUsage() {
@@ -220,6 +221,10 @@ public class Consts {
         "/audio/simulacra/yi-ka-luo-si/skill02.wav",
         "/audio/simulacra/yi-ka-luo-si/skill01.wav",
     };
+
+    public static final Color GREEN = new Color(0x8d / 255d, 0xbd / 255d, 0x74 / 255d, 1);
+    public static final Color ORANGE = new Color(0xe8 / 255d, 0x98 / 255d, 0x70 / 255d, 1);
+    public static final Color RED = new Color(0xf3 / 255d, 0x85 / 255d, 0x85 / 255d, 1);
 
     private Consts() {
     }

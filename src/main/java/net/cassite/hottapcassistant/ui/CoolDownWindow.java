@@ -279,7 +279,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
                         return;
                     }
                 }
-                clickFunc.handle(e);
+                if (clickFunc != null) {
+                    clickFunc.handle(e);
+                }
             });
         }
         hideHiddenButtons();

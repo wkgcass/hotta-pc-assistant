@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant.multi;
 
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.button.ImageButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
@@ -11,9 +12,9 @@ import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
-import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.HBox;
@@ -57,8 +58,9 @@ public class MultiHottaInstanceScene extends ToolScene {
         }};
         selectBetaLocationInput.setEditable(false);
         selectBetaLocationInput.setPrefWidth(500);
-        var selectBetaLocationButton = new Button(I18n.get().selectButton()) {{
-            FontManager.get().setFont(this);
+        var selectBetaLocationButton = new FusionButton(I18n.get().selectButton()) {{
+            setPrefWidth(48);
+            setPrefHeight(35);
         }};
         selectBetaLocationButton.setOnAction(e -> selectLocation(selectBetaLocationInput));
 
@@ -70,8 +72,9 @@ public class MultiHottaInstanceScene extends ToolScene {
         }};
         selectOnlineLocationInput.setEditable(false);
         selectOnlineLocationInput.setPrefWidth(500);
-        var selectOnlineLocationButton = new Button(I18n.get().selectButton()) {{
-            FontManager.get().setFont(this);
+        var selectOnlineLocationButton = new FusionButton(I18n.get().selectButton()) {{
+            setPrefWidth(48);
+            setPrefHeight(35);
         }};
         selectOnlineLocationButton.setOnAction(e -> selectLocation(selectOnlineLocationInput));
 

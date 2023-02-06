@@ -44,6 +44,7 @@ import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.entity.AssistantFishing;
 import net.cassite.hottapcassistant.fish.FishRobot;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.Consts;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.awt.*;
@@ -265,9 +266,9 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             case AFTER_REELING -> I18n.get().fishingStatusAfterReeling();
         };
         var color = switch (status) {
-            case STOPPED, STOPPING, FAILED -> Color.RED;
-            case BEGIN, WAITING_FOR_CASTING, WAITING_FOR_BITE, AFTER_REELING -> Color.ORANGE;
-            case MANAGING_POS, BEFORE_REELING -> Color.GREEN;
+            case STOPPED, STOPPING, FAILED -> Consts.RED;
+            case BEGIN, WAITING_FOR_CASTING, WAITING_FOR_BITE, AFTER_REELING -> Consts.ORANGE;
+            case MANAGING_POS, BEFORE_REELING -> Consts.GREEN;
         };
         this.statusValue.setText(text);
         this.statusValue.setTextFill(color);

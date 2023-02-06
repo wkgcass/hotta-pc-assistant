@@ -122,7 +122,7 @@ public class UIEntry {
         var closeBtn = new FusionImageButton(ImageManager.get().load("/io/vproxy/vfx/res/image/close.png:white")) {{
             setPrefWidth(40);
             setPrefHeight(VStage.TITLE_BAR_HEIGHT + 1);
-            getImageView().setFitHeight(15);
+            getImageView().setFitHeight(12);
             setVisible(false);
         }};
         closeBtn.setOnAction(e -> {

@@ -1023,8 +1023,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
         public final TimerLabel timerLabel = new TimerLabel(
             Theme.current().normalTextColor(),
-            new Color(0xe8 / 255d, 0x98 / 255d, 0x70 / 255d, 1),
-            new Color(0xf3 / 255d, 0x85 / 255d, 0x85 / 255d, 1));
+            Consts.ORANGE,
+            Consts.RED);
 
         static final Rule<BossInfo> rule = new ObjectRule<>(BossInfo::new)
             .put("line", (o, it) -> o.line = it, IntRule.get())
@@ -1053,8 +1053,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
         public final TimerLabel timerLabel = new TimerLabel(
             Theme.current().normalTextColor(),
-            new Color(0xe8 / 255d, 0x98 / 255d, 0x70 / 255d, 1),
-            new Color(0x8d / 255d, 0xbd / 255d, 0x74 / 255d, 1));
+            Consts.ORANGE,
+            Consts.GREEN);
 
         static final Rule<AccountInfo> rule = new ObjectRule<>(AccountInfo::new)
             .put("name", (o, it) -> o.name = it, StringRule.get())
