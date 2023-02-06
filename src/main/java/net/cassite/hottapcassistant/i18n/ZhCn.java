@@ -1318,7 +1318,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String multiInstanceFailedReplacingUserDataDir() {
-        return "替换用户文件失败";
+        return "替换用户文件失败，请确认多开客户端对应的Wmgp进程已退出";
     }
 
     @Override
