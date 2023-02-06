@@ -93,6 +93,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
     private final ObservableList<AssistantCoolDownConfiguration> configurations = FXCollections.observableList(new ArrayList<>());
     private final SimpleObjectProperty<AssistantCoolDownOptions> options = new SimpleObjectProperty<>(AssistantCoolDownOptions.empty());
     private final CoolDownOptionsScene optionsScene;
+    private final CoolDownTips coolDownTipsScene = new CoolDownTips();
 
     public CoolDownScene(VSceneGroup sceneGroup) {
         enableAutoContentWidth();
@@ -100,6 +101,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         this.sceneGroup = sceneGroup;
         this.optionsScene = new CoolDownOptionsScene(options, this);
         sceneGroup.addScene(optionsScene, VSceneHideMethod.TO_RIGHT);
+        sceneGroup.addScene(coolDownTipsScene, VSceneHideMethod.TO_RIGHT);
 
         var vbox = new VBox();
         FXUtils.observeWidthCenter(getContentPane(), vbox);
@@ -254,7 +256,11 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
             }};
             tipsBtn.setPrefWidth(BUTTON_WIDTH);
             tipsBtn.setPrefHeight(30);
-            tipsBtn.setOnAction(e -> new CoolDownTips().show());
+            tipsBtn.setOnAction(e -> {
+                GlobalValues.setBackFunction(() ->
+                    sceneGroup.hide(coolDownTipsScene, VSceneHideMethod.TO_RIGHT));
+                sceneGroup.show(coolDownTipsScene, VSceneShowMethod.FROM_RIGHT);
+            });
 
             hbox.getChildren().addAll(optionsBtn, new HPadding(4), tipsBtn);
         }

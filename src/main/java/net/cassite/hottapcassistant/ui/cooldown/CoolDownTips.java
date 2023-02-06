@@ -1,22 +1,22 @@
-package net.cassite.hottapcassistant.ui;
+package net.cassite.hottapcassistant.ui.cooldown;
 
+import io.vproxy.vfx.control.scroll.ScrollDirection;
 import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.scene.VScene;
+import io.vproxy.vfx.ui.scene.VSceneRole;
+import io.vproxy.vfx.ui.wrapper.ThemeLabel;
+import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.Logger;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.scene.layout.*;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Consts;
 
@@ -24,17 +24,25 @@ import java.awt.*;
 import java.net.URL;
 import java.util.Map;
 
-public class CoolDownTips extends Stage {
+public class CoolDownTips extends VScene {
     public CoolDownTips() {
+        super(VSceneRole.TEMPORARY);
+        getScrollPane().setScrollDirection(ScrollDirection.HORIZONTAL);
+        getNode().setBackground(new Background(new BackgroundFill(
+            Theme.current().sceneBackgroundColor(),
+            CornerRadii.EMPTY,
+            Insets.EMPTY
+        )));
+
         var vbox = new VBox();
-        var scene = new Scene(vbox);
-        setScene(scene);
-        initStyle(StageStyle.UTILITY);
+        FXUtils.observeWidthCenter(getContentPane(), vbox);
+        getContentPane().getChildren().add(new HBox(
+            new HPadding(30),
+            vbox
+        ));
+        vbox.getChildren().add(new VPadding(40));
 
-        setTitle(I18n.get().alertInfoTitle());
-
-        vbox.setPadding(new Insets(10, 10, 10, 10));
-        vbox.getChildren().add(new Label(I18n.get().cooldownTips()) {{
+        vbox.getChildren().add(new ThemeLabel(I18n.get().cooldownTips()) {{
             FontManager.get().setFont(Consts.NotoFont, this);
         }});
         vbox.getChildren().add(new VPadding(5));
@@ -50,15 +58,6 @@ public class CoolDownTips extends Stage {
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().cooldownOpenBrowserForTutorialFailed(url));
                 }
             });
-        }});
-        vbox.getChildren().add(new HBox() {{
-            setAlignment(Pos.CENTER_RIGHT);
-            var btn = new Button(I18n.get().confirm()) {{
-                setPrefWidth(100);
-            }};
-            getChildren().add(btn);
-
-            btn.setOnAction(e -> close());
         }});
     }
 }
