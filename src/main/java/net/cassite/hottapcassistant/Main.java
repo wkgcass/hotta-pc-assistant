@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 import net.cassite.hottapcassistant.feed.FeedThread;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow;
-import net.cassite.hottapcassistant.ui.TerminateScene;
+import net.cassite.hottapcassistant.ui.Terminate;
 import net.cassite.hottapcassistant.ui.UIEntry;
 import net.cassite.hottapcassistant.util.Consts;
 import net.cassite.hottapcassistant.util.GlobalValues;
@@ -105,8 +105,8 @@ public class Main extends Application {
         FeedThread.get().terminate();
         if (mainSceneGroup != null) {
             for (var scene : mainSceneGroup.getScenes()) {
-                if (scene instanceof TerminateScene) {
-                    ((TerminateScene) scene).terminate();
+                if (scene instanceof Terminate) {
+                    ((Terminate) scene).terminate();
                 }
             }
         }

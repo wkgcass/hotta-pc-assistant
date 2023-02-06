@@ -53,7 +53,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class FishingScene extends MainScene implements NativeKeyListener, EnterCheck {
+public class FishingScene extends MainScene implements NativeKeyListener, EnterCheck, Terminate {
     private final FishRobot robot = new FishRobot(this::setStatus, this::setPercentage);
 
     private final Label statusValue = new ThemeLabel();
@@ -610,5 +610,10 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
         stage.setOnCloseRequest(e -> cb.accept(false));
         stage.show();
         Platform.runLater(imagePane::requestFocus);
+    }
+
+    @Override
+    public void terminate() {
+        stop();
     }
 }
