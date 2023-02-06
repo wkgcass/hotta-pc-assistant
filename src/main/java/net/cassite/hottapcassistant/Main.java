@@ -20,6 +20,7 @@ import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.util.Callback;
 import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.feed.FeedThread;
@@ -45,11 +46,14 @@ public class Main extends Application {
         }
         itemsToLoad.add(new LoadingItem(2, "/images/icon/menu.png:white", () ->
             ImageManager.get().loadBlackAndChangeColor("/images/icon/menu.png", Map.of("white", 0xffffffff))));
+        itemsToLoad.add(new LoadingItem(2, "/images/icon/question.png:white", () ->
+            ImageManager.get().loadBlackAndChangeColor("/images/icon/question.png", Map.of("white", 0xffffffff))));
+        itemsToLoad.add(new LoadingItem(2, "/images/icon/return.png:white", () ->
+            ImageManager.get().loadBlackAndChangeColor("/images/icon/return.png", Map.of("white", 0xffffffff))));
         for (var path : Consts.ALL_CLIP) {
             itemsToLoad.add(new LoadingItem(1, path, () -> AudioManager.get().loadAudio(path)));
         }
-        itemsToLoad.add(new LoadingItem(1, I18n.get().hintPressAlt(), () -> {
-        }));
+        itemsToLoad.add(new LoadingItem(1, I18n.get().progressWelcomeText(), () -> MiscUtils.threadSleep(50)));
 
         var stage = new VStage(primaryStage) {
             @Override
@@ -85,7 +89,7 @@ public class Main extends Application {
                 var uiEntry = new UIEntry(stage);
                 var firstScene = uiEntry.mainScenes.get(0);
                 stage.getSceneGroup().show(firstScene, VSceneShowMethod.FADE_IN);
-                uiEntry.hideInactive();
+                uiEntry.init();
             }
 
             @Override
@@ -129,6 +133,7 @@ public class Main extends Application {
                     @Override
                     protected void tableCellText(FontSettings settings) {
                         super.tableCellText(settings);
+                        settings.setFamily(FontManager.FONT_NAME_NotoSansSCRegular);
                         settings.setSize(14);
                     }
 

@@ -2,30 +2,33 @@ package net.cassite.hottapcassistant.tool;
 
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.pane.FusionPane;
+import io.vproxy.vfx.ui.scene.VScene;
+import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
+import io.vproxy.vfx.ui.wrapper.FusionW;
+import io.vproxy.vfx.ui.wrapper.ThemeLabel;
+import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.IOUtils;
 import io.vproxy.vfx.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.animation.AnimationTimer;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Consts;
@@ -62,13 +65,13 @@ public class WorldBossTimer extends AbstractTool implements Tool {
     }
 
     @Override
-    protected Stage buildStage() throws Exception {
+    protected VScene buildScene() throws Exception {
         return new S();
     }
 
     @Override
     protected void terminate0() {
-        var stage = (S) this.stage;
+        var stage = (S) this.scene;
         if (stage != null) {
             stage.etaTimer.stop();
         }
@@ -76,7 +79,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
     private static final DateTimeFormatter formatter = MiscUtils.YYYYMMddHHiissDateTimeFormatter;
 
-    private static class S extends Stage {
+    private static class S extends ToolScene {
         static final Path recordFilePath = Path.of(AssistantConfig.assistantDirPath.toString(), "WorldBossTimer.vjson.txt");
         static final File recordFile = recordFilePath.toFile();
 
@@ -92,6 +95,8 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         private final TextArea nextBossInfoTemplate;
 
         S() throws Exception {
+            enableAutoContentWidthHeight();
+
             initTableStructure();
             initAccountsStructure();
             etaTimer = new AnimationTimer() {
@@ -123,29 +128,28 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             };
             etaTimer.start();
 
-            var addBtn = new Button(I18n.get().worldBossTimerAddBtn()) {{
-                FontManager.get().setFont(this);
+            var addBtn = new FusionButton(I18n.get().worldBossTimerAddBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var editBtn = new Button(I18n.get().worldBossTimerEditBtn()) {{
-                FontManager.get().setFont(this);
+            var editBtn = new FusionButton(I18n.get().worldBossTimerEditBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var spawnBtn = new Button(I18n.get().worldBossTimerSpawnBtn()) {{
-                FontManager.get().setFont(this);
+            var spawnBtn = new FusionButton(I18n.get().worldBossTimerSpawnBtn()) {{
                 setPrefWidth(120);
-                setTextFill(Color.GREEN);
+                setPrefHeight(32);
+                getTextNode().setTextFill(new Color(0x8d / 255d, 0xbd / 255d, 0x74 / 255d, 1));
             }};
-            var delBtn = new Button(I18n.get().worldBossTimerDelBtn()) {{
-                FontManager.get().setFont(this);
+            var delBtn = new FusionButton(I18n.get().worldBossTimerDelBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var clearBtn = new Button(I18n.get().worldBossTimerClearBtn()) {{
-                FontManager.get().setFont(this);
+            var clearBtn = new FusionButton(I18n.get().worldBossTimerClearBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var copyNextBossInfoBtn = new Button(I18n.get().worldBossTimerCopyBossInfoBtn()) {{
-                FontManager.get().setFont(this);
+            var copyNextBossInfoBtn = new FusionButton(I18n.get().worldBossTimerCopyBossInfoBtn()) {{
                 setPrefWidth(120);
                 setPrefHeight(60);
             }};
@@ -155,26 +159,34 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 setPrefHeight(100);
                 setWrapText(false);
             }};
-            var exportBtn = new Button(I18n.get().worldBossTimerExportBtn()) {{
-                FontManager.get().setFont(this);
+            var exportBtn = new FusionButton(I18n.get().worldBossTimerExportBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var importBtn = new Button(I18n.get().worldBossTimerImportBtn()) {{
-                FontManager.get().setFont(this);
+            var importBtn = new FusionButton(I18n.get().worldBossTimerImportBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
             includeBossTimerCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeBossTimerCheckBox()) {{
-                FontManager.get().setFont(this);
+                FontManager.get().setFont(this, settings -> settings.setSize(14));
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
                 setSelected(true);
             }};
             includeAccountTimerCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeAccountTimerCheckBox()) {{
-                FontManager.get().setFont(this);
+                FontManager.get().setFont(this, settings -> settings.setSize(14));
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
             }};
             includeMsgTemplateCheckBox = new CheckBox(I18n.get().worldBossTimerIncludeMsgTemplateCheckBox()) {{
-                FontManager.get().setFont(this);
+                FontManager.get().setFont(this, settings -> settings.setSize(14));
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
             }};
             mergeImportCheckBox = new CheckBox(I18n.get().worldBossTimerMergeImportCheckBox()) {{
-                FontManager.get().setFont(this);
+                FontManager.get().setFont(this, settings -> settings.setSize(14));
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
             }};
 
             addBtn.setOnAction(e -> new AddStage(table, this::save).showAndWait());
@@ -240,25 +252,25 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 save();
             });
 
-            var accountAddBtn = new Button(I18n.get().worldBossTimerAddBtn()) {{
-                FontManager.get().setFont(this);
+            var accountAddBtn = new FusionButton(I18n.get().worldBossTimerAddBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var accountEditBtn = new Button(I18n.get().worldBossTimerEditBtn()) {{
-                FontManager.get().setFont(this);
+            var accountEditBtn = new FusionButton(I18n.get().worldBossTimerEditBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var accountSwitchLineBtn = new Button(I18n.get().worldBossTimerSwitchLineBtn()) {{
-                FontManager.get().setFont(this);
+            var accountSwitchLineBtn = new FusionButton(I18n.get().worldBossTimerSwitchLineBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var accountDelBtn = new Button(I18n.get().worldBossTimerDelBtn()) {{
-                FontManager.get().setFont(this);
+            var accountDelBtn = new FusionButton(I18n.get().worldBossTimerDelBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
-            var accountClearBtn = new Button(I18n.get().worldBossTimerClearBtn()) {{
-                FontManager.get().setFont(this);
+            var accountClearBtn = new FusionButton(I18n.get().worldBossTimerClearBtn()) {{
                 setPrefWidth(120);
+                setPrefHeight(32);
             }};
 
             accountAddBtn.setOnAction(e -> new AddAccountStage(accounts, this::save).showAndWait());
@@ -292,32 +304,26 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 save();
             });
 
-            var pane = new Pane();
-            var scene = new Scene(pane);
-            setScene(scene);
+            var pane = getContentPane();
 
             pane.getChildren().addAll(
                 new VBox(
                     new VPadding(10),
                     new HBox(
                         new HPadding(10), exportBtn, new HPadding(10), importBtn,
-                        new Separator(Orientation.VERTICAL) {{
-                            setPadding(new Insets(0, 10, 0, 10));
-                        }}, includeBossTimerCheckBox,
+                        new HPadding(20), includeBossTimerCheckBox,
                         new HPadding(25), includeAccountTimerCheckBox,
                         new HPadding(25), includeMsgTemplateCheckBox,
                         new HPadding(25), mergeImportCheckBox
                     ) {{
                         setAlignment(Pos.CENTER_LEFT);
                     }},
-                    new Separator() {{
-                        setPadding(new Insets(10, 0, 10, 10));
-                    }},
+                    new VPadding(20),
                     new HBox(
                         new HPadding(10),
                         table.getNode(),
                         new HPadding(10),
-                        new VBox(
+                        new FusionPane(false, new VBox(
                             addBtn,
                             new VPadding(5),
                             editBtn,
@@ -330,17 +336,15 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                             new VPadding(5),
                             copyNextBossInfoBtn,
                             new VPadding(5),
-                            nextBossInfoTemplate
-                        )
+                            new FusionW(nextBossInfoTemplate)
+                        )).getNode()
                     ),
-                    new Separator() {{
-                        setPadding(new Insets(10, 0, 10, 10));
-                    }},
+                    new VPadding(20),
                     new HBox(
                         new HPadding(10),
                         accounts.getNode(),
                         new HPadding(10),
-                        new VBox(
+                        new FusionPane(false, new VBox(
                             accountAddBtn,
                             new VPadding(5),
                             accountEditBtn,
@@ -350,15 +354,15 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                             accountDelBtn,
                             new VPadding(5),
                             accountClearBtn
-                        )
+                        )).getNode()
                     )
                 )
             );
 
             pane.widthProperty().addListener((ob, old, now) -> {
                 if (now == null) return;
-                table.getNode().setPrefWidth(now.doubleValue() - 10 - 120 - 10 - 10);
-                accounts.getNode().setPrefWidth(now.doubleValue() - 10 - 120 - 10 - 10);
+                table.getNode().setPrefWidth(now.doubleValue() - 10 - 120 - 10 - 10 - FusionPane.PADDING_V * 2);
+                accounts.getNode().setPrefWidth(now.doubleValue() - 10 - 120 - 10 - 10 - FusionPane.PADDING_V * 2);
             });
             pane.heightProperty().addListener((ob, old, now) -> {
                 if (now == null) return;
@@ -368,9 +372,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
 
             init();
 
-            setWidth(1024);
-            setHeight(960);
-            centerOnScreen();
+            FXUtils.observeWidthCenter(getContentPane(), pane);
         }
 
         private void initTableStructure() {
@@ -626,7 +628,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
     }
 
-    private static class AddStage extends Stage {
+    private static class AddStage extends VStage {
         private static String lastBossName = null;
 
         AddStage(VTableView<BossInfo> table, Runnable saveCB) {
@@ -639,35 +641,33 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                  Runnable saveCB) {
             var current = LocalDateTime.now();
 
-            var pane = new Pane();
-            var scene = new Scene(pane);
-            setScene(scene);
+            var pane = getInitialScene().getContentPane();
 
-            var lineLabel = new Label(I18n.get().worldBossTimerLineCol()) {{
+            var lineLabel = new ThemeLabel(I18n.get().worldBossTimerLineCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
-            var nameLabel = new Label(I18n.get().worldBossTimerNameCol()) {{
+            var nameLabel = new ThemeLabel(I18n.get().worldBossTimerNameCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
-            var lastKillLabel = new Label(I18n.get().worldBossTimerLastKillCol()) {{
+            var lastKillLabel = new ThemeLabel(I18n.get().worldBossTimerLastKillCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
-            var spawnMinutesLabel = new Label(I18n.get().worldBossTimerSpawnMinutesCol()) {{
+            var spawnMinutesLabel = new ThemeLabel(I18n.get().worldBossTimerSpawnMinutesCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
-            var commentLabel = new Label(I18n.get().worldBossTimerCommentCol()) {{
+            var commentLabel = new ThemeLabel(I18n.get().worldBossTimerCommentCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
@@ -717,10 +717,11 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
             }};
 
-            var okBtn = new Button(I18n.get().worldBossTimerOkBtn()) {{
-                FontManager.get().setFont(Consts.NotoFont, this);
+            var okBtn = new FusionButton(I18n.get().worldBossTimerOkBtn()) {{
+                FontManager.get().setFont(Consts.NotoFont, getTextNode());
             }};
             okBtn.setPrefWidth(120);
+            okBtn.setPrefHeight(32);
             okBtn.setOnAction(e -> {
                 if (lineInput.getText().isBlank()) {
                     SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLine());
@@ -798,25 +799,24 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 new HBox(
                     new HPadding(10),
                     new VBox(
-                        new HBox(lineLabel, new HPadding(10), lineInput),
+                        new HBox(lineLabel, new HPadding(10), new FusionW(lineInput)),
                         new VPadding(5),
-                        new HBox(nameLabel, new HPadding(10), nameInput),
+                        new HBox(nameLabel, new HPadding(10), new FusionW(nameInput)),
                         new VPadding(5),
-                        new HBox(lastKillLabel, new HPadding(10), lastKillInput),
+                        new HBox(lastKillLabel, new HPadding(10), new FusionW(lastKillInput)),
                         new VPadding(5),
-                        new HBox(spawnMinutesLabel, new HPadding(10), spawnMinutesInput),
+                        new HBox(spawnMinutesLabel, new HPadding(10), new FusionW(spawnMinutesInput)),
                         new VPadding(5),
-                        new HBox(commentLabel, new HPadding(10), commentInput)
+                        new HBox(commentLabel, new HPadding(10), new FusionW(commentInput))
                     )
                 ),
                 new VPadding(10),
                 new HBox(new HPadding(165), okBtn)
             ));
 
-            setWidth(450);
-            setHeight(290);
-            setResizable(false);
-            centerOnScreen();
+            getStage().setWidth(450);
+            getStage().setHeight(320);
+            getInitialScene().enableAutoContentWidthHeight();
         }
 
         public AddStage(VTableView<BossInfo> table, BossInfo info, Runnable saveCB) {
@@ -824,7 +824,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         }
     }
 
-    private static class AddAccountStage extends Stage {
+    private static class AddAccountStage extends VStage {
         AddAccountStage(VTableView<AccountInfo> table, Runnable saveCB) {
             this(table, null, 0, null, 0, 0, null, saveCB);
         }
@@ -835,35 +835,33 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                         Runnable saveCB) {
             var current = LocalDateTime.now();
 
-            var pane = new Pane();
-            var scene = new Scene(pane);
-            setScene(scene);
+            var pane = getInitialScene().getContentPane();
 
-            var lineLabel = new Label(I18n.get().worldBossTimerLineCol()) {{
+            var lineLabel = new ThemeLabel(I18n.get().worldBossTimerLineCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
-            var nameLabel = new Label(I18n.get().worldBossTimerAccountNameCol()) {{
+            var nameLabel = new ThemeLabel(I18n.get().worldBossTimerAccountNameCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
-            var lastSwitchLineTsLabel = new Label(I18n.get().worldBossTimerLastSwitchLineTsCol()) {{
+            var lastSwitchLineTsLabel = new ThemeLabel(I18n.get().worldBossTimerLastSwitchLineTsCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
-            var switchLineCDLabel = new Label(I18n.get().worldBossTimerSwitchLineCDMinutes()) {{
+            var switchLineCDLabel = new ThemeLabel(I18n.get().worldBossTimerSwitchLineCDMinutes()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
                 setPadding(new Insets(5, 0, 0, 0));
             }};
-            var commentLabel = new Label(I18n.get().worldBossTimerCommentCol()) {{
+            var commentLabel = new ThemeLabel(I18n.get().worldBossTimerCommentCol()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(160);
                 setAlignment(Pos.CENTER_RIGHT);
@@ -911,10 +909,11 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 }
             }};
 
-            var okBtn = new Button(I18n.get().worldBossTimerOkBtn()) {{
-                FontManager.get().setFont(Consts.NotoFont, this);
+            var okBtn = new FusionButton(I18n.get().worldBossTimerOkBtn()) {{
+                FontManager.get().setFont(Consts.NotoFont, getTextNode());
             }};
             okBtn.setPrefWidth(120);
+            okBtn.setPrefHeight(32);
             okBtn.setOnAction(e -> {
                 if (lineInput.getText().isBlank()) {
                     SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().worldBossTimerMissingLine());
@@ -990,25 +989,24 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 new HBox(
                     new HPadding(10),
                     new VBox(
-                        new HBox(lineLabel, new HPadding(10), lineInput),
+                        new HBox(lineLabel, new HPadding(10), new FusionW(lineInput)),
                         new VPadding(5),
-                        new HBox(nameLabel, new HPadding(10), nameInput),
+                        new HBox(nameLabel, new HPadding(10), new FusionW(nameInput)),
                         new VPadding(5),
-                        new HBox(lastSwitchLineTsLabel, new HPadding(10), lastSwitchLineCDInput),
+                        new HBox(lastSwitchLineTsLabel, new HPadding(10), new FusionW(lastSwitchLineCDInput)),
                         new VPadding(5),
-                        new HBox(switchLineCDLabel, new HPadding(10), cdInput),
+                        new HBox(switchLineCDLabel, new HPadding(10), new FusionW(cdInput)),
                         new VPadding(5),
-                        new HBox(commentLabel, new HPadding(10), commentInput)
+                        new HBox(commentLabel, new HPadding(10), new FusionW(commentInput))
                     )
                 ),
                 new VPadding(10),
                 new HBox(new HPadding(165), okBtn)
             ));
 
-            setWidth(450);
-            setHeight(290);
-            setResizable(false);
-            centerOnScreen();
+            getStage().setWidth(450);
+            getStage().setHeight(320);
+            getInitialScene().enableAutoContentWidthHeight();
         }
 
         public AddAccountStage(VTableView<AccountInfo> table, AccountInfo info, Runnable saveCB) {
@@ -1023,7 +1021,10 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         public int spawnMinutes;
         public String comment;
 
-        public final TimerLabel timerLabel = new TimerLabel(Color.BLACK, Color.ORANGE, Color.RED);
+        public final TimerLabel timerLabel = new TimerLabel(
+            Theme.current().normalTextColor(),
+            new Color(0xe8 / 255d, 0x98 / 255d, 0x70 / 255d, 1),
+            new Color(0xf3 / 255d, 0x85 / 255d, 0x85 / 255d, 1));
 
         static final Rule<BossInfo> rule = new ObjectRule<>(BossInfo::new)
             .put("line", (o, it) -> o.line = it, IntRule.get())
@@ -1050,7 +1051,10 @@ public class WorldBossTimer extends AbstractTool implements Tool {
         public int switchLineCDMinutes;
         public String comment;
 
-        public final TimerLabel timerLabel = new TimerLabel(Color.BLACK, Color.ORANGE, Color.GREEN);
+        public final TimerLabel timerLabel = new TimerLabel(
+            Theme.current().normalTextColor(),
+            new Color(0xe8 / 255d, 0x98 / 255d, 0x70 / 255d, 1),
+            new Color(0x8d / 255d, 0xbd / 255d, 0x74 / 255d, 1));
 
         static final Rule<AccountInfo> rule = new ObjectRule<>(AccountInfo::new)
             .put("name", (o, it) -> o.name = it, StringRule.get())

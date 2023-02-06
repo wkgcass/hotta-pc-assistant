@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.vfx.control.dialog.VConfirmDialog;
 import io.vproxy.vfx.ui.alert.StackTraceAlert;
 import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.layout.VPadding;
@@ -8,8 +9,6 @@ import io.vproxy.vfx.util.FXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -57,11 +56,13 @@ public abstract class WithConfirmScene extends MainScene implements EnterCheck, 
         resetBtn.setPrefWidth(120);
         resetBtn.setOnAction(e -> {
             if (isModified) {
-                Optional<ButtonType> opt = new Alert(Alert.AlertType.CONFIRMATION, I18n.get().discardChangesConfirm()).showAndWait();
+                var dialog = new VConfirmDialog();
+                dialog.setText(I18n.get().discardChangesConfirm());
+                Optional<VConfirmDialog.Result> opt = dialog.showAndWait();
                 if (opt.isEmpty()) {
                     return;
                 }
-                if (opt.get() != ButtonType.OK) {
+                if (opt.get() != VConfirmDialog.Result.YES) {
                     return;
                 }
             }
@@ -124,8 +125,10 @@ public abstract class WithConfirmScene extends MainScene implements EnterCheck, 
         if (!isModified) {
             return true;
         }
-        Optional<ButtonType> opt = new Alert(Alert.AlertType.CONFIRMATION, I18n.get().exitCheckMessage()).showAndWait();
-        return opt.isPresent() && opt.get() == ButtonType.OK;
+        var dialog = new VConfirmDialog();
+        dialog.setText(I18n.get().exitCheckMessage());
+        Optional<VConfirmDialog.Result> opt = dialog.showAndWait();
+        return opt.isPresent() && opt.get() == VConfirmDialog.Result.YES;
     }
 
     abstract protected void confirm() throws Exception;

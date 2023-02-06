@@ -1,10 +1,10 @@
 package net.cassite.hottapcassistant.tool;
 
 import io.vproxy.vfx.ui.alert.StackTraceAlert;
+import io.vproxy.vfx.ui.scene.VScene;
 import io.vproxy.vfx.util.IOUtils;
 import io.vproxy.vfx.util.Logger;
 import javafx.scene.image.Image;
-import javafx.stage.Stage;
 import net.cassite.hottapcassistant.ui.JSONJavaObject;
 import vjson.JSON;
 import vjson.deserializer.rule.Rule;
@@ -16,10 +16,11 @@ import java.nio.file.Path;
 public abstract class AbstractTool implements Tool {
     private final String name;
     private final Image icon;
-    protected Stage stage;
+    protected VScene scene = null;
     private Path configPath = null;
     private Rule<? extends JSONJavaObject> configRule = null;
     protected JSONJavaObject config = null;
+    protected Runnable runOnTerminated = null;
 
     public AbstractTool() {
         name = buildName();
@@ -38,26 +39,15 @@ public abstract class AbstractTool implements Tool {
 
     @Override
     public void launch() {
-        if (stage != null) {
+        if (scene != null) {
             throw new IllegalStateException();
         }
         try {
-            stage = buildStage();
+            scene = buildScene();
             load();
         } catch (Exception e) {
+            scene = null;
             StackTraceAlert.showAndWait(e);
-            stage = null;
-            return;
-        }
-        if (stage != null) {
-            if (stage.getTitle() == null || stage.getTitle().isBlank()) {
-                stage.setTitle(getName());
-            }
-            if (stage.getIcons().isEmpty()) {
-                stage.getIcons().add(getIcon());
-            }
-            stage.setOnCloseRequest(e -> terminate(false));
-            stage.show();
         }
     }
 
@@ -65,35 +55,37 @@ public abstract class AbstractTool implements Tool {
 
     protected abstract Image buildIcon();
 
-    protected abstract Stage buildStage() throws Exception;
+    protected abstract VScene buildScene() throws Exception;
 
     @Override
     public boolean isRunning() {
-        return stage != null;
+        return scene != null;
     }
 
     @Override
-    public void alert() {
-        var stage = this.stage;
-        if (stage != null) {
-            stage.requestFocus();
-        }
+    public VScene getScene() {
+        return scene;
+    }
+
+    @Override
+    public void setOnTerminated(Runnable f) {
+        if (runOnTerminated != null)
+            throw new IllegalStateException();
+        runOnTerminated = f;
     }
 
     @Override
     public void terminate() {
-        terminate(true);
-    }
-
-    protected void terminate(boolean callClose) {
         terminate0();
-        var stage = this.stage;
-        this.stage = null;
-        if (stage != null) {
+        var runOnTerminated = this.runOnTerminated;
+        this.runOnTerminated = null;
+        if (runOnTerminated != null) {
+            runOnTerminated.run();
+        }
+        var scene = this.scene;
+        this.scene = null;
+        if (scene != null) {
             autoSave();
-            if (callClose) {
-                stage.close();
-            }
         }
     }
 

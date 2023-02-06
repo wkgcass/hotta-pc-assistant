@@ -483,7 +483,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
         } else {
             castingPoint.from(fishing.castingPoint);
         }
-        var desc = new ThemeLabel(I18n.get().fishingConfiguringScreenDescription()) {{
+        var desc = new Label(I18n.get().fishingConfiguringScreenDescription()) {{
             FontManager.get().setFont(this, settings -> settings.setSize(48));
             setTextFill(Color.RED);
         }};
@@ -581,7 +581,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
         } else {
             staminaRect.from(fishing.fishStaminaRect);
         }
-        var desc = new ThemeLabel(I18n.get().fishingConfiguringScreenDescription()) {{
+        var desc = new Label(I18n.get().fishingConfiguringScreenDescription()) {{
             FontManager.get().setFont(this, settings -> settings.setSize(48));
             setTextFill(Color.RED);
         }};

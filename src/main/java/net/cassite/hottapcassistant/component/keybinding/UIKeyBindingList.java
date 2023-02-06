@@ -8,6 +8,7 @@ import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.ui.wrapper.FusionW;
 import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.Logger;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
@@ -102,13 +103,22 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
             }
             var inputBox = new TextField();
             inputBox.setText(Utils.floatValueFormat.format(kb.scale));
+            boolean[] modified = new boolean[]{false};
+            inputBox.textProperty().addListener((ob, old, now) -> {
+                System.out.println("set modified to true");
+                modified[0] = true;
+            });
             inputBox.setOnMouseExited(e -> {
+                if (!modified[0]) {
+                    return;
+                }
+                Platform.runLater(() -> modified[0] = false);
                 var v = inputBox.getText().trim();
                 double dv;
                 try {
                     dv = Double.parseDouble(v);
                 } catch (NumberFormatException ex) {
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().notFloatingPointValue());
+                    SimpleAlert.show(Alert.AlertType.ERROR, I18n.get().notFloatingPointValue());
                     inputBox.setText(Utils.floatValueFormat.format(kb.scale));
                     return;
                 }

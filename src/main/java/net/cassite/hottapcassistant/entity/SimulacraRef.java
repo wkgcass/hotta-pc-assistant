@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.entity;
 
+import javafx.scene.image.Image;
 import kotlin.Pair;
 import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.simulacra.AiLiSiSimulacra;
@@ -27,6 +28,7 @@ public class SimulacraRef {
 
     public final int id;
     public final String name;
+    public Image image;
     public final Supplier<Simulacra> simulacraSupplier;
 
     public SimulacraRef(int id, Supplier<Simulacra> simulacraSupplier) {
@@ -34,9 +36,11 @@ public class SimulacraRef {
         this.simulacraSupplier = simulacraSupplier;
         if (simulacraSupplier == null) {
             name = "";
+            this.image = null;
         } else {
             var s = simulacraSupplier.get();
             name = s.getName();
+            this.image = s.getImage();
         }
     }
 
@@ -47,8 +51,8 @@ public class SimulacraRef {
     @Override
     public String toString() {
         return "SimulacraRef{" +
-            "index=" + id +
-            ", name='" + name + '\'' +
-            '}';
+               "index=" + id +
+               ", name='" + name + '\'' +
+               '}';
     }
 }

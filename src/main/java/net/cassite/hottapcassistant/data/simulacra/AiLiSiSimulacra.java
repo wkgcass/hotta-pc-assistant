@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.data.simulacra;
 
+import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.misc.TriggerAiLiSiSimulacra;
@@ -9,7 +10,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
-    private final WeaponCoolDown buff = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ai-li-si-simulacra"), 1.25, "aiLiSiSimulacraBuff", I18n.get().buffName("aiLiSiSimulacraBuff"));
+    private final WeaponCoolDown buff = new WeaponCoolDown(buildImage(), 1.25, "aiLiSiSimulacraBuff", I18n.get().buffName("aiLiSiSimulacraBuff"));
     private long buffTime = 0;
 
     public AiLiSiSimulacra() {
@@ -24,6 +25,11 @@ public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
     @Override
     protected String buildName() {
         return I18n.get().simulacraName("ài lì sī");
+    }
+
+    @Override
+    protected Image buildImage() {
+        return Utils.getBuffImageFromClasspath("ai-li-si-simulacra");
     }
 
     @Override

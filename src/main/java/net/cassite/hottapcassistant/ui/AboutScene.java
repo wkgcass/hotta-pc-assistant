@@ -2,11 +2,9 @@ package net.cassite.hottapcassistant.ui;
 
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -15,7 +13,7 @@ import net.cassite.hottapcassistant.util.Version;
 
 import java.util.List;
 
-public class AboutPane extends StackPane {
+public class AboutScene extends MainScene {
     private static final List<Author> authors = List.of(
         new Author("wkgcass", "https://github.com/wkgcass", "wkgcass",
             "星岛2", "vcassv")
@@ -38,23 +36,26 @@ public class AboutPane extends StackPane {
         return sb.toString();
     }
 
-    private final Label latestVersion = new Label() {{
+    private final ThemeLabel latestVersion = new ThemeLabel() {{
         FontManager.get().setFont(Consts.NotoFont, this);
     }};
-    private final Label latestReleaseTime = new Label() {{
+    private final ThemeLabel latestReleaseTime = new ThemeLabel() {{
         FontManager.get().setFont(Consts.NotoFont, this);
     }};
-    private final Label lastSyncTime = new Label() {{
+    private final ThemeLabel lastSyncTime = new ThemeLabel() {{
         FontManager.get().setFont(Consts.NotoFont, this);
     }};
 
-    public AboutPane() {
+    public AboutScene() {
+        enableAutoContentWidth();
         var vbox = new VBox();
-        vbox.setPadding(new Insets(10, 0, 0, 0));
+        FXUtils.observeWidthCenter(getContentPane(), vbox);
+
+        vbox.setPadding(new Insets(50, 0, 50, 0));
         vbox.getChildren().addAll(
             new VBox() {{
                 getChildren().addAll(
-                    new Label(I18n.get().version() + ": " + Version.version) {{
+                    new ThemeLabel(I18n.get().version() + ": " + Version.version) {{
                         FontManager.get().setFont(Consts.NotoFont, this);
                     }},
                     new VPadding(2),
@@ -65,23 +66,24 @@ public class AboutPane extends StackPane {
                     lastSyncTime
                 );
             }},
-            new Separator() {{
-                setPadding(new Insets(10, 0, 10, 0));
-            }},
-            new Label(I18n.get().about()) {{
+            new VPadding(20),
+            new ThemeLabel(I18n.get().about()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
             }},
-            new Separator() {{
-                setPadding(new Insets(10, 0, 10, 0));
-            }},
-            new Label(I18n.get().contributor() + "\n" + generate()) {{
+            new VPadding(20),
+            new ThemeLabel(I18n.get().contributor() + "\n" + generate()) {{
                 FontManager.get().setFont(Consts.NotoFont, this);
             }});
 
-        getChildren().add(vbox);
+        getContentPane().getChildren().add(vbox);
 
         Feed.updated.addListener((ob, old, now) -> FXUtils.runOnFX(this::updateFeed));
         updateFeed();
+    }
+
+    @Override
+    public String title() {
+        return I18n.get().toolNameAbout();
     }
 
     private void updateFeed() {

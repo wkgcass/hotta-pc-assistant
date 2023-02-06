@@ -5,6 +5,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.dns.AddressResolverOptions;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.button.FusionImageButton;
 import io.vproxy.vfx.util.Logger;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -42,6 +43,11 @@ public class GlobalValues {
     public static final SimpleStringProperty gamePath = new SimpleStringProperty(null);
     public static final SimpleStringProperty globalServerGamePath = new SimpleStringProperty(null);
     public static final SimpleObjectProperty<GameVersion> useVersion = new SimpleObjectProperty<>(GameVersion.CN);
+
+    public static FusionImageButton backButton;
+    public static Runnable backFunction;
+    public static FusionImageButton closeButton;
+    public static Runnable closeFunction;
 
     public static AssistantConfig getGameAssistantConfig() {
         if (savedPath.get() == null) throw new IllegalStateException();
@@ -156,5 +162,21 @@ public class GlobalValues {
             return false;
         }
         return true;
+    }
+
+    public static void setBackFunction(Runnable f) {
+        if (backFunction != null) {
+            throw new IllegalStateException();
+        }
+        backButton.setVisible(true);
+        backFunction = f;
+    }
+
+    public static void setCloseFunction(Runnable f) {
+        if (closeFunction != null) {
+            throw new IllegalStateException();
+        }
+        closeButton.setVisible(true);
+        closeFunction = f;
     }
 }

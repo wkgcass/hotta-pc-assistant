@@ -589,7 +589,7 @@ public class WelcomeScene extends MainScene {
     private void initLocations() {
         Assistant a;
         try {
-            a = AssistantConfig.readAssistant();
+            a = AssistantConfig.readAssistant(true);
         } catch (Exception e) {
             Logger.error("reading assistant config failed in initLocation()", e);
             return;

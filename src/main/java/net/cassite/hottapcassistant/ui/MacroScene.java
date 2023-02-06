@@ -65,9 +65,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
         topVBox.setLayoutX(10);
 
         var switchHBox = new HBox();
-        var switchBtnLabel = new ThemeLabel(I18n.get().macroSwitchButtonLabel()) {{
-            FontManager.get().setFont(this);
-        }};
+        var switchBtnLabel = new ThemeLabel(I18n.get().macroSwitchButtonLabel());
         switchHBox.getChildren().addAll(switchBtnLabel, new HPadding(15), switchButton.getNode());
         var macroAlertLabel = new ThemeLabel(I18n.get().macroAlertLabel()) {{
             FontManager.get().setFont(this);
@@ -78,9 +76,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
             setTextFill(Theme.current().normalTextColor());
         }};
         var rememberHBox = new HBox();
-        var rememberBtnLabel = new ThemeLabel(I18n.get().rememberMousePositionButtonLabel()) {{
-            FontManager.get().setFont(this);
-        }};
+        var rememberBtnLabel = new ThemeLabel(I18n.get().rememberMousePositionButtonLabel());
         rememberHBox.getChildren().addAll(rememberBtnLabel, new HPadding(15), rememberMousePositionSwitchButton.getNode());
         topVBox.getChildren().addAll(
             new VPadding(10),

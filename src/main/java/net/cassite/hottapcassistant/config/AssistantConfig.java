@@ -1,10 +1,9 @@
 package net.cassite.hottapcassistant.config;
 
+import io.vproxy.vfx.control.dialog.VDialog;
+import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.util.IOUtils;
 import io.vproxy.vfx.util.Logger;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import net.cassite.hottapcassistant.entity.Assistant;
 import net.cassite.hottapcassistant.entity.GameAssistant;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -19,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class AssistantConfig {
@@ -58,23 +58,24 @@ public class AssistantConfig {
                 Assistant.rule, ParserOptions.allFeatures());
         } catch (RuntimeException e) {
             if (askForDeletion) {
-                var dialog = new Dialog<ButtonType>();
-                dialog.setContentText(I18n.get().invalidAssistantConfigFileAskForDeletion(assistantFilePath.toString()));
-                var modify = new ButtonType(I18n.get().modifyInvalidAssistantConfigBtn(), ButtonBar.ButtonData.OK_DONE);
-                var delete = new ButtonType(I18n.get().deleteInvalidAssistantConfigBtn(), ButtonBar.ButtonData.OK_DONE);
-                var cancel = new ButtonType(I18n.get().cancelInvalidAssistantConfigBtn(), ButtonBar.ButtonData.CANCEL_CLOSE);
-                dialog.getDialogPane().getButtonTypes().addAll(modify, delete, cancel);
+                var dialog = new VDialog<Integer>();
+                dialog.setText(I18n.get().invalidAssistantConfigFileAskForDeletion(assistantFilePath.toString()));
+                dialog.setButtons(Arrays.asList(
+                    new VDialogButton<>(I18n.get().modifyInvalidAssistantConfigBtn(), 1),
+                    new VDialogButton<>(I18n.get().deleteInvalidAssistantConfigBtn(), 2),
+                    new VDialogButton<>(I18n.get().cancelInvalidAssistantConfigBtn(), 3)
+                ));
                 var res = dialog.showAndWait();
                 if (res.isPresent()) {
-                    var t = res.get();
-                    if (t == delete) {
+                    int t = res.get();
+                    if (t == 2) {
                         try {
                             Files.delete(assistantFilePath);
                         } catch (IOException ee) {
                             Logger.error("deleting invalid assistant config file failed", ee);
                         }
                         return Assistant.empty();
-                    } else if (t == modify) {
+                    } else if (t == 1) {
                         try {
                             Desktop.getDesktop().open(assistantFilePath.toFile());
                         } catch (IOException ee) {

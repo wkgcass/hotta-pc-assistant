@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.entity;
 
+import javafx.scene.image.Image;
 import kotlin.Pair;
 import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.relics.DiceRelics;
@@ -29,6 +30,7 @@ public class RelicsRef {
 
     public final int id;
     public final String name;
+    public Image image;
     private final Supplier<Relics> relicsSupplier;
     public Supplier<Integer> starsSupplier;
 
@@ -38,8 +40,10 @@ public class RelicsRef {
         if (relicsSupplier != null) {
             var r = relicsSupplier.get();
             this.name = r.getName();
+            this.image = r.getImage();
         } else {
             this.name = "";
+            this.image = null;
         }
     }
 
@@ -59,8 +63,8 @@ public class RelicsRef {
     @Override
     public String toString() {
         return "RelicsRef{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            '}';
+               "id=" + id +
+               ", name='" + name + '\'' +
+               '}';
     }
 }

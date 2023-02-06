@@ -1,23 +1,22 @@
 package net.cassite.hottapcassistant.tool;
 
 import io.vproxy.vfx.manager.audio.AudioManager;
-import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.scene.VScene;
+import io.vproxy.vfx.ui.slider.VSlider;
+import io.vproxy.vfx.ui.wrapper.ThemeLabel;
+import io.vproxy.vfx.util.FXUtils;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Slider;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
-import javafx.stage.Stage;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -37,68 +36,79 @@ public class LansBrainWash extends AbstractTool implements Tool {
     }
 
     @Override
-    protected Stage buildStage() {
+    protected VScene buildScene() {
         return new S();
     }
 
     @Override
     protected void terminate0() {
-        var stage = (S) this.stage;
-        if (stage != null) {
-            stage.stop();
+        var scene = (S) this.scene;
+        if (scene != null) {
+            scene.stop();
         }
     }
 
-    private static class S extends Stage {
+    private static class S extends ToolScene {
         private final SimpleBooleanProperty started = new SimpleBooleanProperty(false);
         private AudioClip[] audio = null;
-        private int freq = 30;
-        private int randTime = 1000;
+        private final IntegerProperty freq = new SimpleIntegerProperty(30);
+        private final IntegerProperty randTime = new SimpleIntegerProperty(1000) {
+            @Override
+            public String toString() {
+                String v = "" + get();
+                if (v.length() < 2) {
+                    v = "000" + v;
+                } else if (v.length() < 3) {
+                    v = "00" + v;
+                } else if (v.length() < 4) {
+                    v = "0" + v;
+                }
+                return v.charAt(0) + "." + v.substring(1);
+            }
+        };
         private Play play = null;
 
         public S() {
-            setWidth(550);
-            setHeight(300);
+            enableAutoContentWidthHeight();
+
             var pane = new Pane();
-            var scene = new Scene(pane);
-            setScene(scene);
+            pane.setPrefWidth(550);
+            pane.setPrefHeight(300);
+            getContentPane().getChildren().add(pane);
+            FXUtils.observeWidthHeightCenter(getContentPane(), pane);
 
-            var freqSlider = new Slider(0, 120, 30);
-            freqSlider.setShowTickMarks(true);
-            freqSlider.setShowTickLabels(true);
-            freqSlider.setMajorTickUnit(10);
-            freqSlider.setBlockIncrement(1);
-            freqSlider.setPrefWidth(500);
+            var freqSlider = new VSlider();
+            freqSlider.setLength(500);
+            freqSlider.setPercentage(freq.get() / 120d);
 
-            var randTimeSlider = new Slider(0, 3, 1);
-            randTimeSlider.setShowTickMarks(true);
-            randTimeSlider.setShowTickLabels(true);
-            randTimeSlider.setMajorTickUnit(0.5);
-            randTimeSlider.setBlockIncrement(0.1);
-            randTimeSlider.setPrefWidth(500);
+            var randTimeSlider = new VSlider();
+            randTimeSlider.setLength(500);
+            randTimeSlider.setPercentage(randTime.get() / 3000d);
 
-            var startBtn = new Button(I18n.get().brainWashLanStartBtn()) {{
-                FontManager.get().setFont(this);
+            var startBtn = new FusionButton(I18n.get().brainWashLanStartBtn()) {{
+                setPrefWidth(48);
+                setPrefHeight(32);
             }};
             startBtn.setOnAction(e -> start());
-            var stopBtn = new Button(I18n.get().brainWashLanStopBtn()) {{
-                FontManager.get().setFont(this);
+            var stopBtn = new FusionButton(I18n.get().brainWashLanStopBtn()) {{
                 setDisable(true);
+                setPrefWidth(48);
+                setPrefHeight(32);
             }};
             stopBtn.setOnAction(e -> stop());
 
-            freqSlider.valueProperty().addListener((ob, old, now) -> {
+            freqSlider.percentageProperty().addListener((ob, old, now) -> {
                 if (now == null) return;
-                if (now.intValue() == 0) {
+                if (now.doubleValue() == 0) {
                     startBtn.setDisable(true);
                 } else {
                     startBtn.setDisable(started.get());
                 }
-                freq = now.intValue();
+                freq.set((int) (now.doubleValue() * 120));
             });
-            randTimeSlider.valueProperty().addListener((ob, old, now) -> {
+            randTimeSlider.percentageProperty().addListener((ob, old, now) -> {
                 if (now == null) return;
-                randTime = (int) (now.doubleValue() * 1000);
+                randTime.set((int) (now.doubleValue() * 3 * 1000));
             });
             started.addListener((ob, old, now) -> {
                 if (now == null) return;
@@ -110,22 +120,24 @@ public class LansBrainWash extends AbstractTool implements Tool {
                 new HPadding(25),
                 new VBox(
                     new VPadding(20),
-                    new Label(I18n.get().brainWashLanFreqSliderDesc()) {{
-                        FontManager.get().setFont(this);
+                    new ThemeLabel(I18n.get().brainWashLanFreqSliderDesc() + ": " + freq.get()) {{
+                        freq.addListener((ob, old, now) -> {
+                            if (now == null) return;
+                            setText(I18n.get().brainWashLanFreqSliderDesc() + ": " + now);
+                        });
                     }},
-                    new VPadding(5),
+                    new VPadding(20),
                     freqSlider,
-                    new Separator() {{
-                        setPadding(new Insets(10, 0, 10, 0));
+                    new VPadding(20),
+                    new ThemeLabel(I18n.get().brainWashLanRandTimeSliderDesc() + ": " + randTime) {{
+                        randTime.addListener((ob, old, now) -> {
+                            if (now == null) return;
+                            setText(I18n.get().brainWashLanRandTimeSliderDesc() + ": " + randTime);
+                        });
                     }},
-                    new Label(I18n.get().brainWashLanRandTimeSliderDesc()) {{
-                        FontManager.get().setFont(this);
-                    }},
+                    new VPadding(20),
                     randTimeSlider,
-                    new VPadding(5),
-                    new Separator() {{
-                        setPadding(new Insets(10, 0, 10, 0));
-                    }},
+                    new VPadding(45),
                     new HBox(startBtn, new HPadding(10), stopBtn)
                 )
             ));
@@ -150,7 +162,7 @@ public class LansBrainWash extends AbstractTool implements Tool {
             if (play != null) {
                 play.stop();
             }
-            play = new Play(audio, freq, randTime);
+            play = new Play(audio, freq.get(), randTime.get());
             play.start();
             this.play = play;
         }

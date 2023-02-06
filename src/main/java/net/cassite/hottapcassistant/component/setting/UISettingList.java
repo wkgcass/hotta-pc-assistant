@@ -5,6 +5,7 @@ import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.ui.wrapper.FusionW;
 import io.vproxy.vfx.util.FXUtils;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -12,8 +13,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import net.cassite.hottapcassistant.i18n.I18n;
-
-import java.util.Objects;
 
 public class UISettingList extends VTableView<Setting> {
     private final Runnable modifiedCallback;
@@ -38,7 +37,12 @@ public class UISettingList extends VTableView<Setting> {
         return switch (setting.type) {
             case INT, FLOAT -> {
                 var input = new TextField(setting.formatValue());
+                boolean[] modified = new boolean[]{false};
                 Runnable applyHandler = () -> {
+                    if (!modified[0]) {
+                        return;
+                    }
+                    Platform.runLater(() -> modified[0] = false);
                     String text = input.getText();
                     Object v;
                     try {
@@ -48,7 +52,7 @@ public class UISettingList extends VTableView<Setting> {
                             v = Double.parseDouble(text);
                         }
                     } catch (NumberFormatException ex) {
-                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidNumberValue());
+                        SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().invalidNumberValue());
                         input.setText(setting.formatValue());
                         return;
                     }
@@ -61,12 +65,8 @@ public class UISettingList extends VTableView<Setting> {
                     setting.value = v;
                     modifiedCallback.run();
                 };
-                input.focusedProperty().addListener((ob, old, now) -> {
-                    if (now == null) return;
-                    if (Objects.equals(old, now)) return;
-                    if (!now) applyHandler.run();
-                });
-                input.setOnAction(e -> applyHandler.run());
+                input.textProperty().addListener((ob, old, now) -> modified[0] = true);
+                input.setOnMouseExited(e -> applyHandler.run());
                 yield new FusionW(input);
             }
             case BOOL, BOOL_0_1 -> {
@@ -100,16 +100,21 @@ public class UISettingList extends VTableView<Setting> {
                     "3840x2160", // 4K
                     "-1x-1" // fullscreen
                 );
+                boolean[] modified = new boolean[]{false};
                 Runnable applyHandler = () -> {
+                    if (!modified[0]) {
+                        return;
+                    }
+                    Platform.runLater(() -> modified[0] = false);
                     String v = box.getValue();
                     if (!v.contains("x")) {
-                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue());
+                        SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue());
                         box.setValue((String) setting.value);
                         return;
                     }
                     String[] split = v.split("x");
                     if (split.length != 2) {
-                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue());
+                        SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionValue());
                         box.setValue((String) setting.value);
                         return;
                     }
@@ -119,7 +124,7 @@ public class UISettingList extends VTableView<Setting> {
                         x = Integer.parseInt(split[0]);
                         y = Integer.parseInt(split[1]);
                     } catch (NumberFormatException ex) {
-                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionIntegerValue());
+                        SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionIntegerValue());
                         box.setValue((String) setting.value);
                         return;
                     }
@@ -128,19 +133,15 @@ public class UISettingList extends VTableView<Setting> {
                         return;
                     }
                     if (x <= 0 || y <= 0) {
-                        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionIntegerValue());
+                        SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().invalidResolutionIntegerValue());
                         box.setValue((String) setting.value);
                         return;
                     }
                     setting.value = x + "x" + y;
                     modifiedCallback.run();
                 };
-                box.focusedProperty().addListener((ob, old, now) -> {
-                    if (now == null) return;
-                    if (Objects.equals(old, now)) return;
-                    if (!now) applyHandler.run();
-                });
-                box.setOnAction(e -> applyHandler.run());
+                box.valueProperty().addListener((ob, old, now) -> modified[0] = true);
+                box.setOnMouseExited(e -> applyHandler.run());
                 yield box;
             }
         };

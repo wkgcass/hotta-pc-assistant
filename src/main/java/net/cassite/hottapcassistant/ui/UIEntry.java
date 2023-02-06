@@ -3,37 +3,49 @@ package net.cassite.hottapcassistant.ui;
 import io.vproxy.vfx.manager.image.ImageManager;
 import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.button.FusionImageButton;
+import io.vproxy.vfx.ui.button.TransparentFusionImageButton;
 import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.ui.scene.VScene;
 import io.vproxy.vfx.ui.scene.VSceneHideMethod;
 import io.vproxy.vfx.ui.scene.VSceneRole;
 import io.vproxy.vfx.ui.scene.VSceneShowMethod;
 import io.vproxy.vfx.ui.stage.VStage;
+import io.vproxy.vfx.util.FXUtils;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
+import javafx.scene.Group;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.feed.Feed;
+import net.cassite.hottapcassistant.util.GlobalValues;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class UIEntry {
-    public final List<MainScene> mainScenes = Arrays.asList(
-        new WelcomeScene(),
-        new GameSettingsScene(),
-        new InputSettingsScene(),
-        new MacroScene(),
-        new FishingScene(),
-        new CoolDownScene()
-        // TODO
-    );
+    public final List<MainScene> mainScenes;
     private final VStage stage;
     private final VScene menuScene;
+    private final Group normalButtonGroup = new Group() {{
+        setManaged(false);
+        setVisible(false);
+    }};
+    private final Group transparentButtonGroup = new Group();
 
     public UIEntry(VStage stage) {
         this.stage = stage;
+        mainScenes = Arrays.asList(
+            new WelcomeScene(),
+            new GameSettingsScene(),
+            new InputSettingsScene(),
+            new MacroScene(),
+            new FishingScene(),
+            new CoolDownScene(stage.getSceneGroup()),
+            new ToolBoxScene(stage.getSceneGroup()),
+            new AboutScene(),
+            new LogScene()
+        );
 
         var sceneGroup = stage.getSceneGroup();
         for (var scene : mainScenes) {
@@ -76,11 +88,60 @@ public class UIEntry {
             setPrefWidth(40);
             setPrefHeight(VStage.TITLE_BAR_HEIGHT + 1);
             getImageView().setFitHeight(15);
-            setLayoutX(-2);
-            setLayoutY(-1);
         }};
-        stage.getRoot().getContentPane().getChildren().add(menuBtn);
         menuBtn.setOnAction(e -> stage.getRootSceneGroup().show(menuScene, VSceneShowMethod.FROM_LEFT));
+
+        var transparentMenuBtn = new TransparentFusionImageButton(ImageManager.get().load("/images/icon/menu.png")) {{
+            setPrefWidth(menuBtn.getPrefWidth());
+            setPrefHeight(menuBtn.getPrefHeight());
+            getImageView().setFitHeight(menuBtn.getImageView().getFitHeight());
+        }};
+        transparentMenuBtn.setOnAction(menuBtn.getOnAction());
+
+        normalButtonGroup.getChildren().add(menuBtn);
+        transparentButtonGroup.getChildren().add(transparentMenuBtn);
+
+        var backBtn = new FusionImageButton(ImageManager.get().load("/images/icon/return.png:white")) {{
+            setPrefWidth(40);
+            setPrefHeight(VStage.TITLE_BAR_HEIGHT + 1);
+            getImageView().setFitHeight(15);
+            setVisible(false);
+        }};
+        backBtn.setOnAction(e -> {
+            var func = GlobalValues.backFunction;
+            GlobalValues.backFunction = null;
+            backBtn.setVisible(false);
+            if (func != null) {
+                func.run();
+            }
+            GlobalValues.closeButton.setVisible(false);
+            GlobalValues.closeFunction = null;
+        });
+        GlobalValues.backButton = backBtn;
+
+        var closeBtn = new FusionImageButton(ImageManager.get().load("/io/vproxy/vfx/res/image/close.png:white")) {{
+            setPrefWidth(40);
+            setPrefHeight(VStage.TITLE_BAR_HEIGHT + 1);
+            getImageView().setFitHeight(15);
+            setVisible(false);
+        }};
+        closeBtn.setOnAction(e -> {
+            var func = GlobalValues.closeFunction;
+            GlobalValues.closeFunction = null;
+            closeBtn.setVisible(false);
+            if (func != null) {
+                func.run();
+            }
+            backBtn.setVisible(false);
+            GlobalValues.backFunction = null;
+        });
+        GlobalValues.closeButton = closeBtn;
+
+        var hbox = new HBox();
+        hbox.setSpacing(5);
+        hbox.setLayoutY(-1);
+        hbox.getChildren().addAll(normalButtonGroup, transparentButtonGroup, backBtn, closeBtn);
+        stage.getRoot().getContentPane().getChildren().add(hbox);
 
         menuScene.getContentPane().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ALT) {
@@ -108,6 +169,12 @@ public class UIEntry {
                 showScene(switchToIndex);
                 setSceneSelected(s);
                 s.getNode().requestFocus();
+
+                if (switchToIndex == 0) {
+                    FXUtils.runDelay(VScene.ANIMATION_DURATION_MILLIS, this::configureRootCorrespondToWelcomeScene);
+                } else {
+                    configureRootCorrespondToNormalScene();
+                }
             }
             hideInactive();
         }
@@ -123,22 +190,6 @@ public class UIEntry {
             sceneGroup.show(s, currentIndex < switchToIndex ? VSceneShowMethod.FROM_BOTTOM : VSceneShowMethod.FROM_TOP);
         }
         stage.getRootSceneGroup().hide(menuScene, VSceneHideMethod.TO_LEFT);
-    }
-
-    private record ToolInfo(String name, Supplier<Pane> instantiate, boolean hide) {
-    }
-
-    private static final List<ToolInfo> tools = new ArrayList<>();
-
-    static {
-        // tools.add(new ToolInfo(I18n.get().toolNameWelcome(), WelcomePane::new, false));
-        // tools.add(new ToolInfo(I18n.get().toolNameGameSettings(), GameSettingsPane::new, false));
-        // tools.add(new ToolInfo(I18n.get().toolNameInputSettings(), InputSettingsPane::new, false));
-        // tools.add(new ToolInfo(I18n.get().toolNameMacro(), MacroPane::new, true));
-        // tools.add(new ToolInfo(I18n.get().toolNameFishing(), FishingPane::new, true));
-        // tools.add(new ToolInfo(I18n.get().toolNameCoolDown(), CoolDownPane::new, false));
-        tools.add(new ToolInfo(I18n.get().toolNameToolBox(), ToolBoxPane::new, false));
-        tools.add(new ToolInfo(I18n.get().toolNameAbout(), AboutPane::new, false));
     }
 
     private boolean altIsPressed = false;
@@ -188,5 +239,65 @@ public class UIEntry {
     private void setSceneUnselected(MainScene inst) {
         inst.menuButton.setDisable(false);
         inst.setVisible(false, null);
+    }
+
+    public void init() {
+        hideInactive();
+        configureRootCorrespondToWelcomeScene();
+        Feed.updated.addListener((ob, old, now) -> checkFeedAndSetRootImage());
+        stage.getStage().heightProperty().addListener((ob, old, now) -> updateRootImage());
+    }
+
+    private void configureRootCorrespondToWelcomeScene() {
+        stage.useDarkBorder();
+        updateRootImage();
+        transparentButtonGroup.setManaged(true);
+        transparentButtonGroup.setVisible(true);
+        normalButtonGroup.setManaged(false);
+        normalButtonGroup.setVisible(false);
+    }
+
+    private void configureRootCorrespondToNormalScene() {
+        stage.useLightBorder();
+        stage.getRoot().getNode().setBackground(new Background(new BackgroundFill(
+            Theme.current().sceneBackgroundColor(),
+            CornerRadii.EMPTY,
+            Insets.EMPTY
+        )));
+        transparentButtonGroup.setManaged(false);
+        transparentButtonGroup.setVisible(false);
+        normalButtonGroup.setManaged(true);
+        normalButtonGroup.setVisible(true);
+    }
+
+    private void checkFeedAndSetRootImage() {
+        var bg = Feed.get().introBg;
+        if (bg == null) {
+            return;
+        }
+        setRootImageBg(bg);
+    }
+
+    private void updateRootImage() {
+        var bg = Feed.get().introBg;
+        if (bg == null) {
+            bg = ImageManager.get().load("images/bg/bg1.png");
+        }
+        setRootImageBg(bg);
+    }
+
+    private void setRootImageBg(Image image) {
+        if (stage.getSceneGroup().getNextOrCurrentMainScene() != mainScenes.get(0)) {
+            return;
+        }
+        stage.getRoot().getNode().setBackground(new Background(new BackgroundImage(
+            image,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            new BackgroundPosition(
+                Side.LEFT, 0.5, true,
+                Side.TOP, (stage.getStage().getHeight() - image.getHeight()) / 2 + VStage.TITLE_BAR_HEIGHT / 2d, false),
+            BackgroundSize.DEFAULT
+        )));
     }
 }

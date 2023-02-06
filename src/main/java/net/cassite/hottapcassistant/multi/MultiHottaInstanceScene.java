@@ -7,12 +7,11 @@ import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.ui.loading.LoadingItem;
 import io.vproxy.vfx.ui.loading.LoadingStage;
+import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
@@ -21,9 +20,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.tool.MultiHottaInstance;
+import net.cassite.hottapcassistant.tool.ToolScene;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
 import java.awt.*;
@@ -37,7 +36,7 @@ import java.util.Map;
 import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_SUB_VERSION;
 import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_VERSION;
 
-public class MultiHottaInstanceStage extends Stage {
+public class MultiHottaInstanceScene extends ToolScene {
     private final MultiHottaInstance tool;
     private HottaLauncherProxyServer proxyServer = null;
 
@@ -45,12 +44,13 @@ public class MultiHottaInstanceStage extends Stage {
     private final TextField selectOnlineLocationInput;
     private final TextField advBranchInput;
 
-    public MultiHottaInstanceStage(MultiHottaInstance tool) {
+    public MultiHottaInstanceScene(MultiHottaInstance tool) {
         this.tool = tool;
+        enableAutoContentWidthHeight();
 
         var pane = new Pane();
-        var scene = new Scene(pane);
-        setScene(scene);
+        FXUtils.observeWidthHeightCenter(getContentPane(), pane);
+        getContentPane().getChildren().add(pane);
 
         selectBetaLocationInput = new TextField() {{
             FontManager.get().setFont(this);
@@ -88,14 +88,10 @@ public class MultiHottaInstanceStage extends Stage {
             new HPadding(30),
             new VBox(
                 new VPadding(20),
-                new Label(I18n.get().selectGameLocationDescriptionWithoutAutoSearching()) {{
-                    FontManager.get().setFont(this);
-                }},
+                new ThemeLabel(I18n.get().selectGameLocationDescriptionWithoutAutoSearching()),
                 new VPadding(10),
                 new HBox(
-                    new Label(I18n.get().selectBetaGameLocation()) {{
-                        FontManager.get().setFont(this);
-                    }},
+                    new ThemeLabel(I18n.get().selectBetaGameLocation()),
                     new HPadding(5),
                     selectBetaLocationInput,
                     new HPadding(5),
@@ -105,9 +101,7 @@ public class MultiHottaInstanceStage extends Stage {
                 }},
                 new VPadding(10),
                 new HBox(
-                    new Label(I18n.get().selectOnlineGameLocation()) {{
-                        FontManager.get().setFont(this);
-                    }},
+                    new ThemeLabel(I18n.get().selectOnlineGameLocation()),
                     new HPadding(5),
                     selectOnlineLocationInput,
                     new HPadding(5),
@@ -115,21 +109,16 @@ public class MultiHottaInstanceStage extends Stage {
                 ) {{
                     setAlignment(Pos.CENTER);
                 }},
-                new Separator() {{
-                    setPadding(new Insets(10, 0, 10, 0));
-                }},
+                new VPadding(20),
                 new HBox(
-                    new Label(I18n.get().multiInstanceAdvBranch()) {{
-                        FontManager.get().setFont(this);
+                    new ThemeLabel(I18n.get().multiInstanceAdvBranch()) {{
                         setPrefWidth(80);
                         setPadding(new Insets(5, 0, 0, 0));
                     }},
                     new HPadding(5),
                     advBranchInput
                 ),
-                new Separator() {{
-                    setPadding(new Insets(20, 0, 20, 0));
-                }},
+                new VPadding(40),
                 new HBox(launchBtn) {{
                     setAlignment(Pos.CENTER);
                 }},
@@ -188,7 +177,7 @@ public class MultiHottaInstanceStage extends Stage {
     private void selectLocation(TextField input) {
         var chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("exe", "*.exe"));
-        File f = chooser.showOpenDialog(this.getScene().getWindow());
+        File f = chooser.showOpenDialog(getNode().getScene().getWindow());
         if (f == null) {
             return;
         }

@@ -7,6 +7,8 @@ import io.vproxy.vfx.control.drag.DragHandler;
 import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.ui.scene.VScene;
+import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -31,6 +33,8 @@ public class MessageHelper extends AbstractTool implements Tool {
     private static final Background background = new Background(new BackgroundFill(new Color(21 / 255d, 138 / 255d, 247 / 255d, 1), CornerRadii.EMPTY, Insets.EMPTY));
     private static final Background blinkBackground = new Background(new BackgroundFill(new Color(234 / 255d, 117 / 255d, 8 / 255d, 1), CornerRadii.EMPTY, Insets.EMPTY));
 
+    private S stage;
+
     @Override
     protected String buildName() {
         return I18n.get().toolName("message-helper");
@@ -42,21 +46,32 @@ public class MessageHelper extends AbstractTool implements Tool {
     }
 
     @Override
-    protected Stage buildStage() {
-        return new S();
-    }
+    protected VScene buildScene() {
+        stage = new S();
+        stage.setTitle("message-helper");
+        stage.show();
 
-    @Override
-    public void alert() {
-        terminate();
+        return new SS();
     }
 
     @Override
     protected void terminate0() {
-        var stage = (S) this.stage;
+        var stage = this.stage;
+        this.stage = null;
         if (stage != null) {
             GlobalScreen.removeNativeKeyListener(stage);
             GlobalScreenUtils.disable(stage);
+            stage.close();
+        }
+    }
+
+    private static class SS extends ToolScene {
+        public SS() {
+            enableAutoContentWidthHeight();
+
+            var descLabel = new ThemeLabel(I18n.get().messageHelperDesc());
+            FXUtils.observeWidthHeightCenter(getContentPane(), descLabel);
+            getContentPane().getChildren().add(descLabel);
         }
     }
 

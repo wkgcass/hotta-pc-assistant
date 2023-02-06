@@ -1,12 +1,12 @@
 package net.cassite.hottapcassistant.tool;
 
 import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.ui.scene.VScene;
 import javafx.scene.image.Image;
-import javafx.stage.Stage;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.multi.MultiHottaInstanceConfig;
-import net.cassite.hottapcassistant.multi.MultiHottaInstanceStage;
+import net.cassite.hottapcassistant.multi.MultiHottaInstanceScene;
 import net.cassite.hottapcassistant.ui.JSONJavaObject;
 
 import java.nio.file.Path;
@@ -29,13 +29,13 @@ public class MultiHottaInstance extends AbstractTool implements Tool {
     }
 
     @Override
-    protected Stage buildStage() {
-        return new MultiHottaInstanceStage(this);
+    protected VScene buildScene() {
+        return new MultiHottaInstanceScene(this);
     }
 
     @Override
     protected void init(JSONJavaObject config) {
-        var s = (MultiHottaInstanceStage) stage;
+        var s = (MultiHottaInstanceScene) scene;
         s.init((MultiHottaInstanceConfig) config);
     }
 
@@ -45,7 +45,7 @@ public class MultiHottaInstance extends AbstractTool implements Tool {
 
     @Override
     protected void terminate0() {
-        var s = (MultiHottaInstanceStage) stage;
+        var s = (MultiHottaInstanceScene) scene;
         if (s != null) {
             s.terminate();
         }

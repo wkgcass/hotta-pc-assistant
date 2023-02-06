@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.tool;
 
+import io.vproxy.vfx.ui.scene.VScene;
 import javafx.scene.image.Image;
 
 public interface Tool {
@@ -11,7 +12,9 @@ public interface Tool {
 
     boolean isRunning();
 
-    void alert();
+    VScene getScene();
+
+    void setOnTerminated(Runnable f);
 
     void terminate();
 }

@@ -41,6 +41,8 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     abstract public String toolNameAbout();
 
+    public abstract String toolNameLog();
+
     abstract public String toolIsLocked(String name);
 
     abstract public String selectGameLocation();
@@ -275,8 +277,6 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String cooldownOptionsBtn();
 
-    public abstract String cooldownOptionsTitle();
-
     public abstract String cooldownScanDischargeDesc();
 
     public abstract String cooldownScanDischargeCheckBox();
@@ -333,7 +333,7 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String loadingStageTitle();
 
-    public abstract String hintPressAlt();
+    public abstract String progressWelcomeText();
 
     public abstract String cooldownTipsButton();
 
@@ -484,4 +484,8 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     public abstract String writeAssistantConfigFailed();
 
     public abstract String confirm();
+
+    public abstract String messageHelperDesc();
+
+    public abstract String scrollLogCheckBoxDesc();
 }

@@ -57,6 +57,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String toolNameLog() {
+        return "日志";
+    }
+
+    @Override
     public String toolIsLocked(String name) {
         name = switch (name) {
             case "macro" -> toolNameMacro();
@@ -580,11 +585,12 @@ public class ZhCn extends I18n {
             本程序不会报毒，如果发现报毒，请立即删除、断网并全盘查杀。
 
             美术素材来源说明：
-            本程序使用JavaFX默认字体、Noto字体、得意黑字体 B站@oooooohmygosh
+            本程序使用JavaFX默认字体、Jetbrains Mono、Noto、得意黑（B站@oooooohmygosh）
             本程序欢迎页封面图来自幻塔官网或者游戏内素材，做了调色
             本程序图标为旅行莎莉头像，图片来自B站 @幻塔手游 的头像
             武器、意志、源器、技能、buff等图标，来源于fandom tof wiki图片和幻塔客户端截图
             拟态语音来自游戏内语音
+            CD指示器的问号图标：Help icons created by Vaadin - Flaticon
             CD指示器的重置图标：Reload icons created by IYAHICON - Flaticon
             CD指示器的暂停图标：Pause icons created by Hilmy Abiyyu A. - Flaticon
             CD指示器的恢复图标：Play button icons created by Roundicons - Flaticon
@@ -806,11 +812,6 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String cooldownOptionsTitle() {
-        return "冷却指示器选项";
-    }
-
-    @Override
     public String cooldownScanDischargeDesc() {
         return "连携充能检测功能会读取屏幕，以识别当前的充能值。\n" +
                "该检测仅对屏幕指定区域进行截图操作（截图频率较高），不会读取游戏内存数据。";
@@ -956,8 +957,8 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String hintPressAlt() {
-        return "按住alt键有惊喜！";
+    public String progressWelcomeText() {
+        return "已完成加载，准备进入";
     }
 
     @Override
@@ -1140,7 +1141,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String worldBossTimerMergeImportCheckBox() {
-        return "合并数据";
+        return "导入时合并数据";
     }
 
     @Override
@@ -1385,6 +1386,24 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String messageHelperDesc() {
+        return """
+            对于某些中文输入法，按下数字、空格键时，幻塔客户端可能会丢失光标、无法正常输入中文。
+            这个小工具就是为了应对这种场景而设计的。
+            操作说明：
+              1. 当在游戏中按下Enter时，该工具会自动移至最前，并闪烁以进行提示
+              2. 在工具的输入框中输入内容并按下Enter，内容会被转移到剪贴板里，可以到游戏中进行粘贴
+              3. 在输入框中按上/下方向键，可以滚动浏览最近的20条历史消息
+              4. 按住本工具输入框以外的部分，可以拖拽移动窗口
+            """;
+    }
+
+    @Override
+    public String scrollLogCheckBoxDesc() {
+        return "滚动显示最新日志";
+    }
+
+    @Override
     public String alertInfoTitle() {
         return "信息";
     }
@@ -1442,5 +1461,15 @@ public class ZhCn extends I18n {
     @Override
     public String alertOkButton() {
         return "确认";
+    }
+
+    @Override
+    public String confirmationYesButton() {
+        return "是";
+    }
+
+    @Override
+    public String confirmationNoButton() {
+        return "否";
     }
 }

@@ -62,6 +62,7 @@ jlink {
     launcher {
         name = 'app'
         jvmArgs = ['-Xmx320m', '-Djava.library.path=%TEMP%', '-Dio.vproxy.vfx.logLevel=INFO']
+        noConsole = true
     }
     mergedModule {
         additive = true
