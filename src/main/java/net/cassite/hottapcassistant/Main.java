@@ -33,6 +33,7 @@ import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.Version;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 public class Main extends Application {
@@ -104,7 +105,7 @@ public class Main extends Application {
         TaskManager.get().terminate();
         FeedThread.get().terminate();
         if (mainSceneGroup != null) {
-            for (var scene : mainSceneGroup.getScenes()) {
+            for (var scene : new HashSet<>(mainSceneGroup.getScenes())) {
                 if (scene instanceof Terminate) {
                     ((Terminate) scene).terminate();
                 }
