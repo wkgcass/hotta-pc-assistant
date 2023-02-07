@@ -74,8 +74,29 @@ public class Utils {
             winDir = "C:\\Windows";
         }
         var f = new File(winDir + "\\System32\\Drivers\\etc\\hosts");
-        if (!f.exists() || !f.isFile()) {
-            Logger.error(f.getAbsolutePath() + " does not exist or is not a file");
+        if (!f.exists()) {
+            Logger.info("try to create hosts file: " + f);
+            var hostsDir = f.getParentFile();
+            if (!hostsDir.exists()) {
+                boolean ok = hostsDir.mkdirs();
+                if (!ok) {
+                    Logger.error("creating directory for hosts file failed");
+                    return false;
+                }
+            }
+            boolean ok;
+            try {
+                ok = f.createNewFile();
+            } catch (IOException e) {
+                Logger.error("creating hosts file failed: " + f, e);
+                return false;
+            }
+            if (!ok) {
+                Logger.error("creating hosts file failed for unknown reason: " + f);
+                return false;
+            }
+        } else if (!f.isFile()) {
+            Logger.error(f.getAbsolutePath() + " is not a file");
             return false;
         }
         List<String> lines;
