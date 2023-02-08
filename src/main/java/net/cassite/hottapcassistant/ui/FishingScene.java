@@ -16,8 +16,13 @@ import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.ui.pane.FusionPane;
+import io.vproxy.vfx.ui.scene.VScene;
+import io.vproxy.vfx.ui.scene.VSceneHideMethod;
+import io.vproxy.vfx.ui.scene.VSceneRole;
+import io.vproxy.vfx.ui.scene.VSceneShowMethod;
 import io.vproxy.vfx.ui.shapes.MovablePoint;
 import io.vproxy.vfx.ui.shapes.MovableRect;
+import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.ui.toggle.ToggleSwitch;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
@@ -54,6 +59,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class FishingScene extends MainScene implements NativeKeyListener, EnterCheck, Terminate {
+    private final VStage stage;
+
     private final FishRobot robot = new FishRobot(this::setStatus, this::setPercentage);
 
     private final Label statusValue = new ThemeLabel();
@@ -67,7 +74,8 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
     private boolean isConfiguring = false;
     private AssistantFishing fishing;
 
-    public FishingScene() {
+    public FishingScene(VStage stage) {
+        this.stage = stage;
         enableAutoContentWidth();
 
         initKeyLabel(startKey, key -> fishing.startKey = key);
@@ -188,12 +196,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             configBtn.setPrefHeight(40);
             configBtn.setOnAction(e -> configure());
 
-            var configStep1Btn = new FusionButton(I18n.get().configureFishingOnlyStep1());
-            configStep1Btn.setPrefWidth(120);
-            configStep1Btn.setPrefHeight(40);
-            configStep1Btn.setOnAction(e -> configureStep1(null));
-
-            hbox.getChildren().addAll(resetBtn, new HPadding(4), configBtn, new HPadding(4), configStep1Btn);
+            hbox.getChildren().addAll(resetBtn, new HPadding(4), configBtn);
             vbox.getChildren().add(buttonPane.getNode());
         }
 
@@ -349,16 +352,24 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
                 return;
             }
             if (fishing.startKey.key.code == e.getKeyCode()) {
-                start();
+                FXUtils.runOnFX(() -> {
+                    if (!fishing.isValid()) {
+                        FXUtils.runOnFX(this::configure);
+                        return;
+                    }
+                    stage.temporaryOnTop();
+                    FXUtils.toFrontWindow(stage.getStage());
+                    configureStep1(500, true, () -> {
+                        flushConfig();
+                        postConfigure(false);
+                        start();
+                    });
+                });
             }
         }
     }
 
     private void start() {
-        if (!fishing.isValid()) {
-            FXUtils.runOnFX(this::configure);
-            return;
-        }
         FXUtils.runOnFX(() -> {
             var screen = getScreen();
             if (screen == null) {
@@ -393,7 +404,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
     private void configure() {
         configureStep1(() -> {
             SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().fishingConfigureTips2());
-            FXUtils.iconifyWindow(getNode().getScene().getWindow());
+            FXUtils.toBackWindow(getNode().getScene().getWindow());
             TaskManager.get().execute(() -> {
                 try {
                     Thread.sleep(3_000);
@@ -412,6 +423,10 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
     }
 
     private void configureStep1(Runnable okCallback) {
+        configureStep1(3_000, false, okCallback);
+    }
+
+    private void configureStep1(int timeoutMillis, boolean useScene, Runnable okCallback) {
         if (isConfiguring) {
             return;
         }
@@ -421,30 +436,71 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             return;
         }
         isConfiguring = true;
-        SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().fishingConfigureTips1());
-        FXUtils.iconifyWindow(getNode().getScene().getWindow());
-        TaskManager.get().execute(() -> {
-            try {
-                Thread.sleep(3_000);
-            } catch (InterruptedException ignore) {
-            }
-            Platform.runLater(() -> configureFishingPointAndCastingPoint(ok -> {
-                if (!ok) {
-                    postConfigure();
-                    return;
+        Runnable runOnButtonClicked = () -> {
+            FXUtils.toBackWindow(getNode().getScene().getWindow());
+            TaskManager.get().execute(() -> {
+                try {
+                    Thread.sleep(timeoutMillis);
+                } catch (InterruptedException ignore) {
                 }
-                if (okCallback == null) {
-                    flushConfig();
-                    postConfigure();
-                } else {
-                    okCallback.run();
-                }
-            }));
-        });
+                Platform.runLater(() -> configureFishingPointAndCastingPoint(ok -> {
+                    if (!ok) {
+                        postConfigure();
+                        return;
+                    }
+                    if (okCallback == null) {
+                        flushConfig();
+                        postConfigure();
+                    } else {
+                        okCallback.run();
+                    }
+                }));
+            });
+        };
+        if (useScene) {
+            var confirmScene = new VScene(VSceneRole.TEMPORARY);
+            confirmScene.getNode().setBackground(new Background(new BackgroundFill(
+                Theme.current().sceneBackgroundColor(),
+                CornerRadii.EMPTY,
+                Insets.EMPTY
+            )));
+            confirmScene.enableAutoContentWidthHeight();
+            var label = new ThemeLabel(I18n.get().fishingConfigureTips1());
+            var button = new FusionButton(I18n.get().alertOkButton()) {{
+                setPrefWidth(120);
+                setPrefHeight(45);
+                setOnAction(e -> {
+                    stage.getSceneGroup().hide(confirmScene, VSceneHideMethod.TO_RIGHT);
+                    FXUtils.runDelay(VScene.ANIMATION_DURATION_MILLIS, () -> stage.getSceneGroup().removeScene(confirmScene));
+                    runOnButtonClicked.run();
+                });
+            }};
+            var vbox = new VBox(
+                label,
+                new VPadding(10),
+                button
+            ) {{
+                setAlignment(Pos.CENTER_RIGHT);
+            }};
+            confirmScene.getContentPane().getChildren().add(vbox);
+            FXUtils.observeWidthHeightCenter(confirmScene.getContentPane(), vbox);
+
+            stage.getSceneGroup().addScene(confirmScene, VSceneHideMethod.TO_RIGHT);
+            stage.getSceneGroup().show(confirmScene, VSceneShowMethod.FROM_RIGHT);
+        } else {
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().fishingConfigureTips1());
+            runOnButtonClicked.run();
+        }
     }
 
     private void postConfigure() {
-        FXUtils.showWindow(getNode().getScene().getWindow());
+        postConfigure(true);
+    }
+
+    private void postConfigure(boolean showWindow) {
+        if (showWindow) {
+            FXUtils.showWindow(getNode().getScene().getWindow());
+        }
         isConfiguring = false;
     }
 

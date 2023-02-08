@@ -19,6 +19,8 @@ import java.util.function.Consumer;
 public class FishRobot {
     private static final float[] GreenLightColor = FXUtils.toHSB(Color.color(200f / 255, 253f / 255, 225f / 255));
     private static final float[] GreenLightColor2 = FXUtils.toHSB(Color.color(112f / 255, 250f / 255, 183f / 255));
+    private static final float[] GreenLightColor3 = FXUtils.toHSB(Color.color(137f / 255, 253f / 255, 85f / 255));
+    private static final float[] GreenLightColor4 = FXUtils.toHSB(Color.color(127f / 255, 253f / 255, 132f / 255));
     private static final Set<Color> YellowSliderColors = Set.of(
         Color.color(255f / 255, 176f / 255, 64f / 255),
         Color.color(255f / 255, 176f / 255, 27f / 255)
@@ -181,11 +183,17 @@ public class FishRobot {
         });
     }
 
-    private boolean notTheSame(float[] a, Color bb) {
+    private boolean notTheSame(Color bb, float[]... check) {
         float[] b = FXUtils.toHSB(bb);
-        return !(Math.abs(a[0] - b[0]) < 0.2)
-               || !(Math.abs(a[1] - b[1]) < 0.2)
-               || !(Math.abs(a[2] - b[2]) < 0.2);
+        for (var a : check) {
+            var res = !(Math.abs(a[0] - b[0]) < 0.2)
+                      || !(Math.abs(a[1] - b[1]) < 0.2)
+                      || !(Math.abs(a[2] - b[2]) < 0.2);
+            if (!res) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void cast() {
@@ -202,7 +210,7 @@ public class FishRobot {
         for (int x = 0; x < imgW; ++x) {
             for (int y = 0; y < imgH; ++y) {
                 var color = reader.getColor(x, y);
-                if (notTheSame(GreenLightColor, color) && notTheSame(GreenLightColor2, color)) {
+                if (notTheSame(color, GreenLightColor, GreenLightColor2, GreenLightColor3, GreenLightColor4)) {
                     allGreen = false;
                     break;
                 }

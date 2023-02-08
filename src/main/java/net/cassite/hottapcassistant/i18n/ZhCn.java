@@ -455,11 +455,6 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String configureFishingOnlyStep1() {
-        return "仅配置钓鱼点";
-    }
-
-    @Override
     public String configureFishingHelpMsg() {
         return """
             本工具支持检测鱼耐力自动收杆，支持检测钓鱼失败以及自动恢复，不需要设置游戏分辨率或窗口位置

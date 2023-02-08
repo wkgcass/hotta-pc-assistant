@@ -179,8 +179,6 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String configureFishing();
 
-    public abstract String configureFishingOnlyStep1();
-
     public abstract String configureFishingHelpMsg();
 
     public abstract String fishTutorialLinkDesc();

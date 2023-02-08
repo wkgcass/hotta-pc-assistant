@@ -40,7 +40,7 @@ public class UIEntry {
             new GameSettingsScene(),
             new InputSettingsScene(),
             new MacroScene(),
-            new FishingScene(),
+            new FishingScene(stage),
             new CoolDownScene(stage.getSceneGroup()),
             new ToolBoxScene(stage.getSceneGroup()),
             new AboutScene(),
