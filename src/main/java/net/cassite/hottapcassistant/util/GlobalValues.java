@@ -179,4 +179,26 @@ public class GlobalValues {
         closeButton.setVisible(true);
         closeFunction = f;
     }
+
+    public static void callBackFunction() {
+        var func = backFunction;
+        backFunction = null;
+        backButton.setVisible(false);
+        if (func != null) {
+            func.run();
+        }
+        closeButton.setVisible(false);
+        closeFunction = null;
+    }
+
+    public static void callCloseFunction() {
+        var func = closeFunction;
+        closeFunction = null;
+        closeButton.setVisible(false);
+        if (func != null) {
+            func.run();
+        }
+        closeButton.setVisible(false);
+        backFunction = null;
+    }
 }

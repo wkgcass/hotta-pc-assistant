@@ -89,7 +89,10 @@ public class UIEntry {
             setPrefHeight(VStage.TITLE_BAR_HEIGHT + 1);
             getImageView().setFitHeight(15);
         }};
-        menuBtn.setOnAction(e -> stage.getRootSceneGroup().show(menuScene, VSceneShowMethod.FROM_LEFT));
+        menuBtn.setOnAction(e -> {
+            GlobalValues.callBackFunction();
+            stage.getRootSceneGroup().show(menuScene, VSceneShowMethod.FROM_LEFT);
+        });
 
         var transparentMenuBtn = new TransparentFusionImageButton(ImageManager.get().load("/images/icon/menu.png")) {{
             setPrefWidth(menuBtn.getPrefWidth());
@@ -107,16 +110,7 @@ public class UIEntry {
             getImageView().setFitHeight(15);
             setVisible(false);
         }};
-        backBtn.setOnAction(e -> {
-            var func = GlobalValues.backFunction;
-            GlobalValues.backFunction = null;
-            backBtn.setVisible(false);
-            if (func != null) {
-                func.run();
-            }
-            GlobalValues.closeButton.setVisible(false);
-            GlobalValues.closeFunction = null;
-        });
+        backBtn.setOnAction(e -> GlobalValues.callBackFunction());
         GlobalValues.backButton = backBtn;
 
         var closeBtn = new FusionImageButton(ImageManager.get().load("/io/vproxy/vfx/res/image/close.png:white")) {{
@@ -125,16 +119,7 @@ public class UIEntry {
             getImageView().setFitHeight(12);
             setVisible(false);
         }};
-        closeBtn.setOnAction(e -> {
-            var func = GlobalValues.closeFunction;
-            GlobalValues.closeFunction = null;
-            closeBtn.setVisible(false);
-            if (func != null) {
-                func.run();
-            }
-            backBtn.setVisible(false);
-            GlobalValues.backFunction = null;
-        });
+        closeBtn.setOnAction(e -> GlobalValues.callCloseFunction());
         GlobalValues.closeButton = closeBtn;
 
         var hbox = new HBox();
