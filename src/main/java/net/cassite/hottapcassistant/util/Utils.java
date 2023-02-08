@@ -77,10 +77,14 @@ public class Utils {
         if (!f.exists()) {
             Logger.info("try to create hosts file: " + f);
             var hostsDir = f.getParentFile();
+            if (hostsDir == null) {
+                Logger.error("unable to find directory for hosts file: " + f);
+                return false;
+            }
             if (!hostsDir.exists()) {
                 boolean ok = hostsDir.mkdirs();
                 if (!ok) {
-                    Logger.error("creating directory for hosts file failed");
+                    Logger.error("creating directory " + hostsDir + " for hosts file failed");
                     return false;
                 }
             }
