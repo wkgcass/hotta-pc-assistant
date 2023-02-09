@@ -1,7 +1,8 @@
 package net.cassite.hottapcassistant.entity;
 
 import io.vproxy.vfx.entity.input.InputData;
-import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.ui.table.RowInformer;
+import io.vproxy.vfx.ui.table.RowInformerAware;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
 import vjson.util.ObjectBuilder;
@@ -9,30 +10,35 @@ import vjson.util.ObjectBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssistantMacroData extends InputData {
+public class AssistantMacroData extends InputData implements RowInformerAware {
     public boolean enabled;
     public String name;
+    public AssistantMacroType type = AssistantMacroType.NORMAL;
+    public int loopLimit = 0;
     public List<AssistantMacroStep> steps;
+    public boolean isSystemPreBuilt;
 
-    public static final Rule<AssistantMacroData> rule = new ObjectRule<>(AssistantMacroData::new)
+    private AssistantMacroStatus status = AssistantMacroStatus.STOPPED;
+    private RowInformer rowInformer;
+
+    public static final Rule<AssistantMacroData> rule = new ObjectRule<>(AssistantMacroData::new, (ObjectRule<InputData>) InputData.rule)
         .put("enabled", (o, it) -> o.enabled = it, BoolRule.get())
         .put("name", (o, it) -> o.name = it, StringRule.get())
-        .put("ctrl", (o, it) -> o.ctrl = it, BoolRule.get())
-        .put("alt", (o, it) -> o.alt = it, BoolRule.get())
-        .put("shift", (o, it) -> o.shift = it, BoolRule.get())
-        .put("key", (o, it) -> o.key = new Key(it), StringRule.get())
+        .put("type", (o, it) -> o.type = AssistantMacroType.valueOf(it), StringRule.get())
+        .put("loopLimit", (o, it) -> o.loopLimit = it, IntRule.get())
         .put("steps", (o, it) -> o.steps = it,
-            new ArrayRule<ArrayList<AssistantMacroStep>, AssistantMacroStep>(ArrayList::new, ArrayList::add, AssistantMacroStep.rule));
+            new ArrayRule<ArrayList<AssistantMacroStep>, AssistantMacroStep>(ArrayList::new, ArrayList::add, AssistantMacroStep.rule))
+        .put("isSystemPreBuilt", (o, it) -> o.isSystemPreBuilt = it, BoolRule.get());
 
+    @Override
     public JSON.Object toJson() {
-        return new ObjectBuilder()
+        return new ObjectBuilder(super.toJson())
             .put("enabled", enabled)
             .put("name", name)
-            .put("ctrl", ctrl)
-            .put("alt", alt)
-            .put("shift", shift)
-            .put("key", key.toString())
+            .put("type", type.name())
+            .put("loopLimit", loopLimit)
             .putArray("steps", a -> steps.forEach(e -> a.addInst(e.toJson())))
+            .put("isSystemPreBuilt", isSystemPreBuilt)
             .build();
     }
 
@@ -40,5 +46,19 @@ public class AssistantMacroData extends InputData {
         for (var s : steps) {
             s.exec();
         }
+    }
+
+    public AssistantMacroStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AssistantMacroStatus status) {
+        this.status = status;
+        rowInformer.informRowUpdate();
+    }
+
+    @Override
+    public void setRowInformer(RowInformer rowInformer) {
+        this.rowInformer = rowInformer;
     }
 }

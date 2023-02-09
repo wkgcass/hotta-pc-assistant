@@ -47,21 +47,23 @@ public class AssistantMacro {
                 new AssistantMacroStep.KeyPress(new Key(KeyCode.KEY_2)),
                 new AssistantMacroStep.KeyRelease(new Key(KeyCode.KEY_2))
             );
+            m.isSystemPreBuilt = true;
             macro.macros.add(m);
         }
         {
             var m = new AssistantMacroData();
-            m.name = "女仆闪aa";
+            m.name = "大锤宏";
+            m.type = AssistantMacroType.INFINITE_LOOP;
+            m.ctrl = true;
+            m.alt = true;
             m.key = new Key(KeyCode.F9);
             m.steps = Arrays.asList(
-                new AssistantMacroStep.KeyPress(new Key(MouseButton.SECONDARY)),
-                new AssistantMacroStep.KeyRelease(new Key(MouseButton.SECONDARY)),
-                new AssistantMacroStep.Delay(200),
                 new AssistantMacroStep.KeyPress(new Key(MouseButton.PRIMARY)),
-                new AssistantMacroStep.Delay(250),
-                new AssistantMacroStep.KeyRelease(new Key(MouseButton.PRIMARY))
+                new AssistantMacroStep.Delay(3000),
+                new AssistantMacroStep.KeyRelease(new Key(MouseButton.PRIMARY)),
+                new AssistantMacroStep.Delay(500)
             );
-            macro.macros.add(m);
+            m.isSystemPreBuilt = true;
         }
         return macro;
     }

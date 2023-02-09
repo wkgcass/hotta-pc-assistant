@@ -8,6 +8,8 @@ public class Consts {
     };
     public static final FontUsage NotoFont = new FontUsage() {
     };
+    public static final FontUsage JetbrainsMonoFont = new FontUsage() {
+    };
 
     public static final String[] ALL_IMAGE = new String[]{
         "/images/bg/bg0.jpg",

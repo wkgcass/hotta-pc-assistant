@@ -359,6 +359,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String macroTipsButton() {
+        return "如何自定义宏？";
+    }
+
+    @Override
     public String editMacro() {
         return "编辑按键宏";
     }
@@ -366,6 +371,57 @@ public class ZhCn extends I18n {
     @Override
     public String reloadMacro() {
         return "重新加载按键宏";
+    }
+
+    @Override
+    public String macroTips() {
+        return """
+                   配置一个新宏，需要如下步骤：
+                     1. 在助手中点击[""".trim() + editMacro() +
+               """
+                   ]，按照约定规范定义一个新宏，保存配置
+                     2. 在助手中点击[""".trim() + reloadMacro() +
+               """
+                   ]，然后在表格中定义其触发快捷键
+                     3. 启用宏，按下快捷键触发
+                   在配置新宏时，需要指定如下属性：
+                     1. name = 宏名称
+                     2. type = 宏类型，目前支持：
+                                 NORMAL: 普通宏，只运行一次
+                                 INFINITE_LOOP: 无限循环
+                                 FINITE_LOOP: 有限循环
+                     3. steps = 步骤列表，每一项是宏执行的一条命令，例如按下键盘、等待时间等
+                     4. loopLimit = 对于有限循环宏，还需指定其循环次数
+                   配置步骤时，首先需要指定该步骤的类型，需要的参数会根据类型的不同而有所不同：
+                     1. @type = Delay 延时
+                        参数:
+                          millis = 延时的时长，该值单位为毫秒
+                     2. @type = KeyPress 按下键盘按键或鼠标按钮
+                        参数:
+                          key = 键盘按键或鼠标按钮的字符串，格式为UnrealEngine支持的格式
+                     3. @type = KeyRelease 弹起键盘按键或鼠标按钮
+                        参数:
+                          key = 键盘按键或鼠标按钮的字符串，格式为UnrealEngine支持的格式
+                   其中，key取值可参考UnrealEngine规范，除小键盘区外绝大部分均已实现
+                        或者查看vfx库的io/vproxy/vfx/entity/input/KeyCode.java代码
+                   常用的值有：
+                     1. LeftMouseButton, RightMouseButton: 鼠标左键/右键
+                     2. One, Two, Three, ..., Nine, Zero: 主键盘区1，2，3，...，9，0
+                     3. A~Z: 主键盘区字母按键
+                     4. LeftControl, RightShift, LeftAlt, ...: 左侧CTRL，右侧Shift，左侧Alt
+                   举例：
+                   1. 大锤宏需要按住鼠标左键3秒然后释放，等待0.5秒后继续循环执行
+                      {
+                        name = 大锤宏
+                        type = INFINITE_LOOP
+                        steps = [
+                          { @type: KeyPress, key = LeftMouseButton }
+                          { @type: Delay, millis = 3000 }
+                          { @type: KeyRelease, key = LeftMouseButton }
+                          { @type: Delay, millis = 500 }
+                        ]
+                      }
+                   """.trim();
     }
 
     @Override
@@ -417,6 +473,46 @@ public class ZhCn extends I18n {
     @Override
     public String macroColumnNameName() {
         return "宏命令";
+    }
+
+    @Override
+    public String macroColumnNameType() {
+        return "类型";
+    }
+
+    @Override
+    public String macroTypeNormal() {
+        return "普通";
+    }
+
+    @Override
+    public String macroTypeInfiniteLoop() {
+        return "无限循环";
+    }
+
+    @Override
+    public String macroTypeFiniteLoop() {
+        return "有限循环";
+    }
+
+    @Override
+    public String macroColumnNameStatus() {
+        return "状态";
+    }
+
+    @Override
+    public String macroStatusRunning() {
+        return "运行中...";
+    }
+
+    @Override
+    public String macroStatusStopped() {
+        return "停止";
+    }
+
+    @Override
+    public String macroStatusStopping() {
+        return "正在停止...";
     }
 
     @Override

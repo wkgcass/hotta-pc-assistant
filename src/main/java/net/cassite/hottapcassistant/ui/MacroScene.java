@@ -32,11 +32,9 @@ import javafx.scene.layout.VBox;
 import net.cassite.hottapcassistant.component.macro.UIMacroList;
 import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.config.InputConfig;
-import net.cassite.hottapcassistant.entity.Assistant;
-import net.cassite.hottapcassistant.entity.AssistantMacro;
-import net.cassite.hottapcassistant.entity.AssistantMacroData;
-import net.cassite.hottapcassistant.entity.KeyBinding;
+import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.util.Consts;
 import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.RobotWrapper;
 import net.cassite.hottapcassistant.util.Utils;
@@ -90,7 +88,6 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
 
         boolean[] consequenceIsCheckedOnSelect = new boolean[]{false};
         switchButton.selectedProperty().addListener((ob, old, now) -> {
-            if (Objects.equals(old, now)) return;
             if (switchButton.isSelected()) {
                 if (!knowConsequenceCheckBox.isSelected()) {
                     consequenceIsCheckedOnSelect[0] = false;
@@ -111,6 +108,11 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
                 buttons.clear();
                 GlobalScreenUtils.disable(this);
                 mouseIsReleased = false;
+                for (var m : macro.macros) {
+                    if (m.getStatus() == AssistantMacroStatus.RUNNING) {
+                        m.setStatus(AssistantMacroStatus.STOPPING);
+                    }
+                }
             }
         });
         rememberMousePositionSwitchButton.selectedProperty().addListener((ob, old, now) -> {
@@ -132,6 +134,10 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
         FXUtils.observeWidth(getContentPane(), bottomPane.getNode(), -20);
         bottomPane.getNode().setPrefHeight(60);
 
+        var macroTipsBtn = new FusionButton(I18n.get().macroTipsButton());
+        FXUtils.observeHeight(bottomPane.getContentPane(), macroTipsBtn);
+        macroTipsBtn.setOnAction(e -> SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().macroTips(), Consts.JetbrainsMonoFont));
+        macroTipsBtn.setPrefWidth(120);
         var reloadMacro = new FusionButton(I18n.get().reloadMacro());
         FXUtils.observeHeight(bottomPane.getContentPane(), reloadMacro);
         reloadMacro.setOnAction(e -> {
@@ -160,7 +166,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
         var bottomButtons = new HBox();
         FXUtils.observeWidth(bottomPane.getContentPane(), bottomButtons);
         bottomButtons.setAlignment(Pos.CENTER_RIGHT);
-        bottomButtons.getChildren().addAll(reloadMacro, new HPadding(10), editMacro);
+        bottomButtons.getChildren().addAll(macroTipsBtn, new HPadding(10), reloadMacro, new HPadding(10), editMacro);
 
         bottomPane.getContentPane().getChildren().add(bottomButtons);
         topVBox.getChildren().add(bottomPane.getNode());
@@ -200,7 +206,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
         if (keys.contains(code)) {
             var m = filterOneMacroToRun(code, null);
             keys.remove(code);
-            runMacro(m);
+            runOrStopMacro(m);
         }
         rememberMousePositionEnd(code, null);
     }
@@ -239,7 +245,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
         if (buttons.contains(btn)) {
             var m = filterOneMacroToRun(null, btn);
             buttons.remove(btn);
-            runMacro(m);
+            runOrStopMacro(m);
         }
         rememberMousePositionEnd(null, btn);
     }
@@ -256,14 +262,49 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
         return null;
     }
 
-    private void runMacro(AssistantMacroData m) {
-        if (m != null) {
-            TaskManager.get().execute(() -> {
+    private void runOrStopMacro(AssistantMacroData m) {
+        if (m == null) {
+            return;
+        }
+        if (m.getStatus() == AssistantMacroStatus.RUNNING) {
+            FXUtils.runOnFX(() -> {
+                if (m.getStatus() == AssistantMacroStatus.RUNNING) {
+                    m.setStatus(AssistantMacroStatus.STOPPING);
+                }
+            });
+            return;
+        }
+        m.setStatus(AssistantMacroStatus.RUNNING);
+        TaskManager.get().execute(() -> {
+            int loopCount = 0;
+            loop:
+            while (true) {
+                if (m.getStatus() == AssistantMacroStatus.STOPPING) {
+                    Logger.debug("macro execution stopping");
+                    break;
+                }
+                if (m.type == AssistantMacroType.FINITE_LOOP) {
+                    if (loopCount >= m.loopLimit) {
+                        Logger.debug("finite loop reaches limit: " + loopCount);
+                        break;
+                    }
+                }
+                ++loopCount;
                 Logger.debug("before macro execution: " + m.name);
                 m.exec();
                 Logger.debug("after macro executioin: " + m.name);
-            });
-        }
+                switch (m.type) {
+                    case NORMAL -> {
+                        break loop;
+                    }
+                    case INFINITE_LOOP -> {
+                        //noinspection UnnecessaryContinue
+                        continue;
+                    }
+                }
+            }
+            FXUtils.runOnFX(() -> m.setStatus(AssistantMacroStatus.STOPPED));
+        });
     }
 
     private volatile boolean mouseIsReleased = false;

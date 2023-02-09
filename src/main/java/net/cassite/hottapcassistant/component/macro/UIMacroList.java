@@ -18,6 +18,20 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
     public UIMacroList(Runnable modifiedCallback) {
         var enableColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().macroColumnNameEnable(), kb -> kb);
         var macroColumn = new VTableColumn<AssistantMacroData, String>(I18n.get().macroColumnNameName(), kb -> kb.name);
+        var typeColumn = new VTableColumn<AssistantMacroData, String>(I18n.get().macroColumnNameType(), kb ->
+            switch (kb.type) {
+                case NORMAL -> I18n.get().macroTypeNormal();
+                case INFINITE_LOOP -> I18n.get().macroTypeInfiniteLoop();
+                case FINITE_LOOP -> I18n.get().macroTypeFiniteLoop() + ": " + kb.loopLimit;
+            }
+        );
+        var statusColumn = new VTableColumn<AssistantMacroData, String>(I18n.get().macroColumnNameStatus(), kb ->
+            switch (kb.getStatus()) {
+                case RUNNING -> I18n.get().macroStatusRunning();
+                case STOPPED -> I18n.get().macroStatusStopped();
+                case STOPPING -> I18n.get().macroStatusStopping();
+            }
+        );
         var ctrlColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameCtrl(), kb -> kb);
         var altColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameAlt(), kb -> kb);
         var shiftColumn = new VTableColumn<AssistantMacroData, AssistantMacroData>(I18n.get().hotkeyColumnNameShift(), kb -> kb);
@@ -36,6 +50,10 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             return checkBox;
         });
         macroColumn.setMinWidth(100);
+        typeColumn.setMinWidth(100);
+        typeColumn.setAlignment(Pos.CENTER);
+        statusColumn.setMinWidth(100);
+        statusColumn.setAlignment(Pos.CENTER);
         ctrlColumn.setMaxWidth(80);
         ctrlColumn.setAlignment(Pos.CENTER);
         ctrlColumn.setNodeBuilder(kb -> {
@@ -78,7 +96,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
             var label = new ThemeLabel();
             label.setCursor(Cursor.HAND);
             if (kb.key == null) {
-                label.setText("");
+                label.setText("    ");
             } else {
                 label.setText(kb.key.toString());
             }
@@ -101,6 +119,6 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
         });
 
         //noinspection unchecked
-        getColumns().addAll(enableColumn, macroColumn, ctrlColumn, altColumn, shiftColumn, keyColumn);
+        getColumns().addAll(enableColumn, macroColumn, typeColumn, statusColumn, ctrlColumn, altColumn, shiftColumn, keyColumn);
     }
 }

@@ -143,6 +143,8 @@ public class Main extends Application {
                         super._default(usage, settings);
                         if (usage == Consts.NotoFont) {
                             settings.setFamily(FontManager.FONT_NAME_NotoSansSCRegular);
+                        } else if (usage == Consts.JetbrainsMonoFont) {
+                            settings.setFamily(FontManager.FONT_NAME_JetBrainsMono);
                         }
                     }
                 };

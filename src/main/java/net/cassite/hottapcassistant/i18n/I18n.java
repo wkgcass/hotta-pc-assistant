@@ -143,9 +143,13 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String openInputIni();
 
+    public abstract String macroTipsButton();
+
     public abstract String editMacro();
 
     public abstract String reloadMacro();
+
+    public abstract String macroTips();
 
     public abstract String aboutEmptyTableOrMissingFields();
 
@@ -164,6 +168,22 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     public abstract String macroColumnNameEnable();
 
     public abstract String macroColumnNameName();
+
+    public abstract String macroColumnNameType();
+
+    public abstract String macroColumnNameStatus();
+
+    public abstract String macroTypeNormal();
+
+    public abstract String macroTypeInfiniteLoop();
+
+    public abstract String macroTypeFiniteLoop();
+
+    public abstract String macroStatusRunning();
+
+    public abstract String macroStatusStopped();
+
+    public abstract String macroStatusStopping();
 
     public abstract String knowConsequencePrompt();
 
