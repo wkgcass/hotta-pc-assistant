@@ -518,4 +518,14 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     public abstract String authorGameAccount();
 
     public abstract String authorContribution();
+
+    public abstract String statusIndicatorDesc();
+
+    public abstract String statusIndicatorTitle();
+
+    public abstract String statusComponentModule();
+
+    public abstract String statusComponentTool();
+
+    public abstract String statusComponentMacro();
 }

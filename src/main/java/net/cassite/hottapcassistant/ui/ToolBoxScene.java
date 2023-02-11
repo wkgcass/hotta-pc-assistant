@@ -19,6 +19,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.status.Status;
+import net.cassite.hottapcassistant.status.StatusComponent;
+import net.cassite.hottapcassistant.status.StatusEnum;
+import net.cassite.hottapcassistant.status.StatusManager;
 import net.cassite.hottapcassistant.tool.*;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
@@ -32,6 +36,7 @@ public class ToolBoxScene extends MainScene implements Terminate {
         add(MessageHelper::new);
         add(LansBrainWash::new);
         add(MultiHottaInstance::new);
+        add(StatusIndicator::new);
     }};
     private static final int colsPerLine = 8;
     private final List<Tool> toolInstances = new ArrayList<>();
@@ -124,7 +129,9 @@ public class ToolBoxScene extends MainScene implements Terminate {
             } else {
                 sceneGroup.removeScene(scene);
             }
+            StatusManager.get().removeStatus(new Status(tool.getName(), StatusComponent.TOOL, StatusEnum.STOPPED));
         });
+        StatusManager.get().updateStatus(new Status(tool.getName(), StatusComponent.TOOL, StatusEnum.RUNNING));
     }
 
     @Override

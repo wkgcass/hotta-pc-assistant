@@ -3,6 +3,10 @@ package net.cassite.hottapcassistant.entity;
 import io.vproxy.vfx.entity.input.InputData;
 import io.vproxy.vfx.ui.table.RowInformer;
 import io.vproxy.vfx.ui.table.RowInformerAware;
+import net.cassite.hottapcassistant.status.Status;
+import net.cassite.hottapcassistant.status.StatusComponent;
+import net.cassite.hottapcassistant.status.StatusEnum;
+import net.cassite.hottapcassistant.status.StatusManager;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
 import vjson.util.ObjectBuilder;
@@ -55,6 +59,15 @@ public class AssistantMacroData extends InputData implements RowInformerAware {
     public void setStatus(AssistantMacroStatus status) {
         this.status = status;
         rowInformer.informRowUpdate();
+        if (status == AssistantMacroStatus.STOPPED) {
+            StatusManager.get().removeStatus(new Status(name, StatusComponent.MACRO, StatusEnum.STOPPED));
+        } else {
+            StatusManager.get().updateStatus(new Status(name, StatusComponent.MACRO,
+                (status == AssistantMacroStatus.RUNNING
+                    ? StatusEnum.RUNNING
+                    : StatusEnum.STOPPING)
+            ));
+        }
     }
 
     @Override

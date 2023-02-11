@@ -49,6 +49,10 @@ import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.entity.AssistantFishing;
 import net.cassite.hottapcassistant.fish.FishRobot;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.status.Status;
+import net.cassite.hottapcassistant.status.StatusComponent;
+import net.cassite.hottapcassistant.status.StatusEnum;
+import net.cassite.hottapcassistant.status.StatusManager;
 import net.cassite.hottapcassistant.util.Consts;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -133,15 +137,18 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
                     consequenceIsCheckedOnSelect[0] = true;
                     GlobalScreenUtils.enable(this);
                     GlobalScreen.addNativeKeyListener(this);
+                    StatusManager.get().updateStatus(new Status(I18n.get().toolNameFishing(), StatusComponent.MODULE, StatusEnum.READY));
                 } else {
                     if (!consequenceIsCheckedOnSelect[0]) {
                         return;
                     }
                     GlobalScreen.removeNativeKeyListener(this);
                     GlobalScreenUtils.disable(this);
+                    StatusManager.get().updateStatus(new Status(I18n.get().toolNameFishing(), StatusComponent.MODULE, StatusEnum.STOPPED));
                     stop();
                 }
             });
+            StatusManager.get().updateStatus(new Status(I18n.get().toolNameFishing(), StatusComponent.MODULE, StatusEnum.STOPPED));
         }
 
         {
@@ -275,6 +282,18 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
         };
         this.statusValue.setText(text);
         this.statusValue.setTextFill(color);
+        switch (status) {
+            case STOPPED -> {
+                if (switchButton.isSelected())
+                    StatusManager.get().updateStatus(new Status(I18n.get().toolNameFishing(), StatusComponent.MODULE, StatusEnum.READY));
+                else
+                    StatusManager.get().updateStatus(new Status(I18n.get().toolNameFishing(), StatusComponent.MODULE, StatusEnum.STOPPED));
+            }
+            case STOPPING ->
+                StatusManager.get().updateStatus(new Status(I18n.get().toolNameFishing(), StatusComponent.MODULE, StatusEnum.STOPPING));
+            default ->
+                StatusManager.get().updateStatus(new Status(I18n.get().toolNameFishing(), StatusComponent.MODULE, StatusEnum.RUNNING));
+        }
     }
 
     private void setPercentage(double p) {

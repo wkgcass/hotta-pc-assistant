@@ -690,6 +690,7 @@ public class ZhCn extends I18n {
             CD指示器的恢复图标：Play button icons created by Roundicons - Flaticon
             聊天消息辅助图标：Keyboard icons created by Freepik - Flaticon
             幻塔多开图标：Ui icons created by Graphics Plazza - Flaticon
+            状态指示器图标：Conclusion icons created by Kiranshastry - Flaticon
 
             依赖开源项目：
             1. openjdk: GPLv2 with Classpath Exception
@@ -1131,6 +1132,7 @@ public class ZhCn extends I18n {
             case "message-helper" -> "聊天消息辅助";
             case "lan's-brain-wash" -> "岚的洗脑循环";
             case "multi-hotta-instance" -> "幻塔双开";
+            case "status-indicator" -> "状态指示器";
             default -> name;
         };
     }
@@ -1523,6 +1525,31 @@ public class ZhCn extends I18n {
     @Override
     public String authorContribution() {
         return "贡献内容";
+    }
+
+    @Override
+    public String statusIndicatorDesc() {
+        return "状态指示器标明了当前幻塔PC助手的运行状态，包括各工具的启用状态、宏的启用状态等。";
+    }
+
+    @Override
+    public String statusIndicatorTitle() {
+        return "状态指示器";
+    }
+
+    @Override
+    public String statusComponentModule() {
+        return "模块";
+    }
+
+    @Override
+    public String statusComponentTool() {
+        return "工具";
+    }
+
+    @Override
+    public String statusComponentMacro() {
+        return "宏";
     }
 
     @Override

@@ -34,6 +34,10 @@ import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.config.InputConfig;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.status.Status;
+import net.cassite.hottapcassistant.status.StatusComponent;
+import net.cassite.hottapcassistant.status.StatusEnum;
+import net.cassite.hottapcassistant.status.StatusManager;
 import net.cassite.hottapcassistant.util.Consts;
 import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.RobotWrapper;
@@ -98,6 +102,11 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
                 GlobalScreenUtils.enable(this);
                 GlobalScreen.addNativeKeyListener(this);
                 GlobalScreen.addNativeMouseListener(this);
+                StatusManager.get().updateStatus(new Status(
+                    I18n.get().toolNameMacro(),
+                    StatusComponent.MODULE,
+                    StatusEnum.RUNNING
+                ));
             } else {
                 if (!consequenceIsCheckedOnSelect[0]) {
                     return;
@@ -113,8 +122,18 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
                         m.setStatus(AssistantMacroStatus.STOPPING);
                     }
                 }
+                StatusManager.get().updateStatus(new Status(
+                    I18n.get().toolNameMacro(),
+                    StatusComponent.MODULE,
+                    StatusEnum.STOPPED
+                ));
             }
         });
+        StatusManager.get().updateStatus(new Status(
+            I18n.get().toolNameMacro(),
+            StatusComponent.MODULE,
+            StatusEnum.STOPPED
+        ));
         rememberMousePositionSwitchButton.selectedProperty().addListener((ob, old, now) -> {
             if (now == null) return;
             if (Objects.equals(old, now)) return;

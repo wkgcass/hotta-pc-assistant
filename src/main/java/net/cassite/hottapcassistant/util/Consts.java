@@ -53,6 +53,7 @@ public class Consts {
         "/images/icon/question.png",
         "/images/icon/reloading.png",
         "/images/icon/return.png",
+        "/images/icon/status-indicator.png",
         "/images/icon/world-boss-timer-icon.png",
         "/images/launchgame-btn/launchgame-down.png",
         "/images/launchgame-btn/launchgame-hover.png",
