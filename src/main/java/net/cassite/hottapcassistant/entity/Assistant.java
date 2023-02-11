@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.entity;
 
 import vjson.JSON;
+import vjson.deserializer.rule.BoolRule;
 import vjson.deserializer.rule.ObjectRule;
 import vjson.deserializer.rule.Rule;
 import vjson.util.ObjectBuilder;
@@ -10,12 +11,14 @@ public class Assistant {
     public AssistantMacro macro;
     public AssistantFishing fishing;
     public AssistantCoolDown cooldown;
+    public boolean disableAlertingGPL;
 
     public static final Rule<Assistant> rule = new ObjectRule<>(Assistant::new)
         .put("lastValues", (o, it) -> o.lastValues = it, AssistantLastValues.rule)
         .put("macro", (o, it) -> o.macro = it, AssistantMacro.rule)
         .put("fishing", (o, it) -> o.fishing = it, AssistantFishing.rule)
-        .put("cooldown", (o, it) -> o.cooldown = it, AssistantCoolDown.rule);
+        .put("cooldown", (o, it) -> o.cooldown = it, AssistantCoolDown.rule)
+        .put("disableAlertingGPL", (o, it) -> o.disableAlertingGPL = it, BoolRule.get());
 
     public static Assistant empty() {
         var ret = new Assistant();
@@ -36,6 +39,7 @@ public class Assistant {
         if (cooldown != null) {
             ob.putInst("cooldown", cooldown.toJson());
         }
+        ob.put("disableAlertingGPL", disableAlertingGPL);
         return ob.build();
     }
 }

@@ -506,4 +506,16 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     public abstract String messageHelperDesc();
 
     public abstract String scrollLogCheckBoxDesc();
+
+    public abstract String gplAlert(String url);
+
+    public abstract String confirmAndDisableGPLAlert();
+
+    public String authorBilibili() {
+        return "bilibili";
+    }
+
+    public abstract String authorGameAccount();
+
+    public abstract String authorContribution();
 }

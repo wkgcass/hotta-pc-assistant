@@ -690,6 +690,13 @@ public class ZhCn extends I18n {
             CD指示器的恢复图标：Play button icons created by Roundicons - Flaticon
             聊天消息辅助图标：Keyboard icons created by Freepik - Flaticon
             幻塔多开图标：Ui icons created by Graphics Plazza - Flaticon
+
+            依赖开源项目：
+            1. openjdk: GPLv2 with Classpath Exception
+            2. javafx: GPLv2 with Classpath Exception
+            3. vertx: Eclipse Public License
+            4. vfx: MIT License
+            5. jna: LGPL 2.1
             """;
     }
 
@@ -1495,6 +1502,27 @@ public class ZhCn extends I18n {
     @Override
     public String scrollLogCheckBoxDesc() {
         return "滚动显示最新日志";
+    }
+
+    @Override
+    public String gplAlert(String url) {
+        return "本软件通过GPLv2协议开源，根据协议，分发时需要提供相应的源代码。\n" +
+               "本软件源码仓库位于:" + url + "。具体信息可在[关于]页中查看。";
+    }
+
+    @Override
+    public String confirmAndDisableGPLAlert() {
+        return "我已了解，后续启动时不再提示";
+    }
+
+    @Override
+    public String authorGameAccount() {
+        return "游戏账号";
+    }
+
+    @Override
+    public String authorContribution() {
+        return "贡献内容";
     }
 
     @Override

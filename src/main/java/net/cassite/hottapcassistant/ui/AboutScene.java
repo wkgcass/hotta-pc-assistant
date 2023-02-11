@@ -16,11 +16,13 @@ import java.util.List;
 public class AboutScene extends MainScene {
     private static final List<Author> authors = List.of(
         new Author("wkgcass", "https://github.com/wkgcass", "wkgcass",
-            "星岛2", "vcassv")
+            "星岛2", "vcassv",
+            "Maintainer")
     );
 
     private record Author(String name, String whereToFindMe, String biliAccount,
-                          String gameServer, String gameName) {
+                          String gameServer, String gameName,
+                          String contribution) {
     }
 
     private static String generate() {
@@ -29,9 +31,10 @@ public class AboutScene extends MainScene {
             sb.append(a.name).append("\n");
             sb.append("  ").append(a.whereToFindMe).append("\n");
             if (a.biliAccount != null) {
-                sb.append("  ").append("bilibili: ").append(a.biliAccount).append("\n");
+                sb.append("  ").append(I18n.get().authorBilibili()).append(": ").append(a.biliAccount).append("\n");
             }
-            sb.append("  ").append(a.gameServer).append(" ").append(a.gameName).append("\n");
+            sb.append("  ").append(I18n.get().authorGameAccount()).append(": ").append(a.gameServer).append(" ").append(a.gameName).append("\n");
+            sb.append("  ").append(I18n.get().authorContribution()).append(": ").append(a.contribution).append("\n");
         }
         return sb.toString();
     }

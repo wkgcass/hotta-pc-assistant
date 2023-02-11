@@ -9,7 +9,6 @@ open module net.cassite.hottapcassistant {
     requires jdk.crypto.ec;
     requires vjson;
     requires com.github.kwhat.jnativehook;
-    requires org.controlsfx.controls;
     requires com.sun.jna;
     requires com.sun.jna.platform;
     requires io.vertx.core;

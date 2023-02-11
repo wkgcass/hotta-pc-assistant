@@ -1,5 +1,7 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.vfx.control.dialog.VDialog;
+import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.image.ImageManager;
 import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.button.FusionImageButton;
@@ -11,16 +13,21 @@ import io.vproxy.vfx.ui.scene.VSceneRole;
 import io.vproxy.vfx.ui.scene.VSceneShowMethod;
 import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.vfx.util.Logger;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import net.cassite.hottapcassistant.config.AssistantConfig;
+import net.cassite.hottapcassistant.entity.Assistant;
 import net.cassite.hottapcassistant.feed.Feed;
+import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class UIEntry {
@@ -231,6 +238,32 @@ public class UIEntry {
         configureRootCorrespondToWelcomeScene();
         Feed.updated.addListener((ob, old, now) -> checkFeedAndSetRootImage());
         stage.getStage().heightProperty().addListener((ob, old, now) -> updateRootImage());
+
+        FXUtils.runDelay(VScene.ANIMATION_DURATION_MILLIS, this::showGPLAlert);
+    }
+
+    private void showGPLAlert() {
+        Assistant ass;
+        try {
+            ass = AssistantConfig.readAssistant(false);
+        } catch (Exception e) {
+            Logger.error("reading assistant config failed", e);
+            return;
+        }
+        if (ass.disableAlertingGPL) {
+            return;
+        }
+        var dialog = new VDialog<Void>();
+        dialog.setText(I18n.get().gplAlert("github.com/wkgcass/hotta-pc-assistant"));
+        dialog.setButtons(Collections.singletonList(
+            new VDialogButton<>(I18n.get().confirmAndDisableGPLAlert())
+        ));
+        dialog.showAndWait();
+        try {
+            AssistantConfig.updateAssistant(a -> a.disableAlertingGPL = true);
+        } catch (Exception e) {
+            Logger.error("flushing assistant config for gpl alert failed", e);
+        }
     }
 
     private void configureRootCorrespondToWelcomeScene() {
