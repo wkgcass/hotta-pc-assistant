@@ -198,7 +198,7 @@ public class GlobalValues {
         if (func != null) {
             func.run();
         }
-        closeButton.setVisible(false);
+        backButton.setVisible(false);
         backFunction = null;
     }
 }
