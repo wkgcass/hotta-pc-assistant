@@ -69,7 +69,7 @@ public class StatusIndicator extends AbstractTool implements Tool {
                 .setMaximizeAndResetButton(false)
                 .setCloseButton(false));
 
-            final int width = 400;
+            final int width = 250;
             final int height = 300;
             getStage().setWidth(width);
             getStage().setHeight(height);
