@@ -485,7 +485,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             )));
             confirmScene.enableAutoContentWidthHeight();
             var label = new ThemeLabel(I18n.get().fishingConfigureTips1());
-            var button = new FusionButton(I18n.get().alertOkButton()) {{
+            var button = new FusionButton(I18n.get().fishingStartConfiguring()) {{
                 setPrefWidth(120);
                 setPrefHeight(45);
                 setOnAction(e -> {
@@ -494,10 +494,18 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
                     runOnButtonClicked.run();
                 });
             }};
+            var skipConfiguration = new FusionButton(I18n.get().fishingSkipConfigureStep1Button()) {{
+                setPrefWidth(400);
+                setPrefHeight(45);
+                setOnAction(e -> {
+                    stage.getSceneGroup().hide(confirmScene, VSceneHideMethod.TO_RIGHT);
+                    okCallback.run();
+                });
+            }};
             var vbox = new VBox(
                 label,
                 new VPadding(10),
-                button
+                new HBox(skipConfiguration, new HPadding(10), button)
             ) {{
                 setAlignment(Pos.CENTER_RIGHT);
             }};

@@ -580,6 +580,16 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String fishingStartConfiguring() {
+        return "开始配置";
+    }
+
+    @Override
+    public String fishingSkipConfigureStep1Button() {
+        return "上次配置后没有离开过钓鱼模式，跳过该配置";
+    }
+
+    @Override
     public String fishingConfigureTips1() {
         return """
             请在游戏中进入钓鱼状态（屏幕上有绿光的状态）

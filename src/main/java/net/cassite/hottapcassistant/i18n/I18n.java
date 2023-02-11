@@ -207,6 +207,10 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String fishingSwitchButtonLabel();
 
+    public abstract String fishingStartConfiguring();
+
+    public abstract String fishingSkipConfigureStep1Button();
+
     public abstract String fishingConfigureTips1();
 
     public abstract String fishingConfigureTips2();
