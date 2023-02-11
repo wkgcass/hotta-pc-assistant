@@ -87,6 +87,7 @@ public class StatusIndicator extends AbstractTool implements Tool {
             getInitialScene().enableAutoContentWidth();
             vbox = new VBox();
             vbox.setPadding(new Insets(10));
+            vbox.setSpacing(5);
             var root = getInitialScene().getContentPane();
             FXUtils.observeWidth(root, vbox);
             root.getChildren().add(vbox);
