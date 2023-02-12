@@ -89,9 +89,14 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
     protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
         if (w == this) {
             if (discharge || autoFillSubSkill) {
-                subSkillCount = 2;
+                triggerDischarge(ctx, true);
             }
         }
+    }
+
+    @Override
+    public void triggerDischarge(WeaponContext ctx, boolean withDischargeEffect) {
+        subSkillCount = 2;
     }
 
     @Override

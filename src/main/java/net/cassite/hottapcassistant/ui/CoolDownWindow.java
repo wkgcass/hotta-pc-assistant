@@ -35,7 +35,9 @@ import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.WeaponContext;
 import net.cassite.hottapcassistant.discharge.DischargeDetector;
+import net.cassite.hottapcassistant.entity.AssistantCoolDownYueXingChuanSanLiuSkill;
 import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
+import net.cassite.hottapcassistant.entity.YueXingChuanSanLiuSkillOptions;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -46,6 +48,7 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private static final InputData SpecialAttack = new InputData(new Key(KeyCode.BACKQUOTE));
     private final WeaponContext ctx;
     private final InputData weaponSkill;
+    private final InputData additionalSkill;
     private final InputData[] melee;
     private final InputData[] evade;
     private final InputData[] changeWeapons;
@@ -70,13 +73,26 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private final Node controlButtonSeparator;
 
     public CoolDownWindow(List<Weapon> weapons, Relics[] relics, Simulacra simulacra,
-                          InputData weaponSkill, InputData[] melee, InputData[] evade,
+                          InputData weaponSkill, InputData additionalSkill, InputData[] melee, InputData[] evade,
                           InputData[] changeWeapons, InputData[] artifact,
                           InputData jump,
-                          Set<String> row2Ids, AssistantCoolDownOptions options,
+                          Set<String> row2Ids, AssistantCoolDownOptions options, List<AssistantCoolDownYueXingChuanSanLiuSkill> sanLiuSkills,
                           Runnable resetCallback) {
-        this.ctx = new WeaponContext(weapons, relics, simulacra, options != null && options.playAudio);
+        YueXingChuanSanLiuSkillOptions yueXingChuanSanLiuSkillOptions;
+        if (sanLiuSkills == null || sanLiuSkills.isEmpty()) {
+            yueXingChuanSanLiuSkillOptions = new YueXingChuanSanLiuSkillOptions(null, null);
+        } else if (sanLiuSkills.size() >= 2) {
+            yueXingChuanSanLiuSkillOptions = new YueXingChuanSanLiuSkillOptions(sanLiuSkills.get(0), sanLiuSkills.get(1));
+        } else {
+            yueXingChuanSanLiuSkillOptions = new YueXingChuanSanLiuSkillOptions(sanLiuSkills.get(0), null);
+        }
+        for (var w : weapons) {
+            w.init(options);
+            w.init(yueXingChuanSanLiuSkillOptions);
+        }
+        this.ctx = new WeaponContext(weapons, relics, simulacra, options);
         this.weaponSkill = weaponSkill;
+        this.additionalSkill = additionalSkill;
         this.melee = melee;
         this.evade = evade;
         this.changeWeapons = changeWeapons;
@@ -579,6 +595,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private void handle(KeyCode key, MouseButton btn) {
         if (weaponSkill.matches(keys, btns, key, btn)) {
             ctx.useSkill();
+        } else if (additionalSkill.matches(keys, btns, key, btn)) {
+            ctx.useAdditionalSkill();
         } else if (SpecialAttack.matches(keys, btns, key, btn)) {
             ctx.specialAttack();
         } else if (jump.matches(keys, btns, key, btn)) {

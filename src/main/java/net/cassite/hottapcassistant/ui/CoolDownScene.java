@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
     private final VSceneGroup sceneGroup;
     private InputData weaponSkill;
+    private InputData additionalSkill;
     private InputData[] melee;
     private InputData[] evade;
     private final InputData[] changeWeapons = new InputData[3];
@@ -88,6 +89,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         new SimpleObjectProperty(),
     };
     private final SimpleObjectProperty<SimulacraRef> simulacra = new SimpleObjectProperty<>(null);
+    private final ObservableList<AssistantCoolDownYueXingChuanSanLiuSkill> yueXingChuanSanLiuSkills = FXCollections.observableList(new ArrayList<>());
     private final Set<String> row2Ids = new HashSet<>();
     private final ObservableList<String> configurationNames = FXCollections.observableList(new ArrayList<>());
     private final ObservableList<AssistantCoolDownConfiguration> configurations = FXCollections.observableList(new ArrayList<>());
@@ -99,7 +101,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         enableAutoContentWidth();
 
         this.sceneGroup = sceneGroup;
-        this.optionsScene = new CoolDownOptionsScene(options, this);
+        this.optionsScene = new CoolDownOptionsScene(options, yueXingChuanSanLiuSkills, this);
         sceneGroup.addScene(optionsScene, VSceneHideMethod.TO_RIGHT);
         sceneGroup.addScene(coolDownTipsScene, VSceneHideMethod.TO_RIGHT);
 
@@ -163,6 +165,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
                 new HPadding(5),
                 new FusionW(equipConfig) {{
                     enableLabelBackground();
+                    getLabel().setPadding(new Insets(0, 0, 0, 10));
                 }},
                 new HPadding(5));
 
@@ -361,14 +364,13 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
                 matrixs[index++] = m;
             }
             var w = this.weapons[i].get().make(matrixs);
-            w.init(options.get());
             weapons.add(w);
         }
 
         saveConfig();
 
-        var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, melee, evade, changeWeapons, useArtifacts, jump,
-            row2Ids, options.get(),
+        var window = new CoolDownWindow(weapons, relics, simulacra, weaponSkill, additionalSkill, melee, evade, changeWeapons, useArtifacts, jump,
+            row2Ids, new AssistantCoolDownOptions(options.get()), new ArrayList<>(yueXingChuanSanLiuSkills),
             this::reset);
         this.window = window;
         setWindowPosition(window);
@@ -392,6 +394,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         ret.weapons = cd.weapons;
         ret.relics = cd.relics;
         ret.simulacra = cd.simulacra;
+        ret.yueXingChuanSanLiuSkills = cd.yueXingChuanSanLiuSkills;
 
         configurations.add(ret);
         saveConfig();
@@ -429,6 +432,10 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         {
             var s = this.simulacra.get();
             config.simulacra.simulacraId = s == null ? 0 : s.id;
+        }
+        config.yueXingChuanSanLiuSkills = new ArrayList<>();
+        {
+            config.yueXingChuanSanLiuSkills.addAll(yueXingChuanSanLiuSkills);
         }
         config.row2Ids = row2Ids;
         config.configurations = new ArrayList<>(configurations);
@@ -533,6 +540,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         }
 
         InputData weaponSkill = null;
+        InputData additionalSkill = null;
         InputData melee = null;
         InputData meleeKey = null;
         InputData evade = null;
@@ -546,6 +554,8 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         for (var kb : input) {
             if ("WeaponSkill".equals(kb.action)) {
                 weaponSkill = kb;
+            } else if ("SkillAdditional".equals(kb.action)) {
+                additionalSkill = kb;
             } else if ("ChangeWeapon0".equals(kb.action)) {
                 changeWeapon0 = kb;
             } else if ("ChangeWeapon1".equals(kb.action)) {
@@ -570,6 +580,9 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         }
         if (weaponSkill == null) {
             weaponSkill = new InputData(new Key(KeyCode.KEY_1));
+        }
+        if (additionalSkill == null) {
+            additionalSkill = new InputData(new Key(KeyCode.X));
         }
         if (changeWeapon0 == null) {
             changeWeapon0 = new InputData(new Key(KeyCode.Q));
@@ -600,6 +613,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         }
 
         this.weaponSkill = weaponSkill;
+        this.additionalSkill = additionalSkill;
         if (meleeKey == null) {
             this.melee = new InputData[]{melee};
         } else {
@@ -621,6 +635,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         loadWeaponsFromConfig(cooldown.weapons);
         loadRelicsFromConfig(cooldown.relics);
         loadSimulacraFromConfig(cooldown.simulacra);
+        loadYueXingChuanSanLiuSkills(cooldown.yueXingChuanSanLiuSkills);
         loadRow2Ids(cooldown.row2Ids);
         loadConfigurations(cooldown.configurations);
         loadOptions(cooldown.options);
@@ -631,6 +646,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         loadWeaponsFromConfig(cooldown.weapons);
         loadRelicsFromConfig(cooldown.relics);
         loadSimulacraFromConfig(cooldown.simulacra);
+        loadYueXingChuanSanLiuSkills(cooldown.yueXingChuanSanLiuSkills);
     }
 
     private void loadWeaponsFromConfig(List<AssistantCoolDownWeapon> weapons) {
@@ -665,6 +681,12 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         if (simulacra == null) return;
         var s = new SimulacraRef(simulacra.simulacraId, null);
         this.simulacra.set(s);
+    }
+
+    private void loadYueXingChuanSanLiuSkills(List<AssistantCoolDownYueXingChuanSanLiuSkill> skills) {
+        if (skills == null) return;
+        this.yueXingChuanSanLiuSkills.clear();
+        this.yueXingChuanSanLiuSkills.addAll(skills);
     }
 
     private void loadRow2Ids(Set<String> row2Ids) {

@@ -45,6 +45,8 @@ public interface Weapon extends WithThreadStartStop, WithExtraData {
 
     void alertWeaponSwitched(WeaponContext ctx, Weapon w, boolean discharge);
 
+    void triggerDischarge(WeaponContext ctx, boolean withDischargeEffect);
+
     void resetCoolDown();
 
     void decreaseCoolDown(long time);

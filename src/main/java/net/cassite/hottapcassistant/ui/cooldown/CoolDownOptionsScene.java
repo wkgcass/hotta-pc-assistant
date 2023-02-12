@@ -11,12 +11,15 @@ import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.ui.scene.VScene;
 import io.vproxy.vfx.ui.scene.VSceneRole;
 import io.vproxy.vfx.ui.shapes.MovableRect;
+import io.vproxy.vfx.ui.toggle.ToggleSwitch;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -33,6 +36,7 @@ import javafx.stage.Stage;
 import net.cassite.hottapcassistant.discharge.DischargeCheckAlgorithm;
 import net.cassite.hottapcassistant.discharge.DischargeCheckContext;
 import net.cassite.hottapcassistant.discharge.SimpleDischargeCheckAlgorithm;
+import net.cassite.hottapcassistant.entity.AssistantCoolDownYueXingChuanSanLiuSkill;
 import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.ui.CoolDownScene;
@@ -44,11 +48,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import static net.cassite.hottapcassistant.entity.AssistantCoolDownYueXingChuanSanLiuSkill.*;
+
 public class CoolDownOptionsScene extends VScene {
     private final SimpleObjectProperty<AssistantCoolDownOptions> options;
+    private boolean isSynchronizingYueXingChuanSanLiuSkills = false;
     private final CoolDownScene coolDownScene;
 
-    public CoolDownOptionsScene(SimpleObjectProperty<AssistantCoolDownOptions> options, CoolDownScene coolDownScene) {
+    public CoolDownOptionsScene(SimpleObjectProperty<AssistantCoolDownOptions> options,
+                                ObservableList<AssistantCoolDownYueXingChuanSanLiuSkill> yueXingChuanSanLiuSkills,
+                                CoolDownScene coolDownScene) {
         super(VSceneRole.TEMPORARY);
         enableAutoContentWidth();
         this.options = options;
@@ -124,6 +133,12 @@ public class CoolDownOptionsScene extends VScene {
                 FXUtils.disableFocusColor(this);
             }};
             vbox.getChildren().add(playAudioCheckBox);
+            var skipAudioCollection001CheckBox = new CheckBox(I18n.get().cooldownSkipAudioCollection001CheckBox()) {{
+                FontManager.get().setFont(this);
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
+            }};
+            vbox.getChildren().add(skipAudioCollection001CheckBox);
             vbox.getChildren().add(new VPadding(10));
             var applyDischargeForYingZhiCheckBox = new CheckBox(I18n.get().cooldownApplyDischargeForYingZhiCheckBox()) {{
                 FontManager.get().setFont(this);
@@ -137,6 +152,12 @@ public class CoolDownOptionsScene extends VScene {
                 FXUtils.disableFocusColor(this);
             }};
             vbox.getChildren().add(autoFillPianGuangLingYuSubSkillCheckbox);
+            var autoDischargeForYueXingChuanCheckbox = new CheckBox(I18n.get().cooldownAutoDischargeForYueXingChuanCheckBox()) {{
+                FontManager.get().setFont(this);
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
+            }};
+            vbox.getChildren().add(autoDischargeForYueXingChuanCheckbox);
 
             options.addListener((ob, old, now) -> {
                 if (now == null) return;
@@ -150,8 +171,10 @@ public class CoolDownOptionsScene extends VScene {
                 lockCDWindowPositionCheckBox.setSelected(now.lockCDWindowPosition);
                 onlyShowFirstLineBuffCheckBox.setSelected(now.onlyShowFirstLineBuff);
                 playAudioCheckBox.setSelected(now.playAudio);
+                skipAudioCollection001CheckBox.setSelected(now.skipAudioCollection001);
                 applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                 autoFillPianGuangLingYuSubSkillCheckbox.setSelected(now.autoFillPianGuangLingYuSubSkill);
+                autoDischargeForYueXingChuanCheckbox.setSelected(now.autoDischargeForYueXingChuan);
             });
             scanDischargeCheckbox.setOnAction(e -> {
                 var selected = scanDischargeCheckbox.isSelected();
@@ -230,11 +253,142 @@ public class CoolDownOptionsScene extends VScene {
                 opt.playAudio = playAudioCheckBox.isSelected();
                 saveConfig();
             });
+            skipAudioCollection001CheckBox.setOnAction(e -> {
+                var opt = options.get();
+                opt.skipAudioCollection001 = skipAudioCollection001CheckBox.isSelected();
+                saveConfig();
+            });
             autoFillPianGuangLingYuSubSkillCheckbox.setOnAction(e -> {
                 var opt = options.get();
                 opt.autoFillPianGuangLingYuSubSkill = autoFillPianGuangLingYuSubSkillCheckbox.isSelected();
                 saveConfig();
             });
+            autoDischargeForYueXingChuanCheckbox.setOnAction(e -> {
+                var opt = options.get();
+                opt.autoDischargeForYueXingChuan = autoDischargeForYueXingChuanCheckbox.isSelected();
+                saveConfig();
+            });
+        }
+
+        // san liu skills
+        vbox.getChildren().add(new VPadding(10));
+        {
+            var juShuiSwitch = new YueXingChuanSanLiuSkillSwitch(I18n.get().yueXingChuanJuShuiSkill(), JU_SHUI);
+            var yongJuanSwitch = new YueXingChuanSanLiuSkillSwitch(I18n.get().yueXingChuanYongJuanSkill(), YONG_JUAN);
+            var taoYaSwitch = new YueXingChuanSanLiuSkillSwitch(I18n.get().yueXingChuanTaoYaSkill(), TAO_YA);
+            var woXuanSwitch = new YueXingChuanSanLiuSkillSwitch(I18n.get().yueXingChuanWoXuanSkill(), WO_XUAN);
+            var yuGuSwitch = new YueXingChuanSanLiuSkillSwitch(I18n.get().yueXingChuanYuGuSkill(), YU_GU);
+            var ziQuanSwitch = new YueXingChuanSanLiuSkillSwitch(I18n.get().yueXingChuanZiQuanSkill(), ZI_QUAN);
+            var allSwitches = Arrays.asList(
+                juShuiSwitch, yongJuanSwitch, taoYaSwitch, woXuanSwitch, yuGuSwitch, ziQuanSwitch
+            );
+            for (var s : allSwitches) {
+                s.selectedProperty().addListener((ob, old, now) -> {
+                    if (now == null) return;
+                    if (now) {
+                        YueXingChuanSanLiuSkillSwitch s1 = null;
+                        YueXingChuanSanLiuSkillSwitch s2 = null;
+                        int maxIndex = 0;
+                        for (var ss : allSwitches) {
+                            if (s == ss) continue;
+                            if (ss.index == 1) {
+                                s1 = ss;
+                            } else if (ss.index == 2) {
+                                s2 = ss;
+                            }
+                            if (ss.index > maxIndex) {
+                                maxIndex = ss.index;
+                            }
+                        }
+                        if (maxIndex >= 2) {
+                            assert s1 != null;
+                            assert s2 != null;
+                            s1.setIndex(0);
+                            s2.setIndex(1);
+                            s.setIndex(2);
+                        } else if (s1 != null) {
+                            s.setIndex(2);
+                        } else {
+                            s.setIndex(1);
+                        }
+                    } else {
+                        if (s.index == 1) {
+                            for (var ss : allSwitches) {
+                                if (ss.index == 2) {
+                                    ss.setIndex(1);
+                                    break;
+                                }
+                            }
+                        }
+                        s.setIndex(0);
+                    }
+                    if (!isSynchronizingYueXingChuanSanLiuSkills) {
+                        isSynchronizingYueXingChuanSanLiuSkills = true;
+                        try {
+                            YueXingChuanSanLiuSkillSwitch s1 = null;
+                            YueXingChuanSanLiuSkillSwitch s2 = null;
+                            for (var ss : allSwitches) {
+                                if (ss.index == 1) s1 = ss;
+                                else if (ss.index == 2) s2 = ss;
+                            }
+                            yueXingChuanSanLiuSkills.clear();
+                            if (s1 != null) {
+                                yueXingChuanSanLiuSkills.add(s1.skill);
+                            }
+                            if (s2 != null) {
+                                yueXingChuanSanLiuSkills.add(s2.skill);
+                            }
+                        } finally {
+                            isSynchronizingYueXingChuanSanLiuSkills = false;
+                        }
+                    }
+                });
+            }
+            yueXingChuanSanLiuSkills.addListener((InvalidationListener) ob -> {
+                if (isSynchronizingYueXingChuanSanLiuSkills) return;
+
+                isSynchronizingYueXingChuanSanLiuSkills = true;
+                try {
+                    AssistantCoolDownYueXingChuanSanLiuSkill s1 = null;
+                    AssistantCoolDownYueXingChuanSanLiuSkill s2 = null;
+                    if (yueXingChuanSanLiuSkills.size() >= 1) {
+                        s1 = yueXingChuanSanLiuSkills.get(0);
+                    }
+                    if (yueXingChuanSanLiuSkills.size() >= 2) {
+                        s2 = yueXingChuanSanLiuSkills.get(1);
+                    }
+                    var fs1 = s1;
+                    var fs2 = s2;
+                    for (var s : allSwitches) {
+                        if (s.skill == fs1) s.setIndex(1);
+                        else if (s.skill == fs2) s.setIndex(2);
+                        else s.setIndex(0);
+                    }
+                } finally {
+                    isSynchronizingYueXingChuanSanLiuSkills = false;
+                }
+            });
+
+            vbox.getChildren().addAll(
+                new HBox(juShuiSwitch.nameLabel, juShuiSwitch.getNode(), juShuiSwitch.indexLabel) {{
+                    setSpacing(10);
+                }},
+                new HBox(yongJuanSwitch.nameLabel, yongJuanSwitch.getNode(), yongJuanSwitch.indexLabel) {{
+                    setSpacing(10);
+                }},
+                new HBox(taoYaSwitch.nameLabel, taoYaSwitch.getNode(), taoYaSwitch.indexLabel) {{
+                    setSpacing(10);
+                }},
+                new HBox(woXuanSwitch.nameLabel, woXuanSwitch.getNode(), woXuanSwitch.indexLabel) {{
+                    setSpacing(10);
+                }},
+                new HBox(yuGuSwitch.nameLabel, yuGuSwitch.getNode(), yuGuSwitch.indexLabel) {{
+                    setSpacing(10);
+                }},
+                new HBox(ziQuanSwitch.nameLabel, ziQuanSwitch.getNode(), ziQuanSwitch.indexLabel) {{
+                    setSpacing(10);
+                }}
+            );
         }
     }
 
@@ -481,5 +635,30 @@ public class CoolDownOptionsScene extends VScene {
         }
         opt.scanDischargeCriticalPoints = points;
         return true;
+    }
+
+    private class YueXingChuanSanLiuSkillSwitch extends ToggleSwitch {
+        final AssistantCoolDownYueXingChuanSanLiuSkill skill;
+        final ThemeLabel nameLabel;
+        int index = 0;
+        final ThemeLabel indexLabel = new ThemeLabel();
+
+        public YueXingChuanSanLiuSkillSwitch(String name, AssistantCoolDownYueXingChuanSanLiuSkill skill) {
+            super(10, 30);
+            this.skill = skill;
+            nameLabel = new ThemeLabel(name);
+            nameLabel.setPrefWidth(50);
+        }
+
+        public void setIndex(int i) {
+            this.index = i;
+            if (i == 0) {
+                indexLabel.setText("");
+                setSelected(false);
+            } else {
+                indexLabel.setText("" + i);
+                setSelected(true);
+            }
+        }
     }
 }

@@ -29,6 +29,7 @@ public class Consts {
         "/images/buff/mo-shu-shi-jian.png",
         "/images/buff/optical-space.png",
         "/images/buff/shi-zi-zhuo-shao.png",
+        "/images/buff/shui-yi-shuo-hua.png",
         "/images/buff/lei-dian-gan-ying.png",
         "/images/buff/xing-huan-simulacra.png",
         "/images/buff/ying-yue-zhi-jing.png",
@@ -69,6 +70,12 @@ public class Consts {
         "/images/relics/kao-en-te.png",
         "/images/relics/kao-en-te-2.png",
         "/images/relics/dummy.png",
+        "/images/skills/ju-shui.png",
+        "/images/skills/tao-ya.png",
+        "/images/skills/wo-xuan.png",
+        "/images/skills/yong-juan.png",
+        "/images/skills/yu-gu.png",
+        "/images/skills/zi-quan.png",
         "/images/weapons/a-lai-ye-shi.png",
         "/images/weapons/ba-er-meng-ke.png",
         "/images/weapons/bing-feng-zhi-shi.png",
@@ -103,6 +110,7 @@ public class Consts {
         "/images/weapons/wan-dao.png",
         "/images/weapons/ye-que-zhi-yu.png",
         "/images/weapons/ying-zhi.png",
+        "/images/weapons/yue-xing-chuan.png",
         "/images/weapons/zhong-jie-zhe.png",
     };
 

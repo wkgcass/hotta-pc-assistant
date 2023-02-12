@@ -288,6 +288,15 @@ public class Utils {
         }
     }
 
+    public static Image getSkillImageFromClasspath(String name) {
+        try {
+            return ImageManager.get().load("images/skills/" + name + ".png");
+        } catch (Exception e) {
+            Logger.error("failed loading image for skill " + name, e);
+            return null;
+        }
+    }
+
     public static AudioWrapper getSkillAudio(String name, int index) {
         String n = "" + index;
         if (index < 10) {

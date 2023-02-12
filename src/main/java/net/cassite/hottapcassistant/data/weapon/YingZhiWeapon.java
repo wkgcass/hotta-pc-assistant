@@ -149,12 +149,19 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
+        if (w != this)
+            return;
         if (!discharge) {
             return;
         }
         if (!handleDischargeAlert) {
             return;
         }
+        triggerDischarge(ctx, true);
+    }
+
+    @Override
+    public void triggerDischarge(WeaponContext ctx, boolean withDischargeEffect) {
         increaseDischargeAcquiredSkillCount();
     }
 

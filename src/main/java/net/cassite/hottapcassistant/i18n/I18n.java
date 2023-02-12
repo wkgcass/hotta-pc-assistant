@@ -321,7 +321,11 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
 
     public abstract String cooldownPlayAudioCheckBox();
 
+    public abstract String cooldownSkipAudioCollection001CheckBox();
+
     public abstract String cooldownAutoFillPianGuangLingYuSubSkillCheckbox();
+
+    public abstract String cooldownAutoDischargeForYueXingChuanCheckBox();
 
     public abstract String scanDischargeConfigureTips();
 
@@ -532,4 +536,20 @@ public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI
     public abstract String statusComponentTool();
 
     public abstract String statusComponentMacro();
+
+    public abstract String yueXingChuanJuShuiSkill();
+
+    public abstract String yueXingChuanYongJuanSkill();
+
+    public abstract String yueXingChuanTaoYaSkill();
+
+    public abstract String yueXingChuanWoXuanSkill();
+
+    public abstract String yueXingChuanYuGuSkill();
+
+    public abstract String yueXingChuanZiQuanSkill();
+
+    public abstract String yueXingChuanSanLiuSkillCoolDownDesc(String name);
+
+    public abstract String yueXingChuanSanLiuSkillBuffDesc(String name);
 }

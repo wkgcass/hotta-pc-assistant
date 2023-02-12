@@ -840,6 +840,7 @@ public class ZhCn extends I18n {
             case "yè què zhī yǔ" -> "夜雀之羽";
             case "zhōng jié zhě" -> "终结者";
             case "piàn guāng líng yǚ" -> "片光零羽";
+            case "yuè xīng chuàn" -> "月星钏";
             default -> name;
         };
     }
@@ -904,6 +905,7 @@ public class ZhCn extends I18n {
             case "moBiWuSiBuff" -> "莫比乌斯提前离开领域增伤";
             case "leiDianGanYing" -> "雷电感应";
             case "guiJiCounter" -> "归寂可用次数";
+            case "shuiYiShuoHuaBuff" -> "水意烁华效果持续时间";
             default -> name;
         };
     }
@@ -980,8 +982,18 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String cooldownSkipAudioCollection001CheckBox() {
+        return "仅播放精选拟态语音";
+    }
+
+    @Override
     public String cooldownAutoFillPianGuangLingYuSubSkillCheckbox() {
         return "切换到片光零羽时总是填充2层子技能";
+    }
+
+    @Override
+    public String cooldownAutoDischargeForYueXingChuanCheckBox() {
+        return "切换到月星钏时总是视为释放连携";
     }
 
     @Override
@@ -1560,6 +1572,46 @@ public class ZhCn extends I18n {
     @Override
     public String statusComponentMacro() {
         return "宏";
+    }
+
+    @Override
+    public String yueXingChuanJuShuiSkill() {
+        return "聚水";
+    }
+
+    @Override
+    public String yueXingChuanYongJuanSkill() {
+        return "涌卷";
+    }
+
+    @Override
+    public String yueXingChuanTaoYaSkill() {
+        return "涛压";
+    }
+
+    @Override
+    public String yueXingChuanWoXuanSkill() {
+        return "涡旋";
+    }
+
+    @Override
+    public String yueXingChuanYuGuSkill() {
+        return "潏梏";
+    }
+
+    @Override
+    public String yueXingChuanZiQuanSkill() {
+        return "滋泉";
+    }
+
+    @Override
+    public String yueXingChuanSanLiuSkillCoolDownDesc(String name) {
+        return name + "冷却时间";
+    }
+
+    @Override
+    public String yueXingChuanSanLiuSkillBuffDesc(String name) {
+        return name + "效果持续时间";
     }
 
     @Override

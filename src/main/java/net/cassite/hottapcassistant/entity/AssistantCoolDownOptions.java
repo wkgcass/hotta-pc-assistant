@@ -21,8 +21,10 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public boolean lockCDWindowPosition;
     public boolean onlyShowFirstLineBuff;
     public boolean playAudio;
+    public boolean skipAudioCollection001;
     public boolean applyDischargeForYingZhi;
     public boolean autoFillPianGuangLingYuSubSkill;
+    public boolean autoDischargeForYueXingChuan;
     public double lastWindowScale;
 
     public static final Rule<AssistantCoolDownOptions> rule = new ObjectRule<>(AssistantCoolDownOptions::new)
@@ -38,13 +40,39 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("lockCDWindowPosition", (o, it) -> o.lockCDWindowPosition = it, BoolRule.get())
         .put("onlyShowFirstLineBuff", (o, it) -> o.onlyShowFirstLineBuff = it, BoolRule.get())
         .put("playAudio", (o, it) -> o.playAudio = it, BoolRule.get())
+        .put("skipAudioCollection001", (o, it) -> o.skipAudioCollection001 = it, BoolRule.get())
         .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
         .put("autoFillPianGuangLingYuSubSkill", (o, it) -> o.autoFillPianGuangLingYuSubSkill = it, BoolRule.get())
+        .put("autoDischargeForYueXingChuan", (o, it) -> o.autoDischargeForYueXingChuan = it, BoolRule.get())
         .put("lastWindowScale", (o, it) -> o.lastWindowScale = it, DoubleRule.get());
+
+    public AssistantCoolDownOptions() {
+    }
+
+    public AssistantCoolDownOptions(AssistantCoolDownOptions that) {
+        scanDischarge = that.scanDischarge;
+        scanDischargeDebug = that.scanDischargeDebug;
+        scanDischargeRect = that.scanDischargeRect;
+        scanDischargeCapScale = that.scanDischargeCapScale;
+        scanDischargeCriticalPoints = that.scanDischargeCriticalPoints;
+        scanDischargeNativeCapture = that.scanDischargeNativeCapture;
+        scanDischargeRoughCapture = that.scanDischargeRoughCapture;
+        hideWhenMouseEnter = that.hideWhenMouseEnter;
+        lockCDWindowPosition = that.lockCDWindowPosition;
+        onlyShowFirstLineBuff = that.onlyShowFirstLineBuff;
+        playAudio = that.playAudio;
+        skipAudioCollection001 = that.skipAudioCollection001;
+        applyDischargeForYingZhi = that.applyDischargeForYingZhi;
+        autoFillPianGuangLingYuSubSkill = that.autoFillPianGuangLingYuSubSkill;
+        autoDischargeForYueXingChuan = that.autoDischargeForYueXingChuan;
+        lastWindowScale = that.lastWindowScale;
+    }
 
     public static AssistantCoolDownOptions empty() {
         var ret = new AssistantCoolDownOptions();
+        ret.skipAudioCollection001 = true;
         ret.autoFillPianGuangLingYuSubSkill = true;
+        ret.autoDischargeForYueXingChuan = true;
         return ret;
     }
 
@@ -73,8 +101,10 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         ob.put("lockCDWindowPosition", lockCDWindowPosition);
         ob.put("onlyShowFirstLineBuff", onlyShowFirstLineBuff);
         ob.put("playAudio", playAudio);
+        ob.put("skipAudioCollection001", skipAudioCollection001);
         ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
         ob.put("autoFillPianGuangLingYuSubSkill", autoFillPianGuangLingYuSubSkill);
+        ob.put("autoDischargeForYueXingChuan", autoDischargeForYueXingChuan);
         ob.put("lastWindowScale", lastWindowScale);
         return ob.build();
     }

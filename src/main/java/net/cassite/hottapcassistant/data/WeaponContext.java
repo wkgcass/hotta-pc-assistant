@@ -4,6 +4,7 @@ import io.vproxy.vfx.util.Logger;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.weapon.*;
+import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 public class WeaponContext implements WithExtraData {
     public final List<Weapon> weapons;
+    public final YueXingChuanWeapon yueXingChuanWeapon;
     public final Relics[] relics;
     public final Simulacra simulacra;
     public Weapon current;
@@ -25,15 +27,18 @@ public class WeaponContext implements WithExtraData {
     private final long[] weaponSwitchCD;
 
     private final boolean playAudio;
+    private final boolean skipAudioCollection001;
 
-    public WeaponContext(List<Weapon> weapons, Relics[] relics, Simulacra simulacra, boolean playAudio) {
+    public WeaponContext(List<Weapon> weapons, Relics[] relics, Simulacra simulacra, AssistantCoolDownOptions options) {
         if (weapons.isEmpty()) throw new IllegalArgumentException();
         this.weapons = weapons;
+        this.yueXingChuanWeapon = (YueXingChuanWeapon) weapons.stream().filter(w -> w instanceof YueXingChuanWeapon).findAny().orElse(null);
         this.relics = relics;
         this.simulacra = simulacra;
         this.resonanceInfo = ResonanceInfo.build(weapons);
         this.current = weapons.get(0);
-        this.playAudio = playAudio;
+        this.playAudio = options.playAudio;
+        this.skipAudioCollection001 = options.skipAudioCollection001;
 
         for (var w : weapons) {
             w.init(this);
@@ -149,11 +154,17 @@ public class WeaponContext implements WithExtraData {
             w.alertSkillUsed(this, cw, skill);
         }
         simulacra.alertSkillUsed(this, cw, skill);
-        playSkillAudio(skill);
+        playSkillAudio(cw, skill);
     }
 
-    private void playSkillAudio(Skill skill) {
-        if (!playAudio) return;
+    public void useAdditionalSkill() {
+        if (yueXingChuanWeapon == null)
+            return;
+        yueXingChuanWeapon.useAdditionalSkill(this);
+    }
+
+    private void playSkillAudio(Weapon w, Skill skill) {
+        if (!playAudio(w)) return;
         var audio = skill.getAudio();
         if (audio != null) {
             audio.play();
@@ -221,12 +232,21 @@ public class WeaponContext implements WithExtraData {
             ww.alertWeaponSwitched(this, w, discharge);
         }
         if (discharge) {
-            if (playAudio) {
+            if (playAudio(w)) {
                 var group = w.getSkillAudio();
                 if (group != null) {
                     group.play();
                 }
             }
+        }
+        return true;
+    }
+
+    private boolean playAudio(Weapon w) {
+        if (!playAudio)
+            return false;
+        if (w instanceof SkipAudioCollection001) {
+            return !skipAudioCollection001;
         }
         return true;
     }

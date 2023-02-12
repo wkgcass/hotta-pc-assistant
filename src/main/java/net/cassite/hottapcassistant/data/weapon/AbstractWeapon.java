@@ -280,6 +280,10 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     }
 
     @Override
+    public void triggerDischarge(WeaponContext ctx, boolean withDischargeEffect) {
+    }
+
+    @Override
     public void resetCoolDown() {
         cd = 0;
     }
