@@ -39,6 +39,10 @@ import net.cassite.hottapcassistant.data.Weapon;
 import net.cassite.hottapcassistant.data.simulacra.DummySimulacra;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.status.Status;
+import net.cassite.hottapcassistant.status.StatusComponent;
+import net.cassite.hottapcassistant.status.StatusEnum;
+import net.cassite.hottapcassistant.status.StatusManager;
 import net.cassite.hottapcassistant.ui.cooldown.*;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
@@ -233,7 +237,13 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
                 if (now == null) return;
                 startBtn.setDisable(now);
                 stopBtn.setDisable(!now);
+                if (now) {
+                    StatusManager.get().updateStatus(new Status(I18n.get().toolNameCoolDown(), StatusComponent.MODULE, StatusEnum.RUNNING));
+                } else {
+                    StatusManager.get().updateStatus(new Status(I18n.get().toolNameCoolDown(), StatusComponent.MODULE, StatusEnum.STOPPED));
+                }
             });
+            StatusManager.get().updateStatus(new Status(I18n.get().toolNameCoolDown(), StatusComponent.MODULE, StatusEnum.STOPPED));
 
             hbox.getChildren().addAll(startBtn, new HPadding(4), stopBtn);
         }
