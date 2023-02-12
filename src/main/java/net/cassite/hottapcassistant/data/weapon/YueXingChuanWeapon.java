@@ -182,7 +182,7 @@ public class YueXingChuanWeapon extends AbstractWeapon implements Weapon {
         @Override
         public boolean use(WeaponContext ctx) {
             if (!isMain) { // for main skill, the cd check is already done before calling this method
-                if (currentCD > totalCD() * 0.1) {
+                if (currentCD > 0) {
                     return false;
                 }
             }
