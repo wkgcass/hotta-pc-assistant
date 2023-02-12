@@ -9,7 +9,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, TriggerLiuQuanCheXinStar1 {
+public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, TriggerLiuQuanCheXinStar1, SkipAudioCollection001 {
     private int state = 0;
     // 0 -> normal
     // 1 -> pen-qi

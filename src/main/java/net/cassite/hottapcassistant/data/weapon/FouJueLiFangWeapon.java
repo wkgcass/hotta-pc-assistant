@@ -7,7 +7,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon {
+public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon, SkipAudioCollection001 {
     public FouJueLiFangWeapon() {
         super(60, 700);
     }

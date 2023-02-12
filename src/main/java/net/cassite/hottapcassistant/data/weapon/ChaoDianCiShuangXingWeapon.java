@@ -8,7 +8,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class ChaoDianCiShuangXingWeapon extends AbstractWeapon implements Weapon {
+public class ChaoDianCiShuangXingWeapon extends AbstractWeapon implements Weapon, SkipAudioCollection001 {
     public ChaoDianCiShuangXingWeapon() {
         super(45, 600);
     }

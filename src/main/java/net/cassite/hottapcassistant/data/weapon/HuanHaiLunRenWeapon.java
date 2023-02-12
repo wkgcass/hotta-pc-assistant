@@ -8,7 +8,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class HuanHaiLunRenWeapon extends AbstractWeapon implements Weapon {
+public class HuanHaiLunRenWeapon extends AbstractWeapon implements Weapon, SkipAudioCollection001 {
     public HuanHaiLunRenWeapon() {
         super(45, 800);
     }

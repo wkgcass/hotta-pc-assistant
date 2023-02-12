@@ -8,7 +8,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon {
+public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon, SkipAudioCollection001 {
     private long beeTime = 0;
 
     private final WeaponCoolDown lingDuZhiZhenBeeTimer;

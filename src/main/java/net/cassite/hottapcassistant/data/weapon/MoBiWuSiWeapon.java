@@ -7,7 +7,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon {
+public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon, SkipAudioCollection001 {
     private long moShuShiJianTime = 0;
     private final WeaponCoolDown moShuShiJian = new WeaponCoolDown(Utils.getBuffImageFromClasspath("mo-shu-shi-jian"), "moShuShiJian", I18n.get().buffName("moShuShiJian"));
     private long buffTime = 0;

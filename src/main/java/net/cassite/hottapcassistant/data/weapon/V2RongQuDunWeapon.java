@@ -6,7 +6,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
-public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon {
+public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon, SkipAudioCollection001 {
     private int state = 0;
     // 0 -> shield
     // 1 -> ax
