@@ -223,7 +223,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             vbox.getChildren().add(new Hyperlink(I18n.get().fishTutorialLinkDesc()) {{
                 FontManager.get().setFont(this, settings -> settings.setSize(12));
                 setOnAction(e -> {
-                    var url = "https://www.bilibili.com/video/BV1fT411m7xR/";
+                    var url = "https://www.acfun.cn/v/ac40665585";
                     try {
                         Desktop.getDesktop().browse(new URL(url).toURI());
                     } catch (Throwable t) {

@@ -129,7 +129,7 @@ public class MultiHottaInstanceScene extends ToolScene {
                 new Hyperlink(I18n.get().multiInstanceTutorialLink()) {{
                     FontManager.get().setFont(this, settings -> settings.setSize(12));
                     setOnAction(e -> {
-                        var url = "https://www.bilibili.com/video/BV1Bv4y1C7HN/";
+                        var url = "https://www.acfun.cn/v/ac40665592";
                         try {
                             Desktop.getDesktop().browse(new URL(url).toURI());
                         } catch (Throwable t) {
