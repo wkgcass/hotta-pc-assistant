@@ -8,6 +8,7 @@ import io.vproxy.vfx.ui.scene.VScene;
 import io.vproxy.vfx.ui.slider.VSlider;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -52,20 +53,7 @@ public class LansBrainWash extends AbstractTool implements Tool {
         private final SimpleBooleanProperty started = new SimpleBooleanProperty(false);
         private AudioClip[] audio = null;
         private final IntegerProperty freq = new SimpleIntegerProperty(30);
-        private final IntegerProperty randTime = new SimpleIntegerProperty(1000) {
-            @Override
-            public String toString() {
-                String v = "" + get();
-                if (v.length() < 2) {
-                    v = "000" + v;
-                } else if (v.length() < 3) {
-                    v = "00" + v;
-                } else if (v.length() < 4) {
-                    v = "0" + v;
-                }
-                return v.charAt(0) + "." + v.substring(1);
-            }
-        };
+        private final IntegerProperty randTime = new SimpleIntegerProperty(1000);
         private Play play = null;
 
         public S() {
@@ -80,10 +68,12 @@ public class LansBrainWash extends AbstractTool implements Tool {
             var freqSlider = new VSlider();
             freqSlider.setLength(500);
             freqSlider.setPercentage(freq.get() / 120d);
+            freqSlider.setValueTransform(v -> "" + (int) (v * 120));
 
             var randTimeSlider = new VSlider();
             randTimeSlider.setLength(500);
             randTimeSlider.setPercentage(randTime.get() / 3000d);
+            randTimeSlider.setValueTransform(v -> MiscUtils.roughFloatValueFormat.format(v * 3));
 
             var startBtn = new FusionButton(I18n.get().brainWashLanStartBtn()) {{
                 setPrefWidth(48);
@@ -120,21 +110,11 @@ public class LansBrainWash extends AbstractTool implements Tool {
                 new HPadding(25),
                 new VBox(
                     new VPadding(20),
-                    new ThemeLabel(I18n.get().brainWashLanFreqSliderDesc() + ": " + freq.get()) {{
-                        freq.addListener((ob, old, now) -> {
-                            if (now == null) return;
-                            setText(I18n.get().brainWashLanFreqSliderDesc() + ": " + now);
-                        });
-                    }},
+                    new ThemeLabel(I18n.get().brainWashLanFreqSliderDesc()),
                     new VPadding(20),
                     freqSlider,
                     new VPadding(20),
-                    new ThemeLabel(I18n.get().brainWashLanRandTimeSliderDesc() + ": " + randTime) {{
-                        randTime.addListener((ob, old, now) -> {
-                            if (now == null) return;
-                            setText(I18n.get().brainWashLanRandTimeSliderDesc() + ": " + randTime);
-                        });
-                    }},
+                    new ThemeLabel(I18n.get().brainWashLanRandTimeSliderDesc()),
                     new VPadding(20),
                     randTimeSlider,
                     new VPadding(45),
