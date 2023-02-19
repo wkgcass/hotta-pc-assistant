@@ -17,10 +17,7 @@ import io.vproxy.vfx.ui.loading.LoadingPane;
 import io.vproxy.vfx.ui.scene.VSceneGroup;
 import io.vproxy.vfx.ui.scene.VSceneShowMethod;
 import io.vproxy.vfx.ui.stage.VStage;
-import io.vproxy.vfx.util.Callback;
-import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
-import io.vproxy.vfx.util.MiscUtils;
+import io.vproxy.vfx.util.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.feed.FeedThread;
@@ -150,7 +147,7 @@ public class Main extends Application {
                 };
             }
         });
-        InternalI18n.setInstance(I18n.get());
+        Singleton.register(InternalI18n.class, I18n.get());
 
         var dllPath = "/dll/JNativeHook_x64.dll";
         var dllStream = Main.class.getResourceAsStream(dllPath);

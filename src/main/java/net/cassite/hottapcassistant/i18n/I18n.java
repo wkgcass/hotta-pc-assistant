@@ -1,6 +1,6 @@
 package net.cassite.hottapcassistant.i18n;
 
-public abstract class I18n extends io.vproxy.vfx.manager.internal_i18n.InternalI18n {
+public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.InternalI18n {
     private static volatile I18n impl;
 
     public static I18n get() {
