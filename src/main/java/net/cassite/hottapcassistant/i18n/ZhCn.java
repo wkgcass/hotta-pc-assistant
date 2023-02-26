@@ -541,6 +541,21 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String fishingCastKey() {
+        return "抛竿";
+    }
+
+    @Override
+    public String skipFishingPointCheckBox() {
+        return "跳过绿点检测，改为5秒延迟";
+    }
+
+    @Override
+    public String useCastKeyCheckBox() {
+        return "使用键盘按键抛竿，不使用鼠标点击，并且使用ESC关闭结算界面";
+    }
+
+    @Override
     public String resetFishing() {
         return "重置参数";
     }
@@ -673,6 +688,11 @@ public class ZhCn extends I18n {
     @Override
     public String fishingStatusAfterReeling() {
         return "收杆后";
+    }
+
+    @Override
+    public String fishingCastKeyNotSet() {
+        return "抛竿按键没有设置";
     }
 
     @Override

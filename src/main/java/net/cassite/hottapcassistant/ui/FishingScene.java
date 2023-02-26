@@ -74,6 +74,17 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
     private final Label stopKey = new Label();
     private final Label leftKey = new Label();
     private final Label rightKey = new Label();
+    private final Label castKey = new Label();
+    private final CheckBox skipFishingPointCheckBox = new CheckBox(I18n.get().skipFishingPointCheckBox()) {{
+        FontManager.get().setFont(this);
+        setTextFill(Theme.current().normalTextColor());
+        FXUtils.disableFocusColor(this);
+    }};
+    private final CheckBox useCastKeyCheckBox = new CheckBox(I18n.get().useCastKeyCheckBox()) {{
+        FontManager.get().setFont(this);
+        setTextFill(Theme.current().normalTextColor());
+        FXUtils.disableFocusColor(this);
+    }};
 
     private boolean isConfiguring = false;
     private AssistantFishing fishing;
@@ -86,6 +97,15 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
         initKeyLabel(stopKey, key -> fishing.stopKey = key);
         initKeyLabel(leftKey, key -> fishing.leftKey = key);
         initKeyLabel(rightKey, key -> fishing.rightKey = key);
+        initKeyLabel(castKey, key -> fishing.castKey = key);
+        skipFishingPointCheckBox.setOnAction(e -> {
+            fishing.skipFishingPoint = skipFishingPointCheckBox.isSelected();
+            flushConfig();
+        });
+        useCastKeyCheckBox.setOnAction(e -> {
+            fishing.useCastKey = useCastKeyCheckBox.isSelected();
+            flushConfig();
+        });
 
         var vbox = new VBox();
         vbox.setLayoutX(10);
@@ -168,6 +188,9 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             var rightKeyLabel = new ThemeLabel(I18n.get().fishingRightKey()) {{
                 setPrefWidth(60);
             }};
+            var castKeyLabel = new ThemeLabel(I18n.get().fishingCastKey()) {{
+                setPrefWidth(60);
+            }};
 
             var hbox1 = new HBox();
             hbox1.getChildren().addAll(
@@ -179,10 +202,19 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             hbox2.getChildren().addAll(
                 leftKeyLabel, leftKey,
                 new HPadding(50),
-                rightKeyLabel, rightKey
+                rightKeyLabel, rightKey,
+                new HPadding(50),
+                castKeyLabel, castKey
             );
 
-            vbox.getChildren().addAll(hbox1, new VPadding(10), hbox2);
+            vbox.getChildren().addAll(
+                hbox1,
+                new VPadding(10),
+                hbox2,
+                new VPadding(10),
+                skipFishingPointCheckBox,
+                new VPadding(10),
+                useCastKeyCheckBox);
         }
 
         {
@@ -340,6 +372,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             fishing = AssistantFishing.empty();
         }
         resetKeyLabels();
+        resetConfigCheckBoxes();
         return true;
     }
 
@@ -348,6 +381,14 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
         stopKey.setText(fishing.stopKey.toString());
         leftKey.setText(fishing.leftKey.toString());
         rightKey.setText(fishing.rightKey.toString());
+        if (fishing.castKey != null) {
+            castKey.setText(fishing.castKey.toString());
+        }
+    }
+
+    private void resetConfigCheckBoxes() {
+        skipFishingPointCheckBox.setSelected(fishing.skipFishingPoint);
+        useCastKeyCheckBox.setSelected(fishing.useCastKey);
     }
 
     @Override
@@ -376,8 +417,10 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
                         FXUtils.runOnFX(this::configure);
                         return;
                     }
-                    stage.temporaryOnTop();
-                    FXUtils.toFrontWindow(stage.getStage());
+                    if (!fishing.useCastKey) {
+                        stage.temporaryOnTop();
+                        FXUtils.toFrontWindow(stage.getStage());
+                    }
                     configureStep1(500, true, () -> {
                         flushConfig();
                         postConfigure(false);
@@ -394,7 +437,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
             if (screen == null) {
                 return;
             }
-            robot.start(fishing, screen, fishing.leftKey, fishing.rightKey);
+            robot.start(fishing, screen);
         });
     }
 
@@ -452,6 +495,16 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
         if (robot.isRunning()) {
             switchButton.setSelected(false);
             Platform.runLater(() -> configureStep1(okCallback));
+            return;
+        }
+        if (fishing.skipFishingPoint) {
+            if (fishing.castKey == null) {
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().fishingCastKeyNotSet());
+                return;
+            }
+        }
+        if (useScene && fishing.skipFishingPoint) {
+            okCallback.run();
             return;
         }
         isConfiguring = true;

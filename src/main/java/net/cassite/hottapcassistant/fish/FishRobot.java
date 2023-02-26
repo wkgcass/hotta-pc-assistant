@@ -1,9 +1,11 @@
 package net.cassite.hottapcassistant.fish;
 
 import io.vproxy.vfx.entity.input.Key;
+import io.vproxy.vfx.entity.input.KeyCode;
 import io.vproxy.vfx.manager.task.TaskManager;
 import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.Logger;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
@@ -64,9 +66,7 @@ public class FishRobot {
     private WritableImage buf3;
     private double screenScaleX = 1;
 
-    private Key leftKey;
-    private Key rightKey;
-
+    private int waitingForCastingCount = 0;
     private boolean isPressingLeft;
     private boolean isPressingRight;
     private int totalManagingCount = 0;
@@ -87,13 +87,13 @@ public class FishRobot {
         return !status.isStopped();
     }
 
-    public void start(AssistantFishing fishing, Screen screen, Key leftKey, Key rightKey) {
+    public void start(AssistantFishing fishing, Screen screen) {
         if (!status.isStopped()) {
             throw new IllegalStateException(status.name());
         }
         setStatus(Status.BEGIN);
 
-        this.config = fishing;
+        this.config = new AssistantFishing(fishing);
         var bounds = screen.getBounds();
         captureXOffset = bounds.getMinX();
         captureYOffset = bounds.getMinY();
@@ -114,9 +114,6 @@ public class FishRobot {
             }
         }
 
-        this.leftKey = leftKey;
-        this.rightKey = rightKey;
-
         display.doShow(config);
 
         TaskManager.get().execute(this::exec);
@@ -127,6 +124,15 @@ public class FishRobot {
             setStatus(Status.STOPPING);
             FXUtils.runOnFX(display::close);
         }
+    }
+
+    private void reset() {
+        waitingForCastingCount = 0;
+        isPressingLeft = false;
+        isPressingRight = false;
+        totalManagingCount = 0;
+        staminaDrainManagingCount = 0;
+        posNotFoundCount = 0;
     }
 
     private void exec() {
@@ -175,6 +181,9 @@ public class FishRobot {
 
     private void setStatus(Status status) {
         this.status = status;
+        if (status == Status.STOPPED) {
+            reset();
+        }
         Platform.runLater(() -> {
             statusInformer.accept(status);
             if (status != Status.WAITING_FOR_BITE && status != Status.MANAGING_POS) {
@@ -197,6 +206,15 @@ public class FishRobot {
     }
 
     private void cast() {
+        if (config.skipFishingPoint) {
+            ++waitingForCastingCount;
+            if (waitingForCastingCount > 5) {
+                waitingForCastingCount = 0;
+                clickCast();
+                setStatus(Status.WAITING_FOR_BITE);
+            }
+            return;
+        }
         final double captureWidth = buf1.getWidth();
         final double captureHeight = buf1.getHeight();
         var img = Utils.execRobotOnThread(r -> r.capture(buf1,
@@ -223,6 +241,13 @@ public class FishRobot {
     }
 
     private void clickCast() {
+        if (config.useCastKey) {
+            Utils.execRobot(r -> r.press(config.castKey));
+            MiscUtils.threadSleep(10);
+            Utils.execRobot(r -> r.release(config.castKey));
+            return;
+        }
+
         Utils.execRobot(r -> r.mouseMove(config.castingPoint.x, config.castingPoint.y));
         try {
             Thread.sleep(10);
@@ -510,11 +535,11 @@ public class FishRobot {
             return;
         }
         if (isPressingRight) {
-            Utils.execRobot(r -> r.release(rightKey));
+            Utils.execRobot(r -> r.release(config.rightKey));
             isPressingRight = false;
         }
         isPressingLeft = true;
-        Utils.execRobot(r -> r.press(leftKey));
+        Utils.execRobot(r -> r.press(config.leftKey));
         try {
             Thread.sleep(10);
         } catch (InterruptedException ignore) {
@@ -527,11 +552,11 @@ public class FishRobot {
             return;
         }
         if (isPressingLeft) {
-            Utils.execRobot(r -> r.release(leftKey));
+            Utils.execRobot(r -> r.release(config.leftKey));
             isPressingLeft = false;
         }
         isPressingRight = true;
-        Utils.execRobot(r -> r.press(rightKey));
+        Utils.execRobot(r -> r.press(config.rightKey));
         try {
             Thread.sleep(10);
         } catch (InterruptedException ignore) {
@@ -540,11 +565,11 @@ public class FishRobot {
 
     private void releaseLeftOrRight() {
         if (isPressingLeft) {
-            Utils.execRobot(r -> r.release(leftKey));
+            Utils.execRobot(r -> r.release(config.leftKey));
             isPressingLeft = false;
         }
         if (isPressingRight) {
-            Utils.execRobot(r -> r.release(rightKey));
+            Utils.execRobot(r -> r.release(config.rightKey));
             isPressingRight = false;
         }
     }
@@ -555,17 +580,27 @@ public class FishRobot {
     }
 
     private void finishing() {
-        Utils.execRobot(r -> r.mouseMove(config.fishingPoint.x, config.castingPoint.y));
+        if (!config.useCastKey) {
+            Utils.execRobot(r -> r.mouseMove(config.fishingPoint.x, config.castingPoint.y));
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignore) {
+            }
+        }
+        if (config.useCastKey) {
+            Utils.execRobot(r -> r.press(new Key(KeyCode.ESCAPE)));
+        } else {
+            Utils.execRobot(r -> r.press(new Key(MouseButton.PRIMARY)));
+        }
         try {
             Thread.sleep(10);
         } catch (InterruptedException ignore) {
         }
-        Utils.execRobot(r -> r.press(new Key(MouseButton.PRIMARY)));
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException ignore) {
+        if (config.useCastKey) {
+            Utils.execRobot(r -> r.release(new Key(KeyCode.ESCAPE)));
+        } else {
+            Utils.execRobot(r -> r.release(new Key(MouseButton.PRIMARY)));
         }
-        Utils.execRobot(r -> r.release(new Key(MouseButton.PRIMARY)));
 
         setStatus(Status.BEGIN);
     }
