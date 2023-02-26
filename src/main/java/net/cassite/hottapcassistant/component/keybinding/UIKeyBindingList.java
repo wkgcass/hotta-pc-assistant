@@ -105,7 +105,6 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
             inputBox.setText(Utils.floatValueFormat.format(kb.scale));
             boolean[] modified = new boolean[]{false};
             inputBox.textProperty().addListener((ob, old, now) -> {
-                System.out.println("set modified to true");
                 modified[0] = true;
             });
             inputBox.setOnMouseExited(e -> {
