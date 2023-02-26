@@ -547,7 +547,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String skipFishingPointCheckBox() {
-        return "跳过绿点检测，改为5秒延迟";
+        return "跳过绿点检测，改为5秒延迟，首次钓鱼时需手动点击一次游戏界面";
     }
 
     @Override
