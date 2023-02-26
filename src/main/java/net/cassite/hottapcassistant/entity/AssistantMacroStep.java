@@ -11,7 +11,8 @@ public abstract class AssistantMacroStep {
     public static final Rule<AssistantMacroStep> rule = new TypeRule<AssistantMacroStep>()
         .type("KeyPress", KeyPress.rule)
         .type("KeyRelease", KeyRelease.rule)
-        .type("Delay", Delay.rule);
+        .type("Delay", Delay.rule)
+        .type("SafePoint", SafePoint.rule);
 
     public abstract JSON.Object toJson();
 
@@ -101,6 +102,24 @@ public abstract class AssistantMacroStep {
                 Thread.sleep(millis);
             } catch (InterruptedException ignore) {
             }
+        }
+    }
+
+    public static class SafePoint extends AssistantMacroStep {
+        public SafePoint() {
+        }
+
+        public static final ObjectRule<SafePoint> rule = new ObjectRule<>(SafePoint::new);
+
+        @Override
+        public JSON.Object toJson() {
+            return new ObjectBuilder()
+                .type("SafePoint")
+                .build();
+        }
+
+        @Override
+        public void exec() { // do nothing
         }
     }
 }

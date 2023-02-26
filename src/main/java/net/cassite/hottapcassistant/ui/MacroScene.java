@@ -293,6 +293,9 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
             });
             return;
         }
+        if (m.getStatus() == AssistantMacroStatus.STOPPING) {
+            return; // do nothing
+        }
         m.setStatus(AssistantMacroStatus.RUNNING);
         TaskManager.get().execute(() -> {
             int loopCount = 0;

@@ -48,6 +48,9 @@ public class AssistantMacroData extends InputData implements RowInformerAware {
 
     public void exec() {
         for (var s : steps) {
+            if (s instanceof AssistantMacroStep.SafePoint && status != AssistantMacroStatus.RUNNING) {
+                break;
+            }
             s.exec();
         }
     }
