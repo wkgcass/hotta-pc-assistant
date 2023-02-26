@@ -402,6 +402,8 @@ public class ZhCn extends I18n {
                      3. @type = KeyRelease 弹起键盘按键或鼠标按钮
                         参数:
                           key = 键盘按键或鼠标按钮的字符串，格式为UnrealEngine支持的格式
+                     4. @type = SafePoint 当停止运行脚本时可以在此处中断
+                        参数：无
                    其中，key取值可参考UnrealEngine规范，除小键盘区外绝大部分均已实现
                         或者查看vfx库的io/vproxy/vfx/entity/input/KeyCode.java代码
                    常用的值有：
