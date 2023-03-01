@@ -1,5 +1,8 @@
 package net.cassite.hottapcassistant.tool;
 
+import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
+import io.vproxy.commons.util.IOUtils;
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.manager.image.ImageManager;
 import io.vproxy.vfx.theme.Theme;
@@ -15,8 +18,6 @@ import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.ui.wrapper.FusionW;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.IOUtils;
-import io.vproxy.vfx.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Insets;
@@ -40,7 +41,6 @@ import vjson.util.Manager;
 import vjson.util.ObjectBuilder;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -520,9 +520,9 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             var config = genConfig();
             var str = config.pretty();
             try {
-                IOUtils.writeFile(recordFilePath, str);
-            } catch (IOException e) {
-                Logger.error("failed saving config file to " + recordFilePath, e);
+                IOUtils.writeFileWithBackup(recordFilePath.toString(), str);
+            } catch (Exception e) {
+                Logger.error(LogType.FILE_ERROR, "failed saving config file to " + recordFilePath, e);
             }
         }
 
@@ -534,12 +534,12 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                     try {
                         c = JSON.deserialize(str, Config.rule);
                     } catch (Exception e) {
-                        Logger.error("failed deserializing config from " + recordFilePath, e);
+                        Logger.error(LogType.FILE_ERROR, "failed deserializing config from " + recordFilePath, e);
                         // silently delete the file and proceed
                         try {
                             Files.delete(recordFilePath);
                         } catch (Exception ee) {
-                            Logger.error("failed deleting config file " + recordFilePath, ee);
+                            Logger.error(LogType.FILE_ERROR, "failed deleting config file " + recordFilePath, ee);
                         }
                     }
                 }

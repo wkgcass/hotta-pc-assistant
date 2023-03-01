@@ -1,5 +1,9 @@
 package net.cassite.hottapcassistant.multi;
 
+import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
+import io.vproxy.base.util.callback.Callback;
+import io.vproxy.commons.util.IOUtils;
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.button.FusionButton;
@@ -9,7 +13,8 @@ import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.ui.loading.LoadingItem;
 import io.vproxy.vfx.ui.loading.LoadingStage;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
-import io.vproxy.vfx.util.*;
+import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -133,7 +138,7 @@ public class MultiHottaInstanceScene extends ToolScene {
                         try {
                             Desktop.getDesktop().browse(new URL(url).toURI());
                         } catch (Throwable t) {
-                            Logger.error("failed opening multi-hotta-instances tutorial link", t);
+                            Logger.error(LogType.SYS_ERROR, "failed opening multi-hotta-instances tutorial link", t);
                             Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
                             SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstancesOpenBrowserForTutorialFailed(url));
                         }
@@ -151,9 +156,9 @@ public class MultiHottaInstanceScene extends ToolScene {
                             return;
                         }
                         try {
-                            IOUtils.writeFile(f.toPath(), Certs.CA_CERT);
-                        } catch (IOException ex) {
-                            Logger.error("failed saving ca cert file", ex);
+                            IOUtils.writeFileWithBackup(f.getAbsolutePath(), Certs.CA_CERT);
+                        } catch (Exception ex) {
+                            Logger.error(LogType.FILE_ERROR, "failed saving ca cert file", ex);
                             SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().failedSavingCaCertFile());
                         }
                     });
@@ -224,7 +229,7 @@ public class MultiHottaInstanceScene extends ToolScene {
             try {
                 v = MultiHottaInstanceFlow.readClientVersion(config.onlinePath);
             } catch (IOException e) {
-                Logger.error("failed retrieving client version", e);
+                Logger.error(LogType.FILE_ERROR, "failed retrieving client version", e);
                 FXUtils.runOnFX(() ->
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedRetrievingClientVersion()));
                 return false;
@@ -236,7 +241,7 @@ public class MultiHottaInstanceScene extends ToolScene {
             try {
                 MultiHottaInstanceFlow.replaceUserDataDir(config.betaPath, config.onlinePath);
             } catch (IOException e) {
-                Logger.error("failed replacing UserData", e);
+                Logger.error(LogType.FILE_ERROR, "failed replacing UserData", e);
                 FXUtils.runOnFX(() ->
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedReplacingUserDataDir()));
                 return false;
@@ -247,7 +252,7 @@ public class MultiHottaInstanceScene extends ToolScene {
             try {
                 MultiHottaInstanceFlow.writeResListXml(config.betaPath, RES_SUB_VERSION);
             } catch (IOException e) {
-                Logger.error("failed writing ResList.xml", e);
+                Logger.error(LogType.FILE_ERROR, "failed writing ResList.xml", e);
                 FXUtils.runOnFX(() ->
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingResListXml()));
                 return false;
@@ -258,7 +263,7 @@ public class MultiHottaInstanceScene extends ToolScene {
             try {
                 MultiHottaInstanceFlow.writeConfigXml(config.betaPath, RES_VERSION, RES_SUB_VERSION);
             } catch (IOException e) {
-                Logger.error("failed writing config.xml", e);
+                Logger.error(LogType.FILE_ERROR, "failed writing config.xml", e);
                 FXUtils.runOnFX(() ->
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingConfigXml()));
                 return false;
@@ -275,7 +280,7 @@ public class MultiHottaInstanceScene extends ToolScene {
             try {
                 MultiHottaInstanceFlow.makeLink(clientPath.toAbsolutePath().toString(), onlineClientPath.toAbsolutePath().toString());
             } catch (IOException e) {
-                Logger.error("making link file failed", e);
+                Logger.error(LogType.SYS_ERROR, "making link file failed", e);
                 FXUtils.runOnFX(() ->
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotMakeLink()));
                 return false;
@@ -284,7 +289,7 @@ public class MultiHottaInstanceScene extends ToolScene {
         }));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("hosts"), () -> {
             if (!MultiHottaInstanceFlow.setHostsFile()) {
-                Logger.error("setting hosts file failed");
+                Logger.error(LogType.FILE_ERROR, "setting hosts file failed");
                 FXUtils.runOnFX(() ->
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotSetHostsFile()));
                 return false;
@@ -300,7 +305,7 @@ public class MultiHottaInstanceScene extends ToolScene {
                 proxyServer.start();
             } catch (Exception e) {
                 proxyServer.destroy();
-                Logger.error("launching proxy server failed", e);
+                Logger.error(LogType.SYS_ERROR, "launching proxy server failed", e);
                 FXUtils.runOnFX(() ->
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceLaunchProxyServerFailed()));
                 return false;
@@ -312,7 +317,7 @@ public class MultiHottaInstanceScene extends ToolScene {
             try {
                 Desktop.getDesktop().open(Path.of(config.betaPath, "gameLauncher.exe").toFile());
             } catch (IOException e) {
-                Logger.error("failed launching game", e);
+                Logger.error(LogType.SYS_ERROR, "failed launching game", e);
                 FXUtils.runOnFX(() ->
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed()));
                 return false;
@@ -323,12 +328,9 @@ public class MultiHottaInstanceScene extends ToolScene {
         var loadingStage = new LoadingStage(I18n.get().toolName("multi-hotta-instance"));
         loadingStage.setItems(items);
         loadingStage.setInterval(120);
-        loadingStage.load(new Callback<>() {
-            @Override
-            protected void succeeded0(Void unused) {
-                tool.save(config);
-            }
-        });
+        loadingStage.load(Callback.ofIgnoreExceptionFunction(v ->
+            tool.save(config)
+        ));
     }
 
     public void terminate() {

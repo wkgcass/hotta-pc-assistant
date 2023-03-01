@@ -1,8 +1,8 @@
 package net.cassite.hottapcassistant.config;
 
 import io.vproxy.vfx.entity.input.Key;
-import io.vproxy.vfx.util.IOUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.commons.util.IOUtils;
+import io.vproxy.base.util.Logger;
 import net.cassite.hottapcassistant.entity.KeyBinding;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.JSON;
@@ -92,7 +92,7 @@ public class InputConfig {
         "MoveRight_BreakFate"
     );
 
-    public List<KeyBinding> read() throws IOException {
+    public List<KeyBinding> read() throws Exception {
         var kbList = read0();
         if (kbList.isEmpty()) return kbList;
         if (kbList.stream().anyMatch(kb -> kb.action.equals("SkillAdditional"))) {
@@ -115,7 +115,7 @@ public class InputConfig {
             lines.add(i + 1, newKb.toString());
             break;
         }
-        IOUtils.writeFile(path, String.join("\n", lines));
+        IOUtils.writeFileWithBackup(path.toString(), String.join("\n", lines));
         return read0();
     }
 
@@ -216,8 +216,9 @@ public class InputConfig {
 
         if (action == null || ctrl == null || alt == null || shift == null || key == null || !key.isValid()) {
             if (!allowUnknownKey(action, ctrl, alt, shift, key)) {
+                //noinspection RedundantIfStatement
                 if (key == null || !knownToBeUnsupported(key.toString())) {
-                    Logger.debug("input line skipped: " + line + " extracted data: " + action + ", " + ctrl + ", " + alt + ", " + shift + ", " + key);
+                    assert Logger.lowLevelDebug("input line skipped: " + line + " extracted data: " + action + ", " + ctrl + ", " + alt + ", " + shift + ", " + key);
                 }
                 return null;
             }
@@ -304,8 +305,9 @@ public class InputConfig {
         }
 
         if (action == null || scale == null || key == null || !key.isValid()) {
+            //noinspection RedundantIfStatement
             if (key == null || !knownToBeUnsupported(key.toString())) {
-                Logger.debug("axis input line skipped: " + line + " extracted data: " + action + ", " + scale + ", " + key);
+                assert Logger.lowLevelDebug("axis input line skipped: " + line + " extracted data: " + action + ", " + scale + ", " + key);
             }
             return null;
         }
@@ -319,7 +321,7 @@ public class InputConfig {
         return ret;
     }
 
-    public void write(List<KeyBinding> bindings) throws IOException {
+    public void write(List<KeyBinding> bindings) throws Exception {
         Path path = Path.of(this.path);
         var lines = Files.readAllLines(path);
         for (var kb : bindings) {
@@ -335,6 +337,6 @@ public class InputConfig {
                 lines.set(kb.lineIndex, kb.toString());
             }
         }
-        IOUtils.writeFile(path, String.join("\n", lines));
+        IOUtils.writeFileWithBackup(path.toString(), String.join("\n", lines));
     }
 }

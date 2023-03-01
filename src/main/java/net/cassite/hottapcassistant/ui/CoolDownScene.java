@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.entity.input.InputData;
 import io.vproxy.vfx.entity.input.Key;
 import io.vproxy.vfx.entity.input.KeyCode;
@@ -16,7 +17,7 @@ import io.vproxy.vfx.ui.scene.VSceneShowMethod;
 import io.vproxy.vfx.ui.wrapper.FusionW;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -393,7 +394,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         try {
             AssistantConfig.updateAssistant(ass -> ass.cooldown = config);
         } catch (Exception e) {
-            Logger.error("updating assistant config for cooldown failed", e);
+            Logger.error(LogType.FILE_ERROR, "updating assistant config for cooldown failed", e);
         }
     }
 
@@ -450,7 +451,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         config.row2Ids = row2Ids;
         config.configurations = new ArrayList<>(configurations);
         config.options = this.options.get();
-        Logger.info("weapon properties:\n" + config.toJson().stringify());
+        Logger.alert("weapon properties:\n" + config.toJson().stringify());
         return config;
     }
 
@@ -538,7 +539,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
                 input = config.read();
             } catch (Exception e) {
                 if (skipGamePath) {
-                    Logger.error("failed reading input config", e);
+                    Logger.error(LogType.FILE_ERROR, "failed reading input config", e);
                     input = Collections.emptyList();
                 } else {
                     StackTraceAlert.show(I18n.get().readInputConfigFailed(), e);

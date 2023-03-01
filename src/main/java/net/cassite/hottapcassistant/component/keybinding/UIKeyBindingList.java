@@ -7,7 +7,7 @@ import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.ui.wrapper.FusionW;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -85,7 +85,7 @@ public class UIKeyBindingList extends VTableView<KeyBinding> {
                 if (keyOpt.isPresent()) {
                     var key = keyOpt.get();
                     if (!key.isValid()) {
-                        Logger.debug("unsupported key: " + key.key);
+                        assert Logger.lowLevelDebug("unsupported key: " + key.key);
                         SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().unsupportedKeyErrorMessage());
                     } else {
                         kb.key = key;

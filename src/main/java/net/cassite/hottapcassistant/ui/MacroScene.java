@@ -5,6 +5,7 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseListener;
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
 import io.vproxy.vfx.entity.input.Key;
 import io.vproxy.vfx.entity.input.KeyCode;
@@ -20,7 +21,7 @@ import io.vproxy.vfx.ui.pane.FusionPane;
 import io.vproxy.vfx.ui.toggle.ToggleSwitch;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -302,19 +303,19 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
             loop:
             while (true) {
                 if (m.getStatus() == AssistantMacroStatus.STOPPING) {
-                    Logger.debug("macro execution stopping");
+                    assert Logger.lowLevelDebug("macro execution stopping");
                     break;
                 }
                 if (m.type == AssistantMacroType.FINITE_LOOP) {
                     if (loopCount >= m.loopLimit) {
-                        Logger.debug("finite loop reaches limit: " + loopCount);
+                        assert Logger.lowLevelDebug("finite loop reaches limit: " + loopCount);
                         break;
                     }
                 }
                 ++loopCount;
-                Logger.debug("before macro execution: " + m.name);
+                assert Logger.lowLevelDebug("before macro execution: " + m.name);
                 m.exec();
-                Logger.debug("after macro executioin: " + m.name);
+                assert Logger.lowLevelDebug("after macro execution: " + m.name);
                 switch (m.type) {
                     case NORMAL -> {
                         break loop;
@@ -336,7 +337,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
     private class MouseHandlingThread extends Thread {
         @Override
         public void run() {
-            Logger.debug("recording mouse position thread is running");
+            assert Logger.lowLevelDebug("recording mouse position thread is running");
             while (mouseIsReleased) {
                 lastMousePosition = Utils.execRobotOnThread(RobotWrapper::getMousePosition);
                 try {
@@ -345,7 +346,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
                 } catch (InterruptedException ignore) {
                 }
             }
-            Logger.debug("recording mouse position thread is exiting");
+            assert Logger.lowLevelDebug("recording mouse position thread is exiting");
         }
     }
 
@@ -365,7 +366,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
             }
             mouseIsReleased = true;
         }
-        Logger.info("mouse is released");
+        Logger.alert("mouse is released");
         var pos = lastMousePosition;
         if (pos != null) {
             TaskManager.get().execute(() -> {
@@ -396,7 +397,7 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
             }
             mouseIsReleased = false;
         }
-        Logger.info("mouse is captured");
+        Logger.alert("mouse is captured");
         mouseHandlingThread.interrupt();
         mouseHandlingThread = null;
     }
@@ -461,8 +462,8 @@ public class MacroScene extends MainScene implements NativeKeyListener, NativeMo
         List<KeyBinding> ls;
         try {
             ls = config.read();
-        } catch (IOException e) {
-            Logger.error("failed reading input config", e);
+        } catch (Exception e) {
+            Logger.error(LogType.FILE_ERROR, "failed reading input config", e);
             var kb = new KeyBinding();
             kb.action = "SwitchMouse";
             kb.key = new Key(KeyCode.ALT);

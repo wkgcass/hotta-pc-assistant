@@ -3,6 +3,7 @@ package net.cassite.hottapcassistant.ui;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.component.keychooser.KeyChooser;
 import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
 import io.vproxy.vfx.entity.input.Key;
@@ -26,7 +27,7 @@ import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.ui.toggle.ToggleSwitch;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -259,7 +260,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
                     try {
                         Desktop.getDesktop().browse(new URL(url).toURI());
                     } catch (Throwable t) {
-                        Logger.error("failed opening fishing tutorial link", t);
+                        Logger.error(LogType.SYS_ERROR, "failed opening fishing tutorial link", t);
                         Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
                         SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().fishingOpenBrowserForTutorialFailed(url));
                     }

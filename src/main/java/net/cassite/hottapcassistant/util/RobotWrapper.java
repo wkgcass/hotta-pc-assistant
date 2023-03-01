@@ -1,7 +1,8 @@
 package net.cassite.hottapcassistant.util;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,10 +14,6 @@ public class RobotWrapper extends io.vproxy.vfx.robot.RobotWrapper {
 
     public RobotWrapper() {
         super();
-    }
-
-    public RobotWrapper(boolean log) {
-        super(log);
     }
 
     public BufferedImage nativeCapture(int x, int y, int width, int height, double scale) {
@@ -37,19 +34,19 @@ public class RobotWrapper extends io.vproxy.vfx.robot.RobotWrapper {
             String msg = t.getMessage();
             if (msg == null) msg = "";
             if (nativeCaptureErrors.add(msg)) {
-                Logger.error("failed to capture using jna", t);
+                Logger.error(LogType.SYS_ERROR, "failed to capture using jna", t);
             }
         }
         if (bi == null) {
             if (nativeCaptureErrors.add("null")) {
-                Logger.error("failed to capture using jna: result is null");
+                Logger.error(LogType.SYS_ERROR, "failed to capture using jna: result is null");
             }
         }
         if (bi == null) {
             bi = FXUtils.convertToBufferedImage(awtCapture(x, y, width, height));
         } else {
             if (nativeCaptureErrors.add("x")) {
-                Logger.info("native capture succeeded: " + bi);
+                Logger.alert("native capture succeeded: " + bi);
             }
         }
         return bi;

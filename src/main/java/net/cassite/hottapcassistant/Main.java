@@ -1,5 +1,9 @@
 package net.cassite.hottapcassistant;
 
+import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
+import io.vproxy.base.util.callback.Callback;
+import io.vproxy.commons.util.Singleton;
 import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
 import io.vproxy.vfx.manager.audio.AudioManager;
 import io.vproxy.vfx.manager.font.FontManager;
@@ -12,12 +16,14 @@ import io.vproxy.vfx.manager.task.TaskManager;
 import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.theme.impl.DarkTheme;
 import io.vproxy.vfx.theme.impl.DarkThemeFontProvider;
+import io.vproxy.vfx.ui.loading.LoadingFailure;
 import io.vproxy.vfx.ui.loading.LoadingItem;
 import io.vproxy.vfx.ui.loading.LoadingPane;
 import io.vproxy.vfx.ui.scene.VSceneGroup;
 import io.vproxy.vfx.ui.scene.VSceneShowMethod;
 import io.vproxy.vfx.ui.stage.VStage;
-import io.vproxy.vfx.util.*;
+import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.feed.FeedThread;
@@ -83,7 +89,7 @@ public class Main extends Application {
         rootPane.getChildren().add(loadingPane);
         loadingPane.getProgressBar().load(new Callback<>() {
             @Override
-            protected void succeeded0(Void unused) {
+            protected void onSucceeded(Void unused) {
                 var uiEntry = new UIEntry(stage);
                 var firstScene = uiEntry.mainScenes.get(0);
                 stage.getSceneGroup().show(firstScene, VSceneShowMethod.FADE_IN);
@@ -91,7 +97,7 @@ public class Main extends Application {
             }
 
             @Override
-            protected void failed0(LoadingItem loadingItem) {
+            protected void onFailed(LoadingFailure failure) {
                 System.exit(1);
             }
         });
@@ -152,7 +158,7 @@ public class Main extends Application {
         var dllPath = "/dll/JNativeHook_x64.dll";
         var dllStream = Main.class.getResourceAsStream(dllPath);
         if (dllStream == null) {
-            Logger.error(dllPath + " not found, program might not work");
+            Logger.error(LogType.SYS_ERROR, dllPath + " not found, program might not work");
         } else {
             GlobalScreenUtils.releaseJNativeHookNativeToTmpDir("dll", dllStream);
         }
@@ -167,7 +173,7 @@ public class Main extends Application {
         try {
             MultiHottaInstanceFlow.unsetHostsFile();
         } catch (Throwable t) {
-            Logger.error("failed clean up hosts related to multi-hotta-instances");
+            Logger.error(LogType.FILE_ERROR, "failed clean up hosts related to multi-hotta-instances");
         }
     }
 }

@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.ui.cooldown;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.control.scroll.ScrollDirection;
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.theme.Theme;
@@ -10,7 +11,7 @@ import io.vproxy.vfx.ui.scene.VScene;
 import io.vproxy.vfx.ui.scene.VSceneRole;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Hyperlink;
@@ -53,7 +54,7 @@ public class CoolDownTips extends VScene {
                 try {
                     Desktop.getDesktop().browse(new URL(url).toURI());
                 } catch (Throwable t) {
-                    Logger.error("failed opening cd indicator tutorial link", t);
+                    Logger.error(LogType.SYS_ERROR, "failed opening cd indicator tutorial link", t);
                     Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().cooldownOpenBrowserForTutorialFailed(url));
                 }

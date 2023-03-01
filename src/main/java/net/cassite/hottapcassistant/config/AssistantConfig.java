@@ -1,9 +1,10 @@
 package net.cassite.hottapcassistant.config;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.control.dialog.VDialog;
 import io.vproxy.vfx.control.dialog.VDialogButton;
-import io.vproxy.vfx.util.IOUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.commons.util.IOUtils;
+import io.vproxy.base.util.Logger;
 import net.cassite.hottapcassistant.entity.Assistant;
 import net.cassite.hottapcassistant.entity.GameAssistant;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -72,14 +73,14 @@ public class AssistantConfig {
                         try {
                             Files.delete(assistantFilePath);
                         } catch (IOException ee) {
-                            Logger.error("deleting invalid assistant config file failed", ee);
+                            Logger.error(LogType.FILE_ERROR, "deleting invalid assistant config file failed", ee);
                         }
                         return Assistant.empty();
                     } else if (t == 1) {
                         try {
                             Desktop.getDesktop().open(assistantFilePath.toFile());
                         } catch (IOException ee) {
-                            Logger.error("failed opening invalid assistant config file", ee);
+                            Logger.error(LogType.SYS_ERROR, "failed opening invalid assistant config file", ee);
                         }
                     }
                 }
@@ -88,10 +89,10 @@ public class AssistantConfig {
         }
     }
 
-    public static void writeAssistant(Assistant assistant) throws IOException {
+    public static void writeAssistant(Assistant assistant) throws Exception {
         var sb = new StringBuilder();
         assistant.toJson().scriptify(sb, new ScriptifyContext(2));
-        IOUtils.writeFile(assistantFilePath, sb.toString());
+        IOUtils.writeFileWithBackup(assistantFilePath.toString(), sb.toString());
     }
 
     public static void updateAssistant(Consumer<Assistant> f) throws Exception {
@@ -121,13 +122,13 @@ public class AssistantConfig {
         }
     }
 
-    public void writeGameAssistant(GameAssistant assistant) throws IOException {
+    public void writeGameAssistant(GameAssistant assistant) throws Exception {
         var sb = new StringBuilder();
         assistant.toJson().scriptify(sb, new ScriptifyContext(2));
-        IOUtils.writeFile(Path.of(path), sb.toString());
+        IOUtils.writeFileWithBackup(path, sb.toString());
     }
 
-    public void updateGameAssistant(Consumer<GameAssistant> f) throws IOException {
+    public void updateGameAssistant(Consumer<GameAssistant> f) throws Exception {
         var a = readGameAssistant();
         f.accept(a);
         writeGameAssistant(a);

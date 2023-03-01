@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.control.dialog.VDialog;
 import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.font.FontManager;
@@ -10,7 +11,7 @@ import io.vproxy.vfx.ui.button.TransparentFusionButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -110,7 +111,7 @@ public class WelcomeScene extends MainScene {
                         a.lastValues.savedPath = now;
                     });
                 } catch (Exception e) {
-                    Logger.error("failed updating assistant config", e);
+                    Logger.error(LogType.FILE_ERROR, "failed updating assistant config", e);
                 }
                 if (checkCurrentGameVersion()) {
                     swapSavedIfPossible();
@@ -196,7 +197,7 @@ public class WelcomeScene extends MainScene {
                         a.lastValues.gamePath = now;
                     });
                 } catch (Exception e) {
-                    Logger.error("failed updating assistant config", e);
+                    Logger.error(LogType.FILE_ERROR, "failed updating assistant config", e);
                 }
             });
             var selectLocationButton = new TransparentFusionButton(I18n.get().selectButton()) {{
@@ -285,7 +286,7 @@ public class WelcomeScene extends MainScene {
                         a.lastValues.globalServerGamePath = now;
                     });
                 } catch (Exception e) {
-                    Logger.error("failed updating assistant config", e);
+                    Logger.error(LogType.FILE_ERROR, "failed updating assistant config", e);
                 }
             });
             var selectLocationButton = new TransparentFusionButton(I18n.get().selectButton()) {{
@@ -358,7 +359,7 @@ public class WelcomeScene extends MainScene {
                 try {
                     Desktop.getDesktop().browse(new URL(url).toURI());
                 } catch (Throwable t) {
-                    Logger.error("failed downloading game", t);
+                    Logger.error(LogType.SYS_ERROR, "failed downloading game", t);
                     Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().openBrowserForDownloadingFailed(url));
                 }
@@ -374,7 +375,7 @@ public class WelcomeScene extends MainScene {
                 try {
                     Desktop.getDesktop().open(Path.of(GlobalValues.gamePath.get(), "gameLauncher.exe").toFile());
                 } catch (Throwable t) {
-                    Logger.error("failed launching game", t);
+                    Logger.error(LogType.SYS_ERROR, "failed launching game", t);
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
                 }
             });
@@ -410,7 +411,7 @@ public class WelcomeScene extends MainScene {
                 try {
                     Desktop.getDesktop().browse(new URL(url).toURI());
                 } catch (Throwable t) {
-                    Logger.error("failed downloading global server game", t);
+                    Logger.error(LogType.SYS_ERROR, "failed downloading global server game", t);
                     Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, url));
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().openBrowserForDownloadingFailed(url));
                 }
@@ -454,7 +455,7 @@ public class WelcomeScene extends MainScene {
         try {
             config = GlobalValues.getGameAssistantConfig().readGameAssistant();
         } catch (IOException e) {
-            Logger.error("failed retrieving assistant config when checking version", e);
+            Logger.error(LogType.FILE_ERROR, "failed retrieving assistant config when checking version", e);
             return false;
         }
         if (config.version != null) {
@@ -482,8 +483,8 @@ public class WelcomeScene extends MainScene {
 
         try {
             GlobalValues.getGameAssistantConfig().writeGameAssistant(config);
-        } catch (IOException e) {
-            Logger.error("failed writing assistant config when checking version", e);
+        } catch (Exception e) {
+            Logger.error(LogType.FILE_ERROR, "failed writing assistant config when checking version", e);
             return false;
         }
         return true;
@@ -511,8 +512,8 @@ public class WelcomeScene extends MainScene {
             var config = GlobalValues.getGameAssistantConfig();
             try {
                 config.updateGameAssistant(a -> a.version = GlobalValues.useVersion.get());
-            } catch (IOException e) {
-                Logger.error("trying to update swapped assistant file failed", e);
+            } catch (Exception e) {
+                Logger.error(LogType.FILE_ERROR, "trying to update swapped assistant file failed", e);
             }
         }
     }
@@ -529,14 +530,14 @@ public class WelcomeScene extends MainScene {
             try {
                 servers = TofServerListConfig.read();
             } catch (IOException e) {
-                Logger.error("failed reading tof server list", e);
+                Logger.error(LogType.FILE_ERROR, "failed reading tof server list", e);
                 SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().failedReadingTofServerList());
             }
             try {
                 var ass = AssistantConfig.readAssistant();
                 selectedServers = ass.lastValues.requireWritingHostsFileServerNames;
             } catch (Exception e) {
-                Logger.error("failed reading enabled servers from last config", e);
+                Logger.error(LogType.FILE_ERROR, "failed reading enabled servers from last config", e);
             }
             if (selectedServers == null) selectedServers = Collections.emptyList();
             final var fSelectedServers = selectedServers;
@@ -558,7 +559,7 @@ public class WelcomeScene extends MainScene {
                             ass.lastValues.requireWritingHostsFileServerNames = res.get().stream().map(e -> e.name).toList();
                         });
                     } catch (Exception e) {
-                        Logger.error("failed saving hosts enabled servers to lastValues", e);
+                        Logger.error(LogType.FILE_ERROR, "failed saving hosts enabled servers to lastValues", e);
                     }
                 }
             }
@@ -567,7 +568,7 @@ public class WelcomeScene extends MainScene {
         try {
             Desktop.getDesktop().open(Path.of(GlobalValues.globalServerGamePath.get(), "Launcher", "tof_launcher.exe").toFile());
         } catch (Throwable t) {
-            Logger.error("failed launching global server game", t);
+            Logger.error(LogType.SYS_ERROR, "failed launching global server game", t);
             SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
         }
     }
@@ -591,7 +592,7 @@ public class WelcomeScene extends MainScene {
         try {
             a = AssistantConfig.readAssistant(true);
         } catch (Exception e) {
-            Logger.error("reading assistant config failed in initLocation()", e);
+            Logger.error(LogType.FILE_ERROR, "reading assistant config failed in initLocation()", e);
             return;
         }
         if (a.lastValues != null) {

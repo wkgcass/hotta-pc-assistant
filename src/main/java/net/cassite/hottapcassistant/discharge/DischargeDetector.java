@@ -1,9 +1,10 @@
 package net.cassite.hottapcassistant.discharge;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.entity.Point;
 import io.vproxy.vfx.entity.Rect;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import io.vproxy.vfx.util.imagewrapper.BufferedImageBox;
 import io.vproxy.vfx.util.imagewrapper.FXWritableImageBox;
@@ -130,7 +131,7 @@ public class DischargeDetector {
             if (now - lastBeginTs < 25) {
                 MiscUtils.threadSleep(25 - (now - lastBeginTs));
             } else if (now - lastBeginTs >= 25) {
-                Logger.warn("last discharge detection cost too much time: " + (now - lastBeginTs) + "ms");
+                Logger.warn(LogType.ALERT, "last discharge detection cost too much time: " + (now - lastBeginTs) + "ms");
             }
             lastBeginTs = System.currentTimeMillis();
             if (skipDetectionCount > 0) {
@@ -141,18 +142,18 @@ public class DischargeDetector {
             long beforeCap = System.currentTimeMillis();
             ImageBox bImg;
             if (nativeCapture) {
-                bImg = new BufferedImageBox(Utils.execRobotDirectlyNoLog(r -> r.nativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale)));
+                bImg = new BufferedImageBox(Utils.execRobotDirectly(r -> r.nativeCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h, capScale)));
             } else if (roughCapture) {
                 bImg = new FXWritableImageBox(
-                    (WritableImage) Utils.execRobotOnThreadNoLog(r -> r.capture(imgBuffer, cap.x, cap.y, (int) cap.w, (int) cap.h, false)),
+                    (WritableImage) Utils.execRobotOnThread(r -> r.capture(imgBuffer, cap.x, cap.y, (int) cap.w, (int) cap.h, false)),
                     capScale);
             } else {
-                var img = Utils.execRobotDirectlyNoLog(r -> r.awtCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h));
+                var img = Utils.execRobotDirectly(r -> r.awtCapture((int) cap.x, (int) cap.y, (int) cap.w, (int) cap.h));
                 bImg = new BufferedImageBox(FXUtils.convertToBufferedImage(img));
             }
             long afterCap = System.currentTimeMillis();
             if (afterCap - beforeCap >= 24) {
-                Logger.warn("screen capture costs too much time: " + (afterCap - beforeCap) + "ms");
+                Logger.warn(LogType.ALERT, "screen capture costs too much time: " + (afterCap - beforeCap) + "ms");
             }
 
             long beforeExtraCheck = System.currentTimeMillis();
@@ -179,7 +180,7 @@ public class DischargeDetector {
             var whitePercentage = whiteCount / (double) (totalCheckedPixels);
             long afterExtraCheck = System.currentTimeMillis();
             if (afterExtraCheck - beforeExtraCheck > 2) {
-                Logger.warn("extra check costs too much time: " + (afterExtraCheck - beforeExtraCheck) + "ms");
+                Logger.warn(LogType.ALERT, "extra check costs too much time: " + (afterExtraCheck - beforeExtraCheck) + "ms");
             }
 
             long beforeMatchingPoints = System.currentTimeMillis();
@@ -203,7 +204,7 @@ public class DischargeDetector {
                     sb.append(" ").append("r:").append(r).append(", g:").append(g).append(", b:").append(b).append("\n");
                 }
                 sb.append("=================");
-                Logger.debug(sb.toString());
+                assert Logger.lowLevelDebug(sb.toString());
             }
             int matchCount = 0;
             for (; matchCount < points.size(); ++matchCount) {
@@ -220,7 +221,7 @@ public class DischargeDetector {
             }
             long afterMatchingPoints = System.currentTimeMillis();
             if (afterMatchingPoints - beforeMatchingPoints > 1) {
-                Logger.warn("matching points costs too much time: " + (afterMatchingPoints - beforeMatchingPoints) + "ms");
+                Logger.warn(LogType.ALERT, "matching points costs too much time: " + (afterMatchingPoints - beforeMatchingPoints) + "ms");
             }
 
             if (debug) {
@@ -257,7 +258,7 @@ public class DischargeDetector {
             matchCount = stabilizer.add(matchCount);
             long afterStabilizer = System.currentTimeMillis();
             if (afterStabilizer - beforeStabilizer > 1) {
-                Logger.warn("stabilizer costs too much time: " + (afterStabilizer - beforeStabilizer) + "ms");
+                Logger.warn(LogType.ALERT, "stabilizer costs too much time: " + (afterStabilizer - beforeStabilizer) + "ms");
             }
             if (matchCount == -1) {
                 continue;

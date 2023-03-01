@@ -1,7 +1,8 @@
 package net.cassite.hottapcassistant.feed;
 
-import io.vproxy.vfx.util.IOUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.LogType;
+import io.vproxy.commons.util.IOUtils;
+import io.vproxy.base.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.CharStream;
 import vjson.JSON;
@@ -58,14 +59,14 @@ public class FeedThread extends Thread {
         try {
             loadCache();
         } catch (Throwable t) {
-            Logger.error("failed loading cache", t);
+            Logger.error(LogType.FILE_ERROR, "failed loading cache", t);
         }
         while (!needToStop) {
             checkLock();
             try {
                 exec();
             } catch (Throwable t) {
-                Logger.error("exception thrown in feed thread", t);
+                Logger.error(LogType.USER_HANDLE_FAIL, "exception thrown in feed thread", t);
             }
             if (needToStop) {
                 break;
@@ -88,12 +89,12 @@ public class FeedThread extends Thread {
         var path = Path.of(tmpdir, "hotta-pc-assistant", "req-1");
         var file = path.toFile();
         if (!file.exists()) {
-            Logger.warn(file.getAbsolutePath() + " does not exist, skip loading from cache");
+            Logger.warn(LogType.INVALID_EXTERNAL_DATA, file.getAbsolutePath() + " does not exist, skip loading from cache");
             return;
         }
         var fileAttrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
         if (!fileAttrs.isRegularFile()) {
-            Logger.warn(file.getAbsolutePath() + " is not a valid file, skip loading from cache");
+            Logger.warn(LogType.INVALID_EXTERNAL_DATA, file.getAbsolutePath() + " is not a valid file, skip loading from cache");
             try {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
@@ -103,7 +104,7 @@ public class FeedThread extends Thread {
         }
         var lastModified = fileAttrs.lastModifiedTime().toMillis();
         var httpBody = Files.readString(path);
-        Logger.info("using cached github issue 1 comments: " + httpBody);
+        Logger.alert("using cached github issue 1 comments: " + httpBody);
         handleIssue1(httpBody);
         Feed.feed.feedTime = Instant.ofEpochMilli(lastModified).atZone(ZoneId.systemDefault());
         Feed.alert();
@@ -120,19 +121,19 @@ public class FeedThread extends Thread {
         try {
             resp = client.send(req, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
-            Logger.warn("unable to retrieve github issue 1 comments, skipping");
+            Logger.warn(LogType.CONN_ERROR, "unable to retrieve github issue 1 comments, skipping");
             return;
         }
         var httpBody = resp.body();
         if (resp.statusCode() != 200) {
-            Logger.error("calling github for issue 1 comments failed, status: " + resp.statusCode() + ", body: " + httpBody);
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "calling github for issue 1 comments failed, status: " + resp.statusCode() + ", body: " + httpBody);
             return;
         }
-        Logger.info("calling github for issue 1 comments, retrieved http body: " + httpBody);
+        Logger.alert("calling github for issue 1 comments, retrieved http body: " + httpBody);
         try {
-            IOUtils.writeFile(Path.of(System.getProperty("java.io.tmpdir"), "hotta-pc-assistant", "req-1"), httpBody);
+            IOUtils.writeFileWithBackup(Path.of(System.getProperty("java.io.tmpdir"), "hotta-pc-assistant", "req-1").toString(), httpBody);
         } catch (Throwable t) {
-            Logger.error("failed storing github issue 1 comments response to file", t);
+            Logger.error(LogType.FILE_ERROR, "failed storing github issue 1 comments response to file", t);
             // fallthrough
         }
         handleIssue1(httpBody);
@@ -152,27 +153,27 @@ public class FeedThread extends Thread {
 
     private void handleIssue1(int index, GithubIssueComment comment) {
         if (comment == null) {
-            Logger.error("github issue 1 comments[" + index + "] is null");
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "github issue 1 comments[" + index + "] is null");
             return;
         }
         if (comment.user == null) {
-            Logger.error("github issue 1 comments[" + index + "] does not contain field 'user': " + comment);
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "github issue 1 comments[" + index + "] does not contain field 'user': " + comment);
             return;
         }
         var userId = comment.user.id;
         if (userId != 10825968) {
-            Logger.debug("retrieved comment not produced by trusted user, the retrieved userId is " + userId + ", skipping...");
+            assert Logger.lowLevelDebug("retrieved comment not produced by trusted user, the retrieved userId is " + userId + ", skipping...");
             return;
         }
         if (comment.body == null) {
-            Logger.error("github issue 1 comments[" + index + "] does not contain field 'body': " + comment);
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "github issue 1 comments[" + index + "] does not contain field 'body': " + comment);
             return;
         }
         var bodyStr = comment.body;
         bodyStr = bodyStr.trim();
         var split = bodyStr.split("\n");
         if (split.length == 0) {
-            Logger.error("github issue 1 comments[" + index + "].body does not contain metadata: " + bodyStr);
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "github issue 1 comments[" + index + "].body does not contain metadata: " + bodyStr);
             return;
         }
         var line0 = split[0];
@@ -182,7 +183,7 @@ public class FeedThread extends Thread {
         }
         bodyStr = bodyStr.trim();
         if (!line0.startsWith("```")) {
-            Logger.error("github issue 1 comments[" + index + "].body does not contain metadata, not starting with '```': " + bodyStr);
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "github issue 1 comments[" + index + "].body does not contain metadata, not starting with '```': " + bodyStr);
             return;
         }
         line0 = line0.substring("```".length());
@@ -190,25 +191,25 @@ public class FeedThread extends Thread {
         try {
             metadata = JSON.deserialize(CharStream.from(line0), Metadata.rule, ParserOptions.allFeatures());
         } catch (Exception e) {
-            Logger.error("github issue 1 comments[" + index + "].body does not contain metadata, not valid json or unable to deserialize: " + line0, e);
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "github issue 1 comments[" + index + "].body does not contain metadata, not valid json or unable to deserialize: " + line0, e);
             return;
         }
         if (metadata.version <= 0) {
-            Logger.error("github issue 1 comments[" + index + "] invalid metadata version: " + metadata.version);
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "github issue 1 comments[" + index + "] invalid metadata version: " + metadata.version);
             return;
         }
 
         if (metadata.version > parsers.length) {
-            Logger.warn("unable to handle github issue 1 comments[" + index + "] with version " + metadata.version);
+            Logger.warn(LogType.INVALID_EXTERNAL_DATA, "unable to handle github issue 1 comments[" + index + "] with version " + metadata.version);
             return;
         }
 
-        Logger.info("get body from github issue 1 comments[" + index + "]: " + new SimpleString(bodyStr).stringify());
+        Logger.alert("get body from github issue 1 comments[" + index + "]: " + new SimpleString(bodyStr).stringify());
 
         try {
             parsers[metadata.version - 1].parse(bodyStr);
         } catch (Exception e) {
-            Logger.error("handling github issue 1 comments[" + index + "].body failed, version: " + metadata.version + " ,body: " + bodyStr, e);
+            Logger.error(LogType.SYS_ERROR, "handling github issue 1 comments[" + index + "].body failed, version: " + metadata.version + " ,body: " + bodyStr, e);
             //noinspection UnnecessaryReturnStatement
             return;
         }

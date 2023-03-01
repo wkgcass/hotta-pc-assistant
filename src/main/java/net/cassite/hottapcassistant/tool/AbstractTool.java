@@ -1,9 +1,10 @@
 package net.cassite.hottapcassistant.tool;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.ui.alert.StackTraceAlert;
 import io.vproxy.vfx.ui.scene.VScene;
-import io.vproxy.vfx.util.IOUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.commons.util.IOUtils;
+import io.vproxy.base.util.Logger;
 import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.ui.JSONJavaObject;
 import vjson.JSON;
@@ -115,12 +116,12 @@ public abstract class AbstractTool implements Tool {
                 try {
                     c = JSON.deserialize(str, configRule);
                 } catch (Exception e) {
-                    Logger.error("failed deserializing config from " + configPath, e);
+                    Logger.error(LogType.INVALID_EXTERNAL_DATA, "failed deserializing config from " + configPath, e);
                     // silently delete the file and proceed
                     try {
                         Files.delete(configPath);
                     } catch (Exception ee) {
-                        Logger.error("failed deleting config file " + configPath, ee);
+                        Logger.error(LogType.INVALID_EXTERNAL_DATA, "failed deleting config file " + configPath, ee);
                     }
                 }
             }
@@ -148,9 +149,9 @@ public abstract class AbstractTool implements Tool {
         }
         var str = config.toJson().pretty();
         try {
-            IOUtils.writeFile(configPath, str);
-        } catch (IOException e) {
-            Logger.error("failed saving config for " + getName(), e);
+            IOUtils.writeFileWithBackup(configPath.toString(), str);
+        } catch (Exception e) {
+            Logger.error(LogType.FILE_ERROR, "failed saving config for " + getName(), e);
         }
     }
 }

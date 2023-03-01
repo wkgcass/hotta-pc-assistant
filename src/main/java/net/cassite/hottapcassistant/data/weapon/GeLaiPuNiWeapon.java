@@ -5,7 +5,7 @@ import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.resonance.ThunderResonance;
 import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.util.LinkedList;
@@ -102,14 +102,14 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
                 long last = clickedTs.getLast();
                 long first = clickedTs.getFirst();
                 if (last - first < 800) {
-                    Logger.debug("ge-lai-pu-ni quick cd refresh: triggered");
+                    assert Logger.lowLevelDebug("ge-lai-pu-ni quick cd refresh: triggered");
                     mainSkillCD = 30 * 1000;
                     cd = 15 * 1000;
                     setState(STATE_CAN_BE_REFRESHED);
                     clickedTs.clear();
 
                     if (current - lastTimeSkillUsed >= 800) {
-                        Logger.debug("ge-lai-pu-ni quick cd refresh: free matrix alert");
+                        assert Logger.lowLevelDebug("ge-lai-pu-ni quick cd refresh: free matrix alert");
                         postUseSkill(ctx, skillInstance());
                     }
 
@@ -141,7 +141,7 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
     }
 
     private void setState(int state) {
-        Logger.debug("ge-lai-pu-ni state change: from " + this.state + " to " + state);
+        assert Logger.lowLevelDebug("ge-lai-pu-ni state change: from " + this.state + " to " + state);
         this.state = state;
     }
 

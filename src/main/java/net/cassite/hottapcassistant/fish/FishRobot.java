@@ -4,7 +4,7 @@ import io.vproxy.vfx.entity.input.Key;
 import io.vproxy.vfx.entity.input.KeyCode;
 import io.vproxy.vfx.manager.task.TaskManager;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -163,11 +163,11 @@ public class FishRobot {
                         finishing();
                         break;
                     default:
-                        Logger.error("unexpected status: " + status + ", will break loop!");
+                        Logger.shouldNotHappen("unexpected status: " + status + ", will break loop!");
                         break loop;
                 }
             } catch (Throwable t) {
-                Logger.error("got exception in exec loop, please report a bug", t);
+                Logger.shouldNotHappen("got exception in exec loop, please report a bug", t);
                 break;
             }
             try {

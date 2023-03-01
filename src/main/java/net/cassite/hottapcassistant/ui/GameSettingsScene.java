@@ -46,12 +46,12 @@ public class GameSettingsScene extends WithConfirmScene {
     }
 
     @Override
-    protected void confirm() throws IOException {
+    protected void confirm() throws Exception {
         getSettingConfig().write(ls.getItems());
     }
 
     @Override
-    protected void reset() throws IOException {
+    protected void reset() throws Exception {
         ls.setItems(getSettingConfig().read());
     }
 }

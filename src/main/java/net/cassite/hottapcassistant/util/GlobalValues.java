@@ -4,9 +4,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.dns.AddressResolverOptions;
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.button.FusionImageButton;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
@@ -62,7 +63,7 @@ public class GlobalValues {
         try {
             ass = getGameAssistantConfig().readGameAssistant();
         } catch (IOException e) {
-            Logger.error("failed reading assistant config", e);
+            Logger.error(LogType.FILE_ERROR, "failed reading assistant config", e);
             throw e;
         }
         if (ass.version == null) {
@@ -74,7 +75,7 @@ public class GlobalValues {
         } else if (useVersion.get() == GameVersion.Global) {
             if (ass.version.equals(GameVersion.Global)) return true;
         } else {
-            Logger.error("unknown version " + useVersion.get());
+            Logger.shouldNotHappen("unknown version " + useVersion.get());
             throw new Exception("unknown version " + useVersion.get());
         }
 
@@ -96,13 +97,13 @@ public class GlobalValues {
         var savedFile = new File(savedPath.get());
         if (!savedFile.renameTo(moveToDirFile)) {
             var err = "failed moving " + savedPath.get() + " to " + moveToDir;
-            Logger.error(err);
+            Logger.error(LogType.FILE_ERROR, err);
             throw new IOException(err);
         }
         if (targetDirFile.exists()) {
             if (!targetDirFile.renameTo(savedFile)) {
                 var err = "failed moving " + targetDir + " to " + savedPath.get();
-                Logger.error(err);
+                Logger.error(LogType.FILE_ERROR, err);
                 throw new IOException(err);
             }
         } else {
@@ -120,7 +121,7 @@ public class GlobalValues {
         } else if (useVersion.get() == GameVersion.Global) {
             return checkGlobalServerGamePath();
         } else {
-            Logger.warn("unknown game version: " + useVersion.get() + ", check with CN version rules");
+            Logger.shouldNotHappen("unknown game version: " + useVersion.get() + ", check with CN version rules");
             return checkCNGamePath();
         }
     }

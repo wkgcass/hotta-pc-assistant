@@ -5,7 +5,8 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
 import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.core.net.TrustOptions;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
@@ -76,7 +77,7 @@ public class HottaLauncherProxyServer {
             var body = buffer.toString();
             var reqId = UUID.randomUUID().toString();
             String msg = "reqId: " + reqId + "\nmethod: " + method + "\nuri: " + uri + "\n" + headers + "\nbody: " + body;
-            Logger.info(msg + reqSplitTag);
+            Logger.access(msg + reqSplitTag);
 
             if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/Version/Windows/config.xml")) {
                 nullConfigXml(reqId, req);
@@ -136,21 +137,21 @@ public class HottaLauncherProxyServer {
                    "                <tagTaskThreadCnt>2</tagTaskThreadCnt>\n" +
                    "        </Extra>\n" +
                    "</config>\n";
-        Logger.info("custom null config.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        Logger.access("custom null config.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
 
     private void configXml(String reqId, HttpServerRequest req) {
         var body = MultiHottaInstanceFlow.buildConfigXml(version, subVersion);
-        Logger.info("custom config.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        Logger.access("custom config.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
 
     private void resListXml(String reqId, HttpServerRequest req) {
         var body = MultiHottaInstanceFlow.buildResListXml(subVersion);
-        Logger.info("custom resList.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        Logger.access("custom resList.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
@@ -160,14 +161,14 @@ public class HottaLauncherProxyServer {
             <?xml version="1.0" ?>
             <PatchList/>
             """;
-        Logger.info("custom lastdiff.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        Logger.access("custom lastdiff.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
 
     private void versionTxt(String reqId, HttpServerRequest req) {
         var version = clientVersion;
-        Logger.info("custom version.txt response: " + version + "\nreqId: " + reqId + respEndLogTag);
+        Logger.access("custom version.txt response: " + version + "\nreqId: " + reqId + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(version);
     }
@@ -182,7 +183,7 @@ public class HottaLauncherProxyServer {
                    "    <Url BaseUrl=\"https://pmpcdn1.wmupd.com/pmp/update/200105\"/>\n" +
                    "    <Log></Log>\n" +
                    "</All_Files>\n";
-        Logger.info("custom AllFiles.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        Logger.access("custom AllFiles.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
@@ -196,7 +197,7 @@ public class HottaLauncherProxyServer {
             [UPDATEINFO]
             """;
         body = body.trim() + "\n\n";
-        Logger.info("custom Version.ini response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        Logger.access("custom Version.ini response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
@@ -210,14 +211,14 @@ public class HottaLauncherProxyServer {
             </GameInfo>
             """;
         body = body.trim() + "\n\n";
-        Logger.info("custom gameinfo.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        Logger.access("custom gameinfo.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }
 
     public static void proxy(HttpClient client, String reqId, HttpServerRequest req, HttpMethod method, String uri, MultiMap headers, String body) {
         var host = headers.get("host");
-        Logger.debug("reqId: " + reqId + ", host header is " + host);
+        assert Logger.lowLevelDebug("reqId: " + reqId + ", host header is " + host);
         if (host == null) {
             req.response().setStatusCode(404);
             req.response().end("not found\r\n");
@@ -231,7 +232,7 @@ public class HottaLauncherProxyServer {
                 .setURI(uri)
                 .setHeaders(headers)
             ).flatMap(creq -> {
-                Logger.debug("reqId: " + reqId + ", sending new request");
+                assert Logger.lowLevelDebug("reqId: " + reqId + ", sending new request");
                 if (body == null || body.isEmpty()) {
                     return creq.send();
                 } else {
@@ -239,7 +240,7 @@ public class HottaLauncherProxyServer {
                 }
             })
             .map(resp -> {
-                Logger.info("proxy the response: reqId: " + reqId + "\nresp code: " + resp.statusCode() + "\n" + resp.headers() + respEndLogTag);
+                Logger.access("proxy the response: reqId: " + reqId + "\nresp code: " + resp.statusCode() + "\n" + resp.headers() + respEndLogTag);
                 req.response().setStatusCode(resp.statusCode());
                 for (var entry : resp.headers()) {
                     req.response().putHeader(entry.getKey(), entry.getValue());
@@ -248,7 +249,7 @@ public class HottaLauncherProxyServer {
                 return null;
             })
             .recover(t -> {
-                Logger.error("reqId: " + reqId + ", failed to send request", t);
+                Logger.error(LogType.CONN_ERROR, "reqId: " + reqId + ", failed to send request", t);
                 return null;
             });
     }

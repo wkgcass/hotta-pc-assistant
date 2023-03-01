@@ -1,8 +1,9 @@
 package net.cassite.hottapcassistant.config;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
-import io.vproxy.vfx.util.IOUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.commons.util.IOUtils;
+import io.vproxy.base.util.Logger;
 import javafx.scene.control.Alert;
 import net.cassite.hottapcassistant.component.setting.Setting;
 import net.cassite.hottapcassistant.component.setting.SettingType;
@@ -57,7 +58,7 @@ public class SettingConfig {
         });
     }};
 
-    public List<Setting> read() throws IOException {
+    public List<Setting> read() throws Exception {
         List<Setting> settings = new ArrayList<>();
         initSettingsConfig();
         readConfigFrom(settings, settingsPath);
@@ -77,7 +78,7 @@ public class SettingConfig {
         return settings;
     }
 
-    private void initSettingsConfig() throws IOException {
+    private void initSettingsConfig() throws Exception {
         Path settingsPath = Path.of(this.settingsPath);
         var lines = Files.readAllLines(settingsPath);
         var gameUserSettingsIndex = -1;
@@ -110,7 +111,7 @@ public class SettingConfig {
             }
         }
         if (gameUserSettingsIndex == -1) {
-            Logger.warn("cannot find [/Script/QRSL.QRSLGameUserSettings] in " + settingsPath);
+            Logger.warn(LogType.INVALID_EXTERNAL_DATA,"cannot find [/Script/QRSL.QRSLGameUserSettings] in " + settingsPath);
             return;
         }
         GameAssistant gameAssistant;
@@ -158,7 +159,7 @@ public class SettingConfig {
             ++modified;
         }
         if (modified != 0) {
-            IOUtils.writeFile(settingsPath, String.join("\n", lines));
+            IOUtils.writeFileWithBackup(settingsPath.toString(), String.join("\n", lines));
         }
     }
 
@@ -196,7 +197,7 @@ public class SettingConfig {
         }
     }
 
-    public void write(List<Setting> settings) throws IOException {
+    public void write(List<Setting> settings) throws Exception {
         Path settingsPath = Path.of(this.settingsPath);
         var settingsFile = Files.readAllLines(settingsPath);
 
@@ -226,7 +227,7 @@ public class SettingConfig {
                 settingsFile.set(s.lineIndex, s.toString());
             }
         }
-        IOUtils.writeFile(settingsPath, String.join("\n", settingsFile));
+        IOUtils.writeFileWithBackup(settingsPath.toString(), String.join("\n", settingsFile));
         if (modified) {
             final var fFullscreenMode = fullscreenMode;
             final var fResolutionSizeX = resolutionSizeX;

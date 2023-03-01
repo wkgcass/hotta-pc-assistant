@@ -1,6 +1,6 @@
 package net.cassite.hottapcassistant.multi;
 
-import io.vproxy.vfx.util.IOUtils;
+import io.vproxy.commons.util.IOUtils;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.simple.SimpleString;
 
@@ -79,16 +79,16 @@ public class MultiHottaInstanceFlow {
                "</config>\n";
     }
 
-    public static void writeResListXml(String advLocation, String subVersion) throws IOException {
+    public static void writeResListXml(String advLocation, String subVersion) throws Exception {
         var dir = makePatcherSDKDir(advLocation);
         var path = Path.of(dir.toString(), "ResList.xml");
-        IOUtils.writeFile(path, buildResListXml(subVersion));
+        IOUtils.writeFileWithBackup(path.toString(), buildResListXml(subVersion));
     }
 
-    public static void writeConfigXml(String advLocation, String version, String subVersion) throws IOException {
+    public static void writeConfigXml(String advLocation, String version, String subVersion) throws Exception {
         var dir = makePatcherSDKDir(advLocation);
         var path = Path.of(dir.toString(), "config.xml");
-        IOUtils.writeFile(path, buildConfigXml(version, subVersion));
+        IOUtils.writeFileWithBackup(path.toString(), buildConfigXml(version, subVersion));
     }
 
     private static Path makePatcherSDKDir(String advLocation) throws IOException {
@@ -102,7 +102,7 @@ public class MultiHottaInstanceFlow {
         return dir;
     }
 
-    public static String readClientVersion(String location) throws IOException {
+    public static String readClientVersion(String location) throws Exception {
         var dir = Path.of(location, "Client", "WindowsNoEditor", "Hotta", "Binaries", "Win64");
         if (!dir.toFile().exists()) {
             throw new IOException(dir + " does not exist");
@@ -110,7 +110,7 @@ public class MultiHottaInstanceFlow {
         var path = Path.of(dir.toString(), "Win_pc_version.txt");
         if (!path.toFile().exists()) {
             var dummyVersion = "114.514.1919810";
-            IOUtils.writeFile(path, dummyVersion);
+            IOUtils.writeFileWithBackup(path.toString(), dummyVersion);
             return dummyVersion;
         } else {
             return Files.readString(path);

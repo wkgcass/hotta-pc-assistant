@@ -1,6 +1,6 @@
 package net.cassite.hottapcassistant.data;
 
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.component.cooldown.WeaponSpecialInfo;
 import net.cassite.hottapcassistant.data.weapon.*;
@@ -149,7 +149,7 @@ public class WeaponContext implements WithExtraData {
     }
 
     public void postUseSkill(Weapon cw, Skill skill) {
-        Logger.info("use weapon skill " + cw.getName() + "." + skill);
+        Logger.alert("use weapon skill " + cw.getName() + "." + skill);
         for (var w : weapons) {
             w.alertSkillUsed(this, cw, skill);
         }
@@ -172,7 +172,7 @@ public class WeaponContext implements WithExtraData {
     }
 
     public void attack() {
-        Logger.info("weapon attack " + current.getName());
+        Logger.alert("weapon attack " + current.getName());
         current.attack(this, AttackType.NORMAL);
         for (var w : weapons) {
             w.alertAttack(this, current, AttackType.NORMAL);
@@ -180,12 +180,12 @@ public class WeaponContext implements WithExtraData {
     }
 
     public void dodge() {
-        Logger.info("weapon dodge " + current.getName());
+        Logger.alert("weapon dodge " + current.getName());
         current.dodge(this);
     }
 
     public void dodgeAttack() {
-        Logger.info("weapon dodge attack " + current.getName());
+        Logger.alert("weapon dodge attack " + current.getName());
         current.attack(this, AttackType.DODGE);
         for (var w : weapons) {
             w.alertAttack(this, current, AttackType.DODGE);
@@ -193,7 +193,7 @@ public class WeaponContext implements WithExtraData {
     }
 
     public void aimAttack() {
-        Logger.info("weapon aim/charge attack " + current.getName());
+        Logger.alert("weapon aim/charge attack " + current.getName());
         current.attack(this, AttackType.AIM);
         for (var w : weapons) {
             w.alertAttack(this, current, AttackType.AIM);
@@ -201,7 +201,7 @@ public class WeaponContext implements WithExtraData {
     }
 
     public void specialAttack() {
-        Logger.info("weapon special attack " + current.getName());
+        Logger.alert("weapon special attack " + current.getName());
         current.attack(this, AttackType.SPECIAL);
         for (var w : weapons) {
             w.alertAttack(this, current, AttackType.SPECIAL);
@@ -220,7 +220,7 @@ public class WeaponContext implements WithExtraData {
         if (weaponSwitchCD[index] > getTotalSwitchWeaponCoolDown() * 0.1) {
             return false;
         }
-        Logger.info("weapon switched from " + current.getName() + " to " + w.getName() + (discharge ? " and discharges" : ""));
+        Logger.alert("weapon switched from " + current.getName() + " to " + w.getName() + (discharge ? " and discharges" : ""));
         int oldIndex = weapons.indexOf(current);
         if (oldIndex != -1) {
             var cd = getTotalSwitchWeaponCoolDown();

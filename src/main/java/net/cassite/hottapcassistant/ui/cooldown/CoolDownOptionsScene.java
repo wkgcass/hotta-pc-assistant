@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.ui.cooldown;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.entity.Point;
 import io.vproxy.vfx.entity.Rect;
 import io.vproxy.vfx.manager.font.FontManager;
@@ -14,7 +15,7 @@ import io.vproxy.vfx.ui.shapes.MovableRect;
 import io.vproxy.vfx.ui.toggle.ToggleSwitch;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -479,7 +480,7 @@ public class CoolDownOptionsScene extends VScene {
                 (int) (rect.y * screen.getOutputScaleY()));
             img = wImg;
         } catch (Exception e) {
-            Logger.error("calculatePointsAndStore failure 1", e);
+            Logger.error(LogType.INVALID_INPUT_DATA, "calculatePointsAndStore failure 1", e);
             return false;
         }
 
@@ -572,7 +573,7 @@ public class CoolDownOptionsScene extends VScene {
                 }
                 points.add(new Point(midX - 2 * n, topY + n));
             } catch (Exception e) {
-                Logger.error("calculatePointsAndStore failure 2", e);
+                Logger.error(LogType.INVALID_INPUT_DATA, "calculatePointsAndStore failure 2", e);
                 continue;
             }
             for (int i = 0; i < points.size() - 1; ++i) {

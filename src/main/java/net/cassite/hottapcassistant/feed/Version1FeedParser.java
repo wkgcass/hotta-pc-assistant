@@ -1,7 +1,8 @@
 package net.cassite.hottapcassistant.feed;
 
+import io.vproxy.base.util.LogType;
 import javafx.scene.image.Image;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import vjson.CharStream;
 import vjson.JSON;
 import vjson.deserializer.rule.LongRule;
@@ -28,11 +29,11 @@ public class Version1FeedParser implements FeedParser {
                 var version = program.version;
                 if (version.ver != null) {
                     Feed.feed.latestVersion = version.ver;
-                    Logger.info("feed: latestVersion updated: " + Feed.feed.latestVersion);
+                    Logger.alert("feed: latestVersion updated: " + Feed.feed.latestVersion);
                     if (version.ts != 0) {
                         long ts = version.ts;
                         Feed.feed.latestVersionReleaseTime = Instant.ofEpochSecond(ts).atZone(ZoneId.systemDefault());
-                        Logger.info("feed: latestVersionReleaseTime updated: " + Feed.feed.latestVersionReleaseTime);
+                        Logger.alert("feed: latestVersionReleaseTime updated: " + Feed.feed.latestVersionReleaseTime);
                     }
                 }
             }
@@ -45,10 +46,10 @@ public class Version1FeedParser implements FeedParser {
                         if (body != null) {
                             var img = new Image(new ByteArrayInputStream(body));
                             if (img.isError()) {
-                                Logger.error("failed to load introBg from feed: " + image.introBg);
+                                Logger.error(LogType.CONN_ERROR, "failed to load introBg from feed: " + image.introBg);
                             } else {
                                 Feed.feed.introBg = img;
-                                Logger.info("feed: introBg updated: " + Feed.feed.introBg);
+                                Logger.alert("feed: introBg updated: " + Feed.feed.introBg);
                             }
                         }
                     }
@@ -63,7 +64,7 @@ public class Version1FeedParser implements FeedParser {
                     var pmp = download.pmp;
                     if (pmp.url != null) {
                         Feed.feed.pmpDownloadUrl = pmp.url;
-                        Logger.info("feed: pmpDownloadUrl updated: " + Feed.feed.pmpDownloadUrl);
+                        Logger.alert("feed: pmpDownloadUrl updated: " + Feed.feed.pmpDownloadUrl);
                     }
                 }
             }
@@ -76,14 +77,14 @@ public class Version1FeedParser implements FeedParser {
                     var body = httpGet(tofServer.hosts, "tofServer.hosts");
                     if (body != null) {
                         Feed.feed.tofServerHosts = new String(body);
-                        Logger.info("feed: tofServerHosts updated: line count: " + Feed.feed.tofServerHosts.split("\n").length);
+                        Logger.alert("feed: tofServerHosts updated: line count: " + Feed.feed.tofServerHosts.split("\n").length);
                     }
                 }
                 if (tofServer.names != null) {
                     var body = httpGet(tofServer.names, "tofServer.names");
                     if (body != null) {
                         Feed.feed.tofServerNames = new String(body);
-                        Logger.info("feed: tofServerNames updated: line count: " + Feed.feed.tofServerNames.split("\n").length);
+                        Logger.alert("feed: tofServerNames updated: line count: " + Feed.feed.tofServerNames.split("\n").length);
                     }
                 }
             }
@@ -98,13 +99,13 @@ public class Version1FeedParser implements FeedParser {
         try {
             resp = FeedThread.get().client.send(req, HttpResponse.BodyHandlers.ofByteArray());
         } catch (Throwable t) {
-            Logger.error("failed to retrieve " + resourceName + " from feed: " + url + ": " + t.getMessage());
+            Logger.error(LogType.CONN_ERROR, "failed to retrieve " + resourceName + " from feed: " + url + ": " + t.getMessage());
         }
         if (resp == null) {
             return null;
         }
         if (resp.statusCode() != 200) {
-            Logger.error("failed to retrieve " + resourceName + " from feed: " + url + ", status: " + resp.statusCode());
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, "failed to retrieve " + resourceName + " from feed: " + url + ", status: " + resp.statusCode());
             return null;
         }
         return resp.body();

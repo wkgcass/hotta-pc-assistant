@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.util;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.entity.input.Key;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import io.vproxy.vfx.manager.audio.AudioManager;
@@ -7,8 +8,8 @@ import io.vproxy.vfx.manager.audio.AudioWrapper;
 import io.vproxy.vfx.manager.image.ImageManager;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.alert.StackTraceAlert;
-import io.vproxy.vfx.util.IOUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.commons.util.IOUtils;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -75,16 +76,16 @@ public class Utils {
         }
         var f = new File(winDir + "\\System32\\Drivers\\etc\\hosts");
         if (!f.exists()) {
-            Logger.info("try to create hosts file: " + f);
+            Logger.alert("try to create hosts file: " + f);
             var hostsDir = f.getParentFile();
             if (hostsDir == null) {
-                Logger.error("unable to find directory for hosts file: " + f);
+                Logger.error(LogType.INVALID_EXTERNAL_DATA, "unable to find directory for hosts file: " + f);
                 return false;
             }
             if (!hostsDir.exists()) {
                 boolean ok = hostsDir.mkdirs();
                 if (!ok) {
-                    Logger.error("creating directory " + hostsDir + " for hosts file failed");
+                    Logger.error(LogType.FILE_ERROR, "creating directory " + hostsDir + " for hosts file failed");
                     return false;
                 }
             }
@@ -92,22 +93,22 @@ public class Utils {
             try {
                 ok = f.createNewFile();
             } catch (IOException e) {
-                Logger.error("creating hosts file failed: " + f, e);
+                Logger.error(LogType.FILE_ERROR, "creating hosts file failed: " + f, e);
                 return false;
             }
             if (!ok) {
-                Logger.error("creating hosts file failed for unknown reason: " + f);
+                Logger.error(LogType.FILE_ERROR, "creating hosts file failed for unknown reason: " + f);
                 return false;
             }
         } else if (!f.isFile()) {
-            Logger.error(f.getAbsolutePath() + " is not a file");
+            Logger.error(LogType.INVALID_EXTERNAL_DATA, f.getAbsolutePath() + " is not a file");
             return false;
         }
         List<String> lines;
         try {
             lines = Files.readAllLines(f.toPath());
         } catch (IOException e) {
-            Logger.error("reading " + f.getAbsolutePath() + " failed", e);
+            Logger.error(LogType.FILE_ERROR, "reading " + f.getAbsolutePath() + " failed", e);
             return false;
         }
         lines = new ArrayList<>(lines);
@@ -118,16 +119,15 @@ public class Utils {
         }
         var str = String.join("\n", lines);
         try {
-            IOUtils.writeFile(f.toPath(), str);
-        } catch (IOException e) {
-            Logger.error("writing " + f.getAbsolutePath() + " failed", e);
+            IOUtils.writeFileWithBackup(f.getAbsolutePath(), str);
+        } catch (Exception e) {
+            Logger.error(LogType.FILE_ERROR, "writing " + f.getAbsolutePath() + " failed", e);
             return false;
         }
         return true;
     }
 
     private static volatile RobotWrapper robot;
-    private static volatile RobotWrapper robotNoLog;
 
     public static void execRobot(Consumer<RobotWrapper> f) {
         checkAndInitRobot();
@@ -139,24 +139,9 @@ public class Utils {
         return runOnFXAndReturn(() -> f.apply(robot));
     }
 
-    public static void execRobotNoLog(Consumer<RobotWrapper> f) {
-        checkAndInitRobot();
-        Platform.runLater(() -> f.accept(robotNoLog));
-    }
-
-    public static <T> T execRobotOnThreadNoLog(Function<RobotWrapper, T> f) {
-        checkAndInitRobot();
-        return runOnFXAndReturn(() -> f.apply(robotNoLog));
-    }
-
     public static <T> T execRobotDirectly(Function<RobotWrapper, T> f) {
         checkAndInitRobot();
         return f.apply(robot);
-    }
-
-    public static <T> T execRobotDirectlyNoLog(Function<RobotWrapper, T> f) {
-        checkAndInitRobot();
-        return f.apply(robotNoLog);
     }
 
     public static <T> T runOnFXAndReturn(Supplier<T> f) {
@@ -211,8 +196,7 @@ public class Utils {
                     Throwable[] ex = new Throwable[]{null};
                     Runnable r = () -> {
                         try {
-                            robot = new RobotWrapper(true);
-                            robotNoLog = new RobotWrapper(false);
+                            robot = new RobotWrapper();
                         } catch (Throwable t) {
                             ex[0] = t;
                         } finally {
@@ -245,7 +229,7 @@ public class Utils {
     public static String readClassPath(String location) throws IOException {
         try (var inputStream = Utils.class.getClassLoader().getResourceAsStream(location)) {
             if (inputStream == null) {
-                Logger.warn("unable to find file " + location + " in classpath");
+                Logger.warn(LogType.SYS_ERROR, "unable to find file " + location + " in classpath");
                 return "";
             }
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
@@ -256,7 +240,7 @@ public class Utils {
         try {
             return ImageManager.get().load("images/weapons/" + name + ".png");
         } catch (Exception e) {
-            Logger.error("failed loading image for weapon " + name, e);
+            Logger.error(LogType.SYS_ERROR, "failed loading image for weapon " + name, e);
             return null;
         }
     }
@@ -265,7 +249,7 @@ public class Utils {
         try {
             return ImageManager.get().load("images/matrix/" + name + ".png");
         } catch (Exception e) {
-            Logger.error("failed loading image for matrix " + name, e);
+            Logger.error(LogType.SYS_ERROR, "failed loading image for matrix " + name, e);
             return null;
         }
     }
@@ -274,7 +258,7 @@ public class Utils {
         try {
             return ImageManager.get().load("images/buff/" + name + ".png");
         } catch (Exception e) {
-            Logger.error("failed loading image for buff " + name, e);
+            Logger.error(LogType.SYS_ERROR, "failed loading image for buff " + name, e);
             return null;
         }
     }
@@ -283,7 +267,7 @@ public class Utils {
         try {
             return ImageManager.get().load("images/relics/" + name + ".png");
         } catch (Exception e) {
-            Logger.error("failed loading image for relics " + name, e);
+            Logger.error(LogType.SYS_ERROR, "failed loading image for relics " + name, e);
             return null;
         }
     }
@@ -292,7 +276,7 @@ public class Utils {
         try {
             return ImageManager.get().load("images/skills/" + name + ".png");
         } catch (Exception e) {
-            Logger.error("failed loading image for skill " + name, e);
+            Logger.error(LogType.SYS_ERROR, "failed loading image for skill " + name, e);
             return null;
         }
     }

@@ -1,8 +1,9 @@
 package net.cassite.hottapcassistant.config;
 
+import io.vproxy.base.util.LogType;
 import net.cassite.hottapcassistant.entity.TofServer;
 import net.cassite.hottapcassistant.feed.Feed;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import net.cassite.hottapcassistant.util.Utils;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class TofServerListConfig {
             line = line.trim();
             var split = line.split("\\s+");
             if (split.length != 2) {
-                Logger.warn("invalid line in hosts file: " + line);
+                Logger.warn(LogType.INVALID_EXTERNAL_DATA, "invalid line in hosts file: " + line);
                 continue;
             }
             var ip = split[0].trim();
@@ -62,18 +63,18 @@ public class TofServerListConfig {
             }
             var split = line.split("\t+");
             if (split.length != 2) {
-                Logger.warn("invalid line in names file: " + line);
+                Logger.warn(LogType.INVALID_EXTERNAL_DATA, "invalid line in names file: " + line);
                 continue;
             }
             var name = split[0].trim();
             var host = split[1].trim();
             var ip = hostMap.get(host);
             if (currentRegion == null) {
-                Logger.warn("missing region for name line: " + line);
+                Logger.warn(LogType.INVALID_EXTERNAL_DATA, "missing region for name line: " + line);
                 continue;
             }
             if (ip == null) {
-                Logger.warn("missing ip for name line: " + line);
+                Logger.warn(LogType.INVALID_EXTERNAL_DATA, "missing ip for name line: " + line);
                 continue;
             }
             var tofServer = new TofServer(currentRegion, name, host, ip);

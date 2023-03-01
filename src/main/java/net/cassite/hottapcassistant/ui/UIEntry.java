@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.base.util.LogType;
 import io.vproxy.vfx.control.dialog.VDialog;
 import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.image.ImageManager;
@@ -13,7 +14,7 @@ import io.vproxy.vfx.ui.scene.VSceneRole;
 import io.vproxy.vfx.ui.scene.VSceneShowMethod;
 import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Group;
@@ -247,7 +248,7 @@ public class UIEntry {
         try {
             ass = AssistantConfig.readAssistant(false);
         } catch (Exception e) {
-            Logger.error("reading assistant config failed", e);
+            Logger.error(LogType.FILE_ERROR, "reading assistant config failed", e);
             return;
         }
         if (ass.disableAlertingGPL) {
@@ -262,7 +263,7 @@ public class UIEntry {
         try {
             AssistantConfig.updateAssistant(a -> a.disableAlertingGPL = true);
         } catch (Exception e) {
-            Logger.error("flushing assistant config for gpl alert failed", e);
+            Logger.error(LogType.FILE_ERROR, "flushing assistant config for gpl alert failed", e);
         }
     }
 

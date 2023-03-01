@@ -51,12 +51,12 @@ public class InputSettingsScene extends WithConfirmScene {
     }
 
     @Override
-    protected void confirm() throws IOException {
+    protected void confirm() throws Exception {
         getInputConfig().write(ls.getItems());
     }
 
     @Override
-    protected void reset() throws IOException {
+    protected void reset() throws Exception {
         ls.setItems(getInputConfig().read());
     }
 }

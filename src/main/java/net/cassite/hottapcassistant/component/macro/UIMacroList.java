@@ -6,7 +6,7 @@ import io.vproxy.vfx.ui.table.VTableColumn;
 import io.vproxy.vfx.ui.table.VTableView;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.vfx.util.Logger;
+import io.vproxy.base.util.Logger;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
@@ -106,7 +106,7 @@ public class UIMacroList extends VTableView<AssistantMacroData> {
                 if (keyOpt.isPresent()) {
                     var key = keyOpt.get();
                     if (!key.isValid() || (key.key != null && key.key.java == null)) {
-                        Logger.debug("unsupported key: " + key.key);
+                        assert Logger.lowLevelDebug("unsupported key: " + key.key);
                         SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().unsupportedKeyErrorMessage());
                     } else {
                         kb.key = key;
