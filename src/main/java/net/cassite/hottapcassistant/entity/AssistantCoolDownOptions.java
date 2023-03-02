@@ -25,6 +25,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public boolean applyDischargeForYingZhi;
     public boolean autoFillPianGuangLingYuSubSkill;
     public boolean autoDischargeForYueXingChuan;
+    public boolean refreshBuffRegardlessOfCDForBuMieZhiYi;
     public double lastWindowScale;
 
     public static final Rule<AssistantCoolDownOptions> rule = new ObjectRule<>(AssistantCoolDownOptions::new)
@@ -44,6 +45,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
         .put("autoFillPianGuangLingYuSubSkill", (o, it) -> o.autoFillPianGuangLingYuSubSkill = it, BoolRule.get())
         .put("autoDischargeForYueXingChuan", (o, it) -> o.autoDischargeForYueXingChuan = it, BoolRule.get())
+        .put("refreshBuffRegardlessOfCDForBuMieZhiYi", (o, it) -> o.refreshBuffRegardlessOfCDForBuMieZhiYi = it, BoolRule.get())
         .put("lastWindowScale", (o, it) -> o.lastWindowScale = it, DoubleRule.get());
 
     public AssistantCoolDownOptions() {
@@ -65,6 +67,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         applyDischargeForYingZhi = that.applyDischargeForYingZhi;
         autoFillPianGuangLingYuSubSkill = that.autoFillPianGuangLingYuSubSkill;
         autoDischargeForYueXingChuan = that.autoDischargeForYueXingChuan;
+        refreshBuffRegardlessOfCDForBuMieZhiYi = that.refreshBuffRegardlessOfCDForBuMieZhiYi;
         lastWindowScale = that.lastWindowScale;
     }
 
@@ -105,6 +108,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
         ob.put("autoFillPianGuangLingYuSubSkill", autoFillPianGuangLingYuSubSkill);
         ob.put("autoDischargeForYueXingChuan", autoDischargeForYueXingChuan);
+        ob.put("refreshBuffRegardlessOfCDForBuMieZhiYi", refreshBuffRegardlessOfCDForBuMieZhiYi);
         ob.put("lastWindowScale", lastWindowScale);
         return ob.build();
     }

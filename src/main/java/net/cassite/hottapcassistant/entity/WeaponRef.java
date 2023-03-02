@@ -63,7 +63,7 @@ public class WeaponRef {
     public final int id;
     public final String name;
     public final Image image;
-    private final Supplier<Weapon> weaponSupplier;
+    public final Supplier<Weapon> weaponSupplier;
     public Supplier<Integer> starsSupplier = null;
 
     public WeaponRef(int id, Supplier<Weapon> weaponSupplier) {

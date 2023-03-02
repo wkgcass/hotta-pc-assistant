@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.ui.cooldown;
 
 import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.entity.Point;
 import io.vproxy.vfx.entity.Rect;
 import io.vproxy.vfx.manager.font.FontManager;
@@ -15,7 +16,6 @@ import io.vproxy.vfx.ui.shapes.MovableRect;
 import io.vproxy.vfx.ui.toggle.ToggleSwitch;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -23,6 +23,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
@@ -34,11 +35,18 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import net.cassite.hottapcassistant.data.Matrix;
+import net.cassite.hottapcassistant.data.Weapon;
+import net.cassite.hottapcassistant.data.weapon.BuMieZhiYiWeapon;
+import net.cassite.hottapcassistant.data.weapon.PianGuangLingYuWeapon;
+import net.cassite.hottapcassistant.data.weapon.YingZhiWeapon;
+import net.cassite.hottapcassistant.data.weapon.YueXingChuanWeapon;
 import net.cassite.hottapcassistant.discharge.DischargeCheckAlgorithm;
 import net.cassite.hottapcassistant.discharge.DischargeCheckContext;
 import net.cassite.hottapcassistant.discharge.SimpleDischargeCheckAlgorithm;
-import net.cassite.hottapcassistant.entity.AssistantCoolDownYueXingChuanSanLiuSkill;
 import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
+import net.cassite.hottapcassistant.entity.AssistantCoolDownYueXingChuanSanLiuSkill;
+import net.cassite.hottapcassistant.entity.WeaponRef;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.ui.CoolDownScene;
 import net.cassite.hottapcassistant.util.Consts;
@@ -48,6 +56,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static net.cassite.hottapcassistant.entity.AssistantCoolDownYueXingChuanSanLiuSkill.*;
 
@@ -58,6 +67,7 @@ public class CoolDownOptionsScene extends VScene {
 
     public CoolDownOptionsScene(SimpleObjectProperty<AssistantCoolDownOptions> options,
                                 ObservableList<AssistantCoolDownYueXingChuanSanLiuSkill> yueXingChuanSanLiuSkills,
+                                SimpleObjectProperty<WeaponRef>[] weapons,
                                 CoolDownScene coolDownScene) {
         super(VSceneRole.TEMPORARY);
         enableAutoContentWidth();
@@ -147,18 +157,28 @@ public class CoolDownOptionsScene extends VScene {
                 FXUtils.disableFocusColor(this);
             }};
             vbox.getChildren().add(applyDischargeForYingZhiCheckBox);
+            onlyShowWhen(weapons, applyDischargeForYingZhiCheckBox, w -> w instanceof YingZhiWeapon);
             var autoFillPianGuangLingYuSubSkillCheckbox = new CheckBox(I18n.get().cooldownAutoFillPianGuangLingYuSubSkillCheckbox()) {{
                 FontManager.get().setFont(this);
                 setTextFill(Theme.current().normalTextColor());
                 FXUtils.disableFocusColor(this);
             }};
             vbox.getChildren().add(autoFillPianGuangLingYuSubSkillCheckbox);
+            onlyShowWhen(weapons, autoFillPianGuangLingYuSubSkillCheckbox, w -> w instanceof PianGuangLingYuWeapon);
             var autoDischargeForYueXingChuanCheckbox = new CheckBox(I18n.get().cooldownAutoDischargeForYueXingChuanCheckBox()) {{
                 FontManager.get().setFont(this);
                 setTextFill(Theme.current().normalTextColor());
                 FXUtils.disableFocusColor(this);
             }};
             vbox.getChildren().add(autoDischargeForYueXingChuanCheckbox);
+            onlyShowWhen(weapons, autoDischargeForYueXingChuanCheckbox, w -> w instanceof YueXingChuanWeapon);
+            var refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox = new CheckBox(I18n.get().cooldownRefreshBuffRegardlessOfCDForBuMieZhiYi()) {{
+                FontManager.get().setFont(this);
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
+            }};
+            vbox.getChildren().add(refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox);
+            onlyShowWhen(weapons, refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox, w -> w instanceof BuMieZhiYiWeapon);
 
             options.addListener((ob, old, now) -> {
                 if (now == null) return;
@@ -176,6 +196,7 @@ public class CoolDownOptionsScene extends VScene {
                 applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                 autoFillPianGuangLingYuSubSkillCheckbox.setSelected(now.autoFillPianGuangLingYuSubSkill);
                 autoDischargeForYueXingChuanCheckbox.setSelected(now.autoDischargeForYueXingChuan);
+                refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox.setSelected(now.refreshBuffRegardlessOfCDForBuMieZhiYi);
             });
             scanDischargeCheckbox.setOnAction(e -> {
                 var selected = scanDischargeCheckbox.isSelected();
@@ -267,6 +288,11 @@ public class CoolDownOptionsScene extends VScene {
             autoDischargeForYueXingChuanCheckbox.setOnAction(e -> {
                 var opt = options.get();
                 opt.autoDischargeForYueXingChuan = autoDischargeForYueXingChuanCheckbox.isSelected();
+                saveConfig();
+            });
+            refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox.setOnAction(e -> {
+                var opt = options.get();
+                opt.refreshBuffRegardlessOfCDForBuMieZhiYi = refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox.isSelected();
                 saveConfig();
             });
         }
@@ -390,6 +416,31 @@ public class CoolDownOptionsScene extends VScene {
                     setSpacing(10);
                 }}
             );
+        }
+    }
+
+    private void onlyShowWhen(SimpleObjectProperty<WeaponRef>[] weapons, Node node, Predicate<Weapon> func) {
+        InvalidationListener l = ob -> {
+            var found = false;
+            for (var wp : weapons) {
+                var wr = wp.get();
+                if (wr == null) {
+                    continue;
+                }
+                if (wr.weaponSupplier == null) {
+                    continue; // loading in progress
+                }
+                var w = wr.make(new Matrix[0]);
+                found = func.test(w);
+                if (found) {
+                    break;
+                }
+            }
+            node.setManaged(found);
+            node.setVisible(found);
+        };
+        for (var wp : weapons) {
+            wp.addListener(l);
         }
     }
 
@@ -638,7 +689,7 @@ public class CoolDownOptionsScene extends VScene {
         return true;
     }
 
-    private class YueXingChuanSanLiuSkillSwitch extends ToggleSwitch {
+    private static class YueXingChuanSanLiuSkillSwitch extends ToggleSwitch {
         final AssistantCoolDownYueXingChuanSanLiuSkill skill;
         final ThemeLabel nameLabel;
         int index = 0;

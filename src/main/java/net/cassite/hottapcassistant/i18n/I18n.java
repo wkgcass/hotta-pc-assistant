@@ -335,6 +335,8 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String cooldownAutoDischargeForYueXingChuanCheckBox();
 
+    public abstract String cooldownRefreshBuffRegardlessOfCDForBuMieZhiYi();
+
     public abstract String scanDischargeConfigureTips();
 
     public abstract String positionOfDischargeTip();

@@ -106,7 +106,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
         enableAutoContentWidth();
 
         this.sceneGroup = sceneGroup;
-        this.optionsScene = new CoolDownOptionsScene(options, yueXingChuanSanLiuSkills, this);
+        this.optionsScene = new CoolDownOptionsScene(options, yueXingChuanSanLiuSkills, weapons, this);
         sceneGroup.addScene(optionsScene, VSceneHideMethod.TO_RIGHT);
         sceneGroup.addScene(coolDownTipsScene, VSceneHideMethod.TO_RIGHT);
 

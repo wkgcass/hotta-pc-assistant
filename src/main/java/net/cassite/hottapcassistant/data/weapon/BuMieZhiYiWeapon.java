@@ -4,6 +4,8 @@ import javafx.scene.image.Image;
 import net.cassite.hottapcassistant.component.cooldown.WeaponCoolDown;
 import net.cassite.hottapcassistant.data.*;
 import net.cassite.hottapcassistant.data.misc.TriggerBuMieZhiYiStar1;
+import net.cassite.hottapcassistant.entity.AssistantCoolDownOptions;
+import net.cassite.hottapcassistant.entity.WeaponArgs;
 import net.cassite.hottapcassistant.i18n.I18n;
 import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
@@ -11,6 +13,7 @@ import net.cassite.hottapcassistant.util.Utils;
 public class BuMieZhiYiWeapon extends AbstractWeapon implements Weapon {
     private final WeaponCoolDown zhiHanChangYu = new WeaponCoolDown(Utils.getBuffImageFromClasspath("zhi-han-chang-yu"), "zhiHanChangYu", I18n.get().buffName("zhiHanChangYu"));
     private long zhiHanChangYuTime = 0;
+    private boolean refreshBuffRegardlessOfCDForBuMieZhiYi;
 
     public BuMieZhiYiWeapon() {
         super(25, 300);
@@ -35,6 +38,22 @@ public class BuMieZhiYiWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected void threadTick(long ts, long delta) {
         zhiHanChangYuTime = Utils.subtractLongGE0(zhiHanChangYuTime, delta);
+    }
+
+    @Override
+    public void init(WeaponArgs args) {
+        if (!(args instanceof AssistantCoolDownOptions opts)) {
+            return;
+        }
+        refreshBuffRegardlessOfCDForBuMieZhiYi = opts.refreshBuffRegardlessOfCDForBuMieZhiYi;
+    }
+
+    @Override
+    public Skill useSkill(WeaponContext ctx) {
+        if (refreshBuffRegardlessOfCDForBuMieZhiYi) {
+            zhiHanChangYuTime = getTotalZhiHanChangYuTime();
+        }
+        return super.useSkill(ctx);
     }
 
     private long lastZhiHanChangYuTime = 0;
