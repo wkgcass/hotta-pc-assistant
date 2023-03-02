@@ -418,7 +418,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
                         FXUtils.runOnFX(this::configure);
                         return;
                     }
-                    if (!fishing.useCastKey) {
+                    if (!fishing.skipFishingPoint) {
                         stage.temporaryOnTop();
                         FXUtils.toFrontWindow(stage.getStage());
                     }

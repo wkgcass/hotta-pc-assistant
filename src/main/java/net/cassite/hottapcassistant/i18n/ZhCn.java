@@ -549,12 +549,12 @@ public class ZhCn extends I18n {
 
     @Override
     public String skipFishingPointCheckBox() {
-        return "跳过绿点检测，改为5秒延迟，首次钓鱼时需手动点击一次游戏界面";
+        return "跳过绿点检测，改为5秒延迟";
     }
 
     @Override
     public String useCastKeyCheckBox() {
-        return "使用键盘按键抛竿，不使用鼠标点击，并且使用ESC关闭结算界面";
+        return "使用键盘按键抛竿，不使用鼠标点击，并且使用ESC关闭结算界面（首次钓鱼时需手动点击一次游戏界面）";
     }
 
     @Override
