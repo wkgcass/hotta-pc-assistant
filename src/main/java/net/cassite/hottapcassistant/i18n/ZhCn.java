@@ -1705,4 +1705,14 @@ public class ZhCn extends I18n {
     public String confirmationNoButton() {
         return "否";
     }
+
+    @Override
+    public String sceneGroupPreCheckShowSceneFailed() {
+        return "前置检查未通过";
+    }
+
+    @Override
+    public String loadingCanceled() {
+        return "加载进程已取消";
+    }
 }
