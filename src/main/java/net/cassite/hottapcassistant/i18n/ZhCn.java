@@ -62,6 +62,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String toolNameReset() {
+        return "重置/修复";
+    }
+
+    @Override
     public String toolIsLocked(String name) {
         name = switch (name) {
             case "macro" -> toolNameMacro();
@@ -1639,6 +1644,21 @@ public class ZhCn extends I18n {
     @Override
     public String yueXingChuanSanLiuSkillBuffDesc(String name) {
         return name + "效果持续时间";
+    }
+
+    @Override
+    public String resetSceneDesc() {
+        return "重置功能可以快速清除运行中留下的文件，当助手运行异常时可以使用。";
+    }
+
+    @Override
+    public String resetSceneResetConfigButton() {
+        return "重置配置文件";
+    }
+
+    @Override
+    public String resetSceneResetConfigSucceeded() {
+        return "重置成功，即将退出助手，请手动重新打开";
     }
 
     @Override

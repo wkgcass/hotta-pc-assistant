@@ -169,7 +169,7 @@ public class Main extends Application {
         launch();
     }
 
-    private static void cleanupLastRun() {
+    public static void cleanupLastRun() {
         try {
             MultiHottaInstanceFlow.unsetHostsFile();
         } catch (Throwable t) {

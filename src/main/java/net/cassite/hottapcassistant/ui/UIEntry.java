@@ -52,7 +52,8 @@ public class UIEntry {
             new CoolDownScene(stage.getSceneGroup()),
             new ToolBoxScene(stage.getSceneGroup()),
             new AboutScene(),
-            new LogScene()
+            new LogScene(),
+            new ResetScene()
         );
 
         var sceneGroup = stage.getSceneGroup();

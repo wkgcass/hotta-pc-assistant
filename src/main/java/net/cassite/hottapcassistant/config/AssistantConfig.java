@@ -49,7 +49,18 @@ public class AssistantConfig {
         } else {
             return Assistant.empty();
         }
-        var str = Files.readString(assistantFilePath);
+        String str;
+        try {
+            str = Files.readString(assistantFilePath);
+        } catch (IOException e) {
+            if (askForDeletion) {
+                var ret = askForDeletion();
+                if (ret != null) {
+                    return ret;
+                }
+            }
+            throw e;
+        }
         if (str.isBlank()) {
             return Assistant.empty();
         }
@@ -59,33 +70,46 @@ public class AssistantConfig {
                 Assistant.rule, ParserOptions.allFeatures());
         } catch (RuntimeException e) {
             if (askForDeletion) {
-                var dialog = new VDialog<Integer>();
-                dialog.setText(I18n.get().invalidAssistantConfigFileAskForDeletion(assistantFilePath.toString()));
-                dialog.setButtons(Arrays.asList(
-                    new VDialogButton<>(I18n.get().modifyInvalidAssistantConfigBtn(), 1),
-                    new VDialogButton<>(I18n.get().deleteInvalidAssistantConfigBtn(), 2),
-                    new VDialogButton<>(I18n.get().cancelInvalidAssistantConfigBtn(), 3)
-                ));
-                var res = dialog.showAndWait();
-                if (res.isPresent()) {
-                    int t = res.get();
-                    if (t == 2) {
-                        try {
-                            Files.delete(assistantFilePath);
-                        } catch (IOException ee) {
-                            Logger.error(LogType.FILE_ERROR, "deleting invalid assistant config file failed", ee);
-                        }
-                        return Assistant.empty();
-                    } else if (t == 1) {
-                        try {
-                            Desktop.getDesktop().open(assistantFilePath.toFile());
-                        } catch (IOException ee) {
-                            Logger.error(LogType.SYS_ERROR, "failed opening invalid assistant config file", ee);
-                        }
-                    }
+                var ret = askForDeletion();
+                if (ret != null) {
+                    return ret;
                 }
             }
             throw new IOException("failed to deserialize config from " + assistantFilePath, e);
+        }
+    }
+
+    private static Assistant askForDeletion() {
+        var dialog = new VDialog<Integer>();
+        dialog.setText(I18n.get().invalidAssistantConfigFileAskForDeletion(assistantFilePath.toString()));
+        dialog.setButtons(Arrays.asList(
+            new VDialogButton<>(I18n.get().modifyInvalidAssistantConfigBtn(), 1),
+            new VDialogButton<>(I18n.get().deleteInvalidAssistantConfigBtn(), 2),
+            new VDialogButton<>(I18n.get().cancelInvalidAssistantConfigBtn(), 3)
+        ));
+        var res = dialog.showAndWait();
+        if (res.isPresent()) {
+            int t = res.get();
+            if (t == 2) {
+                deleteAssistant();
+                return Assistant.empty();
+            } else if (t == 1) {
+                try {
+                    Desktop.getDesktop().open(assistantFilePath.toFile());
+                } catch (IOException ee) {
+                    Logger.error(LogType.SYS_ERROR, "failed opening invalid assistant config file", ee);
+                }
+            }
+        }
+        return null;
+    }
+
+    public static void deleteAssistant() {
+        try {
+            Files.delete(assistantFilePath);
+            Logger.warn(LogType.ALERT, "assistant config file deleted: " + assistantFilePath);
+        } catch (IOException ee) {
+            Logger.error(LogType.FILE_ERROR, "deleting assistant config file failed: " + assistantFilePath, ee);
         }
     }
 

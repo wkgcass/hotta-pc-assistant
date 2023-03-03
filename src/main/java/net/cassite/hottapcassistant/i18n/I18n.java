@@ -43,6 +43,8 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String toolNameLog();
 
+    abstract public String toolNameReset();
+
     abstract public String toolIsLocked(String name);
 
     abstract public String selectGameLocation();
@@ -562,4 +564,10 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
     public abstract String yueXingChuanSanLiuSkillCoolDownDesc(String name);
 
     public abstract String yueXingChuanSanLiuSkillBuffDesc(String name);
+
+    public abstract String resetSceneDesc();
+
+    public abstract String resetSceneResetConfigButton();
+
+    public abstract String resetSceneResetConfigSucceeded();
 }
