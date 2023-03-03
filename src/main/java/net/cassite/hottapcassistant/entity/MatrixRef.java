@@ -1,7 +1,7 @@
 package net.cassite.hottapcassistant.entity;
 
 import javafx.scene.image.Image;
-import kotlin.Pair;
+import io.vproxy.base.util.coll.Tuple;
 import net.cassite.hottapcassistant.data.Matrix;
 import net.cassite.hottapcassistant.data.matrix.DummyMatrix;
 import net.cassite.hottapcassistant.data.matrix.KeLaoDiYaMatrix;
@@ -15,15 +15,15 @@ import java.util.function.Supplier;
 public class MatrixRef {
     public static List<MatrixRef> all() {
         //noinspection unchecked
-        Pair<Integer, Supplier<Matrix>>[] ls = new Pair[]{
-            new Pair<Integer, Supplier<Matrix>>(0, DummyMatrix::new),
-            new Pair<Integer, Supplier<Matrix>>(1, KeLaoDiYaMatrix::new),
-            new Pair<Integer, Supplier<Matrix>>(2, LinYeMatrix::new),
-            new Pair<Integer, Supplier<Matrix>>(3, LeiBeiMatrix::new),
+        Tuple<Integer, Supplier<Matrix>>[] ls = new Tuple[]{
+            new Tuple<Integer, Supplier<Matrix>>(0, DummyMatrix::new),
+            new Tuple<Integer, Supplier<Matrix>>(1, KeLaoDiYaMatrix::new),
+            new Tuple<Integer, Supplier<Matrix>>(2, LinYeMatrix::new),
+            new Tuple<Integer, Supplier<Matrix>>(3, LeiBeiMatrix::new),
         };
         var ret = new ArrayList<MatrixRef>();
         for (var pair : ls) {
-            ret.add(new MatrixRef(pair.component1(), pair.component2()));
+            ret.add(new MatrixRef(pair._1, pair._2));
         }
         return ret;
     }

@@ -1,7 +1,7 @@
 package net.cassite.hottapcassistant.entity;
 
+import io.vproxy.base.util.coll.Tuple;
 import javafx.scene.image.Image;
-import kotlin.Pair;
 import net.cassite.hottapcassistant.data.Relics;
 import net.cassite.hottapcassistant.data.relics.DiceRelics;
 import net.cassite.hottapcassistant.data.relics.DummyRelics;
@@ -15,15 +15,15 @@ import java.util.function.Supplier;
 public class RelicsRef {
     public static List<RelicsRef> all() {
         //noinspection unchecked
-        Pair<Integer, Supplier<Relics>>[] ls = new Pair[]{
-            new Pair<Integer, Supplier<Relics>>(0, DummyRelics::new),
-            new Pair<Integer, Supplier<Relics>>(1, DiceRelics::new),
-            new Pair<Integer, Supplier<Relics>>(2, KaoEnTeRelics::new),
-            new Pair<Integer, Supplier<Relics>>(3, KaoEnTe2Relics::new),
+        Tuple<Integer, Supplier<Relics>>[] ls = new Tuple[]{
+            new Tuple<Integer, Supplier<Relics>>(0, DummyRelics::new),
+            new Tuple<Integer, Supplier<Relics>>(1, DiceRelics::new),
+            new Tuple<Integer, Supplier<Relics>>(2, KaoEnTeRelics::new),
+            new Tuple<Integer, Supplier<Relics>>(3, KaoEnTe2Relics::new),
         };
         var ret = new ArrayList<RelicsRef>();
         for (var pair : ls) {
-            ret.add(new RelicsRef(pair.component1(), pair.component2()));
+            ret.add(new RelicsRef(pair._1, pair._2));
         }
         return ret;
     }

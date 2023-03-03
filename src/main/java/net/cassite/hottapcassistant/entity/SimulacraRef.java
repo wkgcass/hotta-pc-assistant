@@ -1,7 +1,7 @@
 package net.cassite.hottapcassistant.entity;
 
+import io.vproxy.base.util.coll.Tuple;
 import javafx.scene.image.Image;
-import kotlin.Pair;
 import net.cassite.hottapcassistant.data.Simulacra;
 import net.cassite.hottapcassistant.data.simulacra.AiLiSiSimulacra;
 import net.cassite.hottapcassistant.data.simulacra.DummySimulacra;
@@ -14,14 +14,14 @@ import java.util.function.Supplier;
 public class SimulacraRef {
     public static List<SimulacraRef> all() {
         //noinspection unchecked
-        Pair<Integer, Supplier<Simulacra>>[] ls = new Pair[]{
-            new Pair<Integer, Supplier<Simulacra>>(0, DummySimulacra::new),
-            new Pair<Integer, Supplier<Simulacra>>(1, XingHuanSimulacra::new),
-            new Pair<Integer, Supplier<Simulacra>>(2, AiLiSiSimulacra::new),
+        Tuple<Integer, Supplier<Simulacra>>[] ls = new Tuple[]{
+            new Tuple<Integer, Supplier<Simulacra>>(0, DummySimulacra::new),
+            new Tuple<Integer, Supplier<Simulacra>>(1, XingHuanSimulacra::new),
+            new Tuple<Integer, Supplier<Simulacra>>(2, AiLiSiSimulacra::new),
         };
         var ret = new ArrayList<SimulacraRef>();
         for (var pair : ls) {
-            ret.add(new SimulacraRef(pair.component1(), pair.component2()));
+            ret.add(new SimulacraRef(pair._1, pair._2));
         }
         return ret;
     }
