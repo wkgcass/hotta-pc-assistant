@@ -868,6 +868,7 @@ public class ZhCn extends I18n {
             case "zhōng jié zhě" -> "终结者";
             case "piàn guāng líng yǚ" -> "片光零羽";
             case "yuè xīng chuàn" -> "月星钏";
+            case "xiǎo xiǎo jǜ fēng" -> "小小飓风";
             default -> name;
         };
     }

@@ -31,6 +31,8 @@ public interface Weapon extends WithThreadStartStop, WithExtraData {
 
     double[] getAllCoolDown();
 
+    Skill pressSkill(WeaponContext ctx);
+
     Skill useSkill(WeaponContext ctx);
 
     void attack(WeaponContext ctx, AttackType type);

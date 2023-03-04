@@ -134,6 +134,33 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     }
 
     @Override
+    public Skill pressSkill(WeaponContext ctx) {
+        if (this.cd != 0) {
+            long cd = this.cd;
+            if (cooldown * considerCDIsClearedRatio < cd) {
+                return null;
+            }
+        }
+        return pressSkillIgnoreCD(ctx);
+    }
+
+    protected Skill pressSkillIgnoreCD(WeaponContext ctx) {
+        var skill = pressSkill0(ctx);
+        if (skill == null) {
+            return null;
+        }
+        postPressSkill(ctx, skill);
+        return skill;
+    }
+
+    protected Skill pressSkill0(WeaponContext ctx) {
+        return null;
+    }
+
+    protected void postPressSkill(WeaponContext ctx, Skill skill) {
+    }
+
+    @Override
     public Skill useSkill(WeaponContext ctx) {
         if (this.cd != 0) {
             long cd = this.cd;

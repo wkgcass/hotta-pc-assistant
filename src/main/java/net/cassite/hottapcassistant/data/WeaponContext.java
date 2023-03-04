@@ -141,6 +141,17 @@ public class WeaponContext implements WithExtraData {
         }
     }
 
+    public void pressSkill() {
+        Skill skill = current.pressSkill(this);
+        if (skill != null) {
+            postPressSkill(current, skill);
+        }
+    }
+
+    public void postPressSkill(Weapon cw, Skill skill) {
+        postUseSkill(cw, skill);
+    }
+
     public void useSkill() {
         Skill skill = current.useSkill(this);
         if (skill != null) {

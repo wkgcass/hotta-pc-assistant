@@ -552,6 +552,9 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
         if (!handle) {
             return;
         }
+        if (weaponSkill.matches(keys, btns, key, btn)) {
+            ctx.pressSkill();
+        }
         for (var input : melee) {
             if (input.matches(keys, btns, key, btn)) {
                 lastAttackButtonDownTs = System.currentTimeMillis();
