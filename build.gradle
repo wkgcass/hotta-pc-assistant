@@ -66,6 +66,8 @@ jlink {
         uses 'io.vertx.core.spi.VerticleFactory'
         uses 'io.vertx.core.spi.JsonFactory'
         uses 'io.vertx.core.spi.launcher.CommandFactory'
+        excludeRequires 'kotlin-stdlib-lite'
+        forceMerge 'kotlin'
     }
 }
 

@@ -15,4 +15,7 @@ open module net.cassite.hottapcassistant {
     requires org.slf4j;
     exports net.cassite.hottapcassistant;
     exports net.cassite.hottapcassistant.test;
+
+    // FIXME: IDEA BUG, it will report error if without this line
+    requires kotlin.stdlib.lite;
 }
