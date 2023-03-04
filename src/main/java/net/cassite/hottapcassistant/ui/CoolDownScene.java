@@ -98,7 +98,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
     private final Set<String> row2Ids = new HashSet<>();
     private final ObservableList<String> configurationNames = FXCollections.observableList(new ArrayList<>());
     private final ObservableList<AssistantCoolDownConfiguration> configurations = FXCollections.observableList(new ArrayList<>());
-    private final SimpleObjectProperty<AssistantCoolDownOptions> options = new SimpleObjectProperty<>(AssistantCoolDownOptions.empty());
+    private final SimpleObjectProperty<AssistantCoolDownOptions> options = new SimpleObjectProperty<>();
     private final CoolDownOptionsScene optionsScene;
     private final CoolDownTips coolDownTipsScene = new CoolDownTips();
 
@@ -107,6 +107,7 @@ public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
 
         this.sceneGroup = sceneGroup;
         this.optionsScene = new CoolDownOptionsScene(options, yueXingChuanSanLiuSkills, weapons, this);
+        options.set(AssistantCoolDownOptions.empty());
         sceneGroup.addScene(optionsScene, VSceneHideMethod.TO_RIGHT);
         sceneGroup.addScene(coolDownTipsScene, VSceneHideMethod.TO_RIGHT);
 
