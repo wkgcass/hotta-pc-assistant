@@ -60,9 +60,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
 
     abstract protected Image buildImage();
 
-    protected AudioGroup buildSkillAudio() {
-        return null;
-    }
+    abstract protected AudioGroup buildSkillAudio();
 
     @Override
     public int getStars() {
