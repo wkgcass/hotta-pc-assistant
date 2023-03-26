@@ -869,6 +869,7 @@ public class ZhCn extends I18n {
             case "piàn guāng líng yǚ" -> "片光零羽";
             case "yuè xīng chuàn" -> "月星钏";
             case "xiǎo xiǎo jǜ fēng" -> "小小飓风";
+            case "jué xiǎng" -> "绝响";
             default -> name;
         };
     }
@@ -934,6 +935,8 @@ public class ZhCn extends I18n {
             case "leiDianGanYing" -> "雷电感应";
             case "guiJiCounter" -> "归寂可用次数";
             case "shuiYiShuoHuaBuff" -> "水意烁华效果持续时间";
+            case "huiXiangCount" -> "回响计数";
+            case "haiLaZhiYongTime" -> "海拉之拥增伤持续时间";
             default -> name;
         };
     }
@@ -1022,6 +1025,11 @@ public class ZhCn extends I18n {
     @Override
     public String cooldownAutoDischargeForYueXingChuanCheckBox() {
         return "切换到月星钏时总是视为释放连携";
+    }
+
+    @Override
+    public String cooldownAutoDischargeForJueXiangCheckBox() {
+        return "切换到绝响时总是视为释放连携";
     }
 
     @Override

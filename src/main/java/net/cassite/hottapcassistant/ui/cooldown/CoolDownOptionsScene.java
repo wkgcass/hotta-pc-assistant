@@ -37,10 +37,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.data.Matrix;
 import net.cassite.hottapcassistant.data.Weapon;
-import net.cassite.hottapcassistant.data.weapon.BuMieZhiYiWeapon;
-import net.cassite.hottapcassistant.data.weapon.PianGuangLingYuWeapon;
-import net.cassite.hottapcassistant.data.weapon.YingZhiWeapon;
-import net.cassite.hottapcassistant.data.weapon.YueXingChuanWeapon;
+import net.cassite.hottapcassistant.data.weapon.*;
 import net.cassite.hottapcassistant.discharge.DischargeCheckAlgorithm;
 import net.cassite.hottapcassistant.discharge.DischargeCheckContext;
 import net.cassite.hottapcassistant.discharge.SimpleDischargeCheckAlgorithm;
@@ -172,6 +169,13 @@ public class CoolDownOptionsScene extends VScene {
             }};
             vbox.getChildren().add(autoDischargeForYueXingChuanCheckbox);
             onlyShowWhen(weapons, autoDischargeForYueXingChuanCheckbox, w -> w instanceof YueXingChuanWeapon);
+            var autoDischargeForJueXiangCheckbox = new CheckBox(I18n.get().cooldownAutoDischargeForJueXiangCheckBox()) {{
+                FontManager.get().setFont(this);
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
+            }};
+            vbox.getChildren().add(autoDischargeForJueXiangCheckbox);
+            onlyShowWhen(weapons, autoDischargeForJueXiangCheckbox, w -> w instanceof JueXiangWeapon);
             var refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox = new CheckBox(I18n.get().cooldownRefreshBuffRegardlessOfCDForBuMieZhiYi()) {{
                 FontManager.get().setFont(this);
                 setTextFill(Theme.current().normalTextColor());
@@ -196,6 +200,7 @@ public class CoolDownOptionsScene extends VScene {
                 applyDischargeForYingZhiCheckBox.setSelected(now.applyDischargeForYingZhi);
                 autoFillPianGuangLingYuSubSkillCheckbox.setSelected(now.autoFillPianGuangLingYuSubSkill);
                 autoDischargeForYueXingChuanCheckbox.setSelected(now.autoDischargeForYueXingChuan);
+                autoDischargeForJueXiangCheckbox.setSelected(now.autoDischargeForJueXiang);
                 refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox.setSelected(now.refreshBuffRegardlessOfCDForBuMieZhiYi);
             });
             scanDischargeCheckbox.setOnAction(e -> {
@@ -288,6 +293,11 @@ public class CoolDownOptionsScene extends VScene {
             autoDischargeForYueXingChuanCheckbox.setOnAction(e -> {
                 var opt = options.get();
                 opt.autoDischargeForYueXingChuan = autoDischargeForYueXingChuanCheckbox.isSelected();
+                saveConfig();
+            });
+            autoDischargeForJueXiangCheckbox.setOnAction(e -> {
+                var opt = options.get();
+                opt.autoDischargeForJueXiang = autoDischargeForJueXiangCheckbox.isSelected();
                 saveConfig();
             });
             refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox.setOnAction(e -> {

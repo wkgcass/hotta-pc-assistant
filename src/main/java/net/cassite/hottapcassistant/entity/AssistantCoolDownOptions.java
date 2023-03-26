@@ -21,10 +21,11 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public boolean lockCDWindowPosition;
     public boolean onlyShowFirstLineBuff;
     public boolean playAudio;
-    public boolean skipAudioCollection001;
+    public boolean skipAudioCollection001 = true;
     public boolean applyDischargeForYingZhi;
-    public boolean autoFillPianGuangLingYuSubSkill;
-    public boolean autoDischargeForYueXingChuan;
+    public boolean autoFillPianGuangLingYuSubSkill = true;
+    public boolean autoDischargeForYueXingChuan = true;
+    public boolean autoDischargeForJueXiang = true;
     public boolean refreshBuffRegardlessOfCDForBuMieZhiYi;
     public double lastWindowScale;
 
@@ -45,6 +46,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("applyDischargeForYingZhi", (o, it) -> o.applyDischargeForYingZhi = it, BoolRule.get())
         .put("autoFillPianGuangLingYuSubSkill", (o, it) -> o.autoFillPianGuangLingYuSubSkill = it, BoolRule.get())
         .put("autoDischargeForYueXingChuan", (o, it) -> o.autoDischargeForYueXingChuan = it, BoolRule.get())
+        .put("autoDischargeForJueXiang", (o, it) -> o.autoDischargeForJueXiang = it, BoolRule.get())
         .put("refreshBuffRegardlessOfCDForBuMieZhiYi", (o, it) -> o.refreshBuffRegardlessOfCDForBuMieZhiYi = it, BoolRule.get())
         .put("lastWindowScale", (o, it) -> o.lastWindowScale = it, DoubleRule.get());
 
@@ -67,16 +69,13 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         applyDischargeForYingZhi = that.applyDischargeForYingZhi;
         autoFillPianGuangLingYuSubSkill = that.autoFillPianGuangLingYuSubSkill;
         autoDischargeForYueXingChuan = that.autoDischargeForYueXingChuan;
+        autoDischargeForJueXiang = that.autoDischargeForJueXiang;
         refreshBuffRegardlessOfCDForBuMieZhiYi = that.refreshBuffRegardlessOfCDForBuMieZhiYi;
         lastWindowScale = that.lastWindowScale;
     }
 
     public static AssistantCoolDownOptions empty() {
-        var ret = new AssistantCoolDownOptions();
-        ret.skipAudioCollection001 = true;
-        ret.autoFillPianGuangLingYuSubSkill = true;
-        ret.autoDischargeForYueXingChuan = true;
-        return ret;
+        return new AssistantCoolDownOptions();
     }
 
     public boolean scanDischargeEnabled() {
@@ -108,6 +107,7 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         ob.put("applyDischargeForYingZhi", applyDischargeForYingZhi);
         ob.put("autoFillPianGuangLingYuSubSkill", autoFillPianGuangLingYuSubSkill);
         ob.put("autoDischargeForYueXingChuan", autoDischargeForYueXingChuan);
+        ob.put("autoDischargeForJueXiang", autoDischargeForJueXiang);
         ob.put("refreshBuffRegardlessOfCDForBuMieZhiYi", refreshBuffRegardlessOfCDForBuMieZhiYi);
         ob.put("lastWindowScale", lastWindowScale);
         return ob.build();
