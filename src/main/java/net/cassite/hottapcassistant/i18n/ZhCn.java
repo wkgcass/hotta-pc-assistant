@@ -1490,7 +1490,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String multiInstanceCannotMakeLink() {
-        return "创建链接文件失败";
+        return "创建链接文件失败。如果游戏客户端目录曾移动过，你需要手动删除多开启动器目录下的Client目录链接";
     }
 
     @Override

@@ -39,6 +39,7 @@ public class HottaLauncherProxyServer {
                 .setCertValue(Buffer.buffer(Certs.HOTTA_CERT))
                 .setKeyValue(Buffer.buffer(Certs.HOTTA_KEY))
             )
+            .setReuseAddress(true)
         );
         server.requestHandler(this::handleRequest);
         client = GlobalValues.vertx.createHttpClient(new HttpClientOptions()

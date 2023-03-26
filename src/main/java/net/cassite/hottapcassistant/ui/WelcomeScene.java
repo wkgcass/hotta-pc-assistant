@@ -597,13 +597,13 @@ public class WelcomeScene extends MainScene {
         }
         if (a.lastValues != null) {
             var lastValues = a.lastValues;
-            if (lastValues.savedPath != null && !lastValues.savedPath.isBlank()) {
+            if (lastValues.savedPath != null && !lastValues.savedPath.isBlank() && new File(lastValues.savedPath).isDirectory()) {
                 selectSavedLocationInput.setText(lastValues.savedPath);
             }
-            if (lastValues.gamePath != null && !lastValues.gamePath.isBlank()) {
+            if (lastValues.gamePath != null && !lastValues.gamePath.isBlank() && new File(lastValues.gamePath).isDirectory()) {
                 selectGameLocationInput.setText(lastValues.gamePath);
             }
-            if (lastValues.globalServerGamePath != null && !lastValues.globalServerGamePath.isBlank()) {
+            if (lastValues.globalServerGamePath != null && !lastValues.globalServerGamePath.isBlank() && new File(lastValues.globalServerGamePath).isDirectory()) {
                 selectGlobalServerGameLocationInput.setText(lastValues.globalServerGamePath);
             }
         }
