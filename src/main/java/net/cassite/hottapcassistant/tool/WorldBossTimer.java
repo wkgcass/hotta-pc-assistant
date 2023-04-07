@@ -28,6 +28,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import net.cassite.hottapcassistant.config.AssistantConfig;
@@ -157,6 +158,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                 FontManager.get().setFont(Consts.NotoFont, this);
                 setPrefWidth(120);
                 setPrefHeight(100);
+                setMaxWidth(120);
                 setWrapText(false);
             }};
             var exportBtn = new FusionButton(I18n.get().worldBossTimerExportBtn()) {{
@@ -305,6 +307,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             });
 
             var pane = getContentPane();
+            Region tableRightNode;
 
             pane.getChildren().addAll(
                 new VBox(
@@ -323,7 +326,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                         new HPadding(10),
                         table.getNode(),
                         new HPadding(10),
-                        new FusionPane(false, new VBox(
+                        new FusionPane(false, (tableRightNode = new VBox(
                             addBtn,
                             new VPadding(5),
                             editBtn,
@@ -337,7 +340,7 @@ public class WorldBossTimer extends AbstractTool implements Tool {
                             copyNextBossInfoBtn,
                             new VPadding(5),
                             new FusionW(nextBossInfoTemplate)
-                        )).getNode()
+                        ))).getNode()
                     ),
                     new VPadding(20),
                     new HBox(
@@ -366,7 +369,12 @@ public class WorldBossTimer extends AbstractTool implements Tool {
             });
             pane.heightProperty().addListener((ob, old, now) -> {
                 if (now == null) return;
-                table.getNode().setPrefHeight(now.doubleValue() - 10 - 10 - 280);
+                var tableMinHeight = tableRightNode.getHeight() + FusionPane.PADDING_V * 2;
+                var pref = now.doubleValue() - 10 - 10 - 280;
+                if (pref < tableMinHeight) {
+                    pref = tableMinHeight;
+                }
+                table.getNode().setPrefHeight(pref);
                 accounts.getNode().setPrefHeight(200);
             });
 
