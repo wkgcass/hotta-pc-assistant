@@ -1,14 +1,23 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.scene.VScene;
 import io.vproxy.vfx.ui.scene.VSceneRole;
+import javafx.geometry.Insets;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 
 public abstract class MainScene extends VScene {
     public final FusionButton menuButton = new FusionButton();
 
     public MainScene() {
         super(VSceneRole.MAIN);
+        getNode().setBackground(new Background(new BackgroundFill(
+            Theme.current().sceneBackgroundColor(),
+            CornerRadii.EMPTY, Insets.EMPTY
+        )));
     }
 
     public abstract String title();

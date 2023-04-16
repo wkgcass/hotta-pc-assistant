@@ -344,7 +344,7 @@ public class FishingScene extends MainScene implements NativeKeyListener, EnterC
         label.setAlignment(Pos.CENTER);
         label.setCursor(Cursor.HAND);
         label.setOnMouseClicked(e -> {
-            var keyOpt = new KeyChooser(false).choose();
+            var keyOpt = new KeyChooser(0).choose();
             if (keyOpt.isEmpty()) return;
             var key = keyOpt.get();
             if (key.button != null) {

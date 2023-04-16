@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.ui;
 
 import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.control.dialog.VDialog;
 import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.image.ImageManager;
@@ -14,9 +15,7 @@ import io.vproxy.vfx.ui.scene.VSceneRole;
 import io.vproxy.vfx.ui.scene.VSceneShowMethod;
 import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.base.util.Logger;
 import javafx.geometry.Insets;
-import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -164,10 +163,10 @@ public class UIEntry {
                 setSceneSelected(s);
                 s.getNode().requestFocus();
 
-                if (switchToIndex == 0) {
-                    FXUtils.runDelay(VScene.ANIMATION_DURATION_MILLIS, this::configureRootCorrespondToWelcomeScene);
+                if (s instanceof WelcomeScene) {
+                    configureRootCorrespondToWelcomeScene();
                 } else {
-                    configureRootCorrespondToNormalScene();
+                    FXUtils.runDelay(VScene.ANIMATION_DURATION_MILLIS, this::configureRootCorrespondToNormalScene);
                 }
             }
             hideInactive();
@@ -239,7 +238,6 @@ public class UIEntry {
         hideInactive();
         configureRootCorrespondToWelcomeScene();
         Feed.updated.addListener((ob, old, now) -> checkFeedAndSetRootImage());
-        stage.getStage().heightProperty().addListener((ob, old, now) -> updateRootImage());
 
         FXUtils.runDelay(VScene.ANIMATION_DURATION_MILLIS, this::showGPLAlert);
     }
@@ -279,6 +277,7 @@ public class UIEntry {
 
     private void configureRootCorrespondToNormalScene() {
         stage.useLightBorder();
+        updateRootImage();
         stage.getRoot().getNode().setBackground(new Background(new BackgroundFill(
             Theme.current().sceneBackgroundColor(),
             CornerRadii.EMPTY,
@@ -295,7 +294,7 @@ public class UIEntry {
         if (bg == null) {
             return;
         }
-        setRootImageBg(bg);
+        FXUtils.runOnFX(() -> setRootImageBg(bg));
     }
 
     private void updateRootImage() {
@@ -308,16 +307,9 @@ public class UIEntry {
 
     private void setRootImageBg(Image image) {
         if (stage.getSceneGroup().getNextOrCurrentMainScene() != mainScenes.get(0)) {
-            return;
+            stage.getRoot().setBackgroundImage(null);
+        } else {
+            stage.getRoot().setBackgroundImage(image);
         }
-        stage.getRoot().getNode().setBackground(new Background(new BackgroundImage(
-            image,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            new BackgroundPosition(
-                Side.LEFT, 0.5, true,
-                Side.TOP, (stage.getStage().getHeight() - image.getHeight()) / 2 + VStage.TITLE_BAR_HEIGHT / 2d, false),
-            BackgroundSize.DEFAULT
-        )));
     }
 }

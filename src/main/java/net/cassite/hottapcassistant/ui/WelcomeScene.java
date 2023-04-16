@@ -1,17 +1,16 @@
 package net.cassite.hottapcassistant.ui;
 
 import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.control.dialog.VDialog;
 import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.font.FontManager;
-import io.vproxy.vfx.manager.image.ImageManager;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.button.ImageButton;
 import io.vproxy.vfx.ui.button.TransparentFusionButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.util.FXUtils;
-import io.vproxy.base.util.Logger;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,7 +21,10 @@ import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -62,15 +64,7 @@ public class WelcomeScene extends MainScene {
     public WelcomeScene() {
         enableAutoContentWidth();
 
-        getNode().setBackground(new Background(new BackgroundImage(
-            ImageManager.get().load("images/bg/bg1.png"),
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            BackgroundSize.DEFAULT
-        )));
-        Feed.updated.addListener((ob, old, now) -> updateBg());
-        updateBg();
+        getNode().setBackground(Background.EMPTY);
 
         var stackPane = new StackPane();
         FXUtils.observeWidth(getContentPane(), stackPane);
@@ -571,20 +565,6 @@ public class WelcomeScene extends MainScene {
             Logger.error(LogType.SYS_ERROR, "failed launching global server game", t);
             SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
         }
-    }
-
-    private void updateBg() {
-        var bg = Feed.get().introBg;
-        if (bg == null) {
-            return;
-        }
-        getNode().setBackground(new Background(new BackgroundImage(
-            bg,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            BackgroundSize.DEFAULT
-        )));
     }
 
     private void initLocations() {

@@ -160,7 +160,7 @@ public class Main extends Application {
         if (dllStream == null) {
             Logger.error(LogType.SYS_ERROR, dllPath + " not found, program might not work");
         } else {
-            GlobalScreenUtils.releaseJNativeHookNativeToTmpDir("dll", dllStream);
+            GlobalScreenUtils.releaseJNativeHookNativeToLibraryPath(dllStream);
         }
 
         cleanupLastRun();
