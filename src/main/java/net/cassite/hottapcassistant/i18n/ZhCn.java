@@ -1716,6 +1716,21 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String keyChooserMiddleMouseButton() {
+        return "鼠标中键";
+    }
+
+    @Override
+    public String keyChooserWheelScrollUpButton() {
+        return "滚轮向上";
+    }
+
+    @Override
+    public String keyChooserWheelScrollDownButton() {
+        return "滚轮向下";
+    }
+
+    @Override
     public String emptyTableLabel() {
         return "没有数据";
     }
@@ -1748,5 +1763,10 @@ public class ZhCn extends I18n {
     @Override
     public String loadingCanceled() {
         return "加载进程已取消";
+    }
+
+    @Override
+    public String globalScreenRegisterFailed() {
+        return "启用GlobalScreen失败";
     }
 }
