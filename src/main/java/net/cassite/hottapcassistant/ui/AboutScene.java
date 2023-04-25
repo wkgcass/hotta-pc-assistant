@@ -57,8 +57,15 @@ public class AboutScene extends AbstractMainScene {
         vbox.setPadding(new Insets(50, 0, 50, 0));
         vbox.getChildren().addAll(
             new VBox() {{
+                String versionStr = Version.version;
+                //noinspection ConstantConditions
+                if (versionStr.endsWith("-dev")) {
+                    versionStr += "    ";
+                    versionStr += Version.devVersion;
+                }
+
                 getChildren().addAll(
-                    new ThemeLabel(I18n.get().version() + ": " + Version.version) {{
+                    new ThemeLabel(I18n.get().version() + ": " + versionStr) {{
                         FontManager.get().setFont(Consts.NotoFont, this);
                     }},
                     new VPadding(2),
