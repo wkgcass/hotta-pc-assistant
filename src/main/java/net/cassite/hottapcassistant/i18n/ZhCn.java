@@ -52,6 +52,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String toolNameXBox() {
+        return "自定义XBox键位";
+    }
+
+    @Override
     public String toolNameAbout() {
         return "关于";
     }
@@ -1768,5 +1773,130 @@ public class ZhCn extends I18n {
     @Override
     public String globalScreenRegisterFailed() {
         return "启用GlobalScreen失败";
+    }
+
+    @Override
+    public String title() {
+        return toolNameXBox();
+    }
+
+    @Override
+    public String agentAddressLabel() {
+        return "Agent地址";
+    }
+
+    @Override
+    public String disconnectButton() {
+        return "断开";
+    }
+
+    @Override
+    public String connectButton() {
+        return "连接";
+    }
+
+    @Override
+    public String disconnectedAlert() {
+        return "与Agent断开连接";
+    }
+
+    @Override
+    public String planLabel() {
+        return "配置";
+    }
+
+    @Override
+    public String savePlanButton() {
+        return "保存";
+    }
+
+    @Override
+    public String deletePlanButton() {
+        return "删除";
+    }
+
+    @Override
+    public String showTableButton() {
+        return "显示当前设定";
+    }
+
+    @Override
+    public String savingConfigurationFailed() {
+        return "保存配置失败";
+    }
+
+    @Override
+    public String applyConfButton() {
+        return "确定";
+    }
+
+    @Override
+    public String enableKeyPress() {
+        return "按键";
+    }
+
+    @Override
+    public String enableMouseMove() {
+        return "鼠标移动";
+    }
+
+    @Override
+    public String enableMouseWheel() {
+        return "鼠标滚轮";
+    }
+
+    @Override
+    public String enableFN() {
+        return "功能键";
+    }
+
+    @Override
+    public String enableFnInput() {
+        return "功能键输入";
+    }
+
+    @Override
+    public String invalidKey() {
+        return "不支持该键位";
+    }
+
+    @Override
+    public String invalidMoveX() {
+        return "鼠标移动横坐标配置错误";
+    }
+
+    @Override
+    public String invalidMoveY() {
+        return "鼠标移动纵坐标配置错误";
+    }
+
+    @Override
+    public String invalidMouseWheel() {
+        return "鼠标滚轮配置错误";
+    }
+
+    @Override
+    public String cannotOverwritePrebuiltPlan() {
+        return "不可以覆盖预设配置";
+    }
+
+    @Override
+    public String cannotDeletePlan() {
+        return "无法删除该配置";
+    }
+
+    @Override
+    public String failedToStart() {
+        return "启动失败";
+    }
+
+    @Override
+    public String tableColName() {
+        return "名称";
+    }
+
+    @Override
+    public String back() {
+        return "返回";
     }
 }

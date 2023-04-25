@@ -1,4 +1,5 @@
 open module net.cassite.hottapcassistant {
+    requires kotlin.stdlib;
     requires io.vproxy.base;
     requires io.vproxy.vfx;
     requires javafx.controls;
@@ -13,9 +14,7 @@ open module net.cassite.hottapcassistant {
     requires com.sun.jna.platform;
     requires io.vertx.core;
     requires org.slf4j;
+    requires net.cassite.xboxrelay.ui;
     exports net.cassite.hottapcassistant;
     exports net.cassite.hottapcassistant.test;
-
-    // FIXME: IDEA BUG, it will report error if without this line
-    requires kotlin.stdlib.lite;
 }

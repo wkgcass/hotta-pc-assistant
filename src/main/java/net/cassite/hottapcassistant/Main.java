@@ -92,7 +92,7 @@ public class Main extends Application {
             protected void onSucceeded(Void unused) {
                 var uiEntry = new UIEntry(stage);
                 var firstScene = uiEntry.mainScenes.get(0);
-                stage.getSceneGroup().show(firstScene, VSceneShowMethod.FADE_IN);
+                stage.getSceneGroup().show(firstScene.getScene(), VSceneShowMethod.FADE_IN);
                 uiEntry.init();
             }
 
@@ -154,6 +154,7 @@ public class Main extends Application {
             }
         });
         Singleton.register(InternalI18n.class, I18n.get());
+        Singleton.register(net.cassite.xboxrelay.ui.I18n.class, I18n.get());
 
         var dllPath = "/dll/JNativeHook_x64.dll";
         var dllStream = Main.class.getResourceAsStream(dllPath);

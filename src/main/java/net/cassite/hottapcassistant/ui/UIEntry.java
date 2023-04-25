@@ -26,12 +26,11 @@ import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class UIEntry {
-    public final List<MainScene> mainScenes;
+    public final List<IMainScene> mainScenes;
+    private final Map<VScene, IMainScene> sceneMap = new HashMap<>();
     private final VStage stage;
     private final VScene menuScene;
     private final Group normalButtonGroup = new Group() {{
@@ -50,14 +49,18 @@ public class UIEntry {
             new FishingScene(stage),
             new CoolDownScene(stage.getSceneGroup()),
             new ToolBoxScene(stage.getSceneGroup()),
+            new XBoxScene(stage.getSceneGroup()),
             new AboutScene(),
             new LogScene(),
             new ResetScene()
         );
+        for (var s : mainScenes) {
+            sceneMap.put(s.getScene(), s);
+        }
 
         var sceneGroup = stage.getSceneGroup();
         for (var scene : mainScenes) {
-            sceneGroup.addScene(scene);
+            sceneGroup.addScene(scene.getScene());
         }
 
         menuScene = new VScene(VSceneRole.DRAWER_VERTICAL);
@@ -79,7 +82,7 @@ public class UIEntry {
             final var fi = i;
             var s = mainScenes.get(i);
             var title = s.title();
-            var button = s.menuButton;
+            var button = s.getMenuButton();
             if (i == 0) {
                 button.setDisable(true);
             }
@@ -156,12 +159,13 @@ public class UIEntry {
 
     private void switchScene(int switchToIndex) {
         var s = mainScenes.get(switchToIndex);
-        var sceneGroup = stage.getSceneGroup();
-        if (sceneGroup.getCurrentMainScene() != s) {
+        var currentIMain = sceneMap.get(stage.getSceneGroup().getCurrentMainScene());
+        assert currentIMain != null;
+        if (currentIMain != s) {
             if (canEnterTool(s) && exitTool()) {
                 showScene(switchToIndex);
                 setSceneSelected(s);
-                s.getNode().requestFocus();
+                s.getScene().getNode().requestFocus();
 
                 if (s instanceof WelcomeScene) {
                     configureRootCorrespondToWelcomeScene();
@@ -177,17 +181,18 @@ public class UIEntry {
         var sceneGroup = stage.getSceneGroup();
         var s = mainScenes.get(switchToIndex);
 
-        //noinspection SuspiciousMethodCalls
-        var currentIndex = mainScenes.indexOf(sceneGroup.getCurrentMainScene());
+        var currentIMain = sceneMap.get(sceneGroup.getCurrentMainScene());
+        assert currentIMain != null;
+        var currentIndex = mainScenes.indexOf(currentIMain);
         if (currentIndex != switchToIndex) {
-            sceneGroup.show(s, currentIndex < switchToIndex ? VSceneShowMethod.FROM_BOTTOM : VSceneShowMethod.FROM_TOP);
+            sceneGroup.show(s.getScene(), currentIndex < switchToIndex ? VSceneShowMethod.FROM_BOTTOM : VSceneShowMethod.FROM_TOP);
         }
         stage.getRootSceneGroup().hide(menuScene, VSceneHideMethod.TO_LEFT);
     }
 
     private boolean altIsPressed = false;
 
-    private boolean canEnterTool(VScene scene) {
+    private boolean canEnterTool(IMainScene scene) {
         if (scene instanceof EnterCheck) {
             return ((EnterCheck) scene).enterCheck(altIsPressed);
         } else {
@@ -197,16 +202,17 @@ public class UIEntry {
 
     private boolean exitTool() {
         var sceneGroup = stage.getSceneGroup();
-        var currentScene = sceneGroup.getCurrentMainScene();
-        if (exitTool(currentScene)) {
-            setSceneUnselected((MainScene) currentScene);
+        var mainScene = sceneMap.get(sceneGroup.getCurrentMainScene());
+        assert mainScene != null;
+        if (exitTool(mainScene)) {
+            setSceneUnselected(mainScene);
             return true;
         } else {
             return false;
         }
     }
 
-    private boolean exitTool(VScene scene) {
+    private boolean exitTool(IMainScene scene) {
         if (scene instanceof ExitCheck) {
             return ((ExitCheck) scene).exitCheck();
         } else {
@@ -215,22 +221,23 @@ public class UIEntry {
     }
 
     public void hideInactive() {
-        var currentScene = stage.getSceneGroup().getNextOrCurrentMainScene();
+        var currentScene = sceneMap.get(stage.getSceneGroup().getNextOrCurrentMainScene());
+        assert currentScene != null;
         for (var s : mainScenes) {
             if (s == currentScene) {
                 continue;
             }
-            s.setVisible(false, currentScene);
+            s.setVisible(false, currentScene.getScene());
         }
     }
 
-    private void setSceneSelected(MainScene inst) {
-        inst.menuButton.setDisable(true);
+    private void setSceneSelected(IMainScene inst) {
+        inst.getMenuButton().setDisable(true);
         inst.setVisible(true, null);
     }
 
-    private void setSceneUnselected(MainScene inst) {
-        inst.menuButton.setDisable(false);
+    private void setSceneUnselected(IMainScene inst) {
+        inst.getMenuButton().setDisable(false);
         inst.setVisible(false, null);
     }
 
@@ -306,7 +313,7 @@ public class UIEntry {
     }
 
     private void setRootImageBg(Image image) {
-        if (stage.getSceneGroup().getNextOrCurrentMainScene() != mainScenes.get(0)) {
+        if (sceneMap.get(stage.getSceneGroup().getNextOrCurrentMainScene()) != mainScenes.get(0)) {
             stage.getRoot().setBackgroundImage(null);
         } else {
             stage.getRoot().setBackgroundImage(image);

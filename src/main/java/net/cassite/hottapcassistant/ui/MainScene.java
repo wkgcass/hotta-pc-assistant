@@ -9,8 +9,8 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 
-public abstract class MainScene extends VScene {
-    public final FusionButton menuButton = new FusionButton();
+public abstract class MainScene extends VScene implements IMainScene {
+    protected final FusionButton menuButton = new FusionButton();
 
     public MainScene() {
         super(VSceneRole.MAIN);
@@ -34,5 +34,15 @@ public abstract class MainScene extends VScene {
             menuButton.setManaged(false);
             menuButton.setVisible(false);
         }
+    }
+
+    @Override
+    public VScene getScene() {
+        return this;
+    }
+
+    @Override
+    public FusionButton getMenuButton() {
+        return menuButton;
     }
 }
