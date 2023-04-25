@@ -13,7 +13,7 @@ import net.cassite.hottapcassistant.util.Version;
 
 import java.util.List;
 
-public class AboutScene extends MainScene {
+public class AboutScene extends AbstractMainScene {
     private static final List<Author> authors = List.of(
         new Author("wkgcass", "https://github.com/wkgcass", "wkgcass",
             "星岛2", "vcassv",

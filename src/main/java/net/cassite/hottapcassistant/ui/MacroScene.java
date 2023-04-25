@@ -50,7 +50,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class MacroScene extends MainScene implements NativeKeyListener, NativeMouseListener, EnterCheck, Terminate {
+public class MacroScene extends AbstractMainScene implements NativeKeyListener, NativeMouseListener, EnterCheck, Terminate {
     private final ToggleSwitch switchButton = new ToggleSwitch(10, 30);
     private final ToggleSwitch rememberMousePositionSwitchButton = new ToggleSwitch(10, 30);
     private final UIMacroList ls = new UIMacroList(this::flushConfig);

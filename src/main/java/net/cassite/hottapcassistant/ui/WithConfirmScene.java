@@ -17,7 +17,7 @@ import net.cassite.hottapcassistant.util.GlobalValues;
 
 import java.util.Optional;
 
-public abstract class WithConfirmScene extends MainScene implements EnterCheck, ExitCheck {
+public abstract class WithConfirmScene extends AbstractMainScene implements EnterCheck, ExitCheck {
     protected final Pane content = new Pane();
     private boolean isModified = false;
 

@@ -63,7 +63,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class FishingScene extends MainScene implements NativeKeyListener, EnterCheck, Terminate {
+public class FishingScene extends AbstractMainScene implements NativeKeyListener, EnterCheck, Terminate {
     private final VStage stage;
 
     private final FishRobot robot = new FishRobot(this::setStatus, this::setPercentage);

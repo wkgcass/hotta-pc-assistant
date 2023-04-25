@@ -9,7 +9,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
 import net.cassite.hottapcassistant.i18n.I18n;
 
-public class LogScene extends MainScene {
+public class LogScene extends AbstractMainScene {
     public LogScene() {
         enableAutoContentWidthHeight();
 

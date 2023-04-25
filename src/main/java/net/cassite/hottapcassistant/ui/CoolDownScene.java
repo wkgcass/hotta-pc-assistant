@@ -52,7 +52,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class CoolDownScene extends MainScene implements EnterCheck, Terminate {
+public class CoolDownScene extends AbstractMainScene implements EnterCheck, Terminate {
     private final VSceneGroup sceneGroup;
     private InputData weaponSkill;
     private InputData additionalSkill;

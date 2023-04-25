@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ToolBoxScene extends MainScene implements Terminate {
+public class ToolBoxScene extends AbstractMainScene implements Terminate {
     private static final List<Supplier<Tool>> tools = new ArrayList<>() {{
         add(WorldBossTimer::new);
         add(MessageHelper::new);

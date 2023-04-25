@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ResetScene extends MainScene {
+public class ResetScene extends AbstractMainScene {
     public ResetScene() {
         enableAutoContentWidthHeight();
         var vbox = new VBox();

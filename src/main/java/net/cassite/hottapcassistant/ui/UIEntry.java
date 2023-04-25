@@ -29,8 +29,8 @@ import net.cassite.hottapcassistant.util.GlobalValues;
 import java.util.*;
 
 public class UIEntry {
-    public final List<IMainScene> mainScenes;
-    private final Map<VScene, IMainScene> sceneMap = new HashMap<>();
+    public final List<MainScene> mainScenes;
+    private final Map<VScene, MainScene> sceneMap = new HashMap<>();
     private final VStage stage;
     private final VScene menuScene;
     private final Group normalButtonGroup = new Group() {{
@@ -159,9 +159,9 @@ public class UIEntry {
 
     private void switchScene(int switchToIndex) {
         var s = mainScenes.get(switchToIndex);
-        var currentIMain = sceneMap.get(stage.getSceneGroup().getCurrentMainScene());
-        assert currentIMain != null;
-        if (currentIMain != s) {
+        var current = sceneMap.get(stage.getSceneGroup().getCurrentMainScene());
+        assert current != null;
+        if (current != s) {
             if (canEnterTool(s) && exitTool()) {
                 showScene(switchToIndex);
                 setSceneSelected(s);
@@ -181,9 +181,9 @@ public class UIEntry {
         var sceneGroup = stage.getSceneGroup();
         var s = mainScenes.get(switchToIndex);
 
-        var currentIMain = sceneMap.get(sceneGroup.getCurrentMainScene());
-        assert currentIMain != null;
-        var currentIndex = mainScenes.indexOf(currentIMain);
+        var current = sceneMap.get(sceneGroup.getCurrentMainScene());
+        assert current != null;
+        var currentIndex = mainScenes.indexOf(current);
         if (currentIndex != switchToIndex) {
             sceneGroup.show(s.getScene(), currentIndex < switchToIndex ? VSceneShowMethod.FROM_BOTTOM : VSceneShowMethod.FROM_TOP);
         }
@@ -192,7 +192,7 @@ public class UIEntry {
 
     private boolean altIsPressed = false;
 
-    private boolean canEnterTool(IMainScene scene) {
+    private boolean canEnterTool(MainScene scene) {
         if (scene instanceof EnterCheck) {
             return ((EnterCheck) scene).enterCheck(altIsPressed);
         } else {
@@ -212,7 +212,7 @@ public class UIEntry {
         }
     }
 
-    private boolean exitTool(IMainScene scene) {
+    private boolean exitTool(MainScene scene) {
         if (scene instanceof ExitCheck) {
             return ((ExitCheck) scene).exitCheck();
         } else {
@@ -231,12 +231,12 @@ public class UIEntry {
         }
     }
 
-    private void setSceneSelected(IMainScene inst) {
+    private void setSceneSelected(MainScene inst) {
         inst.getMenuButton().setDisable(true);
         inst.setVisible(true, null);
     }
 
-    private void setSceneUnselected(IMainScene inst) {
+    private void setSceneUnselected(MainScene inst) {
         inst.getMenuButton().setDisable(false);
         inst.setVisible(false, null);
     }

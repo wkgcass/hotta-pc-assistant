@@ -44,7 +44,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class WelcomeScene extends MainScene {
+public class WelcomeScene extends AbstractMainScene {
     private final CheckBox useCNGameCheckBox = new CheckBox() {{
         FXUtils.disableFocusColor(this);
     }};

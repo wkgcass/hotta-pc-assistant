@@ -16,7 +16,7 @@ import net.cassite.hottapcassistant.status.StatusManager;
 import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.xboxrelay.ui.ConfigureScene;
 
-public class XBoxScene implements IMainScene, Terminate {
+public class XBoxScene implements MainScene, Terminate {
     private final FusionButton menuButton = new FusionButton();
     private final ConfigureScene scene;
 
