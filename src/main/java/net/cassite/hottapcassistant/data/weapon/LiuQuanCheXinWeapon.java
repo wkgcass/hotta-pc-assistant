@@ -56,12 +56,12 @@ public class LiuQuanCheXinWeapon extends AbstractWeapon implements Weapon, IceRe
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.ICE;
+        return WeaponElement.FROST;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.TANK;
+        return WeaponCategory.DEFENSE;
     }
 
     @Override

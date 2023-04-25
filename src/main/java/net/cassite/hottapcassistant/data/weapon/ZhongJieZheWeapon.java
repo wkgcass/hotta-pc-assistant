@@ -20,12 +20,12 @@ public class ZhongJieZheWeapon extends AbstractWeapon implements Weapon, Trigger
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.ICE;
+        return WeaponElement.FROST;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

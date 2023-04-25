@@ -20,12 +20,12 @@ public class JiLeiShuangRenWeapon extends AbstractWeapon implements Weapon, Skip
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.THUNDER;
+        return WeaponElement.VOLT;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

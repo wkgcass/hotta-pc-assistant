@@ -30,12 +30,12 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.ICE;
+        return WeaponElement.FROST;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

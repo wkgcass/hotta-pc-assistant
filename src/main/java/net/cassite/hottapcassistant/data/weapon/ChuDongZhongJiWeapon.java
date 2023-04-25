@@ -28,12 +28,12 @@ public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, Trig
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.ICE;
+        return WeaponElement.FROST;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.TANK;
+        return WeaponCategory.DEFENSE;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.PHYSICS;
+        return WeaponElement.PHYSICAL;
     }
 
     @Override

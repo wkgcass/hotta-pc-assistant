@@ -26,12 +26,12 @@ public class LingGuangWeapon extends AbstractWeapon implements Weapon, FireReson
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.FIRE;
+        return WeaponElement.FLAME;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.TANK;
+        return WeaponCategory.DEFENSE;
     }
 
     @Override

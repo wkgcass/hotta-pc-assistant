@@ -37,7 +37,7 @@ public class QiMingXingWeapon extends AbstractWeapon implements Weapon, ThunderR
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.THUNDER;
+        return WeaponElement.VOLT;
     }
 
     @Override

@@ -29,15 +29,15 @@ public record ResonanceInfo(boolean carry, boolean support, boolean tank, boolea
         boolean hasPhysicsResonance = false;
         for (var w : weapons) {
             switch (w.element()) {
-                case FIRE -> fireCount++;
-                case ICE -> iceCount++;
-                case THUNDER -> thunderCount++;
-                case PHYSICS -> physicsCount++;
+                case FLAME -> fireCount++;
+                case FROST -> iceCount++;
+                case VOLT -> thunderCount++;
+                case PHYSICAL -> physicsCount++;
             }
             switch (w.category()) {
-                case CARRY -> carryCount++;
+                case DPS -> carryCount++;
                 case SUPPORT -> supportCount++;
-                case TANK -> tankCount++;
+                case DEFENSE -> tankCount++;
             }
             if (w instanceof YingZhiWeapon) {
                 hasYingZhi = true;

@@ -19,7 +19,7 @@ public class ShengHenQuanZhangWeapon extends AbstractWeapon implements Weapon, S
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.THUNDER;
+        return WeaponElement.VOLT;
     }
 
     @Override

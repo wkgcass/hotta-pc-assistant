@@ -53,12 +53,12 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.YINENG;
+        return WeaponElement.ALTERED;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

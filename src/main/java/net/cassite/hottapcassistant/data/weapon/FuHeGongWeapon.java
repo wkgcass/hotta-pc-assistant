@@ -20,12 +20,12 @@ public class FuHeGongWeapon extends AbstractWeapon implements Weapon, SkipAudioC
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.FIRE;
+        return WeaponElement.FLAME;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

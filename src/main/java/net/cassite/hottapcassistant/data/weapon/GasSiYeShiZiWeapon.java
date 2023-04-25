@@ -23,7 +23,7 @@ public class GasSiYeShiZiWeapon extends AbstractSiYeShiZiWeapon {
             if (w == this) {
                 continue;
             }
-            if (w.element() == WeaponElement.FIRE) {
+            if (w.element() == WeaponElement.FLAME) {
                 w.decreaseCoolDown(decrease);
             }
         }

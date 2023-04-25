@@ -31,12 +31,12 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.THUNDER;
+        return WeaponElement.VOLT;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

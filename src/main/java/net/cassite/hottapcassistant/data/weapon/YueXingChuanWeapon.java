@@ -75,7 +75,7 @@ public class YueXingChuanWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.YINENG;
+        return WeaponElement.ALTERED;
     }
 
     @Override

@@ -30,12 +30,12 @@ public class SiPaKeWeapon extends AbstractWeapon implements Weapon, FireResonanc
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.FIRE;
+        return WeaponElement.FLAME;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

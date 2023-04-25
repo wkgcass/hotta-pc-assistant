@@ -20,12 +20,12 @@ public class HeiYaMingLianWeapon extends AbstractWeapon implements Weapon, SkipA
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.FIRE;
+        return WeaponElement.FLAME;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

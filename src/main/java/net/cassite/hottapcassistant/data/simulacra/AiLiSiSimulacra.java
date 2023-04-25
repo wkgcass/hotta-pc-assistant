@@ -41,7 +41,7 @@ public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
         if (triggerBuffTime) {
             buffTime = getTotalBuffTime();
         }
-        if (w.element() != WeaponElement.PHYSICS && w.element() != WeaponElement.FIRE && w.element() != WeaponElement.THUNDER) {
+        if (w.element() != WeaponElement.PHYSICAL && w.element() != WeaponElement.FLAME && w.element() != WeaponElement.VOLT) {
             return;
         }
         var bmzyOpt = ctx.weapons.stream().filter(ww -> ww instanceof BuMieZhiYiWeapon).findAny();

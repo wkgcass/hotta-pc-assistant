@@ -20,12 +20,12 @@ public class QiangWeiZhiFengWeapon extends AbstractWeapon implements Weapon, Ski
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.ICE;
+        return WeaponElement.FROST;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.TANK;
+        return WeaponCategory.DEFENSE;
     }
 
     @Override

@@ -20,12 +20,12 @@ public class LeiTingZhanJiWeapon extends AbstractWeapon implements Weapon, SkipA
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.THUNDER;
+        return WeaponElement.VOLT;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

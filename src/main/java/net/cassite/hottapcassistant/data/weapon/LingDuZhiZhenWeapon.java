@@ -26,7 +26,7 @@ public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon, SkipA
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.ICE;
+        return WeaponElement.FROST;
     }
 
     @Override

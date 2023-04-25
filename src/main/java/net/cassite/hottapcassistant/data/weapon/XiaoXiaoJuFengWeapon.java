@@ -18,12 +18,12 @@ public class XiaoXiaoJuFengWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.PHYSICS;
+        return WeaponElement.PHYSICAL;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

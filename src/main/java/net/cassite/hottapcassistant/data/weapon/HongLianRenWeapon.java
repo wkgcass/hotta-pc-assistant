@@ -20,12 +20,12 @@ public class HongLianRenWeapon extends AbstractWeapon implements Weapon, SkipAud
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.PHYSICS;
+        return WeaponElement.PHYSICAL;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

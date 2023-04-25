@@ -1,5 +1,5 @@
 package net.cassite.hottapcassistant.data;
 
 public enum WeaponElement {
-    FIRE, ICE, THUNDER, PHYSICS, YINENG,
+    FLAME, FROST, VOLT, PHYSICAL, ALTERED,
 }

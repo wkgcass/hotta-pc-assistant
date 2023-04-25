@@ -24,12 +24,12 @@ public class PoXiaoWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.PHYSICS;
+        return WeaponElement.PHYSICAL;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.TANK;
+        return WeaponCategory.DEFENSE;
     }
 
     @Override

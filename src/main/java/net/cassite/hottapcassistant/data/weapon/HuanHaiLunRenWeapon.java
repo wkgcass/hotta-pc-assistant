@@ -20,12 +20,12 @@ public class HuanHaiLunRenWeapon extends AbstractWeapon implements Weapon, SkipA
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.PHYSICS;
+        return WeaponElement.PHYSICAL;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override

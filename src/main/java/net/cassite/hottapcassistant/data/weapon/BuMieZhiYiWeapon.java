@@ -27,12 +27,12 @@ public class BuMieZhiYiWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.ICE;
+        return WeaponElement.FROST;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.CARRY;
+        return WeaponCategory.DPS;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class BuMieZhiYiWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     protected void alertSkillUsed0(WeaponContext ctx, Weapon w, Skill skill) {
-        if (w.element() != WeaponElement.ICE) {
+        if (w.element() != WeaponElement.FROST) {
             return;
         }
         if (stars < 1) {

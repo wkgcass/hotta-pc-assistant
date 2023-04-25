@@ -22,12 +22,12 @@ public class V2RongQuDunWeapon extends AbstractWeapon implements Weapon, SkipAud
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.FIRE;
+        return WeaponElement.FLAME;
     }
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.TANK;
+        return WeaponCategory.DEFENSE;
     }
 
     @Override

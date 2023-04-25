@@ -19,7 +19,7 @@ public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon, SkipAu
 
     @Override
     public WeaponElement element() {
-        return WeaponElement.FIRE;
+        return WeaponElement.FLAME;
     }
 
     @Override
