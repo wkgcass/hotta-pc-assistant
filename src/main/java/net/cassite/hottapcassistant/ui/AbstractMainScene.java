@@ -45,4 +45,34 @@ public abstract class AbstractMainScene extends VScene implements MainScene {
     public FusionButton getMenuButton() {
         return menuButton;
     }
+
+    @Override
+    protected boolean checkBeforeShowing() throws Exception {
+        return getOverrideHelper().checkBeforeShowing();
+    }
+
+    @Override
+    protected void beforeShowing() {
+        getOverrideHelper().beforeShowing();
+    }
+
+    @Override
+    protected void onShown() {
+        getOverrideHelper().onShown();
+    }
+
+    @Override
+    protected boolean checkBeforeHiding() throws Exception {
+        return getOverrideHelper().checkBeforeHiding();
+    }
+
+    @Override
+    protected void beforeHiding() {
+        getOverrideHelper().beforeHiding();
+    }
+
+    @Override
+    protected void onHidden() {
+        getOverrideHelper().onHidden();
+    }
 }

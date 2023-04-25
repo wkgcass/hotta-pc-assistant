@@ -11,4 +11,38 @@ public interface MainScene {
     VScene getScene();
 
     FusionButton getMenuButton();
+
+    default OverrideHelper getOverrideHelper() {
+        throw new UnsupportedOperationException("require override");
+    }
+
+    class OverrideHelper {
+        protected final MainScene scene;
+
+        public OverrideHelper(MainScene scene) {
+            this.scene = scene;
+        }
+
+        @SuppressWarnings("RedundantThrows")
+        public boolean checkBeforeShowing() throws Exception {
+            return true;
+        }
+
+        public void beforeShowing() {
+        }
+
+        public void onShown() {
+        }
+
+        @SuppressWarnings("RedundantThrows")
+        public boolean checkBeforeHiding() throws Exception {
+            return true;
+        }
+
+        public void beforeHiding() {
+        }
+
+        public void onHidden() {
+        }
+    }
 }

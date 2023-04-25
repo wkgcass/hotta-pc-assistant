@@ -30,9 +30,47 @@ public class XBoxScene implements MainScene, Terminate {
             }
 
             @Override
+            protected boolean checkBeforeShowing() throws Exception {
+                boolean ret = super.checkBeforeShowing();
+                if (!ret) {
+                    return false;
+                }
+                return getOverrideHelper().checkBeforeShowing();
+            }
+
+            @Override
+            protected void beforeShowing() {
+                super.beforeShowing();
+                getOverrideHelper().beforeShowing();
+            }
+
+            @Override
             protected void onShown() {
                 super.onShown();
+                getOverrideHelper().onShown();
                 GlobalValues.backFunction = scene::hideConfigTableScene;
+            }
+
+            @Override
+            protected boolean checkBeforeHiding() throws Exception {
+                boolean ret = super.checkBeforeHiding();
+                if (!ret) {
+                    return false;
+                }
+                return getOverrideHelper().checkBeforeHiding();
+            }
+
+            @Override
+            protected void beforeHiding() {
+                super.beforeHiding();
+                getOverrideHelper().beforeHiding();
+                GlobalValues.backFunction = null;
+            }
+
+            @Override
+            protected void onHidden() {
+                super.onHidden();
+                getOverrideHelper().onHidden();
             }
         };
         scene.setOnStartEventHandler(() ->

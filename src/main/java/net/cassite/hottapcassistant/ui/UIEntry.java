@@ -42,17 +42,72 @@ public class UIEntry {
     public UIEntry(VStage stage) {
         this.stage = stage;
         mainScenes = Arrays.asList(
-            new WelcomeScene(),
-            new GameSettingsScene(),
-            new InputSettingsScene(),
-            new MacroScene(),
-            new FishingScene(stage),
-            new CoolDownScene(stage.getSceneGroup()),
-            new ToolBoxScene(stage.getSceneGroup()),
-            new XBoxScene(stage.getSceneGroup()),
-            new AboutScene(),
-            new LogScene(),
-            new ResetScene()
+            new WelcomeScene() {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new GameSettingsScene() {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new InputSettingsScene() {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new MacroScene() {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new FishingScene(stage) {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new CoolDownScene(stage.getSceneGroup()) {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new ToolBoxScene(stage.getSceneGroup()) {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new XBoxScene(stage.getSceneGroup()) {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new AboutScene() {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new LogScene() {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
+            new ResetScene() {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            }
         );
         for (var s : mainScenes) {
             sceneMap.put(s.getScene(), s);
@@ -88,7 +143,7 @@ public class UIEntry {
             }
             button.setText(title);
             button.setDisableAnimation(true);
-            button.setOnAction(e -> switchScene(fi));
+            button.setOnAction(e -> showScene(fi));
             button.setPrefWidth(250);
             button.setPrefHeight(40);
             menuVBox.getChildren().add(button);
@@ -157,23 +212,46 @@ public class UIEntry {
         });
     }
 
-    private void switchScene(int switchToIndex) {
-        var s = mainScenes.get(switchToIndex);
-        var current = sceneMap.get(stage.getSceneGroup().getCurrentMainScene());
-        assert current != null;
-        if (current != s) {
-            if (canEnterTool(s) && exitTool()) {
-                showScene(switchToIndex);
-                setSceneSelected(s);
-                s.getScene().getNode().requestFocus();
+    private final class OverrideHelperImpl extends MainScene.OverrideHelper {
+        public OverrideHelperImpl(MainScene scene) {
+            super(scene);
+        }
 
-                if (s instanceof WelcomeScene) {
-                    configureRootCorrespondToWelcomeScene();
-                } else {
-                    FXUtils.runDelay(VScene.ANIMATION_DURATION_MILLIS, this::configureRootCorrespondToNormalScene);
-                }
+        @Override
+        public boolean checkBeforeShowing() {
+            return canEnterTool(scene);
+        }
+
+        @Override
+        public void beforeShowing() {
+            if (scene instanceof WelcomeScene) {
+                configureRootCorrespondToWelcomeScene();
+            }
+        }
+
+        @Override
+        public void onShown() {
+            setSceneSelected(scene);
+            scene.getScene().getNode().requestFocus();
+
+            if (!(scene instanceof WelcomeScene)) {
+                configureRootCorrespondToNormalScene();
             }
             hideInactive();
+        }
+
+        @Override
+        public boolean checkBeforeHiding() {
+            return exitTool(scene);
+        }
+
+        @Override
+        public void beforeHiding() {
+            setSceneUnselected(scene);
+        }
+
+        @Override
+        public void onHidden() {
         }
     }
 
@@ -197,18 +275,6 @@ public class UIEntry {
             return ((EnterCheck) scene).enterCheck(altIsPressed);
         } else {
             return true;
-        }
-    }
-
-    private boolean exitTool() {
-        var sceneGroup = stage.getSceneGroup();
-        var mainScene = sceneMap.get(sceneGroup.getCurrentMainScene());
-        assert mainScene != null;
-        if (exitTool(mainScene)) {
-            setSceneUnselected(mainScene);
-            return true;
-        } else {
-            return false;
         }
     }
 
