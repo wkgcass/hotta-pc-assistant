@@ -1,12 +1,14 @@
 # 如何运行
 
 解压后可以看到 `launch.bat` 文件，如果没有显示扩展名，则会看到 `launch` 文件，格式为批处理文件。
-双击 `launch.bat` 文件即可运行。运行后会跳出黑框，显示一些日志；你可以无视黑框，但是不要关闭它。
+双击 `launch.bat` 文件即可运行。如果 `launch.bat` 无法正常运行，你还可以尝试双击 `launch-with-pwsh.bat` 运行。
+如果依然无法运行，那么你需要手动以管理员权限运行 `launch.bat` 文件。
 
 # How to Run
 
 After extracting, you will see a file named `launch.bat`.
 If extension suffix is not shown, you would see a file named `app`, whose format is Windows Batch File.
 
-Double-click the `launch.bat` file to run.
-A black terminal window would show after launching, to display some logs, you may ignore it, but do not close it.
+Double-click the `launch.bat` file to run. If `launch.bat` does not work properly,
+you may try double-clicking `launch-with-pwsh.bat` file.
+If it still does not work, you would have to manually run `launch.bat` file with `Administrator` privilege.

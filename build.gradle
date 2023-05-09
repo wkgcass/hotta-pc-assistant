@@ -78,6 +78,7 @@ tasks.jlinkZip.doFirst {
         }
         from("misc") {
             include "launch.bat"
+            include "launch-with-pwsh.bat"
         }
         into "${buildDir}/image/"
     }
