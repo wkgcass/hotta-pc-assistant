@@ -43,7 +43,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String toolNameCoolDown() {
-        return "CD指示器(beta)";
+        return "CD指示器";
     }
 
     @Override
