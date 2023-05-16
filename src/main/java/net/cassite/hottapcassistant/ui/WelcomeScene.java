@@ -10,6 +10,8 @@ import io.vproxy.vfx.ui.button.ImageButton;
 import io.vproxy.vfx.ui.button.TransparentFusionButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.pane.AbstractFusionPane;
+import io.vproxy.vfx.ui.pane.TransparentFusionPane;
 import io.vproxy.vfx.util.FXUtils;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -80,6 +82,36 @@ public class WelcomeScene extends AbstractMainScene {
             vbox.setPadding(new Insets(50, 0, 0, 0));
         }
 
+        var textPart = new VBox();
+        {
+            var pane = new TransparentFusionPane() {
+                @Override
+                protected AbstractFusionPane buildRootNode() {
+                    return new TransparentFusionPaneImpl() {
+                        @Override
+                        protected Color normalColor() {
+                            return new Color(1, 1, 1, 0);
+                        }
+
+                        @Override
+                        protected Color hoverColor() {
+                            return new Color(1, 1, 1, 0.4);
+                        }
+                    };
+                }
+            };
+            pane.getNode().setMaxWidth(975);
+            pane.getNode().setPrefWidth(975);
+            pane.getNode().setMaxHeight(250);
+            pane.getNode().setPrefHeight(250);
+
+            vbox.getChildren().add(pane.getNode());
+            pane.getContentPane().getChildren().add(textPart);
+            FXUtils.observeWidthHeight(pane.getContentPane(), textPart);
+
+            textPart.setAlignment(Pos.CENTER);
+        }
+
         {
             var selectLocationGroup = new VBox();
             var selectLocationDesc = new Label(I18n.get().selectSavedLocationDescription()) {{
@@ -147,11 +179,11 @@ public class WelcomeScene extends AbstractMainScene {
                 selectLocationAutoButton);
             selectLocationHBox.setAlignment(Pos.CENTER);
             selectLocationGroup.getChildren().add(selectLocationHBox);
-            vbox.getChildren().add(selectLocationGroup);
+            textPart.getChildren().add(selectLocationGroup);
         }
 
         {
-            vbox.getChildren().add(new VPadding(10));
+            textPart.getChildren().add(new VPadding(10));
         }
 
         {
@@ -234,11 +266,11 @@ public class WelcomeScene extends AbstractMainScene {
                 selectLocationAutoButton);
             selectLocationHBox.setAlignment(Pos.CENTER);
             selectLocationGroup.getChildren().add(selectLocationHBox);
-            vbox.getChildren().add(selectLocationGroup);
+            textPart.getChildren().add(selectLocationGroup);
         }
 
         {
-            vbox.getChildren().add(new VPadding(10));
+            textPart.getChildren().add(new VPadding(10));
         }
 
         {
@@ -329,13 +361,13 @@ public class WelcomeScene extends AbstractMainScene {
                 selectLocationAutoButton);
             selectLocationHBox.setAlignment(Pos.CENTER);
             selectLocationGroup.getChildren().add(selectLocationHBox);
-            vbox.getChildren().add(selectLocationGroup);
+            textPart.getChildren().add(selectLocationGroup);
         }
 
         {
             var sep1 = new Separator();
             sep1.setPadding(new Insets(50, 0, 50, 0));
-            sep1.setOpacity(0.5);
+            sep1.setOpacity(0.25);
             vbox.getChildren().add(sep1);
         }
 
@@ -387,7 +419,7 @@ public class WelcomeScene extends AbstractMainScene {
         {
             var sep1 = new Separator();
             sep1.setPadding(new Insets(50, 0, 50, 0));
-            sep1.setOpacity(0.5);
+            sep1.setOpacity(0.25);
             vbox.getChildren().add(sep1);
         }
 
