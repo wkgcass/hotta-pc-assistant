@@ -101,6 +101,7 @@ public class Consts {
         "/images/weapons/liu-quan-che-xin.png",
         "/images/weapons/mo-bi-wu-si.png",
         "/images/weapons/pian-guang-ling-yu.png",
+        "/images/weapons/pian-zhen.png",
         "/images/weapons/po-jun.png",
         "/images/weapons/po-xiao.png",
         "/images/weapons/qi-ming-xing.png",
@@ -251,6 +252,11 @@ public class Consts {
         "/audio/simulacra/yi-ka-luo-si/skill03.wav",
         "/audio/simulacra/yi-ka-luo-si/skill02.wav",
         "/audio/simulacra/yi-ka-luo-si/skill01.wav",
+        "/audio/simulacra/yu-lan/skill01.wav",
+        "/audio/simulacra/yu-lan/skill02.wav",
+        "/audio/simulacra/yu-lan/skill03.wav",
+        "/audio/simulacra/yu-lan/skill04.wav",
+        "/audio/simulacra/yu-lan/skill05.wav",
     };
 
     public static final Color GREEN = new Color(0x8d / 255d, 0xbd / 255d, 0x74 / 255d, 1);

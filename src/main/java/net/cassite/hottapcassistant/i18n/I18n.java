@@ -343,6 +343,12 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String cooldownRefreshBuffRegardlessOfCDForBuMieZhiYi();
 
+    public abstract String cooldownAlwaysCanUseSkillOfPianZhen();
+
+    // TODO custom-weapon-option: totally 9 steps to define a custom weapon option, search for 'custom-weapon-option' globally to see all these steps
+    // TODO custom-weapon-option: 1 steps in this file
+    // TODO custom-weapon-option: step [6], define method(s) for displaying description for the option
+
     public abstract String scanDischargeConfigureTips();
 
     public abstract String positionOfDischargeTip();

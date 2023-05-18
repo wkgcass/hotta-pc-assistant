@@ -14,6 +14,7 @@ public class WeaponRef {
     public static List<WeaponRef> all() {
         //noinspection unchecked
         Tuple<Integer, Supplier<Weapon>>[] ls = new Tuple[]{
+            new Tuple<Integer, Supplier<Weapon>>(41, PianZhenWeapon::new),
             new Tuple<Integer, Supplier<Weapon>>(40, SongHuiWeapon::new),
             new Tuple<Integer, Supplier<Weapon>>(39, JueXiangWeapon::new),
             new Tuple<Integer, Supplier<Weapon>>(38, XiaoXiaoJuFengWeapon::new),
@@ -54,7 +55,7 @@ public class WeaponRef {
             new Tuple<Integer, Supplier<Weapon>>(33, ShuangDongChangQiangWeapon::new),
             new Tuple<Integer, Supplier<Weapon>>(34, YeQueZhiYuWeapon::new),
             new Tuple<Integer, Supplier<Weapon>>(35, ZhongJieZheWeapon::new),
-            // next is 41
+            // next is 42
         };
         var ret = new ArrayList<WeaponRef>();
         for (var pair : ls) {

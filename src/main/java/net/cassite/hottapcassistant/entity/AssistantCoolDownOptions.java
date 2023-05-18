@@ -27,6 +27,10 @@ public class AssistantCoolDownOptions implements WeaponArgs {
     public boolean autoDischargeForYueXingChuan = true;
     public boolean autoDischargeForJueXiang = true;
     public boolean refreshBuffRegardlessOfCDForBuMieZhiYi;
+    public boolean alwaysCanUseSkillOfPianZhen;
+    // TODO custom-weapon-option: totally 9 steps to define a custom weapon option, search for 'custom-weapon-option' globally to see all these steps
+    // TODO custom-weapon-option: 4 steps in this file
+    // TODO custom-weapon-option: step [1], define the option and give it a default value if needed
     public double lastWindowScale;
 
     public static final Rule<AssistantCoolDownOptions> rule = new ObjectRule<>(AssistantCoolDownOptions::new)
@@ -48,6 +52,8 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         .put("autoDischargeForYueXingChuan", (o, it) -> o.autoDischargeForYueXingChuan = it, BoolRule.get())
         .put("autoDischargeForJueXiang", (o, it) -> o.autoDischargeForJueXiang = it, BoolRule.get())
         .put("refreshBuffRegardlessOfCDForBuMieZhiYi", (o, it) -> o.refreshBuffRegardlessOfCDForBuMieZhiYi = it, BoolRule.get())
+        .put("alwaysCanUseSkillOfPianZhen", (o, it) -> o.alwaysCanUseSkillOfPianZhen = it, BoolRule.get())
+        // TODO custom-weapon-option: step [2], add deserializing rule for the option
         .put("lastWindowScale", (o, it) -> o.lastWindowScale = it, DoubleRule.get());
 
     public AssistantCoolDownOptions() {
@@ -71,6 +77,8 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         autoDischargeForYueXingChuan = that.autoDischargeForYueXingChuan;
         autoDischargeForJueXiang = that.autoDischargeForJueXiang;
         refreshBuffRegardlessOfCDForBuMieZhiYi = that.refreshBuffRegardlessOfCDForBuMieZhiYi;
+        alwaysCanUseSkillOfPianZhen = that.alwaysCanUseSkillOfPianZhen;
+        // TODO custom-weapon-option: step [3], add clone code for the option
         lastWindowScale = that.lastWindowScale;
     }
 
@@ -109,6 +117,8 @@ public class AssistantCoolDownOptions implements WeaponArgs {
         ob.put("autoDischargeForYueXingChuan", autoDischargeForYueXingChuan);
         ob.put("autoDischargeForJueXiang", autoDischargeForJueXiang);
         ob.put("refreshBuffRegardlessOfCDForBuMieZhiYi", refreshBuffRegardlessOfCDForBuMieZhiYi);
+        ob.put("alwaysCanUseSkillOfPianZhen", alwaysCanUseSkillOfPianZhen);
+        // TODO custom-weapon-option: step [4], add serializing code for the option
         ob.put("lastWindowScale", lastWindowScale);
         return ob.build();
     }

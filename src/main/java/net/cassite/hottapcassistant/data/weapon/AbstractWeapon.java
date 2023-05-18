@@ -75,6 +75,9 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
 
     @Override
     public void init(WeaponArgs args) {
+        // TODO custom-weapon-option: totally 9 steps to define a custom weapon option, search for 'custom-weapon-option' globally to see all these steps
+        // TODO custom-weapon-option: 1 steps in this file
+        // TODO custom-weapon-option: step [5], override this method in your weapon class implementation, check and cast `args` to AssistantCoolDownOptions and handle your option
     }
 
     @Override

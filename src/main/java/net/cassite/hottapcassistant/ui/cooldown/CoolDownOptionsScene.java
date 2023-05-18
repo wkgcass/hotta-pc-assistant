@@ -183,6 +183,16 @@ public class CoolDownOptionsScene extends VScene {
             }};
             vbox.getChildren().add(refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox);
             onlyShowWhen(weapons, refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox, w -> w instanceof BuMieZhiYiWeapon);
+            var alwaysCanUseSkillOfPianZhenCheckBox = new CheckBox(I18n.get().cooldownAlwaysCanUseSkillOfPianZhen()) {{
+                FontManager.get().setFont(this);
+                setTextFill(Theme.current().normalTextColor());
+                FXUtils.disableFocusColor(this);
+            }};
+            vbox.getChildren().add(alwaysCanUseSkillOfPianZhenCheckBox);
+            onlyShowWhen(weapons, alwaysCanUseSkillOfPianZhenCheckBox, w -> w instanceof PianZhenWeapon);
+            // TODO custom-weapon-option: totally 9 steps to define a custom weapon option, search for 'custom-weapon-option' globally to see all these steps
+            // TODO custom-weapon-option: 3 steps in this file
+            // TODO custom-weapon-option: step [7], define ui of the option and link the option ui to a weapon
 
             options.addListener((ob, old, now) -> {
                 if (now == null) return;
@@ -202,6 +212,8 @@ public class CoolDownOptionsScene extends VScene {
                 autoDischargeForYueXingChuanCheckbox.setSelected(now.autoDischargeForYueXingChuan);
                 autoDischargeForJueXiangCheckbox.setSelected(now.autoDischargeForJueXiang);
                 refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox.setSelected(now.refreshBuffRegardlessOfCDForBuMieZhiYi);
+                alwaysCanUseSkillOfPianZhenCheckBox.setSelected(now.alwaysCanUseSkillOfPianZhen);
+                // TODO custom-weapon-option: step [8], load config from entity to ui when option object is changed
             });
             scanDischargeCheckbox.setOnAction(e -> {
                 var selected = scanDischargeCheckbox.isSelected();
@@ -305,6 +317,12 @@ public class CoolDownOptionsScene extends VScene {
                 opt.refreshBuffRegardlessOfCDForBuMieZhiYi = refreshBuffRegardlessOfCDForBuMieZhiYiCheckBox.isSelected();
                 saveConfig();
             });
+            alwaysCanUseSkillOfPianZhenCheckBox.setOnAction(e -> {
+                var opt = options.get();
+                opt.alwaysCanUseSkillOfPianZhen = alwaysCanUseSkillOfPianZhenCheckBox.isSelected();
+                saveConfig();
+            });
+            // TODO custom-weapon-option: step [9], when ui is modified, write data into entity and save config
         }
 
         // san liu skills

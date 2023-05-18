@@ -876,6 +876,7 @@ public class ZhCn extends I18n {
             case "xiǎo xiǎo jǜ fēng" -> "小小飓风";
             case "jué xiǎng" -> "绝响";
             case "sōng hùi" -> "松彗";
+            case "pián zhēn" -> "骈臻";
             default -> name;
         };
     }
@@ -1041,6 +1042,11 @@ public class ZhCn extends I18n {
     @Override
     public String cooldownRefreshBuffRegardlessOfCDForBuMieZhiYi() {
         return "每当按下不灭之翼技能时，无论是否在cd均重置其领域持续时间";
+    }
+
+    @Override
+    public String cooldownAlwaysCanUseSkillOfPianZhen() {
+        return "骈臻技能总是视为可使用状态";
     }
 
     @Override
