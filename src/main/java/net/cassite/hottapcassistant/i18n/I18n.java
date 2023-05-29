@@ -519,6 +519,8 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String multiInstancesOpenBrowserForTutorialFailed(String url);
 
+    public abstract String multiInstanceTips();
+
     public abstract String selectGameLocationDescriptionWithoutAutoSearching();
 
     public abstract String failedSavingCaCertFile();

@@ -328,9 +328,10 @@ public class MultiHottaInstanceScene extends ToolScene {
         var loadingStage = new LoadingStage(I18n.get().toolName("multi-hotta-instance"));
         loadingStage.setItems(items);
         loadingStage.setInterval(120);
-        loadingStage.load(Callback.ofIgnoreExceptionFunction(v ->
-            tool.save(config)
-        ));
+        loadingStage.load(Callback.ofIgnoreExceptionFunction(v -> {
+            tool.save(config);
+            SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().multiInstanceTips());
+        }));
     }
 
     public void terminate() {

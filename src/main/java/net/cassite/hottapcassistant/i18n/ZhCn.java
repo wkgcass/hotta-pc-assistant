@@ -1529,6 +1529,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String multiInstanceTips() {
+        return "进入游戏的选区界面时，如果提示更新游戏，可按ESC忽略该界面";
+    }
+
+    @Override
     public String selectGameLocationDescriptionWithoutAutoSearching() {
         return "请选择游戏路径，手动选择gameLauncher.exe所在路径";
     }
