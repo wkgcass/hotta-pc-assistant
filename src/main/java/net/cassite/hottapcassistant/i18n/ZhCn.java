@@ -1395,16 +1395,13 @@ public class ZhCn extends I18n {
     @Override
     public String worldBossTimerNextBossInfoDefaultTemplate() {
         return """
-            msg = ('预计下一个[' + name + ']将于' + hh + ':' + mm + '在' + line + '线刷新，')
+            msg = ('预计<red>' + name + '</</>>将于' + hh + ':' + mm + '在<red>' + line + '</</>>线刷新，')
             if: remainingMillis > 0; then {
               msg += ('剩余') + (remainingMillis / 1000 / 60)
             } else {
               msg += ('已刷新') + (-remainingMillis / 1000 / 60)
             }
             msg += ('分钟')
-            if: msg.length < 35; then {
-              msg += ('，请换线的大佬喊一声再换')
-            }
             """;
     }
 
@@ -1578,7 +1575,23 @@ public class ZhCn extends I18n {
               2. 在工具的输入框中输入内容并按下Enter，内容会被转移到剪贴板里，可以到游戏中进行粘贴
               3. 在输入框中按上/下方向键，可以滚动浏览最近的20条历史消息
               4. 按住本工具输入框以外的部分，可以拖拽移动窗口
+              5. 点击界面中的按钮可自动填充颜色代码，替换“*”为你要输入的内容即可，不过请注意总长度限制
             """;
+    }
+
+    @Override
+    public String messageHelperColorButton(String name) {
+        return switch (name) {
+            case "red" -> "红字";
+            case "blue" -> "蓝字";
+            case "white" -> "白字";
+            case "gold" -> "黄字";
+            case "purple" -> "紫字";
+            case "green" -> "绿字";
+            case "red_big" -> "红字(16)";
+            case "gold_big" -> "黄字(16)";
+            default -> name;
+        };
     }
 
     @Override

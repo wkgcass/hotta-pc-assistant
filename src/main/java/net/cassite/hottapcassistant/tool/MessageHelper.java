@@ -7,20 +7,19 @@ import io.vproxy.vfx.control.drag.DragHandler;
 import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.scene.VScene;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -65,13 +64,65 @@ public class MessageHelper extends AbstractTool implements Tool {
         }
     }
 
-    private static class SS extends ToolScene {
+    private class SS extends ToolScene {
         public SS() {
             enableAutoContentWidthHeight();
 
             var descLabel = new ThemeLabel(I18n.get().messageHelperDesc());
-            FXUtils.observeWidthHeightCenter(getContentPane(), descLabel);
-            getContentPane().getChildren().add(descLabel);
+
+            var redBtn = new FuncButton(I18n.get().messageHelperColorButton("red"), "<red>", new Color(0xe0 / 255d, 0x67 / 255d, 0x64 / 255d, 1));
+            var blueBtn = new FuncButton(I18n.get().messageHelperColorButton("blue"), "<blue>", new Color(0x42 / 255d, 0x7c / 255d, 0xb0 / 255d, 1));
+            var whiteBtn = new FuncButton(I18n.get().messageHelperColorButton("white"), "<hot>", null);
+            var goldBtn = new FuncButton(I18n.get().messageHelperColorButton("gold"), "<ItemQualityLegendary>", new Color(0xbe / 255d, 0x93 / 255d, 0x52 / 255d, 1));
+            var purpleBtn = new FuncButton(I18n.get().messageHelperColorButton("purple"), "<ItemQualityEpic>", new Color(0x87 / 255d, 0x5e / 255d, 0xab / 255d, 1));
+            var greenBtn = new FuncButton(I18n.get().messageHelperColorButton("green"), "<ItemQualityCommon>", new Color(0x53 / 255d, 0xb6 / 255d, 0x67 / 255d, 1));
+            var redBigBtn = new FuncButton(I18n.get().messageHelperColorButton("red_big"), "<red_lbl_16>", new Color(0xe0 / 255d, 0x67 / 255d, 0x64 / 255d, 1)) {{
+                var tn = getTextNode();
+                FontManager.get().setFont(tn, s -> s.setSize(16));
+            }};
+            var goldBigBtn = new FuncButton(I18n.get().messageHelperColorButton("gold_big"), "<yellow_lbl_16>", new Color(0xbe / 255d, 0x93 / 255d, 0x52 / 255d, 1)) {{
+                var tn = getTextNode();
+                FontManager.get().setFont(tn, s -> s.setSize(16));
+            }};
+
+            var pane = new VBox(descLabel,
+                new HBox(redBtn, blueBtn, whiteBtn) {{
+                    setSpacing(15);
+                }},
+                new HBox(goldBtn, purpleBtn, greenBtn) {{
+                    setSpacing(15);
+                }},
+                new HBox(redBigBtn, goldBigBtn) {{
+                    setSpacing(15);
+                }});
+            pane.setAlignment(Pos.CENTER);
+            pane.setPrefWidth(650);
+            pane.setSpacing(15);
+            FXUtils.observeWidthHeightCenter(getContentPane(), pane);
+            getContentPane().getChildren().add(pane);
+        }
+    }
+
+    private class FuncButton extends FusionButton {
+        private FuncButton(String name, String prefix, Color color) {
+            this(name, prefix, "</</>>", color);
+        }
+
+        private FuncButton(String name, String prefix, String suffix, Color color) {
+            super(name);
+            if (color != null) {
+                getTextNode().setTextFill(color);
+            }
+
+            setPrefWidth(150);
+            setPrefHeight(50);
+
+            setOnAction(e -> {
+                var stage = MessageHelper.this.stage;
+                if (stage != null) {
+                    stage.insert(prefix, "*", suffix);
+                }
+            });
         }
     }
 
@@ -218,6 +269,24 @@ public class MessageHelper extends AbstractTool implements Tool {
                 history.removeLast();
             }
             history.addFirst(s);
+        }
+
+        public void insert(String prefix, String content, String suffix) {
+            var pos = input.caretPositionProperty().get();
+            var text = input.getText();
+            if (pos < 0 || pos >= text.length()) {
+                text += prefix + content + suffix;
+                input.setText(text);
+                input.positionCaret(text.length() - content.length() - suffix.length());
+            } else {
+                text = text.substring(0, pos) + prefix + content + suffix + text.substring(pos);
+                input.setText(text);
+                input.positionCaret(pos + prefix.length());
+            }
+
+            setAlwaysOnTop(true);
+            FXUtils.runDelay(500, () -> setAlwaysOnTop(false));
+            input.requestFocus();
         }
     }
 }
