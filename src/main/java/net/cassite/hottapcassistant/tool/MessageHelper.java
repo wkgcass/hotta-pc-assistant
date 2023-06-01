@@ -111,7 +111,7 @@ public class MessageHelper extends AbstractTool implements Tool {
             }};
 
             input = new TextField() {{
-                FontManager.get().setFont(this, settings -> settings.setSize(24).setFamily(FontManager.FONT_NAME_JetBrainsMono));
+                FontManager.get().setFont(this, settings -> settings.setSize(24).setFamily(FontManager.FONT_NAME_NotoSansSCRegular));
                 setPrefWidth(798);
                 setPrefHeight(56);
                 FXUtils.disableFocusColor(this);
