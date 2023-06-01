@@ -539,6 +539,8 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String messageHelperColorButton(String name);
 
+    public abstract String messageHelperItemButton();
+
     public abstract String scrollLogCheckBoxDesc();
 
     public abstract String gplAlert(String url);

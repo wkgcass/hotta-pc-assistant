@@ -730,7 +730,7 @@ public class ZhCn extends I18n {
             CD指示器的重置图标：Reload icons created by IYAHICON - Flaticon
             CD指示器的暂停图标：Pause icons created by Hilmy Abiyyu A. - Flaticon
             CD指示器的恢复图标：Play button icons created by Roundicons - Flaticon
-            聊天消息辅助图标：Keyboard icons created by Freepik - Flaticon
+            聊天消息辅助图标：Wired icons created by Vectorslab - Flaticon
             幻塔多开图标：Ui icons created by Graphics Plazza - Flaticon
             状态指示器图标：Conclusion icons created by Kiranshastry - Flaticon
 
@@ -1395,13 +1395,16 @@ public class ZhCn extends I18n {
     @Override
     public String worldBossTimerNextBossInfoDefaultTemplate() {
         return """
-            msg = ('预计<red>' + name + '</</>>将于' + hh + ':' + mm + '在<red>' + line + '</</>>线刷新，')
+            msg = (name + '将于' + hh + ':' + mm + '在<at>' + line + '</</>>线刷新，')
             if: remainingMillis > 0; then {
               msg += ('剩余') + (remainingMillis / 1000 / 60)
             } else {
               msg += ('已刷新') + (-remainingMillis / 1000 / 60)
             }
             msg += ('分钟')
+            if: msg.length < 38; then {
+              msg += ('，请换线的大佬喊一声再换')
+            }
             """;
     }
 
@@ -1575,7 +1578,8 @@ public class ZhCn extends I18n {
               2. 在工具的输入框中输入内容并按下Enter，内容会被转移到剪贴板里，可以到游戏中进行粘贴
               3. 在输入框中按上/下方向键，可以滚动浏览最近的20条历史消息
               4. 按住本工具输入框以外的部分，可以拖拽移动窗口
-              5. 点击界面中的按钮可自动填充颜色代码，替换“*”为你要输入的内容即可，不过请注意总长度限制
+              5. 使用Ctrl-Z可以回退最近一次的修改，注意仅可回退一次
+              6. 点击界面中的按钮可自动填充颜色代码，请注意总长度限制
             """;
     }
 
@@ -1588,10 +1592,14 @@ public class ZhCn extends I18n {
             case "gold" -> "黄字";
             case "purple" -> "紫字";
             case "green" -> "绿字";
-            case "red_big" -> "红字(16)";
-            case "gold_big" -> "黄字(16)";
+            case "green_bold" -> "加粗绿字";
             default -> name;
         };
+    }
+
+    @Override
+    public String messageHelperItemButton() {
+        return "展示物品";
     }
 
     @Override
