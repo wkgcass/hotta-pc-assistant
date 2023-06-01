@@ -17,7 +17,6 @@ import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.ui.stage.VStageInitParams;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -25,7 +24,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import net.cassite.hottapcassistant.i18n.I18n;
 
@@ -33,9 +33,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class MessageHelper extends AbstractTool implements Tool {
-    private static final Background background = new Background(new BackgroundFill(Theme.current().sceneBackgroundColor(), CornerRadii.EMPTY, Insets.EMPTY));
-    private static final Background blinkBackground = new Background(new BackgroundFill(Theme.current().subSceneBackgroundColor(), CornerRadii.EMPTY, Insets.EMPTY));
-
     private S stage;
 
     @Override
@@ -82,7 +79,6 @@ public class MessageHelper extends AbstractTool implements Tool {
         private static double lastX;
         private static double lastY;
         private static final LinkedList<String> history = new LinkedList<>();
-        private final Pane pane;
         private final TextField input;
         private String lastInputForCtrlZ;
         private ListIterator<String> ite = null;
@@ -203,9 +199,7 @@ public class MessageHelper extends AbstractTool implements Tool {
                 }});
             }
 
-            pane = getRoot().getContentPane();
-            pane.setBackground(background);
-
+            Pane pane = getRoot().getContentPane();
             pane.getChildren().addAll(textNumCount, input, buttons.getNode());
 
             var dragHandler = new DragHandler() {
@@ -262,8 +256,6 @@ public class MessageHelper extends AbstractTool implements Tool {
             }
         }
 
-        private boolean isBlinking = false;
-
         @Override
         public void nativeKeyReleased(NativeKeyEvent e) {
             if (e.getKeyCode() == NativeKeyEvent.VC_ENTER) {
@@ -271,37 +263,10 @@ public class MessageHelper extends AbstractTool implements Tool {
                     return;
                 }
                 FXUtils.runOnFX(() -> {
-                    blink();
                     getStage().setAlwaysOnTop(true);
                     FXUtils.runDelay(500, () -> getStage().setAlwaysOnTop(false));
                 });
             }
-        }
-
-        private void blink() {
-            if (isBlinking) {
-                return;
-            }
-            isBlinking = true;
-            FXUtils.runDelay(100, () -> {
-                pane.setBackground(blinkBackground);
-                FXUtils.runDelay(100, () -> {
-                    pane.setBackground(background);
-                    FXUtils.runDelay(100, () -> {
-                        pane.setBackground(blinkBackground);
-                        FXUtils.runDelay(100, () -> {
-                            pane.setBackground(background);
-                            FXUtils.runDelay(100, () -> {
-                                pane.setBackground(blinkBackground);
-                                FXUtils.runDelay(100, () -> {
-                                    pane.setBackground(background);
-                                    isBlinking = false;
-                                });
-                            });
-                        });
-                    });
-                });
-            });
         }
 
         private void addHistory(String s) {
