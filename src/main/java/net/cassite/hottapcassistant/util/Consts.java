@@ -19,6 +19,7 @@ public class Consts {
         "/images/buff/burn-settle.png",
         "/images/buff/charge.png",
         "/images/buff/dodge.png",
+        "/images/buff/guan-feng.png",
         "/images/buff/gui-ji.png",
         "/images/buff/hai-la-zhi-yong.png",
         "/images/buff/hui-qi.png",
@@ -117,6 +118,7 @@ public class Consts {
         "/images/weapons/ye-que-zhi-yu.png",
         "/images/weapons/ying-zhi.png",
         "/images/weapons/yue-xing-chuan.png",
+        "/images/weapons/zhi-ming.png",
         "/images/weapons/zhong-jie-zhe.png",
     };
 
@@ -166,6 +168,11 @@ public class Consts {
         "/audio/simulacra/ma-ke/skill03.wav",
         "/audio/simulacra/ma-ke/skill02.wav",
         "/audio/simulacra/ma-ke/skill01.wav",
+        "/audio/simulacra/ming-jing/skill05.wav",
+        "/audio/simulacra/ming-jing/skill04.wav",
+        "/audio/simulacra/ming-jing/skill03.wav",
+        "/audio/simulacra/ming-jing/skill02.wav",
+        "/audio/simulacra/ming-jing/skill01.wav",
         "/audio/simulacra/lei-bei/skill03.wav",
         "/audio/simulacra/lei-bei/skill02.wav",
         "/audio/simulacra/lei-bei/skill01.wav",

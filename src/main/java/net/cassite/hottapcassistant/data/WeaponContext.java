@@ -203,6 +203,14 @@ public class WeaponContext implements WithExtraData {
         }
     }
 
+    public void dodgePowerAttack() {
+        Logger.alert("weapon dodge power attack " + current.getName());
+        current.attack(this, AttackType.DODGE_POWER);
+        for (var w : weapons) {
+            w.alertAttack(this, current, AttackType.DODGE_POWER);
+        }
+    }
+
     public void aimAttack() {
         Logger.alert("weapon aim/charge attack " + current.getName());
         current.attack(this, AttackType.AIM);

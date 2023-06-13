@@ -877,6 +877,7 @@ public class ZhCn extends I18n {
             case "jué xiǎng" -> "绝响";
             case "sōng hùi" -> "松彗";
             case "pián zhēn" -> "骈臻";
+            case "zhí míng" -> "执明";
             default -> name;
         };
     }
@@ -944,6 +945,7 @@ public class ZhCn extends I18n {
             case "shuiYiShuoHuaBuff" -> "水意烁华效果持续时间";
             case "huiXiangCount" -> "回响计数";
             case "haiLaZhiYongTime" -> "海拉之拥增伤持续时间";
+            case "guanFengCD" -> "观风冷却时间";
             default -> name;
         };
     }

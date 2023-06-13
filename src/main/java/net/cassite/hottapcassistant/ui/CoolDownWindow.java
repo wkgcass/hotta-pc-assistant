@@ -669,9 +669,19 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
     private long lastDodgeTs;
 
     private void attack() {
+        final int DODGE_POWER_ATTACK_TIME = 300;
+
         long current = System.currentTimeMillis();
-        if (current - lastDodgeTs < 1_000) {
-            ctx.dodgeAttack();
+        if (current - lastDodgeTs < (1_000 + DODGE_POWER_ATTACK_TIME)
+            && (lastAttackButtonDownTs > lastDodgeTs && lastAttackButtonDownTs - lastDodgeTs < 1_000)
+            && current - lastAttackButtonDownTs > DODGE_POWER_ATTACK_TIME) {
+            ctx.dodgePowerAttack();
+        } else if (current - lastDodgeTs < 1_000) {
+            if (current - lastAttackButtonDownTs > DODGE_POWER_ATTACK_TIME) {
+                ctx.dodgePowerAttack();
+            } else {
+                ctx.dodgeAttack();
+            }
         } else if (current - lastAttackButtonDownTs > 300) {
             ctx.aimAttack();
         } else {
