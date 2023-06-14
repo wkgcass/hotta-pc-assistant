@@ -1536,6 +1536,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String multiInstanceConfirmAndDisableTipsButton() {
+        return "我已知晓，后续不再提示";
+    }
+
+    @Override
     public String selectGameLocationDescriptionWithoutAutoSearching() {
         return "请选择游戏路径，手动选择gameLauncher.exe所在路径";
     }

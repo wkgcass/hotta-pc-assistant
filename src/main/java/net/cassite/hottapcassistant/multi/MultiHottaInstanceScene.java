@@ -4,7 +4,10 @@ import io.vproxy.base.util.LogType;
 import io.vproxy.base.util.Logger;
 import io.vproxy.base.util.callback.Callback;
 import io.vproxy.commons.util.IOUtils;
+import io.vproxy.vfx.control.dialog.VDialog;
+import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.task.TaskManager;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.button.ImageButton;
@@ -37,6 +40,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_SUB_VERSION;
@@ -49,6 +53,7 @@ public class MultiHottaInstanceScene extends ToolScene {
     private final TextField selectBetaLocationInput;
     private final TextField selectOnlineLocationInput;
     private final TextField advBranchInput;
+    private int disableTipsVersion;
 
     public MultiHottaInstanceScene(MultiHottaInstance tool) {
         this.tool = tool;
@@ -180,6 +185,7 @@ public class MultiHottaInstanceScene extends ToolScene {
         if (config.advBranch != null) {
             advBranchInput.setText(config.advBranch);
         }
+        disableTipsVersion = config.disableTips;
     }
 
     private void selectLocation(TextField input) {
@@ -205,6 +211,7 @@ public class MultiHottaInstanceScene extends ToolScene {
         config.betaPath = selectBetaLocationInput.getText();
         config.onlinePath = selectOnlineLocationInput.getText();
         config.advBranch = advBranchInput.getText();
+        config.disableTips = disableTipsVersion;
         config.clearEmptyFields();
         return config;
     }
@@ -330,7 +337,42 @@ public class MultiHottaInstanceScene extends ToolScene {
         loadingStage.setInterval(120);
         loadingStage.load(Callback.ofIgnoreExceptionFunction(v -> {
             tool.save(config);
-            SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().multiInstanceTips());
+
+            final int CURRENT_TIPS_VERSION = 1;
+
+            if (config.disableTips >= CURRENT_TIPS_VERSION) {
+                return;
+            }
+            var dialog = new VDialog<Integer>();
+            dialog.setText(I18n.get().multiInstanceTips());
+            var ignoreBtnRef = new VDialogButton<>(I18n.get().multiInstanceConfirmAndDisableTipsButton(), 2);
+            dialog.setButtons(Arrays.asList(
+                ignoreBtnRef,
+                new VDialogButton<>(I18n.get().alertOkButton(), 1)
+            ));
+
+            var ignoreBtn = ignoreBtnRef.getButton();
+            ignoreBtn.setDisable(true);
+
+            TaskManager.get().execute(() -> {
+                for (int i = 3; i >= 0; --i) {
+                    final int fi = i;
+                    FXUtils.runOnFX(() ->
+                        ignoreBtn.setText(I18n.get().multiInstanceConfirmAndDisableTipsButton() + " (" + fi + ")"));
+                    MiscUtils.threadSleep(1_000);
+                }
+                FXUtils.runOnFX(() -> {
+                    ignoreBtn.setText(I18n.get().multiInstanceConfirmAndDisableTipsButton());
+                    ignoreBtn.setDisable(false);
+                });
+            });
+
+            var res = dialog.showAndWait();
+            if (res.isPresent() && res.get() == 2) {
+                config.disableTips = CURRENT_TIPS_VERSION;
+                disableTipsVersion = CURRENT_TIPS_VERSION;
+                tool.save(config);
+            }
         }));
     }
 
