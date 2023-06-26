@@ -1,5 +1,7 @@
 package net.cassite.hottapcassistant.i18n;
 
+import net.cassite.tofpcap.messages.ChatChannel;
+
 public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.InternalI18n, net.cassite.xboxrelay.ui.I18n {
     private static volatile I18n impl;
 
@@ -588,4 +590,32 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
     public abstract String resetSceneResetConfigButton();
 
     public abstract String resetSceneResetConfigSucceeded();
+
+    public abstract String messageMonitorNicChooserTitle();
+
+    public abstract String messageMonitorServerHostTitle();
+
+    public abstract String messageMonitorWordsTitle();
+
+    public abstract String messageMonitorStartBtn();
+
+    public abstract String messageMonitorStopBtn();
+
+    public abstract String messageMonitorServerHostDefaultValue();
+
+    public abstract String messageMonitorWordsDefaultValue();
+
+    public abstract String messageMonitorAlreadyStartedAlert();
+
+    public abstract String messageMonitorNoNetifSelectedAlert();
+
+    public abstract String messageMonitorInvalidServerHostAlert(String str);
+
+    public abstract String messageMonitorEmptyWordsListAlert();
+
+    public abstract String messageMonitorNotificationTitle();
+
+    public abstract String messageMonitorCapFailedAlert();
+
+    public abstract String messageMonitorChannel(ChatChannel channel);
 }

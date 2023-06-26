@@ -1,16 +1,16 @@
 package net.cassite.hottapcassistant.tool;
 
 import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
+import io.vproxy.commons.util.IOUtils;
 import io.vproxy.vfx.ui.alert.StackTraceAlert;
 import io.vproxy.vfx.ui.scene.VScene;
-import io.vproxy.commons.util.IOUtils;
-import io.vproxy.base.util.Logger;
 import javafx.scene.image.Image;
-import net.cassite.hottapcassistant.ui.JSONJavaObject;
+import net.cassite.hottapcassistant.config.AssistantConfig;
 import vjson.JSON;
+import vjson.JSONObject;
 import vjson.deserializer.rule.Rule;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -19,8 +19,8 @@ public abstract class AbstractTool implements Tool {
     private final Image icon;
     protected VScene scene = null;
     private Path configPath = null;
-    private Rule<? extends JSONJavaObject> configRule = null;
-    protected JSONJavaObject config = null;
+    private Rule<? extends JSONObject> configRule = null;
+    protected JSONObject config = null;
     protected Runnable runOnTerminated = null;
 
     public AbstractTool() {
@@ -93,22 +93,22 @@ public abstract class AbstractTool implements Tool {
     protected void terminate0() {
     }
 
-    protected void setConfigRule(Path path, Rule<? extends JSONJavaObject> rule) {
+    protected void setConfigRule(String path, Rule<? extends JSONObject> rule) {
         if (configRule != null || configPath != null) {
             throw new IllegalStateException();
         }
-        this.configPath = path;
+        this.configPath = Path.of(AssistantConfig.assistantDirPath.toString(), path);
         this.configRule = rule;
     }
 
-    protected void init(@SuppressWarnings("unused") JSONJavaObject config) {
+    protected void init(@SuppressWarnings("unused") JSONObject config) {
     }
 
     private void load() throws Exception {
         if (configRule == null || configPath == null) {
             return;
         }
-        JSONJavaObject c = null;
+        JSONObject c = null;
         var configFile = configPath.toFile();
         if (configFile.isFile()) {
             var str = Files.readString(configPath);
@@ -131,7 +131,7 @@ public abstract class AbstractTool implements Tool {
         }
     }
 
-    protected <T extends JSONJavaObject> T getConfig() {
+    protected <T extends JSONObject> T getConfig() {
         //noinspection unchecked
         return (T) config;
     }
@@ -143,7 +143,7 @@ public abstract class AbstractTool implements Tool {
         save(config);
     }
 
-    protected void save(JSONJavaObject config) {
+    protected void save(JSONObject config) {
         if (configRule == null || configPath == null) {
             throw new IllegalStateException();
         }

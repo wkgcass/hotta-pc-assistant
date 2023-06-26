@@ -1,5 +1,7 @@
 package net.cassite.hottapcassistant.i18n;
 
+import net.cassite.tofpcap.messages.ChatChannel;
+
 public class ZhCn extends I18n {
     @Override
     public String id() {
@@ -733,6 +735,8 @@ public class ZhCn extends I18n {
             聊天消息辅助图标：Wired icons created by Vectorslab - Flaticon
             幻塔多开图标：Ui icons created by Graphics Plazza - Flaticon
             状态指示器图标：Conclusion icons created by Kiranshastry - Flaticon
+            聊天消息监听器: Chat box icons created by Pixel perfect - Flaticon
+            消息图标：Info icons created by Plastic Donut - Flaticon
 
             依赖开源项目：
             1. openjdk: GPLv2 with Classpath Exception
@@ -1210,6 +1214,7 @@ public class ZhCn extends I18n {
             case "lan's-brain-wash" -> "岚的洗脑循环";
             case "multi-hotta-instance" -> "幻塔双开";
             case "status-indicator" -> "状态指示器";
+            case "message-monitor" -> "聊天消息监控";
             default -> name;
         };
     }
@@ -1713,6 +1718,84 @@ public class ZhCn extends I18n {
     @Override
     public String resetSceneResetConfigSucceeded() {
         return "重置成功，即将退出助手，请手动重新打开";
+    }
+
+    @Override
+    public String messageMonitorNicChooserTitle() {
+        return "选择监控的网卡";
+    }
+
+    @Override
+    public String messageMonitorServerHostTitle() {
+        return "输入幻塔服务器IP地址";
+    }
+
+    @Override
+    public String messageMonitorWordsTitle() {
+        return "输入要监控的文字，多个用英文逗号隔开";
+    }
+
+    @Override
+    public String messageMonitorStartBtn() {
+        return "启动";
+    }
+
+    @Override
+    public String messageMonitorStopBtn() {
+        return "停止";
+    }
+
+    @Override
+    public String messageMonitorServerHostDefaultValue() {
+        return "39.96.163.203";
+    }
+
+    @Override
+    public String messageMonitorWordsDefaultValue() {
+        return "玄鸦, 丫丫, 鸭脖, 乌鸦";
+    }
+
+    @Override
+    public String messageMonitorAlreadyStartedAlert() {
+        return "消息监控已启动";
+    }
+
+    @Override
+    public String messageMonitorNoNetifSelectedAlert() {
+        return "没有选定待监控的网卡";
+    }
+
+    @Override
+    public String messageMonitorInvalidServerHostAlert(String str) {
+        return "服务器地址不是正确的IP地址: " + str;
+    }
+
+    @Override
+    public String messageMonitorEmptyWordsListAlert() {
+        return "监控文字为空";
+    }
+
+    @Override
+    public String messageMonitorNotificationTitle() {
+        return "幻塔PC助手 - 聊天消息监控";
+    }
+
+    @Override
+    public String messageMonitorCapFailedAlert() {
+        return "监控异常！";
+    }
+
+    @Override
+    public String messageMonitorChannel(ChatChannel channel) {
+        if (channel == null) {
+            return "所有频道";
+        }
+        return switch (channel) {
+            case WORLD -> "世界";
+            case GUILD -> "公会";
+            case TEAM -> "组队";
+            case COOP -> "协力";
+        };
     }
 
     @Override

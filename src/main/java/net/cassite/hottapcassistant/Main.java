@@ -104,9 +104,6 @@ public class Main extends Application {
     }
 
     private void terminate() {
-        GlobalScreenUtils.unregister();
-        TaskManager.get().terminate();
-        FeedThread.get().terminate();
         if (mainSceneGroup != null) {
             for (var scene : new HashSet<>(mainSceneGroup.getScenes())) {
                 if (scene instanceof Terminate) {
@@ -114,7 +111,10 @@ public class Main extends Application {
                 }
             }
         }
+        FeedThread.get().terminate();
         GlobalValues.vertx.close();
+        TaskManager.get().terminate();
+        GlobalScreenUtils.unregister();
     }
 
     public static void main(String[] args) {

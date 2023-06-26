@@ -15,6 +15,9 @@ open module net.cassite.hottapcassistant {
     requires io.vertx.core;
     requires org.slf4j;
     requires net.cassite.xboxrelay.ui;
+    requires org.pcap4j.core;
+    requires net.cassite.tofpcap;
+    requires org.controlsfx.controls;
     exports net.cassite.hottapcassistant;
     exports net.cassite.hottapcassistant.test;
 }

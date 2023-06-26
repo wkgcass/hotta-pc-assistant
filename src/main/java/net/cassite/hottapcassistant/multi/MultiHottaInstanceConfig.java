@@ -1,15 +1,15 @@
 package net.cassite.hottapcassistant.multi;
 
 import io.vproxy.vfx.util.MiscUtils;
-import net.cassite.hottapcassistant.ui.JSONJavaObject;
 import vjson.JSON;
+import vjson.JSONObject;
 import vjson.deserializer.rule.IntRule;
 import vjson.deserializer.rule.ObjectRule;
 import vjson.deserializer.rule.Rule;
 import vjson.deserializer.rule.StringRule;
 import vjson.util.ObjectBuilder;
 
-public class MultiHottaInstanceConfig implements JSONJavaObject {
+public class MultiHottaInstanceConfig implements JSONObject {
     String betaPath;
     String onlinePath;
     String advBranch;
