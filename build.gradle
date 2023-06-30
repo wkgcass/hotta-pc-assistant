@@ -70,6 +70,7 @@ jlink {
         uses 'io.vertx.core.spi.JsonFactory'
         uses 'io.vertx.core.spi.launcher.CommandFactory'
         forceMerge 'kotlin'
+        forceMerge 'slf4j'
     }
 }
 
