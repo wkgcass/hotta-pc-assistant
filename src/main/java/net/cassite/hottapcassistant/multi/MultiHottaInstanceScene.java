@@ -9,6 +9,7 @@ import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.manager.task.TaskManager;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.alert.StackTraceAlert;
 import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.button.ImageButton;
 import io.vproxy.vfx.ui.layout.HPadding;
@@ -335,7 +336,13 @@ public class MultiHottaInstanceScene extends ToolScene {
         var loadingStage = new LoadingStage(I18n.get().toolName("multi-hotta-instance"));
         loadingStage.setItems(items);
         loadingStage.setInterval(120);
-        loadingStage.load(Callback.ofIgnoreExceptionFunction(v -> {
+        loadingStage.load(Callback.ofFunction((err, v) -> {
+            if (err != null) {
+                Logger.error(LogType.ALERT, "initiating multi-hotta-instance failed at " + err.failedItem.name, err);
+                StackTraceAlert.show(err);
+                return;
+            }
+
             tool.save(config);
 
             final int CURRENT_TIPS_VERSION = 1;
