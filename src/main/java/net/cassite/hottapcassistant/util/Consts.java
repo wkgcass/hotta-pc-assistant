@@ -13,7 +13,7 @@ public class Consts {
 
     public static final String[] ALL_IMAGE = new String[]{
         "/net/cassite/xboxrelay/ui/res/xbox.png",
-        "/images/bg/bg2.jpg",
+        "/images/bg/bg3.png",
         "/images/buff/ai-li-si-simulacra.png",
         "/images/buff/bee.png",
         "/images/buff/burn-settle.png",
