@@ -11,7 +11,7 @@ import io.vproxy.vfx.ui.button.TransparentFusionButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
 import io.vproxy.vfx.ui.pane.AbstractFusionPane;
-import io.vproxy.vfx.ui.pane.TransparentFusionPane;
+import io.vproxy.vfx.ui.pane.TransparentContentFusionPane;
 import io.vproxy.vfx.util.FXUtils;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -84,10 +84,10 @@ public class WelcomeScene extends AbstractMainScene {
 
         var textPart = new VBox();
         {
-            var pane = new TransparentFusionPane() {
+            var pane = new TransparentContentFusionPane() {
                 @Override
                 protected AbstractFusionPane buildRootNode() {
-                    return new TransparentFusionPaneImpl() {
+                    return new TransparentContentFusionPaneImpl() {
                         @Override
                         protected Color normalColor() {
                             return new Color(1, 1, 1, 0);
@@ -365,15 +365,52 @@ public class WelcomeScene extends AbstractMainScene {
         }
 
         {
-            var sep1 = new Separator();
-            sep1.setPadding(new Insets(50, 0, 50, 0));
-            sep1.setOpacity(0.25);
-            vbox.getChildren().add(sep1);
+            vbox.getChildren().add(new VPadding(50));
         }
 
+        var buttonsPart = new VBox();
+        {
+            var buttonsPane = new TransparentContentFusionPane() {
+                @Override
+                protected AbstractFusionPane buildRootNode() {
+                    return new TransparentContentFusionPaneImpl() {
+                        @Override
+                        protected Color normalColor() {
+                            return Color.TRANSPARENT;
+                        }
+
+                        @Override
+                        protected Color hoverColor() {
+                            return Color.TRANSPARENT;
+                        }
+
+                        @Override
+                        protected Color hoverBorderColor() {
+                            return Color.TRANSPARENT;
+                        }
+
+                        @Override
+                        protected Color normalBorderColor() {
+                            return Color.TRANSPARENT;
+                        }
+                    };
+                }
+            };
+
+            buttonsPane.getNode().setMaxWidth(500);
+            buttonsPane.getNode().setPrefWidth(500);
+            buttonsPane.getNode().setMaxHeight(280);
+            buttonsPane.getNode().setPrefHeight(280);
+
+            vbox.getChildren().add(buttonsPane.getNode());
+            buttonsPane.getContentPane().getChildren().add(buttonsPart);
+            FXUtils.observeWidthHeight(buttonsPane.getContentPane(), buttonsPart);
+
+            buttonsPart.setAlignment(Pos.CENTER);
+        }
         {
             var group = new Group();
-            vbox.getChildren().add(group);
+            buttonsPart.getChildren().add(group);
 
             var downloadBtn = new ImageButton("images/downloadgame-btn/downloadgame", "png");
             downloadBtn.setScale(0.6);
@@ -418,14 +455,14 @@ public class WelcomeScene extends AbstractMainScene {
 
         {
             var sep1 = new Separator();
-            sep1.setPadding(new Insets(50, 0, 50, 0));
+            sep1.setPadding(new Insets(40, 0, 40, 0));
             sep1.setOpacity(0.25);
-            vbox.getChildren().add(sep1);
+            buttonsPart.getChildren().add(sep1);
         }
 
         {
             var group = new Group();
-            vbox.getChildren().add(group);
+            buttonsPart.getChildren().add(group);
 
             var downloadBtn = new ImageButton("images/global-download-btn/download", "png");
             downloadBtn.setScale(0.5);
