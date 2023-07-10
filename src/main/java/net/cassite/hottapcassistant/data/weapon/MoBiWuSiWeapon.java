@@ -63,7 +63,7 @@ public class MoBiWuSiWeapon extends AbstractWeapon implements Weapon, SkipAudioC
         moShuShiJianTime = 0;
         if (stars >= 3) {
             if (time > 0) {
-                cd = Utils.subtractLongGE0(cd, Math.min(13_000, time));
+                currentCD = Utils.subtractLongGE0(currentCD, Math.min(13_000, time));
                 totalBuffTime = 20_000 * Math.min(13_000, time) / 13_000;
                 buffTime = totalBuffTime;
             }

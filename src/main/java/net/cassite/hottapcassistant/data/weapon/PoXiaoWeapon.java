@@ -46,10 +46,10 @@ public class PoXiaoWeapon extends AbstractWeapon implements Weapon {
         }
         if (state == 0) {
             state = 1;
-            humanCD = cd;
-            cd = mechaCD;
+            humanCD = currentCD;
+            currentCD = mechaCD;
         } else {
-            mechaCD = cd;
+            mechaCD = currentCD;
         }
         return skill;
     }
@@ -74,10 +74,10 @@ public class PoXiaoWeapon extends AbstractWeapon implements Weapon {
     protected void alertWeaponSwitched0(WeaponContext ctx, Weapon w, boolean discharge) {
         if (w == this && discharge) {
             state = 1;
-            cd = mechaCD;
+            currentCD = mechaCD;
         } else if (w != null) {
             state = 0;
-            cd = humanCD;
+            currentCD = humanCD;
         }
     }
 

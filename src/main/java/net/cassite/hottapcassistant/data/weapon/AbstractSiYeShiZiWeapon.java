@@ -58,7 +58,7 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
 
     @Override
     protected void threadTick(long ts, long delta) {
-        if (cd == 0) {
+        if (currentCD == 0) {
             state = 0;
         }
         burnBuff = Utils.subtractLongGE0(burnBuff, delta);
@@ -76,7 +76,7 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
             }
         } else if (state == 1) {
             state = 2;
-            cd = 14_000;
+            currentCD = 14_000;
             shotRemain = 8;
             dodgeRemain = 8; // will / 2
             return SiYeShiZiChooseModeSkill.instance;
@@ -153,7 +153,7 @@ public abstract class AbstractSiYeShiZiWeapon extends AbstractWeapon implements 
     @Override
     public long getCoolDown() {
         if (state == 1) return 0;
-        return cd;
+        return currentCD;
     }
 
     public long getOpticalSpaceTime() {

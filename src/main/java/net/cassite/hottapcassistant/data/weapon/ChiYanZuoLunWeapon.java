@@ -37,9 +37,9 @@ public class ChiYanZuoLunWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected void threadTick(long ts, long delta) {
         burnBuff = Utils.subtractLongGE0(burnBuff, delta);
-        if (stars >= 6 && cd > 0 && burnBuff > 0) {
+        if (stars >= 6 && currentCD > 0 && burnBuff > 0) {
             if (ts - lastDecreaseCD >= 2000) { // the burn tick does not correspond to the timer, so the interval will be longer
-                cd = Utils.subtractLongGE0(cd, 4000);
+                currentCD = Utils.subtractLongGE0(currentCD, 4000);
                 lastDecreaseCD = ts;
             }
         }

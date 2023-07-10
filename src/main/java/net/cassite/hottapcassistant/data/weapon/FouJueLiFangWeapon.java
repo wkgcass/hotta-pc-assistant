@@ -31,7 +31,7 @@ public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon, SkipAu
     public void init(int stars, Matrix[] matrix) {
         super.init(stars, matrix);
         if (stars >= 3) {
-            cooldown = 30_700;
+            totalCoolDown = 30_700;
         }
     }
 

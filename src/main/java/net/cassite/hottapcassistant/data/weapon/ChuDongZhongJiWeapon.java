@@ -50,8 +50,8 @@ public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, Trig
     private void resetState() {
         state = 0;
         state1Time = 0;
-        cooldown = 45_000;
-        cd = state0CD;
+        totalCoolDown = 45_000;
+        currentCD = state0CD;
     }
 
     @Override
@@ -60,15 +60,15 @@ public class ChuDongZhongJiWeapon extends AbstractWeapon implements Weapon, Trig
             var ok = super.useSkill0(ctx);
             if (ok == null) return null;
             state = 1;
-            state0CD = cd;
-            cd = state1CD;
-            cooldown = 10_000;
+            state0CD = currentCD;
+            currentCD = state1CD;
+            totalCoolDown = 10_000;
             state1Time = 25_000;
             return ChuDongZhongJiSwitchModeSkill.instance;
         } else {
             var ok = super.useSkill0(ctx);
             if (ok == null) return null;
-            state1CD = cd;
+            state1CD = currentCD;
             return ChuDongZhongJiAttackSkill.instance;
         }
     }

@@ -13,28 +13,28 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     protected String name;
     protected Image image;
     protected int stars;
-    protected int cooldown;
+    protected int totalCoolDown;
     protected int attackPointTime;
     protected double considerCDIsClearedRatio = 0.1;
     protected Matrix[] matrix;
     protected WeaponContext ctx;
-    protected volatile long cd = 0L;
+    protected volatile long currentCD = 0L;
     protected final AudioGroup skillAudio;
 
-    public AbstractWeapon(int cooldown) {
-        this(cooldown, false);
+    public AbstractWeapon(int totalCoolDown) {
+        this(totalCoolDown, false);
     }
 
-    public AbstractWeapon(int cooldown, int attackPointTime) {
-        this(cooldown, false, attackPointTime);
+    public AbstractWeapon(int totalCoolDown, int attackPointTime) {
+        this(totalCoolDown, false, attackPointTime);
     }
 
-    public AbstractWeapon(int cooldown, boolean isMillis) {
-        this(cooldown, isMillis, 0);
+    public AbstractWeapon(int totalCoolDown, boolean isMillis) {
+        this(totalCoolDown, isMillis, 0);
     }
 
-    public AbstractWeapon(int cooldown, boolean isMillis, int attackPointTime) {
-        this.cooldown = cooldown * (isMillis ? 1 : 1000) + attackPointTime;
+    public AbstractWeapon(int totalCoolDown, boolean isMillis, int attackPointTime) {
+        this.totalCoolDown = totalCoolDown * (isMillis ? 1 : 1000) + attackPointTime;
         this.attackPointTime = attackPointTime;
         this.name = buildName();
         this.image = buildImage();
@@ -113,32 +113,32 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
 
     @Override
     protected final void mainThreadTick(long ts, long delta) {
-        var cd = this.cd;
+        var cd = this.currentCD;
         if (cd > delta) {
             cd -= delta;
-            this.cd = cd;
+            this.currentCD = cd;
         } else {
-            this.cd = 0;
+            this.currentCD = 0;
         }
         super.mainThreadTick(ts, delta);
     }
 
     @Override
     public long getCoolDown() {
-        return cd;
+        return currentCD;
     }
 
     @Override
     public double[] getAllCoolDown() {
-        if (cd == 0) return null;
-        return new double[]{cd / (double) cooldown};
+        if (currentCD == 0) return null;
+        return new double[]{currentCD / (double) totalCoolDown};
     }
 
     @Override
     public Skill pressSkill(WeaponContext ctx) {
-        if (this.cd != 0) {
-            long cd = this.cd;
-            if (cooldown * considerCDIsClearedRatio < cd) {
+        if (this.currentCD != 0) {
+            long cd = this.currentCD;
+            if (totalCoolDown * considerCDIsClearedRatio < cd) {
                 return null;
             }
         }
@@ -163,9 +163,9 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
 
     @Override
     public Skill useSkill(WeaponContext ctx) {
-        if (this.cd != 0) {
-            long cd = this.cd;
-            if (cooldown * considerCDIsClearedRatio < cd) {
+        if (this.currentCD != 0) {
+            long cd = this.currentCD;
+            if (totalCoolDown * considerCDIsClearedRatio < cd) {
                 return null;
             }
         }
@@ -218,7 +218,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     }
 
     protected void revertSkill0(WeaponContext ctx) {
-        cd = 0;
+        currentCD = 0;
     }
 
     protected Skill skillInstance() {
@@ -227,7 +227,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
 
     @SuppressWarnings({"unused", "BooleanMethodIsAlwaysInverted"})
     protected Skill useSkill0(WeaponContext ctx) {
-        cd = cooldown;
+        currentCD = totalCoolDown;
         return skillInstance();
     }
 
@@ -313,16 +313,16 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
 
     @Override
     public void resetCoolDown() {
-        cd = 0;
+        currentCD = 0;
     }
 
     @Override
     public void decreaseCoolDown(long time) {
-        long cd = this.cd;
+        long cd = this.currentCD;
         if (cd < time) {
-            this.cd = 0;
+            this.currentCD = 0;
         } else {
-            this.cd = cd - time;
+            this.currentCD = cd - time;
         }
     }
 }

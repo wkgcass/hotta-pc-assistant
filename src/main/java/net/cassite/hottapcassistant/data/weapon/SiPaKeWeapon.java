@@ -16,10 +16,10 @@ public class SiPaKeWeapon extends AbstractWeapon implements Weapon, FireResonanc
     public void init(int stars, Matrix[] matrix) {
         super.init(stars, matrix);
         if (stars >= 1) {
-            cooldown = 24_400;
+            totalCoolDown = 24_400;
         }
         if (stars >= 6) {
-            cooldown = 16_400;
+            totalCoolDown = 16_400;
         }
     }
 

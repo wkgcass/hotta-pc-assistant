@@ -45,7 +45,7 @@ public class YueXingChuanWeapon extends AbstractWeapon implements Weapon {
             main = new PuLongYing();
         sub = getSanLiu(opts.skill2);
 
-        super.cooldown = (int) (main.totalCD() + super.attackPointTime);
+        super.totalCoolDown = (int) (main.totalCD() + super.attackPointTime);
         if (sub != null) {
             var indicator = sub.cdIndicator();
             indicator.setEffect(new Glow(0.5));

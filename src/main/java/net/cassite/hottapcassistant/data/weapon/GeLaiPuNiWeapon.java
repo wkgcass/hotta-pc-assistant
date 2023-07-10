@@ -59,13 +59,13 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
         if (mainSkillCD == 0) {
             return;
         }
-        if (cd == 0 && (state == STATE_CAN_BE_REFRESHED || state == STATE_USED_AND_CANNOT_REFRESH)) {
+        if (currentCD == 0 && (state == STATE_CAN_BE_REFRESHED || state == STATE_USED_AND_CANNOT_REFRESH)) {
             setState(STATE_SKILL_USED);
         }
         var mainSkillCD = this.mainSkillCD;
         if (mainSkillCD < delta) {
             this.mainSkillCD = 0;
-            cd = 0;
+            currentCD = 0;
             setState(STATE_NORMAL);
         } else {
             mainSkillCD -= delta;
@@ -75,13 +75,13 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
 
     @Override
     public long getCoolDown() {
-        return Math.min(cd, mainSkillCD);
+        return Math.min(currentCD, mainSkillCD);
     }
 
     @Override
     public double[] getAllCoolDown() {
         if (mainSkillCD == 0) return null;
-        long cd = this.cd;
+        long cd = this.currentCD;
         if (cd == 0 || state == STATE_NORMAL) return new double[]{mainSkillCD / 30_000d};
         return new double[]{mainSkillCD / 30_000d, cd / 15_000d};
     }
@@ -104,7 +104,7 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
                 if (last - first < 800) {
                     assert Logger.lowLevelDebug("ge-lai-pu-ni quick cd refresh: triggered");
                     mainSkillCD = 30 * 1000;
-                    cd = 15 * 1000;
+                    currentCD = 15 * 1000;
                     setState(STATE_CAN_BE_REFRESHED);
                     clickedTs.clear();
 
@@ -118,22 +118,22 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
             }
         }
 
-        if (this.cd != 0) {
+        if (this.currentCD != 0) {
             return null;
         }
         if (state == STATE_NORMAL) {
             if (stars < 1) {
-                cd = 30 * 1000;
+                currentCD = 30 * 1000;
                 return skillInstance();
             }
             mainSkillCD = 30 * 1000;
-            cd = 400;
+            currentCD = 400;
             setState(STATE_SKILL_USED);
         } else if (state == STATE_SKILL_USED) {
-            cd = 15_000;
+            currentCD = 15_000;
             setState(STATE_CAN_BE_REFRESHED);
         } else if (state == STATE_IS_REFRESHED) {
-            cd = 15 * 1000;
+            currentCD = 15 * 1000;
             setState(STATE_USED_AND_CANNOT_REFRESH);
         }
         lastTimeSkillUsed = current;
@@ -154,26 +154,26 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
     private void refreshState2() {
         if (state != STATE_CAN_BE_REFRESHED) return;
         setState(STATE_IS_REFRESHED);
-        cd = 0;
+        currentCD = 0;
     }
 
     @Override
     public void resetCoolDown() {
         setState(STATE_NORMAL);
         mainSkillCD = 0;
-        cd = 0;
+        currentCD = 0;
     }
 
     @Override
     public void decreaseCoolDown(long time) {
         var oldState = state;
-        var oldCD = cd;
+        var oldCD = currentCD;
 
         super.decreaseCoolDown(time);
         var mainSkillCD = this.mainSkillCD;
         if (mainSkillCD < time) {
             this.mainSkillCD = 0;
-            cd = 0;
+            currentCD = 0;
             setState(STATE_NORMAL);
         } else {
             mainSkillCD -= time;
@@ -183,7 +183,7 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
         if (oldState == STATE_SKILL_USED && state != STATE_NORMAL) {
             // this is not cooldown, it's just here to prevent user from clicking keyboard too fast
             setState(oldState);
-            cd = oldCD;
+            currentCD = oldCD;
         }
     }
 }

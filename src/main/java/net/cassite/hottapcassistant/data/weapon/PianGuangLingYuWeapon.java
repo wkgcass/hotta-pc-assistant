@@ -67,7 +67,7 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public Skill useSkill(WeaponContext ctx) {
-        if (cd > 0) {
+        if (currentCD > 0) {
             if (subSkillCount > 0) {
                 if (antiFalseTouch > 350) {
                     return null;
@@ -101,25 +101,25 @@ public class PianGuangLingYuWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public long getCoolDown() {
-        if (cd > 0) {
+        if (currentCD > 0) {
             if (subSkillCount > 0) {
                 return antiFalseTouch;
             } else {
-                return cd;
+                return currentCD;
             }
         } else {
-            return cd;
+            return currentCD;
         }
     }
 
     @Override
     public double[] getAllCoolDown() {
-        if (cd > 0) {
+        if (currentCD > 0) {
             if (subSkillCount == 0 || antiFalseTouch == 0) {
                 return super.getAllCoolDown();
             } else {
                 return new double[]{
-                    cd / (double) this.cooldown,
+                    currentCD / (double) this.totalCoolDown,
                     antiFalseTouch / 3_000d,
                 };
             }

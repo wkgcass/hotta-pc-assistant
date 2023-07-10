@@ -46,12 +46,12 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
     @Override
     protected void threadTick(long ts, long delta) {
         if (!ctx.resonanceInfo.support()) return;
-        if (cd == 0) {
+        if (currentCD == 0) {
             if (count < 3) {
                 ++count;
             }
             if (count < 3) {
-                cd = cooldown - attackPointTime;
+                currentCD = totalCoolDown - attackPointTime;
             }
         }
     }
@@ -71,7 +71,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
         }
         if (count > 0) {
             --count;
-            if (cd == 0) {
+            if (currentCD == 0) {
                 return super.useSkill0(ctx);
             } else {
                 return skillInstance();
@@ -86,7 +86,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
         if (ctx.resonanceInfo.support()) {
             if (count == 2) {
                 count = 3;
-                cd = 0;
+                currentCD = 0;
             } else if (count < 2) {
                 ++count;
             }
@@ -129,7 +129,7 @@ public class WanDaoWeapon extends AbstractWeapon implements Weapon, PhysicsReson
 
     public void resetCount() {
         count = 3;
-        cd = 0;
+        currentCD = 0;
     }
 
     @Override
