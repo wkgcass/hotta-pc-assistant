@@ -882,6 +882,7 @@ public class ZhCn extends I18n {
             case "sōng hùi" -> "松彗";
             case "pián zhēn" -> "骈臻";
             case "zhí míng" -> "执明";
+            case "mèng zhāng" -> "孟章";
             default -> name;
         };
     }
@@ -950,6 +951,7 @@ public class ZhCn extends I18n {
             case "huiXiangCount" -> "回响计数";
             case "haiLaZhiYongTime" -> "海拉之拥增伤持续时间";
             case "guanFengCD" -> "观风冷却时间";
+            case "mengZhangSkillCounter" -> "孟章技能层数";
             default -> name;
         };
     }

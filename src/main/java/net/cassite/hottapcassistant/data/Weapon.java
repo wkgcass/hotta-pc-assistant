@@ -19,10 +19,13 @@ public interface Weapon extends WithThreadStartStop, WithExtraData {
 
     int getStars();
 
+    // order:first
     void init(int stars, Matrix[] matrix);
 
+    // order:second
     void init(WeaponArgs args);
 
+    // order:third
     void init(WeaponContext ctx);
 
     Matrix[] getMatrix();

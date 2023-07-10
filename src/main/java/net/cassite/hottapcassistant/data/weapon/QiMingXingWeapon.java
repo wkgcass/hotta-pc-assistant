@@ -11,6 +11,8 @@ import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class QiMingXingWeapon extends AbstractWeapon implements Weapon, ThunderResonance {
+    private boolean cdCannotChange = false;
+
     public QiMingXingWeapon() {
         super(25, 500);
     }
@@ -48,5 +50,28 @@ public class QiMingXingWeapon extends AbstractWeapon implements Weapon, ThunderR
     @Override
     protected boolean isRevertibleSkill(WeaponContext ctx) {
         return true;
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
+        super.init(ctx);
+        if (MengZhangWeapon.hasMengZhangCDDecreasingAndDisableCDChanging(ctx)) {
+            totalCoolDown = totalCoolDown * 2 / 3;
+            cdCannotChange = true;
+        }
+    }
+
+    @Override
+    public void decreaseCoolDown(long time) {
+        if (cdCannotChange)
+            return;
+        super.decreaseCoolDown(time);
+    }
+
+    @Override
+    public void resetCoolDown() {
+        if (cdCannotChange)
+            return;
+        super.resetCoolDown();
     }
 }

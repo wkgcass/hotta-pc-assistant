@@ -20,6 +20,8 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
 
     private volatile long mainSkillCD = 0;
 
+    private boolean hasMengZhangCDDecreasing = false;
+
     public GeLaiPuNiWeapon() {
         super(-1);
     }
@@ -74,6 +76,14 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
     }
 
     @Override
+    public void init(WeaponContext ctx) {
+        super.init(ctx);
+        if (MengZhangWeapon.hasMengZhangCDDecreasingAndDisableCDChanging(ctx)) {
+            hasMengZhangCDDecreasing = true;
+        }
+    }
+
+    @Override
     public long getCoolDown() {
         return Math.min(currentCD, mainSkillCD);
     }
@@ -82,8 +92,8 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
     public double[] getAllCoolDown() {
         if (mainSkillCD == 0) return null;
         long cd = this.currentCD;
-        if (cd == 0 || state == STATE_NORMAL) return new double[]{mainSkillCD / 30_000d};
-        return new double[]{mainSkillCD / 30_000d, cd / 15_000d};
+        if (cd == 0 || state == STATE_NORMAL) return new double[]{mainSkillCD / (double) mainSkillTotalCD()};
+        return new double[]{mainSkillCD / (double) mainSkillTotalCD(), cd / 15_000d};
     }
 
     private final LinkedList<Long> clickedTs = new LinkedList<>();
@@ -103,7 +113,7 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
                 long first = clickedTs.getFirst();
                 if (last - first < 800) {
                     assert Logger.lowLevelDebug("ge-lai-pu-ni quick cd refresh: triggered");
-                    mainSkillCD = 30 * 1000;
+                    mainSkillCD = mainSkillTotalCD();
                     currentCD = 15 * 1000;
                     setState(STATE_CAN_BE_REFRESHED);
                     clickedTs.clear();
@@ -123,10 +133,10 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
         }
         if (state == STATE_NORMAL) {
             if (stars < 1) {
-                currentCD = 30 * 1000;
+                currentCD = mainSkillTotalCD();
                 return skillInstance();
             }
-            mainSkillCD = 30 * 1000;
+            mainSkillCD = mainSkillTotalCD();
             currentCD = 400;
             setState(STATE_SKILL_USED);
         } else if (state == STATE_SKILL_USED) {
@@ -138,6 +148,10 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
         }
         lastTimeSkillUsed = current;
         return skillInstance();
+    }
+
+    private long mainSkillTotalCD() {
+        return (hasMengZhangCDDecreasing ? 20 : 30) * 1000;
     }
 
     private void setState(int state) {
@@ -159,6 +173,9 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
 
     @Override
     public void resetCoolDown() {
+        if (hasMengZhangCDDecreasing)
+            return;
+
         setState(STATE_NORMAL);
         mainSkillCD = 0;
         currentCD = 0;
@@ -166,6 +183,9 @@ public class GeLaiPuNiWeapon extends AbstractWeapon implements Weapon, ThunderRe
 
     @Override
     public void decreaseCoolDown(long time) {
+        if (hasMengZhangCDDecreasing)
+            return;
+
         var oldState = state;
         var oldCD = currentCD;
 

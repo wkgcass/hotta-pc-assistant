@@ -15,6 +15,8 @@ public class JueXiangWeapon extends AbstractWeapon implements Weapon {
     private final WeaponCoolDown haiLaZhiYongTime = new WeaponCoolDown(Utils.getBuffImageFromClasspath("hai-la-zhi-yong"), "hai-la-zhi-yong", I18n.get().buffName("haiLaZhiYongTime"));
     private final WeaponSpecialInfo huiXiangCount = new WeaponSpecialInfo(Utils.getBuffImageFromClasspath("hui-xiang"), "hui-xiang", I18n.get().buffName("huiXiangCount"));
 
+    private boolean cdCannotChange = false;
+
     private long buffTime = 0;
     private int hxCount = 0;
     private boolean autoDischargeForJueXiang;
@@ -60,6 +62,15 @@ public class JueXiangWeapon extends AbstractWeapon implements Weapon {
     @Override
     protected AudioGroup buildSkillAudio() {
         return Utils.getSkillAudioGroup("lei-bi-li-ya", 5);
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
+        super.init(ctx);
+        if (MengZhangWeapon.hasMengZhangCDDecreasingAndDisableCDChanging(ctx)) {
+            totalCoolDown = totalCoolDown * 2 / 3;
+            cdCannotChange = true;
+        }
     }
 
     @Override
@@ -111,5 +122,19 @@ public class JueXiangWeapon extends AbstractWeapon implements Weapon {
     public void updateExtraData() {
         haiLaZhiYongTime.setAllCoolDown(buffTime, getTotalBuffTime());
         huiXiangCount.setText("" + hxCount);
+    }
+
+    @Override
+    public void decreaseCoolDown(long time) {
+        if (cdCannotChange)
+            return;
+        super.decreaseCoolDown(time);
+    }
+
+    @Override
+    public void resetCoolDown() {
+        if (cdCannotChange)
+            return;
+        super.resetCoolDown();
     }
 }

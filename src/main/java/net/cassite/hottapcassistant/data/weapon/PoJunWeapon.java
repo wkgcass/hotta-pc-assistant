@@ -11,6 +11,8 @@ public class PoJunWeapon extends AbstractWeapon implements Weapon {
     private long leiDianGanYingTime = 0;
     private final WeaponCoolDown leiDianGanYing = new WeaponCoolDown(Utils.getBuffImageFromClasspath("lei-dian-gan-ying"), "leiDianGanYing", I18n.get().buffName("leiDianGanYing"));
 
+    private boolean cdCannotChange = false;
+
     public PoJunWeapon() {
         super(30);
         extraIndicatorList.add(leiDianGanYing);
@@ -52,6 +54,15 @@ public class PoJunWeapon extends AbstractWeapon implements Weapon {
     }
 
     @Override
+    public void init(WeaponContext ctx) {
+        super.init(ctx);
+        if (MengZhangWeapon.hasMengZhangCDDecreasingAndDisableCDChanging(ctx)) {
+            totalCoolDown = totalCoolDown * 2 / 3;
+            cdCannotChange = true;
+        }
+    }
+
+    @Override
     protected Skill useSkill0(WeaponContext ctx) {
         var s = super.useSkill0(ctx);
         if (s == null) {
@@ -72,5 +83,19 @@ public class PoJunWeapon extends AbstractWeapon implements Weapon {
     @Override
     public void updateExtraData() {
         leiDianGanYing.setAllCoolDown(leiDianGanYingTime, getTotalLeiDianGanYingTime());
+    }
+
+    @Override
+    public void decreaseCoolDown(long time) {
+        if (cdCannotChange)
+            return;
+        super.decreaseCoolDown(time);
+    }
+
+    @Override
+    public void resetCoolDown() {
+        if (cdCannotChange)
+            return;
+        super.resetCoolDown();
     }
 }

@@ -8,6 +8,8 @@ import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class ShengHenQuanZhangWeapon extends AbstractWeapon implements Weapon, SkipAudioCollection001 {
+    private boolean cdCannotChange = false;
+
     public ShengHenQuanZhangWeapon() {
         super(60, 800);
     }
@@ -50,5 +52,28 @@ public class ShengHenQuanZhangWeapon extends AbstractWeapon implements Weapon, S
     @Override
     protected AudioGroup buildSkillAudio() {
         return Utils.getSkillAudioGroup("pei-pei", 3);
+    }
+
+    @Override
+    public void init(WeaponContext ctx) {
+        super.init(ctx);
+        if (MengZhangWeapon.hasMengZhangCDDecreasingAndDisableCDChanging(ctx)) {
+            totalCoolDown = totalCoolDown * 2 / 3;
+            cdCannotChange = true;
+        }
+    }
+
+    @Override
+    public void decreaseCoolDown(long time) {
+        if (cdCannotChange)
+            return;
+        super.decreaseCoolDown(time);
+    }
+
+    @Override
+    public void resetCoolDown() {
+        if (cdCannotChange)
+            return;
+        super.resetCoolDown();
     }
 }
