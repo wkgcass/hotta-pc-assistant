@@ -8,6 +8,7 @@ import io.vproxy.vfx.control.dialog.VDialog;
 import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.manager.task.TaskManager;
+import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.alert.StackTraceAlert;
 import io.vproxy.vfx.ui.button.FusionButton;
@@ -22,6 +23,7 @@ import io.vproxy.vfx.util.MiscUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
@@ -54,6 +56,8 @@ public class MultiHottaInstanceScene extends ToolScene {
     private final TextField selectBetaLocationInput;
     private final TextField selectOnlineLocationInput;
     private final TextField advBranchInput;
+    private final TextField onlineBranchInput;
+    private final CheckBox isHandlingAdvCheckBox;
     private int disableTipsVersion;
 
     public MultiHottaInstanceScene(MultiHottaInstance tool) {
@@ -93,6 +97,18 @@ public class MultiHottaInstanceScene extends ToolScene {
             FontManager.get().setFont(this);
             setText("AdvLaunch24");
         }};
+        onlineBranchInput = new TextField() {{
+            FontManager.get().setFont(this);
+            setText("Windows30");
+        }};
+
+        isHandlingAdvCheckBox = new CheckBox(I18n.get().multiInstanceIsHandlingAdvCheckBox()) {{
+            FontManager.get().setFont(this);
+            setTextFill(Theme.current().normalTextColor());
+            FXUtils.disableFocusColor(this);
+            setSelected(true);
+        }};
+
         var launchBtn = new ImageButton("images/launchgame-btn/launchgame", "png") {{
             setScale(0.7);
         }};
@@ -126,11 +142,20 @@ public class MultiHottaInstanceScene extends ToolScene {
                 new VPadding(20),
                 new HBox(
                     new ThemeLabel(I18n.get().multiInstanceAdvBranch()) {{
-                        setPrefWidth(80);
                         setPadding(new Insets(5, 0, 0, 0));
                     }},
                     new HPadding(5),
-                    advBranchInput
+                    advBranchInput,
+                    new HPadding(20),
+                    new ThemeLabel(I18n.get().multiInstanceOnlineBranch()) {{
+                        setPadding(new Insets(5, 0, 0, 0));
+                    }},
+                    new HPadding(5),
+                    onlineBranchInput
+                ),
+                new VPadding(20),
+                new HBox(
+                    isHandlingAdvCheckBox
                 ),
                 new VPadding(40),
                 new HBox(launchBtn) {{
@@ -186,6 +211,9 @@ public class MultiHottaInstanceScene extends ToolScene {
         if (config.advBranch != null) {
             advBranchInput.setText(config.advBranch);
         }
+        if (config.onlineBranch != null) {
+            onlineBranchInput.setText(config.onlineBranch);
+        }
         disableTipsVersion = config.disableTips;
     }
 
@@ -212,6 +240,7 @@ public class MultiHottaInstanceScene extends ToolScene {
         config.betaPath = selectBetaLocationInput.getText();
         config.onlinePath = selectOnlineLocationInput.getText();
         config.advBranch = advBranchInput.getText();
+        config.onlineBranch = onlineBranchInput.getText();
         config.disableTips = disableTipsVersion;
         config.clearEmptyFields();
         return config;
@@ -308,7 +337,8 @@ public class MultiHottaInstanceScene extends ToolScene {
             if (proxyServer != null) {
                 return true;
             }
-            var proxyServer = new HottaLauncherProxyServer(config.advBranch, RES_VERSION, RES_SUB_VERSION, clientVersion[0]);
+            var proxyServer = new HottaLauncherProxyServer(config.advBranch, config.onlineBranch, RES_VERSION, RES_SUB_VERSION, clientVersion[0],
+                isHandlingAdvCheckBox.selectedProperty());
             try {
                 proxyServer.start();
             } catch (Exception e) {

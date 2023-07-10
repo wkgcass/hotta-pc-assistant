@@ -497,6 +497,10 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String multiInstanceAdvBranch();
 
+    public abstract String multiInstanceOnlineBranch();
+
+    public abstract String multiInstanceIsHandlingAdvCheckBox();
+
     public abstract String multiInstanceSaveCaCert();
 
     public abstract String multiInstanceTutorialLink();

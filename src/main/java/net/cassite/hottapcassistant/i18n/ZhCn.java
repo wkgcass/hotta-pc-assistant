@@ -1464,7 +1464,17 @@ public class ZhCn extends I18n {
 
     @Override
     public String multiInstanceAdvBranch() {
-        return "分支";
+        return "测试服分支";
+    }
+
+    @Override
+    public String multiInstanceOnlineBranch() {
+        return "正式服分支";
+    }
+
+    @Override
+    public String multiInstanceIsHandlingAdvCheckBox() {
+        return "处理测试服客户端流量";
     }
 
     @Override

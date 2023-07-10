@@ -8,6 +8,7 @@ import io.vertx.core.net.TrustOptions;
 import io.vproxy.base.util.LogType;
 import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.util.MiscUtils;
+import javafx.beans.property.BooleanProperty;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
 import javax.net.ssl.X509TrustManager;
@@ -24,15 +25,21 @@ public class HottaLauncherProxyServer {
     private final HttpClient client;
 
     private final String advBranch;
+    private final String onlineBranch;
     private final String version;
     private final String subVersion;
     private final String clientVersion;
 
-    public HottaLauncherProxyServer(String advBranch, String version, String subVersion, String clientVersion) {
+    private final BooleanProperty isHandlingAdv;
+
+    public HottaLauncherProxyServer(String advBranch, String onlineBranch, String version, String subVersion, String clientVersion,
+                                    BooleanProperty isHandlingAdv) {
         this.advBranch = advBranch;
+        this.onlineBranch = onlineBranch;
         this.version = version;
         this.subVersion = subVersion;
         this.clientVersion = clientVersion;
+        this.isHandlingAdv = isHandlingAdv;
         server = GlobalValues.vertx.createHttpServer(new HttpServerOptions()
             .setSsl(true)
             .setPemKeyCertOptions(new PemKeyCertOptions()
@@ -84,6 +91,8 @@ public class HottaLauncherProxyServer {
                 nullConfigXml(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + advBranch + "/Version/Windows/config.xml")) {
                 configXml(reqId, req);
+            } else if (isHandlingAdv.get() && method == HttpMethod.GET && uri.startsWith("/clientRes/" + onlineBranch + "/Version/Windows/config.xml")) {
+                configXml(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + advBranch + "/Version/Windows/version/" + subVersion + "/ResList.xml")) {
                 resListXml(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + advBranch + "/Version/Windows/version/" + subVersion + "/lastdiff.xml")) {
@@ -95,7 +104,11 @@ public class HottaLauncherProxyServer {
             } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/200105/Version.ini")) {
                 versionIni(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/gameinfo.xml")) {
+                isHandlingAdv.set(true);
                 gameInfoXml(reqId, req);
+            } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + onlineBranch + "/gameinfo.xml")) {
+                isHandlingAdv.set(false);
+                proxy(client, reqId, req, method, uri, headers, body);
             } else {
                 proxy(client, reqId, req, method, uri, headers, body);
             }
