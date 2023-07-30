@@ -34,7 +34,7 @@ public class MengZhangWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     public WeaponCategory category() {
-        return WeaponCategory.DPS;
+        return WeaponCategory.DEFENSE;
     }
 
     @Override
