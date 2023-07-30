@@ -25,6 +25,11 @@ import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import net.cassite.hottapcassistant.feed.FeedThread;
 import net.cassite.hottapcassistant.i18n.I18n;
@@ -41,6 +46,7 @@ import java.util.Map;
 
 public class Main extends Application {
     private VSceneGroup mainSceneGroup;
+    private volatile boolean isPlayingStartupVideo = false;
 
     @Override
     public void start(Stage primaryStage) {
@@ -57,6 +63,11 @@ public class Main extends Application {
         for (var path : Consts.ALL_CLIP) {
             itemsToLoad.add(new LoadingItem(1, path, () -> AudioManager.get().loadAudio(path)));
         }
+        itemsToLoad.add(new LoadingItem(1, I18n.get().waitForStartupVideoToFinish(), () -> {
+            while (isPlayingStartupVideo) {
+                MiscUtils.threadSleep(1);
+            }
+        }));
         itemsToLoad.add(new LoadingItem(1, I18n.get().progressWelcomeText(), () -> MiscUtils.threadSleep(50)));
 
         var stage = new VStage(primaryStage) {
@@ -101,6 +112,43 @@ public class Main extends Application {
                 System.exit(1);
             }
         });
+        try {
+            //noinspection DataFlowIssue
+            var media = new Media(Main.class.getResource("/video/feise_dance.mp4").toExternalForm());
+            var player = new MediaPlayer(media);
+            var viewer = new MediaView(player);
+            player.setMute(true);
+
+            var rootNode = stage.getRoot().getContentPane();
+            rootNode.getChildren().add(viewer);
+
+            var wWatch = new InvalidationListener() {
+                @Override
+                public void invalidated(Observable observable) {
+                    viewer.setFitWidth(rootNode.getPrefWidth());
+                }
+            };
+            var hWatch = new InvalidationListener() {
+                @Override
+                public void invalidated(Observable observable) {
+                    viewer.setFitHeight(rootNode.getHeight());
+                }
+            };
+            rootNode.widthProperty().addListener(wWatch);
+            rootNode.heightProperty().addListener(hWatch);
+
+            player.setOnEndOfMedia(() -> {
+                rootNode.widthProperty().removeListener(wWatch);
+                rootNode.heightProperty().removeListener(hWatch);
+                rootNode.getChildren().remove(viewer);
+                isPlayingStartupVideo = false;
+            });
+
+            isPlayingStartupVideo = true;
+            player.play();
+        } catch (Exception e) {
+            Logger.error(LogType.ALERT, "failed to play startup video", e);
+        }
     }
 
     private void terminate() {

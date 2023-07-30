@@ -383,6 +383,8 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String loadingStageTitle();
 
+    public abstract String waitForStartupVideoToFinish();
+
     public abstract String progressWelcomeText();
 
     public abstract String cooldownTipsButton();

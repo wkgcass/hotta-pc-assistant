@@ -1144,6 +1144,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String waitForStartupVideoToFinish() {
+        return "正在播放启动动画...";
+    }
+
+    @Override
     public String progressWelcomeText() {
         return "已完成加载，准备进入";
     }
