@@ -72,7 +72,7 @@ public class Main extends Application {
             title = title + " " + I18n.get().titleMainScreenDevVersion();
         }
         stage.setTitle(title);
-        stage.getStage().getIcons().add(ImageManager.get().load("images/icon/icon.jpg"));
+        stage.getStage().getIcons().add(ImageManager.get().load("images/icon/moliniya.png"));
         stage.getStage().setWidth(1100);
         stage.getStage().setHeight(800);
         stage.getStage().centerOnScreen();
