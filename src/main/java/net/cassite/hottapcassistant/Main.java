@@ -46,7 +46,6 @@ import java.util.Map;
 
 public class Main extends Application {
     private VSceneGroup mainSceneGroup;
-    private volatile boolean isPlayingStartupVideo = false;
 
     @Override
     public void start(Stage primaryStage) {
@@ -112,6 +111,12 @@ public class Main extends Application {
                 System.exit(1);
             }
         });
+        playStartupVideo(stage);
+    }
+
+    private volatile boolean isPlayingStartupVideo = false;
+
+    private void playStartupVideo(VStage stage) {
         try {
             //noinspection DataFlowIssue
             var media = new Media(Main.class.getResource("/video/feise_dance.mp4").toExternalForm());
