@@ -560,13 +560,18 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String skipFishingPointCheckBox() {
+    public String fishingSkipFishingPointCheckBox() {
         return "跳过绿点检测，改为5秒延迟";
     }
 
     @Override
-    public String useCastKeyCheckBox() {
+    public String fishingUseCastKeyCheckBox() {
         return "使用键盘按键抛竿，不使用鼠标点击，并且使用ESC关闭结算界面（首次钓鱼时需手动点击一次游戏界面）";
+    }
+
+    @Override
+    public String fishingDebugCheckBox() {
+        return "Debug模式。启用后，屏幕截图将存入剪贴板";
     }
 
     @Override

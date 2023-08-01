@@ -9,6 +9,8 @@ import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -221,6 +223,9 @@ public class FishRobot {
             captureXOffset + config.fishingPoint.x - captureWidth / 2,
             captureYOffset + config.fishingPoint.y - (captureHeight - 1),
             (int) captureWidth, (int) captureHeight));
+        if (config.debug) {
+            copyToClipboard(img);
+        }
         var imgW = (int) img.getWidth();
         var imgH = (int) img.getHeight();
         var reader = img.getPixelReader();
@@ -238,6 +243,15 @@ public class FishRobot {
             clickCast();
             setStatus(Status.WAITING_FOR_BITE);
         }
+    }
+
+    private void copyToClipboard(Image img) {
+        FXUtils.runOnFX(() -> {
+            var clipboard = Clipboard.getSystemClipboard();
+            var content = new ClipboardContent();
+            content.putImage(img);
+            clipboard.setContent(content);
+        });
     }
 
     private void clickCast() {
@@ -269,6 +283,9 @@ public class FishRobot {
             (int) config.posBarRect.h,
             true
         ));
+        if (config.debug) {
+            copyToClipboard(img);
+        }
         var bar = findBar(img);
         displayPosBar(bar, -1, 1);
         int midPos = midOf(bar);
@@ -436,6 +453,11 @@ public class FishRobot {
             (int) config.fishStaminaRect.h,
             true
         ));
+        if (config.debug) {
+            if (totalManagingCount % 2 == 0) { // gives opportunity to paste both, see below
+                copyToClipboard(img);
+            }
+        }
 
         double p;
         {
@@ -468,6 +490,11 @@ public class FishRobot {
             (int) config.posBarRect.h,
             true
         ));
+        if (config.debug) {
+            if (totalManagingCount % 2 == 1) { // gives opportunity to paste both, see above
+                copyToClipboard(img);
+            }
+        }
 
         var posbar = findBar(img);
         int bar = midOf(posbar);

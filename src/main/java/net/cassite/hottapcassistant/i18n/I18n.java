@@ -203,9 +203,11 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String fishingCastKey();
 
-    public abstract String skipFishingPointCheckBox();
+    public abstract String fishingSkipFishingPointCheckBox();
 
-    public abstract String useCastKeyCheckBox();
+    public abstract String fishingUseCastKeyCheckBox();
+
+    public abstract String fishingDebugCheckBox();
 
     public abstract String resetFishing();
 

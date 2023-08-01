@@ -18,6 +18,7 @@ public class AssistantFishing {
     public Key castKey;
     public boolean skipFishingPoint;
     public boolean useCastKey;
+    public boolean debug; // do not persist this field
     public Point fishingPoint;
     public Point castingPoint;
     public Rect posBarRect;
@@ -47,6 +48,7 @@ public class AssistantFishing {
         this.skipFishingPoint = f.skipFishingPoint;
         this.castKey = f.castKey;
         this.useCastKey = f.useCastKey;
+        this.debug = f.debug;
         this.fishingPoint = f.fishingPoint;
         this.castingPoint = f.castingPoint;
         this.posBarRect = f.posBarRect;

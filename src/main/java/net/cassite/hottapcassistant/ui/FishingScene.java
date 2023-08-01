@@ -76,12 +76,17 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
     private final Label leftKey = new Label();
     private final Label rightKey = new Label();
     private final Label castKey = new Label();
-    private final CheckBox skipFishingPointCheckBox = new CheckBox(I18n.get().skipFishingPointCheckBox()) {{
+    private final CheckBox skipFishingPointCheckBox = new CheckBox(I18n.get().fishingSkipFishingPointCheckBox()) {{
         FontManager.get().setFont(this);
         setTextFill(Theme.current().normalTextColor());
         FXUtils.disableFocusColor(this);
     }};
-    private final CheckBox useCastKeyCheckBox = new CheckBox(I18n.get().useCastKeyCheckBox()) {{
+    private final CheckBox useCastKeyCheckBox = new CheckBox(I18n.get().fishingUseCastKeyCheckBox()) {{
+        FontManager.get().setFont(this);
+        setTextFill(Theme.current().normalTextColor());
+        FXUtils.disableFocusColor(this);
+    }};
+    private final CheckBox debugCheckBox = new CheckBox(I18n.get().fishingDebugCheckBox()) {{
         FontManager.get().setFont(this);
         setTextFill(Theme.current().normalTextColor());
         FXUtils.disableFocusColor(this);
@@ -106,6 +111,9 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
         useCastKeyCheckBox.setOnAction(e -> {
             fishing.useCastKey = useCastKeyCheckBox.isSelected();
             flushConfig();
+        });
+        debugCheckBox.setOnAction(e -> {
+            fishing.debug = debugCheckBox.isSelected();
         });
 
         var vbox = new VBox();
@@ -215,7 +223,9 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
                 new VPadding(10),
                 skipFishingPointCheckBox,
                 new VPadding(10),
-                useCastKeyCheckBox);
+                useCastKeyCheckBox,
+                new VPadding(10),
+                debugCheckBox);
         }
 
         {
@@ -390,6 +400,7 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
     private void resetConfigCheckBoxes() {
         skipFishingPointCheckBox.setSelected(fishing.skipFishingPoint);
         useCastKeyCheckBox.setSelected(fishing.useCastKey);
+        debugCheckBox.setSelected(false);
     }
 
     @Override
