@@ -71,7 +71,6 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
     private final Label statusValue = new ThemeLabel();
     private final ToggleSwitch switchButton = new ToggleSwitch(10, 30);
 
-    private final Label startKey = new Label();
     private final Label stopKey = new Label();
     private final Label leftKey = new Label();
     private final Label rightKey = new Label();
@@ -99,7 +98,6 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
         this.stage = stage;
         enableAutoContentWidth();
 
-        initKeyLabel(startKey, key -> fishing.startKey = key);
         initKeyLabel(stopKey, key -> fishing.stopKey = key);
         initKeyLabel(leftKey, key -> fishing.leftKey = key);
         initKeyLabel(rightKey, key -> fishing.rightKey = key);
@@ -185,9 +183,6 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
         }
 
         {
-            var startKeyLabel = new ThemeLabel(I18n.get().fishingStartKey()) {{
-                setPrefWidth(60);
-            }};
             var stopKeyLabel = new ThemeLabel(I18n.get().fishingStopKey()) {{
                 setPrefWidth(60);
             }};
@@ -202,10 +197,7 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
             }};
 
             var hbox1 = new HBox();
-            hbox1.getChildren().addAll(
-                startKeyLabel, startKey,
-                new HPadding(50),
-                stopKeyLabel, stopKey);
+            hbox1.getChildren().addAll(stopKeyLabel, stopKey);
 
             var hbox2 = new HBox();
             hbox2.getChildren().addAll(
@@ -237,6 +229,13 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
             var hbox = new HBox();
             buttonPane.getContentPane().getChildren().add(hbox);
 
+            FusionButton startButton = new FusionButton(I18n.get().fishingStartButton());
+            {
+                startButton.setPrefWidth(120);
+                startButton.setPrefHeight(40);
+                startButton.setOnAction(e -> pressStartButton());
+            }
+
             var resetBtn = new FusionButton(I18n.get().resetFishing());
             resetBtn.setPrefWidth(120);
             resetBtn.setPrefHeight(40);
@@ -246,7 +245,7 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
             configBtn.setPrefHeight(40);
             configBtn.setOnAction(e -> configure());
 
-            hbox.getChildren().addAll(resetBtn, new HPadding(4), configBtn);
+            hbox.getChildren().addAll(startButton, new HPadding(4), resetBtn, new HPadding(4), configBtn);
             vbox.getChildren().add(buttonPane.getNode());
         }
 
@@ -388,7 +387,6 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
     }
 
     private void resetKeyLabels() {
-        startKey.setText(fishing.startKey.toString());
         stopKey.setText(fishing.stopKey.toString());
         leftKey.setText(fishing.leftKey.toString());
         rightKey.setText(fishing.rightKey.toString());
@@ -419,28 +417,26 @@ public class FishingScene extends AbstractMainScene implements NativeKeyListener
             if (fishing.stopKey.key.code == e.getKeyCode()) {
                 stop();
             }
-        } else {
-            if (fishing.startKey == null) {
-                return;
-            }
-            if (fishing.startKey.key.code == e.getKeyCode()) {
-                FXUtils.runOnFX(() -> {
-                    if (!fishing.isValid()) {
-                        FXUtils.runOnFX(this::configure);
-                        return;
-                    }
-                    if (!fishing.skipFishingPoint) {
-                        stage.temporaryOnTop();
-                        FXUtils.toFrontWindow(stage.getStage());
-                    }
-                    configureStep1(500, true, () -> {
-                        flushConfig();
-                        postConfigure(false);
-                        start();
-                    });
-                });
-            }
         }
+    }
+
+    private void pressStartButton() {
+        if (!switchButton.isSelected()) {
+            return;
+        }
+        if (!fishing.isValid()) {
+            FXUtils.runOnFX(this::configure);
+            return;
+        }
+        if (!fishing.skipFishingPoint) {
+            stage.temporaryOnTop();
+            FXUtils.toFrontWindow(stage.getStage());
+        }
+        configureStep1(500, true, () -> {
+            flushConfig();
+            postConfigure(false);
+            start();
+        });
     }
 
     private void start() {

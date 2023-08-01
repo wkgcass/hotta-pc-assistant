@@ -11,7 +11,6 @@ import vjson.deserializer.rule.StringRule;
 import vjson.util.ObjectBuilder;
 
 public class AssistantFishing {
-    public Key startKey;
     public Key stopKey;
     public Key leftKey;
     public Key rightKey;
@@ -25,7 +24,6 @@ public class AssistantFishing {
     public Rect fishStaminaRect;
 
     public static final Rule<AssistantFishing> rule = new ObjectRule<>(AssistantFishing::new)
-        .put("startKey", (o, it) -> o.startKey = new Key(it), StringRule.get())
         .put("stopKey", (o, it) -> o.stopKey = new Key(it), StringRule.get())
         .put("leftKey", (o, it) -> o.leftKey = new Key(it), StringRule.get())
         .put("rightKey", (o, it) -> o.rightKey = new Key(it), StringRule.get())
@@ -41,7 +39,6 @@ public class AssistantFishing {
     }
 
     public AssistantFishing(AssistantFishing f) {
-        this.startKey = f.startKey;
         this.stopKey = f.stopKey;
         this.leftKey = f.leftKey;
         this.rightKey = f.rightKey;
@@ -57,7 +54,6 @@ public class AssistantFishing {
 
     public static AssistantFishing empty() {
         var fish = new AssistantFishing();
-        fish.startKey = new Key("F8");
         fish.stopKey = new Key("F8");
         fish.leftKey = new Key("A");
         fish.rightKey = new Key("D");
@@ -67,7 +63,6 @@ public class AssistantFishing {
 
     public JSON.Object toJson() {
         var ob = new ObjectBuilder()
-            .put("startKey", startKey.toString())
             .put("stopKey", stopKey.toString())
             .put("leftKey", leftKey.toString())
             .put("rightKey", rightKey.toString());

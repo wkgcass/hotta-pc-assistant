@@ -536,8 +536,8 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String fishingStartKey() {
-        return "开始按键";
+    public String fishingStartButton() {
+        return "开始";
     }
 
     @Override
