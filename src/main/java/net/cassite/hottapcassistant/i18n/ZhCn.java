@@ -1562,7 +1562,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String multiInstanceTips() {
-        return "进入游戏的选区界面时，如果提示更新游戏，可按ESC忽略该界面";
+        return "多开工具会写入hosts文件，如果在未使用多开工具时游戏出现网络连接问题，请检查hosts配置";
     }
 
     @Override
