@@ -419,6 +419,9 @@ public class MultiHottaInstanceScene extends ToolScene {
         if (proxyServer != null) {
             proxyServer.destroy();
         }
-        MultiHottaInstanceFlow.unsetHostsFile();
+        var ok = MultiHottaInstanceFlow.unsetHostsFile();
+        if (!ok) {
+            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().clearHostsFailed());
+        }
     }
 }

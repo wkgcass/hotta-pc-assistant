@@ -86,14 +86,18 @@ public class TofServerListConfig {
     private static final String hostsFileSuffixComment = " # tof server, added by hotta-pc-assistant";
 
     public static boolean setHosts(List<TofServer> tofServers) {
-        return Utils.modifyHostsFile(lines -> {
-            var ls = new ArrayList<>(lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
-            for (var s : tofServers) {
-                if (s.selected) {
-                    ls.add(s.ip + "\t" + s.domain + hostsFileSuffixComment);
+        for (int i = 0; i < 3; ++i) {
+            var b = Utils.modifyHostsFile(lines -> {
+                var ls = new ArrayList<>(lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
+                for (var s : tofServers) {
+                    if (s.selected) {
+                        ls.add(s.ip + "\t" + s.domain + hostsFileSuffixComment);
+                    }
                 }
-            }
-            return ls;
-        });
+                return ls;
+            });
+            if (b) return true;
+        }
+        return false;
     }
 }

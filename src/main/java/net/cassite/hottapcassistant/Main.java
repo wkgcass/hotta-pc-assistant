@@ -16,6 +16,7 @@ import io.vproxy.vfx.manager.task.TaskManager;
 import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.theme.impl.DarkTheme;
 import io.vproxy.vfx.theme.impl.DarkThemeFontProvider;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.loading.LoadingFailure;
 import io.vproxy.vfx.ui.loading.LoadingItem;
 import io.vproxy.vfx.ui.loading.LoadingPane;
@@ -27,6 +28,7 @@ import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.scene.control.Alert;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -49,6 +51,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        cleanupLastRun();
+
         var itemsToLoad = new ArrayList<LoadingItem>();
         for (var path : Consts.ALL_IMAGE) {
             itemsToLoad.add(new LoadingItem(2, path, () -> ImageManager.get().load(path)));
@@ -217,17 +221,16 @@ public class Main extends Application {
             GlobalScreenUtils.releaseJNativeHookNativeToLibraryPath(dllStream);
         }
 
-        cleanupLastRun();
-
         FeedThread.get().start();
         launch();
     }
 
-    public static void cleanupLastRun() {
-        try {
-            MultiHottaInstanceFlow.unsetHostsFile();
-        } catch (Throwable t) {
+    public static boolean cleanupLastRun() {
+        var ok = MultiHottaInstanceFlow.unsetHostsFile();
+        if (!ok) {
             Logger.error(LogType.FILE_ERROR, "failed clean up hosts related to multi-hotta-instances");
+            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().clearHostsFailed());
         }
+        return ok;
     }
 }

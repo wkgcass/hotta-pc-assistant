@@ -26,17 +26,25 @@ public class MultiHottaInstanceFlow {
     };
 
     public static boolean setHostsFile() {
-        return Utils.modifyHostsFile(lines -> {
-            var ls = new ArrayList<>(lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
-            for (var h : hostsToAdd) {
-                ls.add("127.0.0.1\t" + h + hostsFileSuffixComment);
-            }
-            return ls;
-        });
+        for (int i = 0; i < 3; ++i) {
+            boolean b = Utils.modifyHostsFile(lines -> {
+                var ls = new ArrayList<>(lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
+                for (var h : hostsToAdd) {
+                    ls.add("127.0.0.1\t" + h + hostsFileSuffixComment);
+                }
+                return ls;
+            });
+            if (b) return true;
+        }
+        return false;
     }
 
     public static boolean unsetHostsFile() {
-        return Utils.modifyHostsFile(lines -> lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
+        for (int i = 0; i < 3; ++i) {
+            boolean b = Utils.modifyHostsFile(lines -> lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
+            if (b) return true;
+        }
+        return false;
     }
 
     public static void makeLink(String advLocation, String normalClientLocation) throws IOException {

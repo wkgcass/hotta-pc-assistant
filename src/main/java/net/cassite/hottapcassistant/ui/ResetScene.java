@@ -66,7 +66,9 @@ public class ResetScene extends AbstractMainScene {
 
         deleteConfigFromSavedPath(savedPath);
 
-        Main.cleanupLastRun();
+        if (!Main.cleanupLastRun()) {
+            return;
+        }
         SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().resetSceneResetConfigSucceeded());
         System.exit(0); // do not give the program any chance to save config
     }

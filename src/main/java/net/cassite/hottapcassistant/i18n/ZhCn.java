@@ -1818,6 +1818,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String clearHostsFailed() {
+        return "清理hosts文件失败，你需要手动清理，或者重复执行退出操作以便重新清理，否则将导致网络异常";
+    }
+
+    @Override
     public String alertInfoTitle() {
         return "信息";
     }
