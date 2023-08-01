@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.i18n;
 
+import io.vproxy.vfx.ui.loading.LoadingItem;
 import net.cassite.tofpcap.messages.ChatChannel;
 
 public class ZhCn extends I18n {
@@ -1825,6 +1826,11 @@ public class ZhCn extends I18n {
     @Override
     public String clearHostsFailed() {
         return "清理hosts文件失败，你需要手动清理，或者重复执行退出操作以便重新清理，否则将导致网络异常";
+    }
+
+    @Override
+    public String loadingFailedErrorMessage(LoadingItem failedItem) {
+        return "加载失败。失败项为：" + failedItem.name;
     }
 
     @Override

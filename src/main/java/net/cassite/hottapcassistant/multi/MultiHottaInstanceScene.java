@@ -369,7 +369,12 @@ public class MultiHottaInstanceScene extends ToolScene {
         loadingStage.load(Callback.ofFunction((err, v) -> {
             if (err != null) {
                 Logger.error(LogType.ALERT, "initiating multi-hotta-instance failed at " + err.failedItem.name, err);
-                StackTraceAlert.show(err);
+                String errMsg = I18n.get().loadingFailedErrorMessage(err.failedItem);
+                if (err.getCause() != null) {
+                    StackTraceAlert.showAndWait(errMsg, err.getCause());
+                } else {
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, errMsg);
+                }
                 return;
             }
 
