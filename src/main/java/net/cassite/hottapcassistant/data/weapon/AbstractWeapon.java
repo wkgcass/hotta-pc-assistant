@@ -19,7 +19,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     protected Matrix[] matrix;
     protected WeaponContext ctx;
     protected volatile long currentCD = 0L;
-    protected final AudioGroup skillAudio;
+    protected AudioGroup skillAudio;
 
     public AbstractWeapon(int totalCoolDown) {
         this(totalCoolDown, false);
@@ -37,8 +37,6 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
         this.totalCoolDown = totalCoolDown * (isMillis ? 1 : 1000) + attackPointTime;
         this.attackPointTime = attackPointTime;
         this.name = buildName();
-        this.image = buildImage();
-        this.skillAudio = buildSkillAudio();
     }
 
     @Override
@@ -48,11 +46,17 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
 
     @Override
     public final Image getImage() {
+        if (image == null) {
+            image = buildImage();
+        }
         return image;
     }
 
     @Override
     public AudioGroup getSkillAudio() {
+        if (skillAudio == null) {
+            skillAudio = buildSkillAudio();
+        }
         return skillAudio;
     }
 
@@ -222,7 +226,7 @@ public abstract class AbstractWeapon extends AbstractWithThreadStartStopAndExtra
     }
 
     protected Skill skillInstance() {
-        return new NormalSkill(skillAudio);
+        return new NormalSkill(getSkillAudio());
     }
 
     @SuppressWarnings({"unused", "BooleanMethodIsAlwaysInverted"})

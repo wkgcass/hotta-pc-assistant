@@ -37,7 +37,7 @@ public class FouJueLiFangWeapon extends AbstractWeapon implements Weapon, SkipAu
 
     @Override
     protected Skill skillInstance() {
-        return new NoHitSkill(skillAudio);
+        return new NoHitSkill(getSkillAudio());
     }
 
     @Override

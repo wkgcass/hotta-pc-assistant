@@ -55,7 +55,12 @@ public class Main extends Application {
 
         var itemsToLoad = new ArrayList<LoadingItem>();
         for (var path : Consts.ALL_IMAGE) {
-            itemsToLoad.add(new LoadingItem(2, path, () -> ImageManager.get().load(path)));
+            itemsToLoad.add(new LoadingItem(2, path, () -> {
+                ImageManager.get().load(path);
+                if (!Consts.PRELOAD_IMAGE.contains(path)) {
+                    ImageManager.get().remove(path);
+                }
+            }));
         }
         itemsToLoad.add(new LoadingItem(2, "/images/icon/menu.png:white", () ->
             ImageManager.get().loadBlackAndChangeColor("/images/icon/menu.png", Map.of("white", 0xffffffff))));
@@ -64,7 +69,10 @@ public class Main extends Application {
         itemsToLoad.add(new LoadingItem(2, "/images/icon/return.png:white", () ->
             ImageManager.get().loadBlackAndChangeColor("/images/icon/return.png", Map.of("white", 0xffffffff))));
         for (var path : Consts.ALL_CLIP) {
-            itemsToLoad.add(new LoadingItem(1, path, () -> AudioManager.get().loadAudio(path)));
+            itemsToLoad.add(new LoadingItem(1, path, () -> {
+                AudioManager.get().loadAudio(path);
+                AudioManager.get().removeAudio(path);
+            }));
         }
         itemsToLoad.add(new LoadingItem(1, I18n.get().waitForStartupVideoToFinish(), () -> {
             while (isPlayingStartupVideo) {

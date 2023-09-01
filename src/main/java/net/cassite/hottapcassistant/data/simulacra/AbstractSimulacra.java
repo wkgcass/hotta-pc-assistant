@@ -5,11 +5,10 @@ import net.cassite.hottapcassistant.data.*;
 
 public abstract class AbstractSimulacra extends AbstractWithThreadStartStopAndExtraData implements Simulacra {
     protected final String name;
-    protected final Image image;
+    protected Image image;
 
     public AbstractSimulacra() {
         this.name = buildName();
-        this.image = buildImage();
     }
 
     @Override
@@ -19,6 +18,9 @@ public abstract class AbstractSimulacra extends AbstractWithThreadStartStopAndEx
 
     @Override
     public Image getImage() {
+        if (image == null) {
+            image = buildImage();
+        }
         return image;
     }
 

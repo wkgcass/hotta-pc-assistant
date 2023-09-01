@@ -50,7 +50,7 @@ public class LingDuZhiZhenWeapon extends AbstractWeapon implements Weapon, SkipA
 
     @Override
     protected Skill skillInstance() {
-        return new NoHitSkill(skillAudio);
+        return new NoHitSkill(getSkillAudio());
     }
 
     @Override

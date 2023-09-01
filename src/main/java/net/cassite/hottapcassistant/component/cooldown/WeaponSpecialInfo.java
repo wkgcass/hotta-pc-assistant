@@ -9,6 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 
+import java.util.function.Supplier;
+
 public class WeaponSpecialInfo extends Group implements WithId, WithDesc {
     private static final int INNER_RADIUS = WeaponCoolDown.INNER_RADIUS;
     private static final int FONT_SIZE = WeaponCoolDown.FONT_SIZE;
@@ -17,7 +19,7 @@ public class WeaponSpecialInfo extends Group implements WithId, WithDesc {
     private final String id;
     private final String desc;
 
-    public WeaponSpecialInfo(Image image, String id, String desc) {
+    public WeaponSpecialInfo(Supplier<Image> image, String id, String desc) {
         this.id = id;
         this.desc = desc;
 
@@ -43,7 +45,7 @@ public class WeaponSpecialInfo extends Group implements WithId, WithDesc {
         maskCircle.setRadius(INNER_RADIUS);
         maskCircle.setCenterX(INNER_RADIUS);
         maskCircle.setCenterY(INNER_RADIUS);
-        var imageView = new ImageView(image);
+        var imageView = new ImageView();
         imageView.setFitWidth(INNER_RADIUS * 2);
         imageView.setFitHeight(INNER_RADIUS * 2);
         imageView.setLayoutX(-INNER_RADIUS);
@@ -56,6 +58,11 @@ public class WeaponSpecialInfo extends Group implements WithId, WithDesc {
         innerBackground.setRadius(INNER_RADIUS);
 
         getChildren().addAll(innerBackground, imageView, textPane, innerCircle);
+        this.sceneProperty().addListener((ob, old, now) -> {
+            if (now != null) {
+                imageView.setImage(image.get());
+            }
+        });
     }
 
     public void setText(String str) {

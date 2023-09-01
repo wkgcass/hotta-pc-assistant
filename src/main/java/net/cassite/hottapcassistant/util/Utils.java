@@ -254,13 +254,15 @@ public class Utils {
         }
     }
 
-    public static Image getBuffImageFromClasspath(String name) {
-        try {
-            return ImageManager.get().load("images/buff/" + name + ".png");
-        } catch (Exception e) {
-            Logger.error(LogType.SYS_ERROR, "failed loading image for buff " + name, e);
-            return null;
-        }
+    public static Supplier<Image> getBuffImageFromClasspath(String name) {
+        return () -> {
+            try {
+                return ImageManager.get().load("images/buff/" + name + ".png");
+            } catch (Exception e) {
+                Logger.error(LogType.SYS_ERROR, "failed loading image for buff " + name, e);
+                return null;
+            }
+        };
     }
 
     public static Image getRelicsImageFromClasspath(String name) {
@@ -272,13 +274,15 @@ public class Utils {
         }
     }
 
-    public static Image getSkillImageFromClasspath(String name) {
-        try {
-            return ImageManager.get().load("images/skills/" + name + ".png");
-        } catch (Exception e) {
-            Logger.error(LogType.SYS_ERROR, "failed loading image for skill " + name, e);
-            return null;
-        }
+    public static Supplier<Image> getSkillImageFromClasspath(String name) {
+        return () -> {
+            try {
+                return ImageManager.get().load("images/skills/" + name + ".png");
+            } catch (Exception e) {
+                Logger.error(LogType.SYS_ERROR, "failed loading image for skill " + name, e);
+                return null;
+            }
+        };
     }
 
     public static AudioWrapper getSkillAudio(String name, int index) {

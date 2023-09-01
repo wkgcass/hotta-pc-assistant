@@ -15,6 +15,8 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import net.cassite.hottapcassistant.util.Utils;
 
+import java.util.function.Supplier;
+
 public class WeaponCoolDown extends Group implements WithId, WithDesc {
     static final int INNER_RADIUS = 28;
     static final int FONT_SIZE = 24;
@@ -37,11 +39,11 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
     private final String id;
     private final String desc;
 
-    public WeaponCoolDown(Image image, String id, String desc) {
+    public WeaponCoolDown(Supplier<Image> image, String id, String desc) {
         this(image, 1, id, desc);
     }
 
-    public WeaponCoolDown(Image image, double imageScale, String id, String desc) {
+    public WeaponCoolDown(Supplier<Image> image, double imageScale, String id, String desc) {
         this.id = id;
         this.desc = desc;
 
@@ -67,7 +69,7 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
         maskCircle.setRadius(INNER_RADIUS);
         maskCircle.setCenterX(INNER_RADIUS * imageScale);
         maskCircle.setCenterY(INNER_RADIUS * imageScale);
-        var imageView = new ImageView(image);
+        var imageView = new ImageView();
         imageView.setFitWidth(INNER_RADIUS * 2 * imageScale);
         imageView.setFitHeight(INNER_RADIUS * 2 * imageScale);
         imageView.setLayoutX(-INNER_RADIUS * imageScale);
@@ -112,6 +114,11 @@ public class WeaponCoolDown extends Group implements WithId, WithDesc {
             }
         });
         getTransforms().add(translate);
+        this.sceneProperty().addListener((ob, old, now) -> {
+            if (now != null) {
+                imageView.setImage(image.get());
+            }
+        });
     }
 
     private final SimpleBooleanProperty isCoolingDown = new SimpleBooleanProperty(false);

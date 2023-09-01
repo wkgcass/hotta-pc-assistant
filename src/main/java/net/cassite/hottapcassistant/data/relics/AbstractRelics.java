@@ -7,12 +7,11 @@ import net.cassite.hottapcassistant.data.WeaponContext;
 
 public abstract class AbstractRelics extends AbstractWithThreadStartStopAndExtraData implements Relics {
     protected final String name;
-    protected final Image image;
+    protected Image image;
     protected int stars;
 
     public AbstractRelics() {
         this.name = buildName();
-        this.image = buildImage();
     }
 
     @Override
@@ -22,6 +21,9 @@ public abstract class AbstractRelics extends AbstractWithThreadStartStopAndExtra
 
     @Override
     public final Image getImage() {
+        if (image == null) {
+            image = buildImage();
+        }
         return image;
     }
 

@@ -10,7 +10,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
-    private final WeaponCoolDown buff = new WeaponCoolDown(buildImage(), 1.25, "aiLiSiSimulacraBuff", I18n.get().buffName("aiLiSiSimulacraBuff"));
+    private final WeaponCoolDown buff = new WeaponCoolDown(this::getImage, 1.25, "aiLiSiSimulacraBuff", I18n.get().buffName("aiLiSiSimulacraBuff"));
     private long buffTime = 0;
 
     public AiLiSiSimulacra() {
@@ -29,7 +29,7 @@ public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
 
     @Override
     protected Image buildImage() {
-        return Utils.getBuffImageFromClasspath("ai-li-si-simulacra");
+        return Utils.getBuffImageFromClasspath("ai-li-si-simulacra").get();
     }
 
     @Override

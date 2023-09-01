@@ -31,7 +31,7 @@ public class ShengHenQuanZhangWeapon extends AbstractWeapon implements Weapon, S
 
     @Override
     protected Skill skillInstance() {
-        return new NoHitSkill(skillAudio);
+        return new NoHitSkill(getSkillAudio());
     }
 
     @Override

@@ -15,7 +15,7 @@ public class XingHuanSimulacra extends AbstractSimulacra implements Simulacra {
     private final WeaponCoolDown xingHuanSimulacraTimer;
 
     public XingHuanSimulacra() {
-        xingHuanSimulacraTimer = new WeaponCoolDown(buildImage(), 1.25, "xingHuanSimulacraTimer", I18n.get().buffName("xingHuanSimulacraTimer"));
+        xingHuanSimulacraTimer = new WeaponCoolDown(this::getImage, 1.25, "xingHuanSimulacraTimer", I18n.get().buffName("xingHuanSimulacraTimer"));
     }
 
     @Override
@@ -33,7 +33,7 @@ public class XingHuanSimulacra extends AbstractSimulacra implements Simulacra {
 
     @Override
     protected Image buildImage() {
-        return Utils.getBuffImageFromClasspath("xing-huan-simulacra");
+        return Utils.getBuffImageFromClasspath("xing-huan-simulacra").get();
     }
 
     @Override

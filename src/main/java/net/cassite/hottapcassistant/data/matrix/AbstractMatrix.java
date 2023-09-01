@@ -7,12 +7,11 @@ import java.util.ArrayList;
 
 public abstract class AbstractMatrix extends AbstractWithThreadStartStopAndExtraData implements Matrix {
     private final String name;
-    private final Image image;
+    private Image image;
     protected int[] stars = new int[5];
 
     protected AbstractMatrix() {
         this.name = buildName();
-        this.image = buildImage();
         stars[0] = -1;
     }
 
@@ -23,6 +22,9 @@ public abstract class AbstractMatrix extends AbstractWithThreadStartStopAndExtra
 
     @Override
     public final Image getImage() {
+        if (image == null) {
+            image = buildImage();
+        }
         return image;
     }
 

@@ -13,7 +13,7 @@ public class BingFengZhiShiWeapon extends AbstractWeapon implements Weapon, Skip
 
     public BingFengZhiShiWeapon() {
         super(12, 1000);
-        bingFengZhiShiBuffTimer = new WeaponCoolDown(getImage(), "bingFengZhiShiBuffTimer", I18n.get().buffName("bingFengZhiShiBuffTimer"));
+        bingFengZhiShiBuffTimer = new WeaponCoolDown(this::getImage, "bingFengZhiShiBuffTimer", I18n.get().buffName("bingFengZhiShiBuffTimer"));
         extraIndicatorList.add(bingFengZhiShiBuffTimer);
     }
 

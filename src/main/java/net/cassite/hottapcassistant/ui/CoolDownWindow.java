@@ -170,7 +170,8 @@ public class CoolDownWindow extends Stage implements NativeKeyListener, NativeMo
 
         cds = new WeaponCoolDown[weapons.size()];
         for (var i = 0; i < weapons.size(); ++i) {
-            cds[i] = new WeaponCoolDown(weapons.get(i).getImage(), weapons.get(i).getId(), weapons.get(i).getName());
+            final int fi = i;
+            cds[i] = new WeaponCoolDown(() -> weapons.get(fi).getImage(), weapons.get(i).getId(), weapons.get(i).getName());
             if (weapons.get(i) == ctx.current) {
                 cds[i].setActive(true);
             }

@@ -8,7 +8,7 @@ import io.vproxy.vfx.manager.audio.AudioGroup;
 import net.cassite.hottapcassistant.util.Utils;
 
 public class YeQueZhiYuWeapon extends AbstractWeapon implements Weapon, SkipAudioCollection001 {
-    private final WeaponCoolDown star5 = new WeaponCoolDown(Utils.getWeaponImageFromClasspath("ye-que-zhi-yu"), "yeQueZhiYuStar5", I18n.get().buffName("yeQueZhiYuStar5"));
+    private final WeaponCoolDown star5 = new WeaponCoolDown(() -> Utils.getWeaponImageFromClasspath("ye-que-zhi-yu"), "yeQueZhiYuStar5", I18n.get().buffName("yeQueZhiYuStar5"));
     private long star5Time = 0;
 
     public YeQueZhiYuWeapon() {

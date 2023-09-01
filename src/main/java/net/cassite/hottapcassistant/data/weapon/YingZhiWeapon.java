@@ -24,7 +24,7 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
     public YingZhiWeapon() {
         super(30);
         yingYueZhiJingBuffTimer = new WeaponCoolDown(Utils.getBuffImageFromClasspath("ying-yue-zhi-jing"), "yingYueZhiJingBuffTimer", I18n.get().buffName("yingYueZhiJingBuffTimer"));
-        star6Counter = new WeaponSpecialInfo(getImage(), "yingZhiStar6Counter", I18n.get().buffName("yingZhiStar6Counter"));
+        star6Counter = new WeaponSpecialInfo(this::getImage, "yingZhiStar6Counter", I18n.get().buffName("yingZhiStar6Counter"));
         extraIndicatorList.add(yingYueZhiJingBuffTimer);
 
         star6Counter.setOnMouseClicked(e -> increaseDischargeAcquiredSkillCount());
@@ -144,7 +144,7 @@ public class YingZhiWeapon extends AbstractWeapon implements Weapon {
 
     @Override
     protected Skill skillInstance() {
-        return new NoHitSkill(skillAudio);
+        return new NoHitSkill(getSkillAudio());
     }
 
     @Override

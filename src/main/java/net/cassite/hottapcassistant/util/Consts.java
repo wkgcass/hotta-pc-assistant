@@ -3,6 +3,8 @@ package net.cassite.hottapcassistant.util;
 import io.vproxy.vfx.manager.font.FontUsage;
 import javafx.scene.paint.Color;
 
+import java.util.Set;
+
 public class Consts {
     public static final FontUsage NormalFont = new FontUsage() {
     };
@@ -11,6 +13,40 @@ public class Consts {
     public static final FontUsage JetbrainsMonoFont = new FontUsage() {
     };
 
+    public static final Set<String> PRELOAD_IMAGE = Set.of(
+        "/net/cassite/xboxrelay/ui/res/xbox.png",
+        "/images/bg/bg3.png",
+        "/images/downloadgame-btn/downloadgame-down.png",
+        "/images/downloadgame-btn/downloadgame-hover.png",
+        "/images/downloadgame-btn/downloadgame-normal.png",
+        "/images/global-download-btn/download-down.png",
+        "/images/global-download-btn/download-hover.png",
+        "/images/global-download-btn/download-normal.png",
+        "/images/global-launch-btn/launch-down.png",
+        "/images/global-launch-btn/launch-hover.png",
+        "/images/global-launch-btn/launch-normal.png",
+        "/images/icon/moliniya.png",
+        "/images/icon/info.png",
+        "/images/icon/menu.png",
+        "/images/icon/message-helper-icon.png",
+        "/images/icon/message-monitor-icon.png",
+        "/images/icon/multi-hotta-instance.png",
+        "/images/icon/pause.png",
+        "/images/icon/play-button.png",
+        "/images/icon/question.png",
+        "/images/icon/reloading.png",
+        "/images/icon/return.png",
+        "/images/icon/status-indicator.png",
+        "/images/icon/world-boss-timer-icon.png",
+        "/images/launchgame-btn/launchgame-down.png",
+        "/images/launchgame-btn/launchgame-hover.png",
+        "/images/launchgame-btn/launchgame-normal.png",
+        "/images/matrix/dummy.png",
+        "/images/misc/fishing-1.png",
+        "/images/misc/fishing-2.png",
+        "/images/misc/fishing-3.png",
+        "/images/relics/dummy.png"
+    );
     public static final String[] ALL_IMAGE = new String[]{
         "/net/cassite/xboxrelay/ui/res/xbox.png",
         "/images/bg/bg3.png",
