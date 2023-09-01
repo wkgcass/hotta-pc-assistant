@@ -631,4 +631,6 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
     public abstract String clearHostsFailed();
 
     public abstract String loadingFailedErrorMessage(LoadingItem failedItem);
+
+    public abstract String skipAnimation();
 }

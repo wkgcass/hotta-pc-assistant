@@ -1835,6 +1835,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String skipAnimation() {
+        return "跳过";
+    }
+
+    @Override
     public String alertInfoTitle() {
         return "信息";
     }

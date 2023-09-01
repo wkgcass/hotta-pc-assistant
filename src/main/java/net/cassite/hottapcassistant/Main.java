@@ -17,6 +17,7 @@ import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.theme.impl.DarkTheme;
 import io.vproxy.vfx.theme.impl.DarkThemeFontProvider;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
+import io.vproxy.vfx.ui.button.TransparentFusionButton;
 import io.vproxy.vfx.ui.loading.LoadingFailure;
 import io.vproxy.vfx.ui.loading.LoadingItem;
 import io.vproxy.vfx.ui.loading.LoadingPane;
@@ -26,8 +27,6 @@ import io.vproxy.vfx.ui.stage.VStage;
 import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.scene.control.Alert;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -83,8 +82,14 @@ public class Main extends Application {
             }));
         }
         itemsToLoad.add(new LoadingItem(1, I18n.get().waitForStartupVideoToFinish(), () -> {
+            long waitBegin = System.currentTimeMillis();
             while (isPlayingStartupVideo) {
                 MiscUtils.threadSleep(1);
+                long waitTs = System.currentTimeMillis();
+                // at most wait for ... millis
+                if (waitTs - waitBegin > 20_000) {
+                    break;
+                }
             }
         }));
         itemsToLoad.add(new LoadingItem(1, I18n.get().progressWelcomeText(), () -> MiscUtils.threadSleep(50)));
@@ -128,7 +133,11 @@ public class Main extends Application {
 
             @Override
             protected void onFailed(LoadingFailure failure) {
-                System.exit(1);
+                FXUtils.runOnFX(() -> {
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR,
+                        I18n.get().loadingFailedErrorMessage(failure.failedItem));
+                    System.exit(1);
+                });
             }
         });
         playStartupVideo(stage);
@@ -137,6 +146,7 @@ public class Main extends Application {
     private volatile boolean isPlayingStartupVideo = false;
 
     private void playStartupVideo(VStage stage) {
+        Runnable endCall = null;
         try {
             //noinspection DataFlowIssue
             var media = new Media(Main.class.getResource("/video/feise_dance.mp4").toExternalForm());
@@ -147,32 +157,33 @@ public class Main extends Application {
             var rootNode = stage.getRoot().getContentPane();
             rootNode.getChildren().add(viewer);
 
-            var wWatch = new InvalidationListener() {
-                @Override
-                public void invalidated(Observable observable) {
-                    viewer.setFitWidth(rootNode.getPrefWidth());
-                }
-            };
-            var hWatch = new InvalidationListener() {
-                @Override
-                public void invalidated(Observable observable) {
-                    viewer.setFitHeight(rootNode.getHeight());
-                }
-            };
-            rootNode.widthProperty().addListener(wWatch);
-            rootNode.heightProperty().addListener(hWatch);
+            var skipButton = new TransparentFusionButton(I18n.get().skipAnimation()) {{
+                setPrefWidth(60);
+                setPrefHeight(32);
+                FontManager.get().setFont(getTextNode());
+                setLayoutX(rootNode.getPrefWidth() - getPrefWidth() - 30);
+                setLayoutY(30);
+            }};
+            rootNode.getChildren().add(skipButton);
 
-            player.setOnEndOfMedia(() -> {
-                rootNode.widthProperty().removeListener(wWatch);
-                rootNode.heightProperty().removeListener(hWatch);
-                rootNode.getChildren().remove(viewer);
+            endCall = () -> {
+                rootNode.getChildren().removeAll(viewer, skipButton);
                 isPlayingStartupVideo = false;
+            };
+            final Runnable fendCall = endCall;
+            skipButton.setOnAction(e -> {
+                player.stop();
+                fendCall.run();
             });
+            player.setOnEndOfMedia(endCall);
 
             isPlayingStartupVideo = true;
             player.play();
         } catch (Exception e) {
             Logger.error(LogType.ALERT, "failed to play startup video", e);
+            if (endCall != null) {
+                endCall.run();
+            }
         }
     }
 
