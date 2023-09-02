@@ -727,7 +727,10 @@ public class ZhCn extends I18n {
             如果你要修改本工具并分发修改后的版本，请依旧遵循GPLv2协议，并提供源代码。
             请在github release页获取本工具，或者使用B站wkgcass发布的网盘链接，不要轻信其他来源。
             本程序不会报毒，如果发现报毒，请立即删除、断网并全盘查杀。
-
+                        
+            英文翻译来源说明：
+            使用GPT-4翻译，部分进行过微调。
+                        
             美术素材来源说明：
             本程序使用JavaFX默认字体、Jetbrains Mono、Noto、得意黑（B站@oooooohmygosh）
             本程序欢迎页封面图来自幻塔官网或者游戏内素材，做了调色
@@ -1418,7 +1421,7 @@ public class ZhCn extends I18n {
     @Override
     public String worldBossTimerNextBossInfoDefaultTemplate() {
         return """
-            msg = (name + '将于' + hh + ':' + mm + '在<at>' + line + '</</>>线刷新，')
+            msg = (name + '将于' + hh + ':' + mm + '在<at>' + line + '</>线刷新，')
             if: remainingMillis > 0; then {
               msg += ('剩余') + (remainingMillis / 1000 / 60)
             } else {

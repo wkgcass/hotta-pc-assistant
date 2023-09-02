@@ -1,6 +1,10 @@
 package net.cassite.hottapcassistant.i18n;
 
+import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.ui.loading.LoadingItem;
+import net.cassite.hottapcassistant.config.AssistantConfig;
+import net.cassite.hottapcassistant.entity.Assistant;
 import net.cassite.tofpcap.messages.ChatChannel;
 
 public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.InternalI18n, net.cassite.xboxrelay.ui.I18n {
@@ -10,7 +14,22 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
         if (impl == null) {
             synchronized (I18n.class) {
                 if (impl == null) {
-                    impl = new ZhCn();
+                    Assistant ass;
+                    try {
+                        ass = AssistantConfig.readAssistant();
+                    } catch (Exception e) {
+                        Logger.error(LogType.FILE_ERROR, "failed to load assistant config", e);
+                        ass = null;
+                    }
+                    I18nType type = I18nType.ZhCn;
+                    if (ass != null && ass.i18n != null) {
+                        type = ass.i18n;
+                    }
+                    if (type == I18nType.EnUs) {
+                        impl = new EnUs();
+                    } else {
+                        impl = new ZhCn();
+                    }
                 }
             }
         }

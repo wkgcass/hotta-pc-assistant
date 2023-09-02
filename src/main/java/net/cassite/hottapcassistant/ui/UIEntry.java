@@ -90,6 +90,12 @@ public class UIEntry {
                     return new OverrideHelperImpl(this);
                 }
             },
+            new SwitchLanguageScene() {
+                @Override
+                public OverrideHelper getOverrideHelper() {
+                    return new OverrideHelperImpl(this);
+                }
+            },
             new AboutScene() {
                 @Override
                 public OverrideHelper getOverrideHelper() {
