@@ -16,11 +16,11 @@ public class TofServerListConfig {
     }
 
     public static List<TofServer> read() throws IOException {
-        String hosts = Feed.get().tofServerHosts;
+        String hosts = Feed.get().tofServerHosts.get();
         if (hosts == null) {
             hosts = Utils.readClassPath("config/global-server-hosts");
         }
-        String names = Feed.get().tofServerNames;
+        String names = Feed.get().tofServerNames.getName();
         if (names == null) {
             names = Utils.readClassPath("config/global-server-names");
         }

@@ -87,7 +87,10 @@ public class AboutScene extends AbstractMainScene {
 
         getContentPane().getChildren().add(vbox);
 
-        Feed.updated.addListener((ob, old, now) -> FXUtils.runOnFX(this::updateFeed));
+        Runnable updateFeedRunnable = () -> FXUtils.runOnFX(this::updateFeed);
+        Feed.get().latestVersion.addListener((ob) -> updateFeedRunnable.run());
+        Feed.get().latestVersionReleaseTime.addListener((ob) -> updateFeedRunnable.run());
+        Feed.get().feedTime.addListener((ob) -> updateFeedRunnable.run());
         updateFeed();
     }
 

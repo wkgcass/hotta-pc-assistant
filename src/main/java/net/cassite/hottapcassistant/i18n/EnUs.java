@@ -1704,4 +1704,9 @@ public class EnUs extends I18n {
     public String skipAnimation() {
         return "Skip";
     }
+
+    @Override
+    public String newCriticalVersionAvailable(String ver) {
+        return "New critical updates available: " + ver + ", you can get the latest version from github.com/wkgcass/hotta-pc-assistant";
+    }
 }

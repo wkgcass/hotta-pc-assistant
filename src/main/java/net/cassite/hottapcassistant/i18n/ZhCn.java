@@ -1844,6 +1844,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String newCriticalVersionAvailable(String ver) {
+        return "有新的关键性更新：" + ver + ", 可以前往 github.com/wkgcass/hotta-pc-assistant 获取";
+    }
+
+    @Override
     public String alertInfoTitle() {
         return "信息";
     }

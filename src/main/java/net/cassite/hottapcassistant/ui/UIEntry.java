@@ -316,7 +316,7 @@ public class UIEntry {
     public void init() {
         hideInactive();
         configureRootCorrespondToWelcomeScene();
-        Feed.updated.addListener((ob, old, now) -> checkFeedAndSetRootImage());
+        Feed.get().introBg.addListener((ob) -> checkFeedAndSetRootImage());
 
         FXUtils.runDelay(VScene.ANIMATION_DURATION_MILLIS, this::showGPLAlert);
     }
@@ -369,7 +369,7 @@ public class UIEntry {
     }
 
     private void checkFeedAndSetRootImage() {
-        var bg = Feed.get().introBg;
+        var bg = Feed.get().introBg.get();
         if (bg == null) {
             return;
         }
@@ -377,7 +377,7 @@ public class UIEntry {
     }
 
     private void updateRootImage() {
-        var bg = Feed.get().introBg;
+        var bg = Feed.get().introBg.get();
         if (bg == null) {
             bg = ImageManager.get().load("images/bg/bg4.jpg");
         }

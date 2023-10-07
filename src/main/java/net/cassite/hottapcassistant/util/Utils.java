@@ -325,9 +325,9 @@ public class Utils {
         if (useFeed) {
             Boolean ret = null;
             if (name.equals("macro")) {
-                ret = Feed.get().lockMacroPane;
+                ret = Feed.get().lockMacroPane.get();
             } else if (name.equals("fishing")) {
-                ret = Feed.get().lockFishingPane;
+                ret = Feed.get().lockFishingPane.get();
             }
             if (ret != null) {
                 if (!ret && alert) {

@@ -2,6 +2,7 @@ package net.cassite.hottapcassistant;
 
 import io.vproxy.base.util.LogType;
 import io.vproxy.base.util.Logger;
+import io.vproxy.base.util.Utils;
 import io.vproxy.base.util.callback.Callback;
 import io.vproxy.commons.util.Singleton;
 import io.vproxy.vfx.control.globalscreen.GlobalScreenUtils;
@@ -32,6 +33,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
+import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.feed.FeedThread;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow;
@@ -265,6 +267,19 @@ public class Main extends Application {
             GlobalScreenUtils.releaseJNativeHookNativeToLibraryPath(dllStream);
         }
 
+        Feed.get().lastCriticalVersion.addListener((ob, old, ver) -> {
+            if (ver == null)
+                return;
+            try {
+                Utils.validateVProxyVersion(ver);
+            } catch (Exception e) {
+                Logger.warn(LogType.ALERT, "invalid version from feed: " + ver, e);
+                return;
+            }
+            if (Utils.compareVProxyVersions(Version.version, ver) < 0) {
+                SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().newCriticalVersionAvailable(ver));
+            }
+        });
         FeedThread.get().start();
         launch();
     }

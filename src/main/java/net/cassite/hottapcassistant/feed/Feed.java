@@ -1,6 +1,6 @@
 package net.cassite.hottapcassistant.feed;
 
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 
 import java.time.ZonedDateTime;
@@ -15,22 +15,17 @@ public class Feed {
     Feed() {
     }
 
-    public static final SimpleIntegerProperty updated = new SimpleIntegerProperty(0);
+    public final SimpleObjectProperty<String> latestVersion = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<ZonedDateTime> latestVersionReleaseTime = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<String> lastCriticalVersion = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<String> pmpDownloadUrl = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<String> tofMiniLoaderUrl = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<Image> introBg = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<String> tofServerNames = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<String> tofServerHosts = new SimpleObjectProperty<>();
 
-    public static void alert() {
-        updated.set(updated.get() + 1);
-    }
+    public final SimpleObjectProperty<Boolean> lockMacroPane = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<Boolean> lockFishingPane = new SimpleObjectProperty<>();
 
-    public String latestVersion;
-    public ZonedDateTime latestVersionReleaseTime;
-    public String pmpDownloadUrl;
-    public String tofMiniLoaderUrl;
-    public Image introBg;
-    public String tofServerNames;
-    public String tofServerHosts;
-
-    public Boolean lockMacroPane;
-    public Boolean lockFishingPane;
-
-    public ZonedDateTime feedTime;
+    public final SimpleObjectProperty<ZonedDateTime> feedTime = new SimpleObjectProperty<>();
 }

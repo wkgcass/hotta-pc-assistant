@@ -80,8 +80,8 @@ public class FeedThread extends Thread {
     }
 
     private void checkLock() {
-        Feed.feed.lockMacroPane = Utils.checkLock("macro", false, false);
-        Feed.feed.lockFishingPane = Utils.checkLock("fishing", false, false);
+        Feed.feed.lockMacroPane.set(Utils.checkLock("macro", false, false));
+        Feed.feed.lockFishingPane.set(Utils.checkLock("fishing", false, false));
     }
 
     private void loadCache() throws IOException {
@@ -106,8 +106,7 @@ public class FeedThread extends Thread {
         var httpBody = Files.readString(path);
         Logger.alert("using cached github issue 1 comments: " + httpBody);
         handleIssue1(httpBody);
-        Feed.feed.feedTime = Instant.ofEpochMilli(lastModified).atZone(ZoneId.systemDefault());
-        Feed.alert();
+        Feed.feed.feedTime.set(Instant.ofEpochMilli(lastModified).atZone(ZoneId.systemDefault()));
     }
 
     private void exec() {
@@ -147,8 +146,7 @@ public class FeedThread extends Thread {
         for (var i = 0; i < arr.size(); ++i) {
             handleIssue1(i, arr.get(i));
         }
-        Feed.feed.feedTime = ZonedDateTime.now();
-        Feed.alert();
+        Feed.feed.feedTime.set(ZonedDateTime.now());
     }
 
     private void handleIssue1(int index, GithubIssueComment comment) {

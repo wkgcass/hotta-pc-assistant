@@ -415,7 +415,7 @@ public class WelcomeScene extends AbstractMainScene {
             var downloadBtn = new ImageButton("images/downloadgame-btn/downloadgame", "png");
             downloadBtn.setScale(0.6);
             downloadBtn.setOnAction(e -> {
-                var url = Feed.get().pmpDownloadUrl;
+                var url = Feed.get().pmpDownloadUrl.get();
                 if (url == null) {
                     url = "https://pmpcdn1.wmupd.com/pmp/client/PMP_1.0.7.0125.exe";
                 }
@@ -467,7 +467,7 @@ public class WelcomeScene extends AbstractMainScene {
             var downloadBtn = new ImageButton("images/global-download-btn/download", "png");
             downloadBtn.setScale(0.5);
             downloadBtn.setOnAction(e -> {
-                var url = Feed.get().tofMiniLoaderUrl;
+                var url = Feed.get().tofMiniLoaderUrl.get();
                 if (url == null) {
                     url = "https://www.toweroffantasy-global.com/download/TofMiniLoader_official.wg.intl.exe";
                 }

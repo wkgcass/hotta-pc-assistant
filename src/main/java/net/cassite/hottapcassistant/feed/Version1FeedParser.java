@@ -28,12 +28,16 @@ public class Version1FeedParser implements FeedParser {
             if (program.version != null) {
                 var version = program.version;
                 if (version.ver != null) {
-                    Feed.feed.latestVersion = version.ver;
-                    Logger.alert("feed: latestVersion updated: " + Feed.feed.latestVersion);
+                    Feed.feed.latestVersion.set(version.ver);
+                    Logger.alert("feed: latestVersion updated: " + Feed.feed.latestVersion.get());
                     if (version.ts != 0) {
                         long ts = version.ts;
-                        Feed.feed.latestVersionReleaseTime = Instant.ofEpochSecond(ts).atZone(ZoneId.systemDefault());
-                        Logger.alert("feed: latestVersionReleaseTime updated: " + Feed.feed.latestVersionReleaseTime);
+                        Feed.feed.latestVersionReleaseTime.set(Instant.ofEpochSecond(ts).atZone(ZoneId.systemDefault()));
+                        Logger.alert("feed: latestVersionReleaseTime updated: " + Feed.feed.latestVersionReleaseTime.get());
+                    }
+                    if (version.lastCriticalVer != null) {
+                        Feed.feed.lastCriticalVersion.set(version.lastCriticalVer);
+                        Logger.alert("feed: lastCriticalVersion updated: " + Feed.feed.lastCriticalVersion.get());
                     }
                 }
             }
@@ -48,8 +52,8 @@ public class Version1FeedParser implements FeedParser {
                             if (img.isError()) {
                                 Logger.error(LogType.CONN_ERROR, "failed to load introBg from feed: " + image.introBg);
                             } else {
-                                Feed.feed.introBg = img;
-                                Logger.alert("feed: introBg updated: " + Feed.feed.introBg);
+                                Feed.feed.introBg.set(img);
+                                Logger.alert("feed: introBg updated: " + Feed.feed.introBg.get());
                             }
                         }
                     }
@@ -63,8 +67,8 @@ public class Version1FeedParser implements FeedParser {
                 if (download.pmp != null) {
                     var pmp = download.pmp;
                     if (pmp.url != null) {
-                        Feed.feed.pmpDownloadUrl = pmp.url;
-                        Logger.alert("feed: pmpDownloadUrl updated: " + Feed.feed.pmpDownloadUrl);
+                        Feed.feed.pmpDownloadUrl.set(pmp.url);
+                        Logger.alert("feed: pmpDownloadUrl updated: " + Feed.feed.pmpDownloadUrl.get());
                     }
                 }
             }
@@ -76,15 +80,15 @@ public class Version1FeedParser implements FeedParser {
                 if (tofServer.hosts != null) {
                     var body = httpGet(tofServer.hosts, "tofServer.hosts");
                     if (body != null) {
-                        Feed.feed.tofServerHosts = new String(body);
-                        Logger.alert("feed: tofServerHosts updated: line count: " + Feed.feed.tofServerHosts.split("\n").length);
+                        Feed.feed.tofServerHosts.set(new String(body));
+                        Logger.alert("feed: tofServerHosts updated: line count: " + Feed.feed.tofServerHosts.get().split("\n").length);
                     }
                 }
                 if (tofServer.names != null) {
                     var body = httpGet(tofServer.names, "tofServer.names");
                     if (body != null) {
-                        Feed.feed.tofServerNames = new String(body);
-                        Logger.alert("feed: tofServerNames updated: line count: " + Feed.feed.tofServerNames.split("\n").length);
+                        Feed.feed.tofServerNames.set(new String(body));
+                        Logger.alert("feed: tofServerNames updated: line count: " + Feed.feed.tofServerNames.get().split("\n").length);
                     }
                 }
             }
@@ -134,10 +138,12 @@ public class Version1FeedParser implements FeedParser {
     private static class EntityProgramVersion {
         String ver;
         long ts;
+        String lastCriticalVer;
 
         static Rule<EntityProgramVersion> rule = new ObjectRule<>(EntityProgramVersion::new)
             .put("ver", (o, it) -> o.ver = it, StringRule.get())
-            .put("ts", (o, it) -> o.ts = it, LongRule.get());
+            .put("ts", (o, it) -> o.ts = it, LongRule.get())
+            .put("lastCriticalVer", (o, it) -> o.lastCriticalVer = it, StringRule.get());
     }
 
     private static class EntityProgramResource {
