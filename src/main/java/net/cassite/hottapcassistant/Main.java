@@ -149,13 +149,30 @@ public class Main extends Application {
         Runnable endCall = null;
         try {
             //noinspection DataFlowIssue
-            var media = new Media(Main.class.getResource("/video/feise_dance.mp4").toExternalForm());
+            var media = new Media(Main.class.getResource("/video/nanyin_card.mp4").toExternalForm());
             var player = new MediaPlayer(media);
             var viewer = new MediaView(player);
             player.setMute(true);
 
             var rootNode = stage.getRoot().getContentPane();
             rootNode.getChildren().add(viewer);
+
+            Runnable mediaWatcher = () -> {
+                var mw = media.getWidth();
+                var mh = media.getHeight();
+                var nw = rootNode.getPrefWidth();
+                var nh = rootNode.getPrefHeight();
+
+                if (mw / (double) mh > nw / nh) {
+                    viewer.setFitHeight(nh);
+                    viewer.setLayoutX((nh / mh * mw - mw) / 2);
+                } else {
+                    viewer.setFitWidth(nw);
+                    viewer.setFitHeight((nw / mw * mh - mh) / 2);
+                }
+            };
+            media.widthProperty().addListener((ob) -> mediaWatcher.run());
+            media.heightProperty().addListener((ob) -> mediaWatcher.run());
 
             var skipButton = new TransparentFusionButton(I18n.get().skipAnimation()) {{
                 setPrefWidth(60);

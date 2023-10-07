@@ -162,6 +162,7 @@ public class Consts {
         "/images/weapons/yue-xing-chuan.png",
         "/images/weapons/zhi-ming.png",
         "/images/weapons/zhong-jie-zhe.png",
+        "/images/weapons/zi-zhu.png",
     };
 
     public static final String[] ALL_CLIP = new String[]{
@@ -206,6 +207,11 @@ public class Consts {
         "/audio/simulacra/huang/skill03.wav",
         "/audio/simulacra/huang/skill02.wav",
         "/audio/simulacra/huang/skill01.wav",
+        "/audio/simulacra/nan-yin/skill01.wav",
+        "/audio/simulacra/nan-yin/skill02.wav",
+        "/audio/simulacra/nan-yin/skill03.wav",
+        "/audio/simulacra/nan-yin/skill04.wav",
+        "/audio/simulacra/nan-yin/skill05.wav",
         "/audio/simulacra/nai-mei-xi-si/skill03.wav",
         "/audio/simulacra/nai-mei-xi-si/skill02.wav",
         "/audio/simulacra/nai-mei-xi-si/skill01.wav",
