@@ -33,7 +33,7 @@ public class LansBrainWash extends AbstractTool implements Tool {
 
     @Override
     protected Image buildIcon() {
-        return Utils.getBuffImageFromClasspath("lan-simulacra").get();
+        return Utils.getSimulacraImageFromClasspath("lan").get();
     }
 
     @Override

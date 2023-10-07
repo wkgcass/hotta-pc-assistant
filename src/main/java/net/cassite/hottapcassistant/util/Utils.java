@@ -265,6 +265,17 @@ public class Utils {
         };
     }
 
+    public static Supplier<Image> getSimulacraImageFromClasspath(String name) {
+        return () -> {
+            try {
+                return ImageManager.get().load("images/simulacra/" + name + ".png");
+            } catch (Exception e) {
+                Logger.error(LogType.SYS_ERROR, "failed loading image for simulacra " + name, e);
+                return null;
+            }
+        };
+    }
+
     public static Image getRelicsImageFromClasspath(String name) {
         try {
             return ImageManager.get().load("images/relics/" + name + ".png");

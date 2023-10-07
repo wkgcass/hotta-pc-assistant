@@ -33,7 +33,7 @@ public class XingHuanSimulacra extends AbstractSimulacra implements Simulacra {
 
     @Override
     protected Image buildImage() {
-        return Utils.getBuffImageFromClasspath("xing-huan-simulacra").get();
+        return Utils.getSimulacraImageFromClasspath("xing-huan").get();
     }
 
     @Override

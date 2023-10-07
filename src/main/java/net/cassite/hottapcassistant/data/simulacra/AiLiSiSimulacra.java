@@ -29,7 +29,7 @@ public class AiLiSiSimulacra extends AbstractSimulacra implements Simulacra {
 
     @Override
     protected Image buildImage() {
-        return Utils.getBuffImageFromClasspath("ai-li-si-simulacra").get();
+        return Utils.getSimulacraImageFromClasspath("ai-li-si").get();
     }
 
     @Override
