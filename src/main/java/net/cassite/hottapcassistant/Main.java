@@ -105,7 +105,7 @@ public class Main extends Application {
         };
         var title = I18n.get().titleMainScreen();
         //noinspection ConstantConditions
-        if (Version.version.endsWith("-dev")) {
+        if (Version.version.contains("-")) {
             title = title + " " + I18n.get().titleMainScreenDevVersion();
         }
         stage.setTitle(title);

@@ -59,7 +59,7 @@ public class AboutScene extends AbstractMainScene {
             new VBox() {{
                 String versionStr = Version.version;
                 //noinspection ConstantConditions
-                if (versionStr.endsWith("-dev")) {
+                if (versionStr.contains("-")) {
                     versionStr += "    ";
                     versionStr += Version.devVersion;
                 }
