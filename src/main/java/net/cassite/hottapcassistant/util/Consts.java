@@ -15,7 +15,7 @@ public class Consts {
 
     public static final Set<String> PRELOAD_IMAGE = Set.of(
         "/net/cassite/xboxrelay/ui/res/xbox.png",
-        "/images/bg/bg3.png",
+        "/images/bg/bg4.jpg",
         "/images/downloadgame-btn/downloadgame-down.png",
         "/images/downloadgame-btn/downloadgame-hover.png",
         "/images/downloadgame-btn/downloadgame-normal.png",
@@ -49,7 +49,7 @@ public class Consts {
     );
     public static final String[] ALL_IMAGE = new String[]{
         "/net/cassite/xboxrelay/ui/res/xbox.png",
-        "/images/bg/bg3.png",
+        "/images/bg/bg4.jpg",
         "/images/buff/ai-li-si-simulacra.png",
         "/images/buff/bee.png",
         "/images/buff/burn-settle.png",
