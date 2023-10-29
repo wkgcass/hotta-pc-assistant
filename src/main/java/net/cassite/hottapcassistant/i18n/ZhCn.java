@@ -895,6 +895,7 @@ public class ZhCn extends I18n {
             case "chóng ruǐ" -> "重蕊";
             case "jiān bīng" -> "监兵";
             case "zǐ zhú" -> "紫竹";
+            case "guī héng" -> "规衡";
             default -> name;
         };
     }
