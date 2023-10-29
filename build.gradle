@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
     id 'org.beryx.jlink' version '2.26.0'
 }
 
@@ -40,6 +40,7 @@ repositories {
 
 dependencies {
     implementation 'com.github.kwhat:jnativehook:2.2.2'
+    implementation group: 'io.vproxy', name: 'vjson', version: '1.5.4-jdk9'
     implementation group: 'io.vproxy', name: 'vfx', version: '1.3.5'
     implementation group: 'net.cassite', name: 'xboxrelay-ui', version: '1.0.0'
     implementation group: 'net.java.dev.jna', name: 'jna', version: '5.12.1'
