@@ -380,7 +380,7 @@ public class MultiHottaInstanceScene extends ToolScene {
 
             tool.save(config);
 
-            final int CURRENT_TIPS_VERSION = 2;
+            final int CURRENT_TIPS_VERSION = 3;
 
             if (config.disableTips >= CURRENT_TIPS_VERSION) {
                 return;

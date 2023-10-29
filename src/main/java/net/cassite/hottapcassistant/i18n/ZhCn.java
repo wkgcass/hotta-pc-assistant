@@ -1568,7 +1568,8 @@ public class ZhCn extends I18n {
 
     @Override
     public String multiInstanceTips() {
-        return "多开工具会写入hosts文件，如果在未使用多开工具时游戏出现网络连接问题，请检查hosts配置";
+        return "多开工具会写入hosts文件，如果游戏出现网络连接问题，再次开启本助手即可解决。\n" +
+               "建议使用多开工具的用户总是使用本助手启动游戏！";
     }
 
     @Override

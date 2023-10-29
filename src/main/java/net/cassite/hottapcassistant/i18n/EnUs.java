@@ -1429,7 +1429,8 @@ public class EnUs extends I18n {
 
     @Override
     public String multiInstanceTips() {
-        return "The multi-boot tool will write to the hosts file. If network connection problems occur when the game is not using the multi-boot tool, please check the hosts configuration";
+        return "The multi-boot tool will write to the hosts file. If there is a network connection problem in the game, it can be solved by opening this assistant application again.\n" +
+               "It is recommended that users who use multi-boot tool always use this assistant application to launch the game.";
     }
 
     @Override
