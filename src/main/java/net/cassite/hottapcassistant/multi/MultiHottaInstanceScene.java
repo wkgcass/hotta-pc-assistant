@@ -99,7 +99,7 @@ public class MultiHottaInstanceScene extends ToolScene {
         }};
         onlineBranchInput = new TextField() {{
             FontManager.get().setFont(this);
-            setText("Windows30");
+            setText("Windows35");
         }};
 
         isHandlingAdvCheckBox = new CheckBox(I18n.get().multiInstanceIsHandlingAdvCheckBox()) {{
@@ -212,7 +212,9 @@ public class MultiHottaInstanceScene extends ToolScene {
             advBranchInput.setText(config.advBranch);
         }
         if (config.onlineBranch != null) {
-            onlineBranchInput.setText(config.onlineBranch);
+            if (config.onlineBranchVersion >= MultiHottaInstanceConfig.CURRENT_ONLINE_BRANCH_VERSION) {
+                onlineBranchInput.setText(config.onlineBranch);
+            }
         }
         disableTipsVersion = config.disableTips;
     }
@@ -242,6 +244,7 @@ public class MultiHottaInstanceScene extends ToolScene {
         config.advBranch = advBranchInput.getText();
         config.onlineBranch = onlineBranchInput.getText();
         config.disableTips = disableTipsVersion;
+        config.onlineBranchVersion = MultiHottaInstanceConfig.CURRENT_ONLINE_BRANCH_VERSION;
         config.clearEmptyFields();
         return config;
     }

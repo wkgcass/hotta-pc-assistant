@@ -15,13 +15,17 @@ public class MultiHottaInstanceConfig implements JSONObject {
     String advBranch;
     String onlineBranch;
     int disableTips;
+    int onlineBranchVersion;
+
+    public static final int CURRENT_ONLINE_BRANCH_VERSION = 1;
 
     public static final Rule<MultiHottaInstanceConfig> rule = new ObjectRule<>(MultiHottaInstanceConfig::new)
         .put("betaPath", (o, it) -> o.betaPath = it, StringRule.get())
         .put("onlinePath", (o, it) -> o.onlinePath = it, StringRule.get())
         .put("advBranch", (o, it) -> o.advBranch = it, StringRule.get())
         .put("onlineBranch", (o, it) -> o.onlineBranch = it, StringRule.get())
-        .put("disableTips", (o, it) -> o.disableTips = it, IntRule.get());
+        .put("disableTips", (o, it) -> o.disableTips = it, IntRule.get())
+        .put("onlineBranchVersion", (o, it) -> o.onlineBranchVersion = it, IntRule.get());
 
     public void clearEmptyFields() {
         betaPath = MiscUtils.returnNullIfBlank(betaPath);
@@ -47,6 +51,7 @@ public class MultiHottaInstanceConfig implements JSONObject {
             ob.put("onlineBranch", onlineBranch);
         }
         ob.put("disableTips", disableTips);
+        ob.put("onlineBranchVersion", onlineBranchVersion);
         return ob.build();
     }
 

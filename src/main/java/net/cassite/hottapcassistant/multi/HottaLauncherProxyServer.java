@@ -106,7 +106,7 @@ public class HottaLauncherProxyServer {
             } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/gameinfo.xml")) {
                 isHandlingAdv.set(true);
                 gameInfoXml(reqId, req);
-            } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + onlineBranch + "/gameinfo.xml")) {
+            } else if (method == HttpMethod.GET && uri.startsWith("//hd/htob/launcher")) {
                 isHandlingAdv.set(false);
                 proxy(client, reqId, req, method, uri, headers, body);
             } else {
