@@ -88,6 +88,7 @@ public class Consts {
         "/images/icon/message-helper-icon.png",
         "/images/icon/message-monitor-icon.png",
         "/images/icon/multi-hotta-instance.png",
+        "/images/icon/patch-manager-icon.png",
         "/images/icon/pause.png",
         "/images/icon/play-button.png",
         "/images/icon/question.png",

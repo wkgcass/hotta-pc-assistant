@@ -459,6 +459,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String applyPatchFailed() {
+        return "应用补丁失败";
+    }
+
+    @Override
     public String launchGameFailed() {
         return "启动游戏失败";
     }
@@ -746,6 +751,7 @@ public class ZhCn extends I18n {
             状态指示器图标：Conclusion icons created by Kiranshastry - Flaticon
             聊天消息监听器: Chat box icons created by Pixel perfect - Flaticon
             消息图标：Info icons created by Plastic Donut - Flaticon
+            补丁管理器：Puzzle icons created by Freepik - Flaticon
 
             依赖开源项目：
             1. openjdk: GPLv2 with Classpath Exception
@@ -1236,6 +1242,7 @@ public class ZhCn extends I18n {
             case "multi-hotta-instance" -> "幻塔双开";
             case "status-indicator" -> "状态指示器";
             case "message-monitor" -> "聊天消息监控";
+            case "patch-manager" -> "补丁管理器";
             default -> name;
         };
     }
@@ -2073,5 +2080,90 @@ public class ZhCn extends I18n {
     @Override
     public String back() {
         return "返回";
+    }
+
+    @Override
+    public String patchManagerEditBtn() {
+        return "修改";
+    }
+
+    @Override
+    public String patchManagerRemoveBtn() {
+        return "删除";
+    }
+
+    @Override
+    public String patchManagerReloadBtn() {
+        return "重新读取";
+    }
+
+    @Override
+    public String patchManagerOpenFolderBtn() {
+        return "打开目录";
+    }
+
+    @Override
+    public String patchManagerEnabledCol() {
+        return "启用";
+    }
+
+    @Override
+    public String patchManagerNameCol() {
+        return "名称";
+    }
+
+    @Override
+    public String patchManagerCNCol() {
+        return "国服";
+    }
+
+    @Override
+    public String patchManagerGlobalCol() {
+        return "国际服";
+    }
+
+    @Override
+    public String patchManagerDescCol() {
+        return "描述";
+    }
+
+    @Override
+    public String patchManagerAlertInvalidConfigTitle() {
+        return "配置文件错误";
+    }
+
+    @Override
+    public String patchManagerAlertInvalidConfigContent(String name) {
+        return "配置文件 " + name + " 错误，将对其使用空配置";
+    }
+
+    @Override
+    public String patchManagerAlertFailedToWriteConfigTitle() {
+        return "存储配置失败";
+    }
+
+    @Override
+    public String patchManagerAlertFailedToWriteConfigContent() {
+        return "存储配置失败，请查看日志以获取更多信息";
+    }
+
+    @Override
+    public String patchManagerConfirmRemove(String name) {
+        return "你确定要删除 " + name + " 吗？磁盘上的文件也将被删除！";
+    }
+
+    @Override
+    public String applyPatchLoadingStageTitle() {
+        return "正在应用补丁...";
+    }
+
+    @Override
+    public String applyPatchLoadingPreparePatchDirectory() {
+        return "准备补丁目录";
+    }
+
+    @Override
+    public String applyPatchLoadingPrepareSigFile() {
+        return "准备签名文件";
     }
 }

@@ -183,6 +183,8 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String openFileFailed();
 
+    public abstract String applyPatchFailed();
+
     public abstract String launchGameFailed();
 
     public abstract String macroSwitchButtonLabel();
@@ -654,4 +656,38 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
     public abstract String skipAnimation();
 
     public abstract String newCriticalVersionAvailable(String ver);
+
+    public abstract String patchManagerEditBtn();
+
+    public abstract String patchManagerRemoveBtn();
+
+    public abstract String patchManagerReloadBtn();
+
+    public abstract String patchManagerOpenFolderBtn();
+
+    public abstract String patchManagerEnabledCol();
+
+    public abstract String patchManagerNameCol();
+
+    public abstract String patchManagerCNCol();
+
+    public abstract String patchManagerGlobalCol();
+
+    public abstract String patchManagerDescCol();
+
+    public abstract String patchManagerAlertInvalidConfigTitle();
+
+    public abstract String patchManagerAlertInvalidConfigContent(String name);
+
+    public abstract String patchManagerAlertFailedToWriteConfigTitle();
+
+    public abstract String patchManagerAlertFailedToWriteConfigContent();
+
+    public abstract String patchManagerConfirmRemove(String name);
+
+    public abstract String applyPatchLoadingStageTitle();
+
+    public abstract String applyPatchLoadingPreparePatchDirectory();
+
+    public abstract String applyPatchLoadingPrepareSigFile();
 }

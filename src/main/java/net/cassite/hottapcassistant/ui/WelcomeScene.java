@@ -10,6 +10,7 @@ import io.vproxy.vfx.ui.button.ImageButton;
 import io.vproxy.vfx.ui.button.TransparentFusionButton;
 import io.vproxy.vfx.ui.layout.HPadding;
 import io.vproxy.vfx.ui.layout.VPadding;
+import io.vproxy.vfx.ui.loading.LoadingFailure;
 import io.vproxy.vfx.ui.pane.AbstractFusionPane;
 import io.vproxy.vfx.ui.pane.TransparentContentFusionPane;
 import io.vproxy.vfx.util.FXUtils;
@@ -36,6 +37,7 @@ import net.cassite.hottapcassistant.config.TofServerListConfig;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.tool.PatchInfoBuilder;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
 import java.awt.*;
@@ -435,12 +437,25 @@ public class WelcomeScene extends AbstractMainScene {
                     return;
                 }
                 useCNGameCheckBox.setSelected(true);
-                try {
-                    Desktop.getDesktop().open(Path.of(GlobalValues.gamePath.get(), "gameLauncher.exe").toFile());
-                } catch (Throwable t) {
-                    Logger.error(LogType.SYS_ERROR, "failed launching game", t);
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
-                }
+                var promise = PatchInfoBuilder.applyCNPatch(
+                    Path.of(GlobalValues.gamePath.get(), "Client", "WindowsNoEditor", "Hotta", "Content", "PatchPaks"));
+                promise.setHandler((v, err) -> {
+                    if (err != null) {
+                        Logger.error(LogType.FILE_ERROR, "failed applying patch", err);
+                        if (err instanceof LoadingFailure lf) {
+                            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed() + ": " + lf.failedItem.name);
+                        } else {
+                            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed());
+                        }
+                        return;
+                    }
+                    try {
+                        Desktop.getDesktop().open(Path.of(GlobalValues.gamePath.get(), "gameLauncher.exe").toFile());
+                    } catch (Throwable t) {
+                        Logger.error(LogType.SYS_ERROR, "failed launching game", t);
+                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
+                    }
+                });
             });
             group.getChildren().add(downloadBtn);
             selectGameLocationInput.textProperty().addListener((ob, old, now) -> {
@@ -628,12 +643,25 @@ public class WelcomeScene extends AbstractMainScene {
             }
         }
 
-        try {
-            Desktop.getDesktop().open(Path.of(GlobalValues.globalServerGamePath.get(), "Launcher", "tof_launcher.exe").toFile());
-        } catch (Throwable t) {
-            Logger.error(LogType.SYS_ERROR, "failed launching global server game", t);
-            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
-        }
+        var promise = PatchInfoBuilder.applyGlobalPatch(
+            Path.of(GlobalValues.globalServerGamePath.get(), "Hotta", "Content", "Paks"));
+        promise.setHandler((v, err) -> {
+            if (err != null) {
+                Logger.error(LogType.FILE_ERROR, "failed applying patch", err);
+                if (err instanceof LoadingFailure lf) {
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed() + ": " + lf.failedItem.name);
+                } else {
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed());
+                }
+                return;
+            }
+            try {
+                Desktop.getDesktop().open(Path.of(GlobalValues.globalServerGamePath.get(), "Launcher", "tof_launcher.exe").toFile());
+            } catch (Throwable t) {
+                Logger.error(LogType.SYS_ERROR, "failed launching global server game", t);
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
+            }
+        });
     }
 
     private void initLocations() {

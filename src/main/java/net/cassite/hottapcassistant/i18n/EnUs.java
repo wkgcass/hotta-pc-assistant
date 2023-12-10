@@ -461,6 +461,11 @@ public class EnUs extends I18n {
     }
 
     @Override
+    public String applyPatchFailed() {
+        return "Failed to apply patch";
+    }
+
+    @Override
     public String launchGameFailed() {
         return "Failed to launch game";
     }
@@ -1108,6 +1113,7 @@ public class EnUs extends I18n {
             case "multi-hotta-instance" -> "Multiple Hotta Instance";
             case "status-indicator" -> "Status Indicator";
             case "message-monitor" -> "Chat Message Monitor";
+            case "patch-manager" -> "Patch Manager";
             default -> name;
         };
     }
@@ -1709,5 +1715,90 @@ public class EnUs extends I18n {
     @Override
     public String newCriticalVersionAvailable(String ver) {
         return "New critical updates available: " + ver + ", you can get the latest version from github.com/wkgcass/hotta-pc-assistant";
+    }
+
+    @Override
+    public String patchManagerEditBtn() {
+        return "Edit";
+    }
+
+    @Override
+    public String patchManagerRemoveBtn() {
+        return "Remove";
+    }
+
+    @Override
+    public String patchManagerReloadBtn() {
+        return "Reload";
+    }
+
+    @Override
+    public String patchManagerOpenFolderBtn() {
+        return "Open Folder";
+    }
+
+    @Override
+    public String patchManagerEnabledCol() {
+        return "enabled";
+    }
+
+    @Override
+    public String patchManagerNameCol() {
+        return "name";
+    }
+
+    @Override
+    public String patchManagerCNCol() {
+        return "cn";
+    }
+
+    @Override
+    public String patchManagerGlobalCol() {
+        return "global";
+    }
+
+    @Override
+    public String patchManagerDescCol() {
+        return "description";
+    }
+
+    @Override
+    public String patchManagerAlertInvalidConfigTitle() {
+        return "Invalid patch config";
+    }
+
+    @Override
+    public String patchManagerAlertInvalidConfigContent(String name) {
+        return "Unable to parse patch config: " + name + ", will use empty config instead";
+    }
+
+    @Override
+    public String patchManagerAlertFailedToWriteConfigTitle() {
+        return "Failed to persist config";
+    }
+
+    @Override
+    public String patchManagerAlertFailedToWriteConfigContent() {
+        return "Failed to persist config, please check the logs for more info";
+    }
+
+    @Override
+    public String patchManagerConfirmRemove(String name) {
+        return "Are you sure to delete " + name + "? The file on disk will be removed!";
+    }
+
+    @Override
+    public String applyPatchLoadingStageTitle() {
+        return "Applying patches ...";
+    }
+
+    @Override
+    public String applyPatchLoadingPreparePatchDirectory() {
+        return "Prepare patch directory";
+    }
+
+    @Override
+    public String applyPatchLoadingPrepareSigFile() {
+        return "Prepare sig file";
     }
 }

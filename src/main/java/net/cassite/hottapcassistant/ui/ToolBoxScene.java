@@ -38,8 +38,9 @@ public class ToolBoxScene extends AbstractMainScene implements Terminate {
         add(MultiHottaInstance::new);
         add(StatusIndicator::new);
         add(MessageMonitor::new);
+        add(PatchManager::new);
     }};
-    private static final int colsPerLine = 8;
+    private static final int colsPerLine = 6;
     private final List<Tool> toolInstances = new ArrayList<>();
     private final VSceneGroup sceneGroup;
 
@@ -60,7 +61,7 @@ public class ToolBoxScene extends AbstractMainScene implements Terminate {
     }
 
     private void initTools(GridPane grid) {
-        grid.setHgap(40);
+        grid.setHgap(60);
         grid.setVgap(30);
         var i = 0;
         for (var tool : tools) {
