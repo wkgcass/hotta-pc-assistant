@@ -2151,4 +2151,19 @@ public class ZhCn extends I18n {
     public String patchManagerConfirmRemove(String name) {
         return "你确定要删除 " + name + " 吗？磁盘上的文件也将被删除！";
     }
+
+    @Override
+    public String applyPatchLoadingStageTitle() {
+        return "正在应用补丁...";
+    }
+
+    @Override
+    public String applyPatchLoadingPreparePatchDirectory() {
+        return "准备补丁目录";
+    }
+
+    @Override
+    public String applyPatchLoadingPrepareSigFile() {
+        return "准备签名文件";
+    }
 }

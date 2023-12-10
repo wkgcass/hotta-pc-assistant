@@ -36,7 +36,7 @@ public class PatchInfoBuilder {
         .put("isGlobalCompatible", (it, o) -> it.isGlobalCompatible = o, BoolRule.get())
         .put("description", (it, o) -> it.description = o, StringRule.get());
 
-    public static File getHottaPatchDir() throws Exception {
+    public static File getPatchManagerDir() throws Exception {
         var patchDirStr = Utils.homefile("hotta-patch");
         var patchDir = new File(patchDirStr);
         if (patchDir.exists()) {
@@ -65,13 +65,13 @@ public class PatchInfoBuilder {
 
         File patchDir;
         try {
-            patchDir = getHottaPatchDir();
+            patchDir = getPatchManagerDir();
         } catch (Exception e) {
             promise._2.failed(e);
             return promise._1;
         }
         var patches = patchDir.listFiles(file -> file.isFile() && file.getName().endsWith(".pak"));
-        if (patches == null) {
+        if (patches == null || patches.length == 0) {
             promise._2.succeeded();
             return promise._1;
         }
@@ -113,7 +113,9 @@ public class PatchInfoBuilder {
 
         var loadingStage = new LoadingStage(I18n.get().applyPatchLoadingStageTitle());
         var progressItems = new ArrayList<LoadingItem>();
-        progressItems.add(new LoadingItem(1, I18n.get().applyPatchLoadingPreparePatchDirectory(), () -> ensureDir(pakDirPath)));
+        {
+            progressItems.add(new LoadingItem(1, I18n.get().applyPatchLoadingPreparePatchDirectory(), () -> ensureDir(pakDirPath)));
+        }
         for (var copy : filesToCopy) {
             progressItems.add(new LoadingItem(1, copy.getName(), () ->
                 copyFile(copy, Path.of(pakDirPath.toString(), copy.getName()))
@@ -151,6 +153,7 @@ public class PatchInfoBuilder {
         if (ls != null && ls.length > 0) {
             return ls[0];
         }
+        Logger.error(LogType.ALERT, "unable to find any .sig file in " + basedir);
         return null;
     }
 

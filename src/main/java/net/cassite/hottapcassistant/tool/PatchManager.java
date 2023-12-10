@@ -132,7 +132,7 @@ public class PatchManager extends AbstractTool {
         S() throws Exception {
             enableAutoContentWidthHeight();
 
-            patchDir = PatchInfoBuilder.getHottaPatchDir();
+            patchDir = PatchInfoBuilder.getPatchManagerDir();
 
             initUI();
             load();

@@ -1786,4 +1786,19 @@ public class EnUs extends I18n {
     public String patchManagerConfirmRemove(String name) {
         return "Are you sure to delete " + name + "? The file on disk will be removed!";
     }
+
+    @Override
+    public String applyPatchLoadingStageTitle() {
+        return "Applying patches ...";
+    }
+
+    @Override
+    public String applyPatchLoadingPreparePatchDirectory() {
+        return "Prepare patch directory";
+    }
+
+    @Override
+    public String applyPatchLoadingPrepareSigFile() {
+        return "Prepare sig file";
+    }
 }
