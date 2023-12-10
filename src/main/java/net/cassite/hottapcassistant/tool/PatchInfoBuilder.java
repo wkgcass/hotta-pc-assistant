@@ -114,7 +114,7 @@ public class PatchInfoBuilder {
         var pakDirPath = Path.of(basedir.toString(), "HottaPCAssistantPatchPaks");
 
         var loadingStage = new LoadingStage(I18n.get().applyPatchLoadingStageTitle());
-        loadingStage.setInterval(200);
+        loadingStage.setInterval(50);
         var progressItems = new ArrayList<LoadingItem>();
         {
             progressItems.add(new LoadingItem(1, I18n.get().applyPatchLoadingPreparePatchDirectory(), () -> ensureDir(pakDirPath)));
