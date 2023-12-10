@@ -38,6 +38,7 @@ public class ToolBoxScene extends AbstractMainScene implements Terminate {
         add(MultiHottaInstance::new);
         add(StatusIndicator::new);
         add(MessageMonitor::new);
+        add(PatchManager::new);
     }};
     private static final int colsPerLine = 8;
     private final List<Tool> toolInstances = new ArrayList<>();
