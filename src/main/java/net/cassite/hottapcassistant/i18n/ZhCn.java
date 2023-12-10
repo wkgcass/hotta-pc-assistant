@@ -2094,7 +2094,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String patchManagerReloadBtn() {
-        return "重新加载";
+        return "重新读取";
     }
 
     @Override
