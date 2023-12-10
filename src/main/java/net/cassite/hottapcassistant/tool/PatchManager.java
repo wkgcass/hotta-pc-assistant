@@ -313,6 +313,10 @@ public class PatchManager extends AbstractTool {
         private void load(String name) throws Exception {
             var p = Path.of(patchDir.getAbsolutePath(), name + PatchInfoBuilder.CONFIG_SUFFIX);
             var f = p.toFile();
+            if (!f.exists()) {
+                load(name, new PatchInfoBuilder());
+                return;
+            }
             if (!f.isFile()) {
                 Logger.warn(LogType.INVALID_EXTERNAL_DATA, f + " is not a valid file, config creation might fail!");
                 load(name, new PatchInfoBuilder());

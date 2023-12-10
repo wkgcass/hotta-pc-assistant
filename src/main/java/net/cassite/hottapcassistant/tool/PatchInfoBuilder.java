@@ -72,6 +72,7 @@ public class PatchInfoBuilder {
         }
         var patches = patchDir.listFiles(file -> file.isFile() && file.getName().endsWith(".pak"));
         if (patches == null || patches.length == 0) {
+            Logger.alert("no .pak file exist, will not run patch loading");
             promise._2.succeeded();
             return promise._1;
         }
@@ -105,6 +106,7 @@ public class PatchInfoBuilder {
         }
 
         if (filesToCopy.isEmpty() && requireSigNames.isEmpty()) {
+            Logger.alert("no matching files (enabled/version), will not run patch loading");
             promise._2.succeeded();
             return promise._1;
         }
