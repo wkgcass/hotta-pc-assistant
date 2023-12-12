@@ -26,9 +26,9 @@ import java.util.function.Predicate;
 
 public class PatchInfoBuilder {
     public static final String CONFIG_SUFFIX = ".config.json.txt";
-    public boolean enabled;
-    public boolean isCNCompatible;
-    public boolean isGlobalCompatible;
+    public boolean enabled = false;
+    public boolean isCNCompatible = true;
+    public boolean isGlobalCompatible = true;
     public String description;
     public static final Rule<PatchInfoBuilder> rule = new ObjectRule<>(PatchInfoBuilder::new)
         .put("enabled", (it, o) -> it.enabled = o, BoolRule.get())
