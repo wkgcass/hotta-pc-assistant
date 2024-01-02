@@ -47,7 +47,10 @@ public class Consts {
         "/images/misc/fishing-3.png",
         "/images/relics/dummy.png"
     );
-    public static final String[] ALL_IMAGE = new String[]{
+    @SuppressWarnings("ToArrayCallWithZeroLengthArrayArgument")
+    public static final String[] ALL_IMAGE = PRELOAD_IMAGE.toArray(new String[PRELOAD_IMAGE.size()]);
+    @Deprecated
+    public static final String[] ___ALL_IMAGE = new String[]{
         "/net/cassite/xboxrelay/ui/res/xbox.png",
         "/images/bg/bg4.jpg",
         "/images/buff/bee.png",
@@ -167,7 +170,9 @@ public class Consts {
         "/images/weapons/zi-zhu.png",
     };
 
-    public static final String[] ALL_CLIP = new String[]{
+    public static final String[] ALL_CLIP = new String[]{};
+    @Deprecated
+    public static final String[] ___ALL_CLIP = new String[]{
         "/audio/lan/ai-zhe-shi.wav",
         "/audio/lan/shei-de-xin-yu.wav",
         "/audio/lan/wo-hui-ji-zhu-zhe-yi-ke-de.wav",
