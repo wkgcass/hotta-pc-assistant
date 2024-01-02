@@ -3,6 +3,9 @@ package net.cassite.hottapcassistant.i18n;
 import io.vproxy.vfx.ui.loading.LoadingItem;
 import net.cassite.tofpcap.messages.ChatChannel;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 public class ZhCn extends I18n {
     @Override
     public String id() {
@@ -2128,6 +2131,31 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String patchManagerLoadAfterCol() {
+        return "前置加载项";
+    }
+
+    @Override
+    public String patchManagerDependsOnCol() {
+        return "依赖项";
+    }
+
+    @Override
+    public String patchManagerOkBtn() {
+        return "确认";
+    }
+
+    @Override
+    public String patchManagerDepNotExist(String colName, String parentItemName) {
+        return colName + "不存在: " + parentItemName;
+    }
+
+    @Override
+    public String patchManagerDepCircular(String colName, ArrayList<String> newPath) {
+        return colName + "存在循环依赖: " + newPath;
+    }
+
+    @Override
     public String patchManagerAlertInvalidConfigTitle() {
         return "配置文件错误";
     }
@@ -2145,6 +2173,11 @@ public class ZhCn extends I18n {
     @Override
     public String patchManagerAlertFailedToWriteConfigContent() {
         return "存储配置失败，请查看日志以获取更多信息";
+    }
+
+    @Override
+    public String patchManagerAlertHasDependedCannotDelete(String name, Set<String> set) {
+        return "存在依赖" + name + "的补丁: " + set;
     }
 
     @Override

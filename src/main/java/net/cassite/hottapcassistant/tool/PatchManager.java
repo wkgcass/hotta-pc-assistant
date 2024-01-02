@@ -22,7 +22,9 @@ import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -39,7 +41,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 
 public class PatchManager extends AbstractTool {
     @Override
@@ -67,6 +71,8 @@ public class PatchManager extends AbstractTool {
             boolean isCNCompatible;
             boolean isGlobalCompatible;
             String description;
+            List<String> loadAfter;
+            List<String> dependsOn;
 
             PatchInfo(String name, PatchInfoBuilder b) {
                 this.enabled = b.enabled;
@@ -74,8 +80,17 @@ public class PatchManager extends AbstractTool {
                 this.isCNCompatible = b.isCNCompatible;
                 this.isGlobalCompatible = b.isGlobalCompatible;
                 this.description = b.description;
+                this.loadAfter = b.loadAfter;
+                this.dependsOn = b.dependsOn;
+
                 if (this.description == null) {
                     this.description = "";
+                }
+                if (this.loadAfter == null) {
+                    this.loadAfter = new ArrayList<>();
+                }
+                if (this.dependsOn == null) {
+                    this.dependsOn = new ArrayList<>();
                 }
             }
 
@@ -94,20 +109,13 @@ public class PatchManager extends AbstractTool {
                 persist();
             }
 
-            public void setDescription(String description) {
-                this.description = description;
-                persist();
-                if (rowInformer != null) {
-                    rowInformer.informRowUpdate();
-                }
-            }
-
-            private void persist() {
+            public void persist() {
                 var json = new ObjectBuilder()
                     .put("enabled", enabled)
                     .put("isCNCompatible", isCNCompatible)
                     .put("isGlobalCompatible", isGlobalCompatible)
                     .put("description", description)
+                    .putArray("dependsOn", a -> dependsOn.forEach(a::add))
                     .build()
                     .pretty();
                 var p = Path.of(patchDir.getAbsolutePath(), name + PatchInfoBuilder.CONFIG_SUFFIX);
@@ -118,6 +126,10 @@ public class PatchManager extends AbstractTool {
                         I18n.get().patchManagerAlertFailedToWriteConfigTitle(),
                         I18n.get().patchManagerAlertFailedToWriteConfigContent());
                     Logger.error(LogType.FILE_ERROR, "failed to write config file to " + p, e);
+                }
+
+                if (rowInformer != null) {
+                    rowInformer.informRowUpdate();
                 }
             }
 
@@ -144,14 +156,21 @@ public class PatchManager extends AbstractTool {
             var cnCol = new VTableColumn<PatchInfo, PatchInfo>(I18n.get().patchManagerCNCol(), i -> i);
             var globalCol = new VTableColumn<PatchInfo, PatchInfo>(I18n.get().patchManagerGlobalCol(), i -> i);
             var descCol = new VTableColumn<PatchInfo, String>(I18n.get().patchManagerDescCol(), i -> i.description);
+            var loadAfterCol = new VTableColumn<PatchInfo, Integer>("L", i -> i.loadAfter.size());
+            var dependsOnCol = new VTableColumn<PatchInfo, Integer>("D", i -> i.dependsOn.size());
             //noinspection unchecked
-            table.getColumns().addAll(enabledCol, nameCol, cnCol, globalCol, descCol);
+            table.getColumns().addAll(enabledCol, nameCol, cnCol, globalCol, descCol, loadAfterCol, dependsOnCol);
             enabledCol.setMaxWidth(80);
             nameCol.setMinWidth(100);
             nameCol.setComparator(String::compareTo);
             cnCol.setMaxWidth(80);
             globalCol.setMaxWidth(80);
             descCol.setMinWidth(400);
+            loadAfterCol.setMaxWidth(40);
+            dependsOnCol.setMaxWidth(40);
+
+            loadAfterCol.setAlignment(Pos.CENTER);
+            dependsOnCol.setAlignment(Pos.CENTER);
 
             enabledCol.setAlignment(Pos.CENTER);
             enabledCol.setNodeBuilder(i -> {
@@ -159,6 +178,19 @@ public class PatchManager extends AbstractTool {
                 FXUtils.disableFocusColor(checkBox);
                 checkBox.setSelected(i.enabled);
                 checkBox.setOnAction(e -> i.setEnabled(checkBox.isSelected()));
+                if (checkBox.isSelected()) {
+                    // enable dependencies
+                    for (var d : i.dependsOn)
+                        for (var ii : table.getItems())
+                            if (d.equals(ii.name))
+                                ii.setEnabled(true);
+                } else {
+                    // disable depended
+                    for (var ii : table.getItems())
+                        for (var d : ii.dependsOn)
+                            if (d.equals(i.name))
+                                ii.setEnabled(false);
+                }
                 return checkBox;
             });
             nameCol.setAlignment(Pos.CENTER);
@@ -206,6 +238,15 @@ public class PatchManager extends AbstractTool {
             removeBtn.setOnAction(e -> {
                 var info = table.getSelectedItem();
                 if (info == null) { // nothing selected
+                    return;
+                }
+                var depended = new HashSet<String>();
+                for (var ii : table.getItems())
+                    for (var d : ii.dependsOn)
+                        if (d.equals(info.name))
+                            depended.add(ii.name);
+                if (!depended.isEmpty()) {
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().patchManagerAlertHasDependedCannotDelete(info.name, depended));
                     return;
                 }
                 var confirm = new VConfirmDialog();
@@ -345,7 +386,7 @@ public class PatchManager extends AbstractTool {
             table.getItems().add(i);
         }
 
-        private static class EditStage extends VStage {
+        private class EditStage extends VStage {
             EditStage(PatchInfo info) {
                 var pane = getInitialScene().getContentPane();
 
@@ -354,11 +395,21 @@ public class PatchManager extends AbstractTool {
                     setPrefWidth(100);
                     setAlignment(Pos.CENTER_RIGHT);
                 }};
-                var descLabel = new ThemeLabel(I18n.get().worldBossTimerCommentCol()) {{
+                var descLabel = new ThemeLabel(I18n.get().patchManagerDescCol()) {{
                     FontManager.get().setFont(Consts.NotoFont, this);
                     setPrefWidth(100);
                     setAlignment(Pos.CENTER_RIGHT);
                     setPadding(new Insets(5, 0, 0, 0));
+                }};
+                var loadAfterLabel = new ThemeLabel(I18n.get().patchManagerLoadAfterCol()) {{
+                    FontManager.get().setFont(Consts.NotoFont, this);
+                    setPrefWidth(100);
+                    setAlignment(Pos.CENTER_RIGHT);
+                }};
+                var dependsOnLabel = new ThemeLabel(I18n.get().patchManagerDependsOnCol()) {{
+                    FontManager.get().setFont(Consts.NotoFont, this);
+                    setPrefWidth(100);
+                    setAlignment(Pos.CENTER_RIGHT);
                 }};
                 var nameValue = new ThemeLabel(info.name) {{
                     FontManager.get().setFont(Consts.NotoFont, this);
@@ -369,14 +420,52 @@ public class PatchManager extends AbstractTool {
                     setPrefWidth(300);
                     setText(info.description);
                 }};
+                var loadAfterInput = new TextArea() {{
+                    FontManager.get().setFont(Consts.JetbrainsMonoFont, this);
+                    setPrefWidth(300);
+                    setPrefHeight(60);
+                    setText(String.join("\n", info.loadAfter));
+                }};
+                var dependsOnInput = new TextArea() {{
+                    FontManager.get().setFont(Consts.JetbrainsMonoFont, this);
+                    setPrefWidth(300);
+                    setPrefHeight(60);
+                    setText(String.join("\n", info.dependsOn));
+                }};
 
-                var okBtn = new FusionButton(I18n.get().worldBossTimerOkBtn()) {{
+                var okBtn = new FusionButton(I18n.get().patchManagerOkBtn()) {{
                     FontManager.get().setFont(Consts.NotoFont, getTextNode());
                 }};
                 okBtn.setPrefWidth(120);
                 okBtn.setPrefHeight(32);
                 okBtn.setOnAction(e -> {
-                    info.setDescription(descInput.getText().trim());
+                    var loadAfter = textListValue(loadAfterInput);
+                    var dependsOn = textListValue(dependsOnInput);
+
+                    if (checkExistence(I18n.get().patchManagerLoadAfterCol(), loadAfter)) {
+                        return;
+                    }
+                    if (checkExistence(I18n.get().patchManagerDependsOnCol(), dependsOn)) {
+                        return;
+                    }
+                    if (checkCircularDep(I18n.get().patchManagerLoadAfterCol(), info, loadAfter, i -> i.loadAfter)) {
+                        return;
+                    }
+                    if (checkCircularDep(I18n.get().patchManagerDependsOnCol(), info, dependsOn, i -> i.dependsOn)) {
+                        return;
+                    }
+
+                    info.description = descInput.getText().trim();
+                    info.loadAfter = loadAfter;
+                    info.dependsOn = dependsOn;
+                    info.persist();
+
+                    if (info.enabled)
+                        for (var d : dependsOn)
+                            for (var item : table.getItems())
+                                if (item.name.equals(d))
+                                    item.setEnabled(true);
+
                     close();
                 });
 
@@ -386,17 +475,83 @@ public class PatchManager extends AbstractTool {
                         new HPadding(10),
                         new VBox(
                             new HBox(nameLabel, new HPadding(10), nameValue),
-                            new VPadding(5),
-                            new HBox(descLabel, new HPadding(10), new FusionW(descInput))
-                        )
+                            new HBox(descLabel, new HPadding(10), new FusionW(descInput)),
+                            new HBox(loadAfterLabel, new HPadding(10), new FusionW(loadAfterInput)),
+                            new HBox(dependsOnLabel, new HPadding(10), new FusionW(dependsOnInput))
+                        ) {{
+                            setSpacing(5);
+                        }}
                     ),
                     new VPadding(30),
                     new HBox(new HPadding(165), okBtn)
                 ));
 
                 getStage().setWidth(450);
-                getStage().setHeight(200);
+                getStage().setHeight(330);
                 getInitialScene().enableAutoContentWidthHeight();
+            }
+
+            private boolean checkExistence(String colName, List<String> parentNames) {
+                var current = table.getItems();
+                if (current == null) {
+                    current = Collections.emptyList();
+                }
+                for (var parent : parentNames) {
+                    if (current.stream().noneMatch(i -> i.name.equals(parent))) {
+                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().patchManagerDepNotExist(colName, parent));
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            private boolean checkCircularDep(String colName, PatchInfo info, List<String> parentNames, Function<PatchInfo, List<String>> getPatches) {
+                var ls = new ArrayList<String>();
+                ls.add(info.name);
+                return checkCircularDep0(colName, info, parentNames, ls, getPatches);
+            }
+
+            private boolean checkCircularDep0(String colName, PatchInfo checkItem,
+                                              List<String> parentNames,
+                                              List<String> currentPath,
+                                              Function<PatchInfo, List<String>> getParents) {
+                var current = table.getItems();
+                if (current == null) {
+                    current = Collections.emptyList();
+                }
+                final var fcurrent = current;
+
+                var parents = parentNames.stream()
+                    .map(s ->
+                        fcurrent.stream().filter(i -> i.name.equals(s)).findAny().orElse(null)
+                    )
+                    .filter(Objects::nonNull)
+                    .toList();
+
+                for (var parent : parents) {
+                    var newPath = new ArrayList<>(currentPath);
+                    newPath.add(parent.name);
+                    if (parent.name.equals(checkItem.name)) {
+                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().patchManagerDepCircular(colName, newPath));
+                        return true;
+                    }
+                    var res = checkCircularDep0(colName, checkItem, getParents.apply(parent), newPath, getParents);
+                    if (res) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            private static List<String> textListValue(TextArea dependsOnInput) {
+                var ret = new ArrayList<String>();
+                var split = dependsOnInput.getText().split("\n");
+                for (var s : split) {
+                    if (s.isBlank())
+                        continue;
+                    ret.add(s.trim());
+                }
+                return ret;
             }
         }
     }

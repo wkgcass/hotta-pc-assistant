@@ -7,6 +7,9 @@ import net.cassite.hottapcassistant.config.AssistantConfig;
 import net.cassite.hottapcassistant.entity.Assistant;
 import net.cassite.tofpcap.messages.ChatChannel;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.InternalI18n, net.cassite.xboxrelay.ui.I18n {
     private static volatile I18n impl;
 
@@ -675,6 +678,16 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String patchManagerDescCol();
 
+    public abstract String patchManagerLoadAfterCol();
+
+    public abstract String patchManagerDependsOnCol();
+
+    public abstract String patchManagerOkBtn();
+
+    public abstract String patchManagerDepNotExist(String colName, String parentItemName);
+
+    public abstract String patchManagerDepCircular(String colName, ArrayList<String> newPath);
+
     public abstract String patchManagerAlertInvalidConfigTitle();
 
     public abstract String patchManagerAlertInvalidConfigContent(String name);
@@ -682,6 +695,8 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
     public abstract String patchManagerAlertFailedToWriteConfigTitle();
 
     public abstract String patchManagerAlertFailedToWriteConfigContent();
+
+    public abstract String patchManagerAlertHasDependedCannotDelete(String name, Set<String> set);
 
     public abstract String patchManagerConfirmRemove(String name);
 

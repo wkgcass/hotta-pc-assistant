@@ -3,6 +3,9 @@ package net.cassite.hottapcassistant.i18n;
 import io.vproxy.vfx.ui.loading.LoadingItem;
 import net.cassite.tofpcap.messages.ChatChannel;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 public class EnUs extends I18n {
     private final ZhCn delegate = new ZhCn();
 
@@ -1763,6 +1766,31 @@ public class EnUs extends I18n {
     }
 
     @Override
+    public String patchManagerLoadAfterCol() {
+        return "load after";
+    }
+
+    @Override
+    public String patchManagerDependsOnCol() {
+        return "depends on";
+    }
+
+    @Override
+    public String patchManagerOkBtn() {
+        return "Ok";
+    }
+
+    @Override
+    public String patchManagerDepNotExist(String colName, String parentItemName) {
+        return "Missing item detected for `" + colName + "`: " + parentItemName;
+    }
+
+    @Override
+    public String patchManagerDepCircular(String colName, ArrayList<String> newPath) {
+        return "Circular dependency detected for `" + colName + "`: " + newPath;
+    }
+
+    @Override
     public String patchManagerAlertInvalidConfigTitle() {
         return "Invalid patch config";
     }
@@ -1780,6 +1808,11 @@ public class EnUs extends I18n {
     @Override
     public String patchManagerAlertFailedToWriteConfigContent() {
         return "Failed to persist config, please check the logs for more info";
+    }
+
+    @Override
+    public String patchManagerAlertHasDependedCannotDelete(String name, Set<String> set) {
+        return "Patches " + set + " depend on " + name;
     }
 
     @Override
