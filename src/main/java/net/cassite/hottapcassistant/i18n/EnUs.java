@@ -422,6 +422,10 @@ public class EnUs extends I18n {
                           key = String of keyboard key or mouse button, in the format supported by UnrealEngine
                      4. @type = SafePoint Can interrupt in this place when stopping the script
                         Parameter: none
+                     5. @type = MouseMove moves your mouse to the specific position
+                        Parameter:
+                          x = x coordinate (integer)
+                          y = y coordinate (integer)
                    For key values, please refer to UnrealEngine standards, most of which have been implemented except for the numeric keypad,
                    or view the io/vproxy/vfx/entity/input/KeyCode.java code in the vfx library
                    Commonly used values ​​are:

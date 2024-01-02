@@ -12,7 +12,8 @@ public abstract class AssistantMacroStep {
         .type("KeyPress", KeyPress.rule)
         .type("KeyRelease", KeyRelease.rule)
         .type("Delay", Delay.rule)
-        .type("SafePoint", SafePoint.rule);
+        .type("SafePoint", SafePoint.rule)
+        .type("MouseMove", MouseMove.rule);
 
     public abstract JSON.Object toJson();
 
@@ -120,6 +121,32 @@ public abstract class AssistantMacroStep {
 
         @Override
         public void exec() { // do nothing
+        }
+    }
+
+    public static class MouseMove extends AssistantMacroStep {
+        public int x;
+        public int y;
+
+        public MouseMove() {
+        }
+
+        public static final ObjectRule<MouseMove> rule = new ObjectRule<>(MouseMove::new)
+            .put("x", (o, it) -> o.x = it, IntRule.get())
+            .put("y", (o, it) -> o.y = it, IntRule.get());
+
+        @Override
+        public JSON.Object toJson() {
+            return new ObjectBuilder()
+                .type("MouseMove")
+                .put("x", x)
+                .put("y", y)
+                .build();
+        }
+
+        @Override
+        public void exec() {
+            Utils.execRobot(r -> r.mouseMove(x, y));
         }
     }
 }
