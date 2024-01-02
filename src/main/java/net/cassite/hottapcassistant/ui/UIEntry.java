@@ -72,12 +72,12 @@ public class UIEntry {
                     return new OverrideHelperImpl(this);
                 }
             },
-            new CoolDownScene(stage.getSceneGroup()) {
-                @Override
-                public OverrideHelper getOverrideHelper() {
-                    return new OverrideHelperImpl(this);
-                }
-            },
+//            new CoolDownScene(stage.getSceneGroup()) {
+//                @Override
+//                public OverrideHelper getOverrideHelper() {
+//                    return new OverrideHelperImpl(this);
+//                }
+//            },
             new ToolBoxScene(stage.getSceneGroup()) {
                 @Override
                 public OverrideHelper getOverrideHelper() {
