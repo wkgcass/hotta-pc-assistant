@@ -4,7 +4,9 @@ import io.vproxy.base.util.LogType;
 import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.control.dialog.VConfirmDialog;
 import io.vproxy.vfx.manager.font.FontManager;
+import io.vproxy.vfx.manager.font.FontUsages;
 import io.vproxy.vfx.manager.image.ImageManager;
+import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.alert.StackTraceAlert;
 import io.vproxy.vfx.ui.button.FusionButton;
@@ -24,6 +26,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -195,6 +198,15 @@ public class PatchManager extends AbstractTool {
                 return checkBox;
             });
             nameCol.setAlignment(Pos.CENTER);
+            nameCol.setNodeBuilder(s -> new Label(s) {{
+                setTextFill(Theme.current().tableTextColor());
+                FontManager.get().setFont(FontUsages.tableCellText, this);
+                var es = s;
+                if (es.length() > 20) {
+                    es = "..." + es.substring(es.length() - 17);
+                }
+                setEllipsisString(es);
+            }});
             cnCol.setAlignment(Pos.CENTER);
             cnCol.setNodeBuilder(i -> {
                 var checkBox = new CheckBox();
