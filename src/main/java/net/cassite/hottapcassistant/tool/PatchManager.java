@@ -115,6 +115,7 @@ public class PatchManager extends AbstractTool {
                     .put("isCNCompatible", isCNCompatible)
                     .put("isGlobalCompatible", isGlobalCompatible)
                     .put("description", description)
+                    .putArray("loadAfter", a -> loadAfter.forEach(a::add))
                     .putArray("dependsOn", a -> dependsOn.forEach(a::add))
                     .build()
                     .pretty();
