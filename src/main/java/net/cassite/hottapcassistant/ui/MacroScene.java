@@ -39,10 +39,7 @@ import net.cassite.hottapcassistant.status.Status;
 import net.cassite.hottapcassistant.status.StatusComponent;
 import net.cassite.hottapcassistant.status.StatusEnum;
 import net.cassite.hottapcassistant.status.StatusManager;
-import net.cassite.hottapcassistant.util.Consts;
-import net.cassite.hottapcassistant.util.GlobalValues;
-import net.cassite.hottapcassistant.util.RobotWrapper;
-import net.cassite.hottapcassistant.util.Utils;
+import net.cassite.hottapcassistant.util.*;
 
 import java.awt.*;
 import java.io.IOException;
@@ -326,8 +323,13 @@ public class MacroScene extends AbstractMainScene implements NativeKeyListener, 
                     }
                 }
             }
+            afterMacro();
             FXUtils.runOnFX(() -> m.setStatus(AssistantMacroStatus.STOPPED));
         });
+    }
+
+    private void afterMacro() {
+        StressWorkers.get().end();
     }
 
     private volatile boolean mouseIsReleased = false;

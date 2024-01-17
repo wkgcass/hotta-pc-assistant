@@ -1,6 +1,7 @@
 package net.cassite.hottapcassistant.entity;
 
 import io.vproxy.vfx.entity.input.Key;
+import net.cassite.hottapcassistant.util.StressWorkers;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
@@ -13,7 +14,9 @@ public abstract class AssistantMacroStep {
         .type("KeyRelease", KeyRelease.rule)
         .type("Delay", Delay.rule)
         .type("SafePoint", SafePoint.rule)
-        .type("MouseMove", MouseMove.rule);
+        .type("MouseMove", MouseMove.rule)
+        .type("StressBegin", StressBegin.rule)
+        .type("StressEnd", StressEnd.rule);
 
     public abstract JSON.Object toJson();
 
@@ -147,6 +150,38 @@ public abstract class AssistantMacroStep {
         @Override
         public void exec() {
             Utils.execRobot(r -> r.mouseMove(x, y));
+        }
+    }
+
+    public static class StressBegin extends AssistantMacroStep {
+        public static final ObjectRule<StressBegin> rule = new ObjectRule<>(StressBegin::new);
+
+        @Override
+        public JSON.Object toJson() {
+            return new ObjectBuilder()
+                .type("StressBegin")
+                .build();
+        }
+
+        @Override
+        public void exec() {
+            StressWorkers.get().begin();
+        }
+    }
+
+    public static class StressEnd extends AssistantMacroStep {
+        public static final ObjectRule<StressEnd> rule = new ObjectRule<>(StressEnd::new);
+
+        @Override
+        public JSON.Object toJson() {
+            return new ObjectBuilder()
+                .type("StressEnd")
+                .build();
+        }
+
+        @Override
+        public void exec() {
+            StressWorkers.get().end();
         }
     }
 }

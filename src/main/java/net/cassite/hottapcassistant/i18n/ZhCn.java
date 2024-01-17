@@ -424,6 +424,10 @@ public class ZhCn extends I18n {
                         参数:
                           x = 屏幕X坐标（整数）
                           y = 屏幕Y坐标（整数）
+                     6. @type = StressBegin 开始占用CPU资源
+                        参数：无
+                     7. @type = StressEnd 结束占用CPU资源
+                        参数：无
                    其中，key取值可参考UnrealEngine规范，除小键盘区外绝大部分均已实现
                         或者查看vfx库的io/vproxy/vfx/entity/input/KeyCode.java代码
                    常用的值有：

@@ -426,6 +426,10 @@ public class EnUs extends I18n {
                         Parameter:
                           x = x coordinate (integer)
                           y = y coordinate (integer)
+                     6. @type = StressBegin begins consuming the cpu resource
+                        Parameter: none
+                     7. @type = StressEnd ends consuming the cpu resource
+                        Parameter: none
                    For key values, please refer to UnrealEngine standards, most of which have been implemented except for the numeric keypad,
                    or view the io/vproxy/vfx/entity/input/KeyCode.java code in the vfx library
                    Commonly used values ​​are:
