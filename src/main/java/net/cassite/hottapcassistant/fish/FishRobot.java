@@ -275,6 +275,9 @@ public class FishRobot {
         Utils.execRobot(r -> r.release(new Key(MouseButton.PRIMARY)));
     }
 
+    private long waitForBiteTs = 0;
+    private static final long WAIT_FOR_BITE_ROLLBACK_TIMEOUT = 18_000;
+
     private void waitForBite() {
         var img = Utils.execRobotOnThread(r -> r.capture(buf2,
             captureXOffset + config.posBarRect.x,
@@ -290,8 +293,16 @@ public class FishRobot {
         displayPosBar(bar, -1, 1);
         int midPos = midOf(bar);
         if (midPos < 0) {
+            var now = System.currentTimeMillis();
+            if (waitForBiteTs == 0) {
+                waitForBiteTs = now;
+            } else if (now - waitForBiteTs > WAIT_FOR_BITE_ROLLBACK_TIMEOUT) {
+                waitForBiteTs = 0;
+                setStatus(Status.WAITING_FOR_CASTING);
+            }
             return;
         }
+        waitForBiteTs = 0; // clear timer
         setStatus(Status.MANAGING_POS);
     }
 
