@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.tool;
 
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vproxy.base.util.LogType;
 import io.vproxy.base.util.Logger;
 import io.vproxy.base.util.Utils;
@@ -13,8 +14,7 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -116,7 +116,11 @@ public class PatchInfoBuilder {
         }
     }
 
+    private static final Set<InputStream> holdPatchFiles = new ConcurrentHashSet<>();
+
     private static Promise<Void> applyPatch(Path basedir, Predicate<PatchInfoBuilder> checkApply) {
+        clearLastHoldPatchFiles();
+
         var promise = Promise.<Void>todo();
 
         File patchDir;
@@ -214,6 +218,16 @@ public class PatchInfoBuilder {
         return promise._1;
     }
 
+    private static void clearLastHoldPatchFiles() {
+        for (var f : holdPatchFiles) {
+            try {
+                f.close();
+            } catch (IOException ignore) {
+                // we can do nothing if closing failed
+            }
+        }
+    }
+
     private static void initItems(List<Item> items) {
         // init nodes
         for (var item : items) {
@@ -267,6 +281,10 @@ public class PatchInfoBuilder {
     private static boolean copyFile(File src, Path dest) {
         try {
             Files.copy(src.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+            var holdFile = new FileInputStream(dest.toFile());
+            //noinspection ResultOfMethodCallIgnored
+            holdFile.read(); // just read anything to ensure the file is opened
+            holdPatchFiles.add(holdFile);
             return true;
         } catch (IOException e) {
             return false;
