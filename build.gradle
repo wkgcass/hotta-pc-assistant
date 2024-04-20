@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.1.0'
-    id 'org.beryx.jlink' version '2.26.0'
+    id 'org.beryx.jlink' version '3.0.1'
 }
 
 group 'net.cassite'
@@ -16,8 +16,8 @@ ext {
     junitVersion = '5.8.2'
 }
 
-sourceCompatibility = '17'
-targetCompatibility = '17'
+sourceCompatibility = '21'
+targetCompatibility = '21'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
