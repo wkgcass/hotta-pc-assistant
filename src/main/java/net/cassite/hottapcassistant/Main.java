@@ -215,7 +215,6 @@ public class Main extends Application {
             }
         }
         FeedThread.get().terminate();
-        GlobalValues.vertx.close();
         TaskManager.get().terminate();
         GlobalScreenUtils.unregister();
     }

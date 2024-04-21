@@ -1,9 +1,5 @@
 package net.cassite.hottapcassistant.util;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.dns.AddressResolverOptions;
 import io.vproxy.base.util.LogType;
 import io.vproxy.base.util.Logger;
 import io.vproxy.vfx.ui.alert.SimpleAlert;
@@ -23,10 +19,6 @@ import java.nio.file.Path;
 public class GlobalValues {
     private GlobalValues() {
     }
-
-    public static final Vertx vertx = Vertx.vertx(new VertxOptions()
-        .setAddressResolverOptions(new AddressResolverOptions()
-            .setHostsValue(Buffer.buffer(""))));
 
     public static final SimpleStringProperty savedPath = new SimpleStringProperty(null) {
         @Override

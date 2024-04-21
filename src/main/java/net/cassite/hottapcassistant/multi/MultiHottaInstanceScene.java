@@ -46,17 +46,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_SUB_VERSION;
-import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.RES_VERSION;
+import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.DEFAULT_RES_SUB_VERSION;
 
 public class MultiHottaInstanceScene extends ToolScene {
     private final MultiHottaInstance tool;
     private HottaLauncherProxyServer proxyServer = null;
+    private DNSHijacker dnsHijacker = null;
 
     private final TextField selectBetaLocationInput;
     private final TextField selectOnlineLocationInput;
+    private final TextField selectOnlineModLocationInput;
     private final TextField advBranchInput;
     private final TextField onlineBranchInput;
+    private final TextField onlineModBranchInput;
+    private final TextField onlineVersionInput;
     private final CheckBox isHandlingAdvCheckBox;
     private int disableTipsVersion;
 
@@ -72,12 +75,17 @@ public class MultiHottaInstanceScene extends ToolScene {
             FontManager.get().setFont(this);
         }};
         selectBetaLocationInput.setEditable(false);
-        selectBetaLocationInput.setPrefWidth(500);
+        selectBetaLocationInput.setPrefWidth(450);
         var selectBetaLocationButton = new FusionButton(I18n.get().selectButton()) {{
             setPrefWidth(48);
             setPrefHeight(35);
         }};
         selectBetaLocationButton.setOnAction(e -> selectLocation(selectBetaLocationInput));
+        var launchBetaButton = new FusionButton(I18n.get().multiInstanceSingleLaunchButton()) {{
+            setPrefWidth(48);
+            setPrefHeight(35);
+        }};
+        launchBetaButton.setOnAction(_ -> launchGame(selectBetaLocationInput.getText()));
 
         selectOnlineLocationInput = new TextField() {{
             FontManager.get().setFont(this);
@@ -93,6 +101,21 @@ public class MultiHottaInstanceScene extends ToolScene {
         }};
         selectOnlineLocationButton.setOnAction(e -> selectLocation(selectOnlineLocationInput));
 
+        selectOnlineModLocationInput = new TextField() {{
+            FontManager.get().setFont(this);
+        }};
+        selectOnlineModLocationInput.setPrefWidth(450);
+        var selectOnlineModLocationButton = new FusionButton(I18n.get().selectButton()) {{
+            setPrefWidth(48);
+            setPrefHeight(35);
+        }};
+        selectOnlineModLocationButton.setOnAction(_ -> selectLocation(selectOnlineModLocationInput));
+        var launchOnlineModButton = new FusionButton(I18n.get().multiInstanceSingleLaunchButton()) {{
+            setPrefWidth(48);
+            setPrefHeight(35);
+        }};
+        launchOnlineModButton.setOnAction(_ -> launchGame(selectOnlineModLocationInput.getText()));
+
         advBranchInput = new TextField() {{
             FontManager.get().setFont(this);
             setText("AdvLaunch24");
@@ -100,6 +123,15 @@ public class MultiHottaInstanceScene extends ToolScene {
         onlineBranchInput = new TextField() {{
             FontManager.get().setFont(this);
             setText("Windows35");
+        }};
+        onlineModBranchInput = new TextField() {{
+            FontManager.get().setFont(this);
+            setText("Windows30");
+        }};
+
+        onlineVersionInput = new TextField() {{
+            FontManager.get().setFont(this);
+            setText("");
         }};
 
         isHandlingAdvCheckBox = new CheckBox(I18n.get().multiInstanceIsHandlingAdvCheckBox()) {{
@@ -121,17 +153,9 @@ public class MultiHottaInstanceScene extends ToolScene {
                 new ThemeLabel(I18n.get().selectGameLocationDescriptionWithoutAutoSearching()),
                 new VPadding(10),
                 new HBox(
-                    new ThemeLabel(I18n.get().selectBetaGameLocation()),
-                    new HPadding(5),
-                    selectBetaLocationInput,
-                    new HPadding(5),
-                    selectBetaLocationButton
-                ) {{
-                    setAlignment(Pos.CENTER);
-                }},
-                new VPadding(10),
-                new HBox(
-                    new ThemeLabel(I18n.get().selectOnlineGameLocation()),
+                    new ThemeLabel(I18n.get().selectOnlineGameLocation()) {{
+                        setPrefWidth(150);
+                    }},
                     new HPadding(5),
                     selectOnlineLocationInput,
                     new HPadding(5),
@@ -139,19 +163,65 @@ public class MultiHottaInstanceScene extends ToolScene {
                 ) {{
                     setAlignment(Pos.CENTER);
                 }},
+                new VPadding(10),
+                new HBox(
+                    new ThemeLabel(I18n.get().selectBetaGameLocation()) {{
+                        setPrefWidth(150);
+                    }},
+                    new HPadding(5),
+                    selectBetaLocationInput,
+                    new HPadding(5),
+                    launchBetaButton,
+                    new HPadding(5),
+                    selectBetaLocationButton
+                ) {{
+                    setAlignment(Pos.CENTER);
+                }},
+                new VPadding(10),
+                new HBox(
+                    new ThemeLabel(I18n.get().selectOnlineModGameLocation()) {{
+                        setPrefWidth(150);
+                    }},
+                    new HPadding(5),
+                    selectOnlineModLocationInput,
+                    new HPadding(5),
+                    launchOnlineModButton,
+                    new HPadding(5),
+                    selectOnlineModLocationButton
+                ) {{
+                    setAlignment(Pos.CENTER);
+                }},
                 new VPadding(20),
                 new HBox(
                     new ThemeLabel(I18n.get().multiInstanceAdvBranch()) {{
                         setPadding(new Insets(5, 0, 0, 0));
+                        setPrefWidth(100);
                     }},
                     new HPadding(5),
                     advBranchInput,
                     new HPadding(20),
                     new ThemeLabel(I18n.get().multiInstanceOnlineBranch()) {{
                         setPadding(new Insets(5, 0, 0, 0));
+                        setPrefWidth(100);
                     }},
                     new HPadding(5),
                     onlineBranchInput
+                ),
+                new VPadding(20),
+                new HBox(
+                    new ThemeLabel(I18n.get().multiInstanceOnlineVersion()) {{
+                        setPadding(new Insets(5, 0, 0, 0));
+                        setPrefWidth(100);
+                    }},
+                    new HPadding(5),
+                    onlineVersionInput,
+                    new HPadding(20),
+                    new ThemeLabel(I18n.get().multiInstanceOnlineModBranch()) {{
+                        setPadding(new Insets(5, 0, 0, 0));
+                        setPrefWidth(100);
+                    }},
+                    new HPadding(5),
+                    onlineModBranchInput
                 ),
                 new VPadding(20),
                 new HBox(
@@ -201,12 +271,15 @@ public class MultiHottaInstanceScene extends ToolScene {
     }
 
     public void init(MultiHottaInstanceConfig config) {
-        config.clearEmptyFields();
+        config.clearInvalidFields();
         if (config.betaPath != null) {
             selectBetaLocationInput.setText(config.betaPath);
         }
         if (config.onlinePath != null) {
             selectOnlineLocationInput.setText(config.onlinePath);
+        }
+        if (config.onlineModPath != null) {
+            selectOnlineModLocationInput.setText(config.onlineModPath);
         }
         if (config.advBranch != null) {
             advBranchInput.setText(config.advBranch);
@@ -215,6 +288,12 @@ public class MultiHottaInstanceScene extends ToolScene {
             if (config.onlineBranchVersion >= MultiHottaInstanceConfig.CURRENT_ONLINE_BRANCH_VERSION) {
                 onlineBranchInput.setText(config.onlineBranch);
             }
+        }
+        if (config.onlineModBranch != null) {
+            onlineModBranchInput.setText(config.onlineModBranch);
+        }
+        if (config.onlineVersion != null) {
+            onlineVersionInput.setText(config.onlineVersion);
         }
         disableTipsVersion = config.disableTips;
     }
@@ -241,11 +320,14 @@ public class MultiHottaInstanceScene extends ToolScene {
         var config = new MultiHottaInstanceConfig();
         config.betaPath = selectBetaLocationInput.getText();
         config.onlinePath = selectOnlineLocationInput.getText();
+        config.onlineModPath = selectOnlineModLocationInput.getText();
         config.advBranch = advBranchInput.getText();
         config.onlineBranch = onlineBranchInput.getText();
+        config.onlineModBranch = onlineModBranchInput.getText();
+        config.onlineVersion = onlineVersionInput.getText();
         config.disableTips = disableTipsVersion;
         config.onlineBranchVersion = MultiHottaInstanceConfig.CURRENT_ONLINE_BRANCH_VERSION;
-        config.clearEmptyFields();
+        config.clearInvalidFields();
         return config;
     }
 
@@ -258,80 +340,67 @@ public class MultiHottaInstanceScene extends ToolScene {
      */
     private synchronized void launch() {
         var config = buildConfig();
-        if (config.hasEmptyField()) {
-            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().multiInstanceEmptyFieldAlert());
+        var configErr = config.configValidation();
+        if (configErr != null) {
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().multiInstanceInvalidFieldAlert(configErr));
             return;
         }
-        var clientVersion = new String[]{null};
         var items = new ArrayList<LoadingItem>();
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("lock"),
+            MultiHottaInstanceFlow::checkLock));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("clientVersion"), () -> {
-            String v;
             try {
-                v = MultiHottaInstanceFlow.readClientVersion(config.onlinePath);
+                MultiHottaInstanceFlow.setClientVersion(config.onlinePath,
+                    config.onlineVersion == null ? DEFAULT_RES_SUB_VERSION : config.onlineVersion);
             } catch (IOException e) {
                 Logger.error(LogType.FILE_ERROR, "failed retrieving client version", e);
                 FXUtils.runOnFX(() ->
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedRetrievingClientVersion()));
-                return false;
-            }
-            clientVersion[0] = v;
-            return true;
-        }));
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("UserData"), () -> {
-            try {
-                MultiHottaInstanceFlow.replaceUserDataDir(config.betaPath, config.onlinePath);
-            } catch (IOException e) {
-                Logger.error(LogType.FILE_ERROR, "failed replacing UserData", e);
-                FXUtils.runOnFX(() ->
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedReplacingUserDataDir()));
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedSettingClientVersion()));
                 return false;
             }
             return true;
         }));
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("ResList.xml"), () -> {
-            try {
-                MultiHottaInstanceFlow.writeResListXml(config.betaPath, RES_SUB_VERSION);
-            } catch (IOException e) {
-                Logger.error(LogType.FILE_ERROR, "failed writing ResList.xml", e);
+        if (config.betaPath != null) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("UserData"), () ->
+                doReplaceUserData(config.betaPath, config)
+            ));
+        }
+        if (config.onlineModPath != null) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("UserData2"), () ->
+                doReplaceUserData(config.onlineModPath, config)
+            ));
+        }
+        if (config.betaPath != null) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("ResList.xml"), () ->
+                doWriteResListXml(config.betaPath, config)
+            ));
+        }
+        if (config.onlineModPath != null) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("ResList.xml-2"), () ->
+                doWriteResListXml(config.onlineModPath, config)
+            ));
+        }
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("config.xml"), () ->
+            doWriteConfigXml(config.betaPath, config)
+        ));
+        if (config.onlineModPath != null) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("config.xml-2"), () ->
+                doWriteConfigXml(config.onlineModPath, config)
+            ));
+        }
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("Client"), () ->
+            doMkLink(config, config.betaPath)
+        ));
+        if (config.onlineModPath != null) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("Client2"), () ->
+                doMkLink(config, config.onlineModPath)
+            ));
+        }
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("resolve"), () -> {
+            if (!MultiHottaInstanceFlow.resolveHosts()) {
+                Logger.error(LogType.FILE_ERROR, "resolving hosts failed");
                 FXUtils.runOnFX(() ->
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingResListXml()));
-                return false;
-            }
-            return true;
-        }));
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("config.xml"), () -> {
-            try {
-                MultiHottaInstanceFlow.writeConfigXml(config.betaPath, RES_VERSION, RES_SUB_VERSION);
-            } catch (IOException e) {
-                Logger.error(LogType.FILE_ERROR, "failed writing config.xml", e);
-                FXUtils.runOnFX(() ->
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingConfigXml()));
-                return false;
-            }
-            return true;
-        }));
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("Client"), () -> {
-            var clientPath = Path.of(config.betaPath, "Client");
-            var clientFile = clientPath.toFile();
-            if (clientFile.exists()) {
-                return true;
-            }
-            var onlineClientPath = Path.of(config.onlinePath, "Client");
-            try {
-                MultiHottaInstanceFlow.makeLink(clientPath.toAbsolutePath().toString(), onlineClientPath.toAbsolutePath().toString());
-            } catch (IOException e) {
-                Logger.error(LogType.SYS_ERROR, "making link file failed", e);
-                FXUtils.runOnFX(() ->
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotMakeLink()));
-                return false;
-            }
-            return true;
-        }));
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("hosts"), () -> {
-            if (!MultiHottaInstanceFlow.setHostsFile()) {
-                Logger.error(LogType.FILE_ERROR, "setting hosts file failed");
-                FXUtils.runOnFX(() ->
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotSetHostsFile()));
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceResolvingFailed()));
                 return false;
             }
             return true;
@@ -340,7 +409,8 @@ public class MultiHottaInstanceScene extends ToolScene {
             if (proxyServer != null) {
                 return true;
             }
-            var proxyServer = new HottaLauncherProxyServer(config.advBranch, config.onlineBranch, RES_VERSION, RES_SUB_VERSION, clientVersion[0],
+            var proxyServer = new HottaLauncherProxyServer(
+                MultiHottaInstanceFlow.resolvedHosts, config,
                 isHandlingAdvCheckBox.selectedProperty());
             try {
                 proxyServer.start();
@@ -354,23 +424,33 @@ public class MultiHottaInstanceScene extends ToolScene {
             this.proxyServer = proxyServer;
             return true;
         }));
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("launch"), () -> {
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("hijack"), () -> {
+            if (dnsHijacker != null) {
+                return true;
+            }
+            var hijacker = new DNSHijacker(MultiHottaInstanceFlow.resolvedHosts);
             try {
-                Desktop.getDesktop().open(Path.of(config.betaPath, "gameLauncher.exe").toFile());
-            } catch (IOException e) {
-                Logger.error(LogType.SYS_ERROR, "failed launching game", e);
+                hijacker.start();
+            } catch (Exception e) {
+                hijacker.destroy();
+                Logger.error(LogType.SYS_ERROR, "launching dns hijacker failed", e);
                 FXUtils.runOnFX(() ->
-                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed()));
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceLaunchDNSHijackerFailed()));
                 return false;
             }
-            MiscUtils.threadSleep(1_000);
+            this.dnsHijacker = hijacker;
             return true;
         }));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("flush-dns"),
+            MultiHottaInstanceFlow::flushDNS));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("launch"), () ->
+            launchGame(config.onlineModPath != null ? config.onlineModPath : config.betaPath)
+        ));
         var loadingStage = new LoadingStage(I18n.get().toolName("multi-hotta-instance"));
         loadingStage.setItems(items);
         loadingStage.setInterval(120);
-        loadingStage.load(Callback.ofFunction((err, v) -> {
-            if (err != null) {
+        loadingStage.load(Callback.ofFunction((err, _) -> {
+            if (err != null && err.failedItem != null) {
                 Logger.error(LogType.ALERT, "initiating multi-hotta-instance failed at " + err.failedItem.name, err);
                 String errMsg = I18n.get().loadingFailedErrorMessage(err.failedItem);
                 if (err.getCause() != null) {
@@ -380,10 +460,13 @@ public class MultiHottaInstanceScene extends ToolScene {
                 }
                 return;
             }
+            if (err != null) {
+                return;
+            }
 
             tool.save(config);
 
-            final int CURRENT_TIPS_VERSION = 3;
+            final int CURRENT_TIPS_VERSION = 4;
 
             if (config.disableTips >= CURRENT_TIPS_VERSION) {
                 return;
@@ -421,11 +504,87 @@ public class MultiHottaInstanceScene extends ToolScene {
         }));
     }
 
+    private boolean doWriteConfigXml(String path, MultiHottaInstanceConfig config) throws Exception {
+        try {
+            MultiHottaInstanceFlow.writeConfigXml(path, config.resVersion(), config.resSubVersion());
+        } catch (IOException e) {
+            Logger.error(LogType.FILE_ERROR, "failed writing config.xml", e);
+            FXUtils.runOnFX(() ->
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingConfigXml()));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean doWriteResListXml(String path, MultiHottaInstanceConfig config) throws Exception {
+        try {
+            MultiHottaInstanceFlow.writeResListXml(path, config.resSubVersion());
+        } catch (IOException e) {
+            Logger.error(LogType.FILE_ERROR, "failed writing ResList.xml", e);
+            FXUtils.runOnFX(() ->
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedWritingResListXml()));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean launchGame(String path) {
+        if (path == null) {
+            return false; // do nothing
+        }
+        try {
+            Desktop.getDesktop().open(
+                Path.of(path, "gameLauncher.exe").toFile());
+        } catch (IOException e) {
+            Logger.error(LogType.SYS_ERROR, "failed launching game", e);
+            FXUtils.runOnFX(() ->
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed()));
+            return false;
+        }
+        MiscUtils.threadSleep(1_000);
+        return true;
+    }
+
+    private boolean doMkLink(MultiHottaInstanceConfig config, String dst) {
+        var dstClient = Path.of(dst, "Client");
+        var clientFile = dstClient.toFile();
+        if (clientFile.exists()) {
+            return true;
+        }
+        var onlineClientPath = Path.of(config.onlinePath, "Client");
+        try {
+            MultiHottaInstanceFlow.makeLink(dstClient.toAbsolutePath().toString(), onlineClientPath.toAbsolutePath().toString());
+        } catch (Exception e) {
+            Logger.error(LogType.SYS_ERROR, "making link file failed", e);
+            FXUtils.runOnFX(() ->
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceCannotMakeLink()));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean doReplaceUserData(String dst, MultiHottaInstanceConfig config) {
+        try {
+            MultiHottaInstanceFlow.replaceUserDataDir(dst, config.onlinePath);
+        } catch (IOException e) {
+            Logger.error(LogType.FILE_ERROR, "failed replacing UserData", e);
+            FXUtils.runOnFX(() ->
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().multiInstanceFailedReplacingUserDataDir()));
+            return false;
+        }
+        return true;
+    }
+
     public void terminate() {
         var proxyServer = this.proxyServer;
         this.proxyServer = null;
         if (proxyServer != null) {
             proxyServer.destroy();
+        }
+        var dnsHijacker = this.dnsHijacker;
+        this.dnsHijacker = null;
+        if (dnsHijacker != null) {
+            dnsHijacker.destroy();
         }
         var ok = MultiHottaInstanceFlow.unsetHostsFile();
         if (!ok) {

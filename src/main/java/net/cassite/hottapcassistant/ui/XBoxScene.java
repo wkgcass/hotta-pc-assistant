@@ -1,5 +1,6 @@
 package net.cassite.hottapcassistant.ui;
 
+import io.vertx.core.Vertx;
 import io.vproxy.vfx.theme.Theme;
 import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.scene.VScene;
@@ -18,10 +19,12 @@ import net.cassite.xboxrelay.ui.ConfigureScene;
 
 public class XBoxScene implements MainScene, Terminate {
     private final FusionButton menuButton = new FusionButton();
+    private final Vertx vertx;
     private final ConfigureScene scene;
 
     public XBoxScene(VSceneGroup sceneGroup) {
-        scene = new ConfigureScene(GlobalValues.vertx, () -> sceneGroup) {
+        vertx = Vertx.vertx();
+        scene = new ConfigureScene(vertx, () -> sceneGroup) {
             {
                 getNode().setBackground(new Background(new BackgroundFill(
                     Theme.current().sceneBackgroundColor(),
@@ -104,5 +107,6 @@ public class XBoxScene implements MainScene, Terminate {
     @Override
     public void terminate() {
         scene.stop();
+        vertx.close();
     }
 }

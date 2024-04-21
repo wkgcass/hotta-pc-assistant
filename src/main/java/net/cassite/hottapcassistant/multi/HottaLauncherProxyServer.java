@@ -1,46 +1,57 @@
 package net.cassite.hottapcassistant.multi;
 
 import io.vertx.core.MultiMap;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.dns.AddressResolverOptions;
 import io.vertx.core.http.*;
 import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.core.net.TrustOptions;
 import io.vproxy.base.util.LogType;
 import io.vproxy.base.util.Logger;
+import io.vproxy.vfd.IPv4;
 import io.vproxy.vfx.util.MiscUtils;
 import javafx.beans.property.BooleanProperty;
-import net.cassite.hottapcassistant.util.GlobalValues;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.time.ZonedDateTime;
-import java.util.Base64;
-import java.util.UUID;
+import java.util.*;
 
 public class HottaLauncherProxyServer {
     private static final String reqSplitTag = "\n--------------------------------------";
     private static final String respEndLogTag = "\n========================================";
 
+    private final Vertx vertx;
     private final HttpServer server;
     private final HttpClient client;
 
-    private final String advBranch;
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private final Optional<String> advBranch;
     private final String onlineBranch;
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private final Optional<String> onlineModBranch;
     private final String version;
     private final String subVersion;
-    private final String clientVersion;
 
     private final BooleanProperty isHandlingAdv;
 
-    public HottaLauncherProxyServer(String advBranch, String onlineBranch, String version, String subVersion, String clientVersion,
+    public HottaLauncherProxyServer(Map<String, IPv4> serversToProxy,
+                                    MultiHottaInstanceConfig config,
                                     BooleanProperty isHandlingAdv) {
-        this.advBranch = advBranch;
-        this.onlineBranch = onlineBranch;
-        this.version = version;
-        this.subVersion = subVersion;
-        this.clientVersion = clientVersion;
+        this.advBranch = Optional.ofNullable(config.advBranch);
+        this.onlineBranch = Objects.requireNonNull(config.onlineBranch);
+        this.onlineModBranch = Optional.ofNullable(config.onlineModBranch);
+        this.version = config.resVersion();
+        this.subVersion = config.resSubVersion();
         this.isHandlingAdv = isHandlingAdv;
-        server = GlobalValues.vertx.createHttpServer(new HttpServerOptions()
+        vertx = Vertx.vertx(new VertxOptions()
+            .setAddressResolverOptions(new AddressResolverOptions()
+                .setHostsValue(Buffer.buffer(
+                    generateHostsContent(serversToProxy)
+                ))));
+        server = vertx.createHttpServer(new HttpServerOptions()
             .setSsl(true)
             .setPemKeyCertOptions(new PemKeyCertOptions()
                 .setCertValue(Buffer.buffer(Certs.HOTTA_CERT))
@@ -49,7 +60,7 @@ public class HottaLauncherProxyServer {
             .setReuseAddress(true)
         );
         server.requestHandler(this::handleRequest);
-        client = GlobalValues.vertx.createHttpClient(new HttpClientOptions()
+        client = vertx.createHttpClient(new HttpClientOptions()
             .setTrustOptions(TrustOptions.wrap(new X509TrustManager() {
                 @Override
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
@@ -67,6 +78,14 @@ public class HottaLauncherProxyServer {
             .setVerifyHost(false));
     }
 
+    private static String generateHostsContent(Map<String, IPv4> serversToProxy) {
+        var sb = new StringBuilder();
+        for (var entry : serversToProxy.entrySet()) {
+            sb.append(entry.getValue().formatToIPString()).append(" ").append(entry.getKey()).append("\n");
+        }
+        return sb.toString();
+    }
+
     public void start() throws Exception {
         server.listen(443).toCompletionStage().toCompletableFuture().get();
     }
@@ -74,6 +93,8 @@ public class HottaLauncherProxyServer {
     public void destroy() {
         server.close();
         client.close();
+        vertx.close();
+        Logger.alert("hotta-launcher-proxy-server terminated!");
     }
 
     @SuppressWarnings("DuplicatedCode")
@@ -81,6 +102,9 @@ public class HottaLauncherProxyServer {
         req.body().map(buffer -> {
             var method = req.method();
             var uri = req.uri();
+            if (uri.startsWith("//")) {
+                uri = uri.substring(1);
+            }
             var headers = req.headers();
             var body = buffer.toString();
             var reqId = UUID.randomUUID().toString();
@@ -89,24 +113,29 @@ public class HottaLauncherProxyServer {
 
             if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/Version/Windows/config.xml")) {
                 nullConfigXml(reqId, req);
-            } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + advBranch + "/Version/Windows/config.xml")) {
+            } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + advBranch.orElse("null") + "/Version/Windows/config.xml")) {
                 configXml(reqId, req);
             } else if (isHandlingAdv.get() && method == HttpMethod.GET && uri.startsWith("/clientRes/" + onlineBranch + "/Version/Windows/config.xml")) {
                 configXml(reqId, req);
-            } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + advBranch + "/Version/Windows/version/" + subVersion + "/ResList.xml")) {
+            } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + onlineModBranch.orElse("null") + "/Version/Windows/config.xml")) {
+                configXmlMod(reqId, req);
+            } else if (method == HttpMethod.GET && uri.contains("/ResList.xml")) {
                 resListXml(reqId, req);
-            } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/" + advBranch + "/Version/Windows/version/" + subVersion + "/lastdiff.xml")) {
+            } else if (method == HttpMethod.GET && uri.contains("/lastdiff.xml")) {
                 lastdiffXml(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/htydalphahd/client/Version.txt")) {
                 versionTxt(reqId, req);
-            } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/200105/") && uri.endsWith("AllFiles.xml")) {
+            } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/200105/") && uri.endsWith("/AllFiles.xml")) {
                 allFilesXml(reqId, req);
+            } else if (method == HttpMethod.GET && uri.startsWith("/hd/htob/launcher/") && uri.endsWith("/AllFiles.xml")) {
+                isHandlingAdv.set(false);
+                allFilesXml2(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/pmp/update/200105/Version.ini")) {
                 versionIni(reqId, req);
             } else if (method == HttpMethod.GET && uri.startsWith("/clientRes/AdvLaunchNull/gameinfo.xml")) {
                 isHandlingAdv.set(true);
                 gameInfoXml(reqId, req);
-            } else if (method == HttpMethod.GET && uri.startsWith("//hd/htob/launcher")) {
+            } else if (method == HttpMethod.GET && uri.startsWith("/hd/htob/launcher")) {
                 isHandlingAdv.set(false);
                 proxy(client, reqId, req, method, uri, headers, body);
             } else {
@@ -129,7 +158,7 @@ public class HottaLauncherProxyServer {
             /*----*/"\"https://htcdn1.wmupd.com/\"," +
             /*----*/"\"https://htcdn2.wmupd.com/\"" +
             /**/"]," +
-            /**/"\"branchName\":\"" + advBranch + "\"," +
+            /**/"\"branchName\":\"" + advBranch.orElse("null") + "\"," +
             /**/"\"gameUpdateAssetUrl\":[" +
             /*----*/"\"https://htcdn1.wmupd.com/clientRes\"," +
             /*----*/"\"https://htcdn2.wmupd.com/clientRes\"" +
@@ -140,7 +169,7 @@ public class HottaLauncherProxyServer {
                    "        <ResVersion>" + subVersion + "</ResVersion>\n" +
                    "        <UpdateResVersion>1.0</UpdateResVersion>\n" +
                    "        <Section>" + version + "</Section>\n" +
-                   "        <PreReleaseBranch>" + advBranch + "</PreReleaseBranch>\n" +
+                   "        <PreReleaseBranch>" + advBranch.orElse("null") + "</PreReleaseBranch>\n" +
                    "        <PreReleaseVersion>" + subVersion + "</PreReleaseVersion>\n" +
                    "        <ResConfig>" + Base64.getEncoder().encodeToString(resConfig.getBytes()) + "</ResConfig>\n" +
                    "        <BaseVerson appVersion=\"1.0\"/>\n" +
@@ -163,6 +192,13 @@ public class HottaLauncherProxyServer {
         req.response().end(body);
     }
 
+    private void configXmlMod(String reqId, HttpServerRequest req) {
+        var body = MultiHottaInstanceFlow.buildConfigXml(version /* FIXME: the page responds 0.0 */, subVersion);
+        Logger.access("custom config.xml(mod) response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        req.response().setStatusCode(200);
+        req.response().end(body);
+    }
+
     private void resListXml(String reqId, HttpServerRequest req) {
         var body = MultiHottaInstanceFlow.buildResListXml(subVersion);
         Logger.access("custom resList.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
@@ -181,10 +217,9 @@ public class HottaLauncherProxyServer {
     }
 
     private void versionTxt(String reqId, HttpServerRequest req) {
-        var version = clientVersion;
-        Logger.access("custom version.txt response: " + version + "\nreqId: " + reqId + respEndLogTag);
+        Logger.access("custom version.txt response: " + subVersion + "\nreqId: " + reqId + respEndLogTag);
         req.response().setStatusCode(200);
-        req.response().end(version);
+        req.response().end(subVersion);
     }
 
     private void allFilesXml(String reqId, HttpServerRequest req) {
@@ -198,6 +233,31 @@ public class HottaLauncherProxyServer {
                    "    <Log></Log>\n" +
                    "</All_Files>\n";
         Logger.access("custom AllFiles.xml response\nreqId: " + reqId + "\n" + body + respEndLogTag);
+        req.response().setStatusCode(200);
+        req.response().end(body);
+    }
+
+    private void allFilesXml2(String reqId, HttpServerRequest req) {
+        var uri = req.uri();
+        if (uri.startsWith("//")) {
+            uri = uri.substring(1);
+        }
+        assert uri.startsWith("/hd/htob/launcher/") && uri.endsWith("/AllFiles.xml");
+        var version = uri.substring("/hd/htob/launcher/".length());
+        version = version.substring(0, version.length() - "/AllFiles.xml".length());
+
+        var now = ZonedDateTime.now();
+        var timeStr = MiscUtils.YYYYMMddHHiissDateTimeFormatter.format(now);
+        var body = STR."""
+            <All_Files>
+                <script/>
+                <BuildInfo Time="\{timeStr}"/>
+                <ProductVersion Version="\{version}"/>
+                <Url BaseUrl="\{req.host()}//hd/htob/launcher"/>
+                <Log/>
+            </All_Files>
+            """;
+        Logger.access("custom AllFiles.xml(2) response\nreqId: " + reqId + "\n" + body + respEndLogTag);
         req.response().setStatusCode(200);
         req.response().end(body);
     }

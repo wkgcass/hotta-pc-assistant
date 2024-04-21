@@ -524,9 +524,15 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String selectOnlineGameLocation();
 
+    public abstract String selectOnlineModGameLocation();
+
     public abstract String multiInstanceAdvBranch();
 
     public abstract String multiInstanceOnlineBranch();
+
+    public abstract String multiInstanceOnlineModBranch();
+
+    public abstract String multiInstanceOnlineVersion();
 
     public abstract String multiInstanceIsHandlingAdvCheckBox();
 
@@ -534,11 +540,11 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String multiInstanceTutorialLink();
 
-    public abstract String multiInstanceEmptyFieldAlert();
+    public abstract String multiInstanceInvalidFieldAlert(String field);
 
     public abstract String multiInstanceLaunchStep(String step);
 
-    public abstract String multiInstanceFailedRetrievingClientVersion();
+    public abstract String multiInstanceFailedSettingClientVersion();
 
     public abstract String multiInstanceFailedReplacingUserDataDir();
 
@@ -548,15 +554,19 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String multiInstanceCannotMakeLink();
 
-    public abstract String multiInstanceCannotSetHostsFile();
+    public abstract String multiInstanceResolvingFailed();
 
     public abstract String multiInstanceLaunchProxyServerFailed();
+
+    public abstract String multiInstanceLaunchDNSHijackerFailed();
 
     public abstract String multiInstancesOpenBrowserForTutorialFailed(String url);
 
     public abstract String multiInstanceTips();
 
     public abstract String multiInstanceConfirmAndDisableTipsButton();
+
+    public abstract String multiInstanceSingleLaunchButton();
 
     public abstract String selectGameLocationDescriptionWithoutAutoSearching();
 

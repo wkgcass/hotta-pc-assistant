@@ -82,6 +82,7 @@ public class FeedThread extends Thread {
     private void checkLock() {
         Feed.feed.lockMacroPane.set(Utils.checkLock("macro", false, false));
         Feed.feed.lockFishingPane.set(Utils.checkLock("fishing", false, false));
+        Feed.feed.lockMultiPane.set(Utils.checkLock("multi", false, false));
     }
 
     private void loadCache() throws IOException {

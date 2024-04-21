@@ -84,6 +84,7 @@ public class EnUs extends I18n {
         name = switch (name) {
             case "macro" -> toolNameMacro();
             case "fishing" -> toolNameFishing();
+            case "multi" -> toolName("multi-hotta-instance");
             default -> name;
         };
         return "This tool is currently unavailable: " + name;
@@ -1356,7 +1357,12 @@ public class EnUs extends I18n {
 
     @Override
     public String selectOnlineGameLocation() {
-        return "Select formal server path";
+        return "Select online server path";
+    }
+
+    @Override
+    public String selectOnlineModGameLocation() {
+        return "Select online mod server path";
     }
 
     @Override
@@ -1366,7 +1372,17 @@ public class EnUs extends I18n {
 
     @Override
     public String multiInstanceOnlineBranch() {
-        return "Formal server branch";
+        return "Online server branch";
+    }
+
+    @Override
+    public String multiInstanceOnlineModBranch() {
+        return "Online mod server branch";
+    }
+
+    @Override
+    public String multiInstanceOnlineVersion() {
+        return "Online server version";
     }
 
     @Override
@@ -1385,28 +1401,43 @@ public class EnUs extends I18n {
     }
 
     @Override
-    public String multiInstanceEmptyFieldAlert() {
-        return "There are empty fields, please fill them out before starting";
+    public String multiInstanceInvalidFieldAlert(String field) {
+        return switch (field) {
+            case "onlinePath" -> "Online game path is empty or invalid";
+            case "advBranch" -> "Beta branch is empty or invalid";
+            case "onlineBranch" -> "Online branch is empty or invalid";
+            case "onlineModBranch" -> "Online mod branch is empty or invalid";
+            case "onlineVersion" -> "Online version is empty or invalid (x.y.z)";
+            case "betaPath&onlineModPath" -> "At least one of online mod and beta game path should be filled";
+            default -> STR."\{field} is empty or invalid";
+        };
     }
 
     @Override
     public String multiInstanceLaunchStep(String step) {
         return switch (step) {
-            case "clientVersion" -> "Getting client version";
+            case "lock" -> "Function lock checking";
+            case "clientVersion" -> "Setting client version";
             case "UserData" -> "Replacing user files";
-            case "ResList.xml" -> "Write resource configuration file(1)";
-            case "config.xml" -> "Write resource configuration file(2)";
+            case "UserData2" -> "Replacing user files for mod launcher";
+            case "ResList.xml" -> "Write resource configuration file(1) for beta launcher";
+            case "ResList.xml-2" -> "Write resource configuration file(1) for mod launcher";
+            case "config.xml" -> "Write resource configuration file(2) for beta launcher";
+            case "config.xml-2" -> "Write resource configuration file(2) for mod launcher";
             case "Client" -> "Linking to client directory";
-            case "hosts" -> "Modifying hosts file";
+            case "Client2" -> "Linking to client directory for mod launcher";
+            case "resolve" -> "Resolving related domain names";
             case "server" -> "Starting proxy server";
+            case "hijack" -> "Hijacking DNS requests";
+            case "flush-dns" -> "Flushing DNS cache";
             case "launch" -> "Launch";
             default -> step;
         };
     }
 
     @Override
-    public String multiInstanceFailedRetrievingClientVersion() {
-        return "Failed to get client version, please confirm whether the official service path is set correctly";
+    public String multiInstanceFailedSettingClientVersion() {
+        return "Failed to set client version, please confirm whether the online service path is set correctly";
     }
 
     @Override
@@ -1430,13 +1461,18 @@ public class EnUs extends I18n {
     }
 
     @Override
-    public String multiInstanceCannotSetHostsFile() {
-        return "Failed to modify hosts file, please check whether the program is started with administrator privileges";
+    public String multiInstanceResolvingFailed() {
+        return "Domain resolving failed";
     }
 
     @Override
     public String multiInstanceLaunchProxyServerFailed() {
         return "Failed to start proxy service, please ensure that the 443 port of this machine is not occupied";
+    }
+
+    @Override
+    public String multiInstanceLaunchDNSHijackerFailed() {
+        return "Failed to start dns hijacker, please check log and contact the developer";
     }
 
     @Override
@@ -1446,13 +1482,18 @@ public class EnUs extends I18n {
 
     @Override
     public String multiInstanceTips() {
-        return "The multi-boot tool will write to the hosts file. If there is a network connection problem in the game, it can be solved by opening this assistant application again.\n" +
-               "It is recommended that users who use multi-boot tool always use this assistant application to launch the game.";
+        return "Do NOT click the upgrade button if the game prompts an upgrade.\n" +
+               "Please terminate the game and re-extract the prebuilt compressed package, then re-launch the game with this tool";
     }
 
     @Override
     public String multiInstanceConfirmAndDisableTipsButton() {
         return "I understand, don't remind again later";
+    }
+
+    @Override
+    public String multiInstanceSingleLaunchButton() {
+        return "Launch";
     }
 
     @Override

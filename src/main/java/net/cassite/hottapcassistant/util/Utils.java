@@ -334,12 +334,12 @@ public class Utils {
 
     public static boolean checkLock(String name, boolean alert, boolean useFeed) {
         if (useFeed) {
-            Boolean ret = null;
-            if (name.equals("macro")) {
-                ret = Feed.get().lockMacroPane.get();
-            } else if (name.equals("fishing")) {
-                ret = Feed.get().lockFishingPane.get();
-            }
+            var ret = switch (name) {
+                case "macro" -> Feed.get().lockMacroPane.get();
+                case "fishing" -> Feed.get().lockFishingPane.get();
+                case "multi" -> Feed.get().lockMultiPane.get();
+                default -> null;
+            };
             if (ret != null) {
                 if (!ret && alert) {
                     SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().toolIsLocked(name));

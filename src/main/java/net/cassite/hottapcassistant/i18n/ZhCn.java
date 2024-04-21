@@ -82,6 +82,7 @@ public class ZhCn extends I18n {
         name = switch (name) {
             case "macro" -> toolNameMacro();
             case "fishing" -> toolNameFishing();
+            case "multi" -> toolName("multi-hotta-instance");
             default -> name;
         };
         return "此工具暂未开放：" + name;
@@ -1500,6 +1501,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String selectOnlineModGameLocation() {
+        return "选择MOD正式服路径";
+    }
+
+    @Override
     public String multiInstanceAdvBranch() {
         return "测试服分支";
     }
@@ -1507,6 +1513,16 @@ public class ZhCn extends I18n {
     @Override
     public String multiInstanceOnlineBranch() {
         return "正式服分支";
+    }
+
+    @Override
+    public String multiInstanceOnlineModBranch() {
+        return "Mod正式服分支";
+    }
+
+    @Override
+    public String multiInstanceOnlineVersion() {
+        return "正式服版本";
     }
 
     @Override
@@ -1525,28 +1541,43 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String multiInstanceEmptyFieldAlert() {
-        return "存在空字段，请填充后再启动";
+    public String multiInstanceInvalidFieldAlert(String field) {
+        return switch (field) {
+            case "onlinePath" -> "正式服路径为空或有误";
+            case "advBranch" -> "测试服分支为空或有误";
+            case "onlineBranch" -> "正式服分支为空或有误";
+            case "onlineModBranch" -> "正式服Mod分支为空或有误";
+            case "onlineVersion" -> "正式服版本为空或有误（x.y.z）";
+            case "betaPath&onlineModPath" -> "正式服Mod和测试服的路径至少填写一项";
+            default -> STR."\{field} 为空或有误";
+        };
     }
 
     @Override
     public String multiInstanceLaunchStep(String step) {
         return switch (step) {
-            case "clientVersion" -> "获取客户端版本";
+            case "lock" -> "功能锁定检查";
+            case "clientVersion" -> "设置客户端版本";
             case "UserData" -> "替换用户文件";
-            case "ResList.xml" -> "写入资源配置文件(1)";
-            case "config.xml" -> "写入资源配置文件(2)";
-            case "Client" -> "链接客户度目录";
-            case "hosts" -> "修改hosts文件";
+            case "UserData2" -> "为mod启动器替换用户文件";
+            case "ResList.xml" -> "为测试服启动器写入资源配置文件(1)";
+            case "ResList.xml-2" -> "为mod启动器写入资源配置文件(1)";
+            case "config.xml" -> "为测试服启动器写入资源配置文件(2)";
+            case "config.xml-2" -> "为mod启动器写入资源配置文件(2)";
+            case "Client" -> "链接客户端目录";
+            case "Client2" -> "为mod启动器链接客户端目录";
+            case "resolve" -> "执行DNS解析";
             case "server" -> "启动代理服务器";
+            case "hijack" -> "启动DNS劫持";
+            case "flush-dns" -> "清空DNS缓存";
             case "launch" -> "启动";
             default -> step;
         };
     }
 
     @Override
-    public String multiInstanceFailedRetrievingClientVersion() {
-        return "获取客户端版本失败，请确认正式服路径是否设置正确";
+    public String multiInstanceFailedSettingClientVersion() {
+        return "设置客户端版本失败，请确认正式服路径是否设置正确";
     }
 
     @Override
@@ -1570,13 +1601,18 @@ public class ZhCn extends I18n {
     }
 
     @Override
-    public String multiInstanceCannotSetHostsFile() {
-        return "修改hosts文件失败，请检查本程序是否以管理员权限启动";
+    public String multiInstanceResolvingFailed() {
+        return "域名解析失败";
     }
 
     @Override
     public String multiInstanceLaunchProxyServerFailed() {
         return "启动代理服务失败，请确保本机443端口未被占用";
+    }
+
+    @Override
+    public String multiInstanceLaunchDNSHijackerFailed() {
+        return "启动DNS劫持失败，请查看日志并联系开发者";
     }
 
     @Override
@@ -1586,13 +1622,17 @@ public class ZhCn extends I18n {
 
     @Override
     public String multiInstanceTips() {
-        return "多开工具会写入hosts文件，如果游戏出现网络连接问题，再次开启本助手即可解决。\n" +
-               "建议使用多开工具的用户总是使用本助手启动游戏！";
+        return "如果提示游戏需要更新，请不要点击更新。退出游戏并重新解压预制的客户端压缩包，然后重新使用本工具启动即可";
     }
 
     @Override
     public String multiInstanceConfirmAndDisableTipsButton() {
         return "我已知晓，后续不再提示";
+    }
+
+    @Override
+    public String multiInstanceSingleLaunchButton() {
+        return "启动";
     }
 
     @Override

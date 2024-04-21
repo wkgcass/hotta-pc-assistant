@@ -1,42 +1,75 @@
 package net.cassite.hottapcassistant.multi;
 
+import io.vproxy.base.util.LogType;
+import io.vproxy.base.util.Logger;
+import io.vproxy.base.util.callback.BlockCallback;
+import io.vproxy.base.util.exception.NoException;
 import io.vproxy.commons.util.IOUtils;
+import io.vproxy.vfd.IPv4;
+import io.vproxy.vfx.util.FXUtils;
 import net.cassite.hottapcassistant.util.Utils;
 import vjson.simple.SimpleString;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MultiHottaInstanceFlow {
-    public static final String RES_VERSION = "114.514";
-    public static final String RES_SUB_VERSION = RES_VERSION + ".1919810";
+    public static final String DEFAULT_RES_VERSION = "114.514";
+    public static final String DEFAULT_RES_SUB_VERSION = DEFAULT_RES_VERSION + ".1919810";
 
     private MultiHottaInstanceFlow() {
     }
 
     private static final String hostsFileSuffixComment = " # hotta launcher request proxyZ, added by hotta-pc-assistant";
-    private static final String[] hostsToAdd = new String[]{
-        "htcdn1.wmupd.com",
-        "htcdn2.wmupd.com",
-        "htydhd.wmupd.com",
-        "pmpcdn1.wmupd.com",
-    };
+    static final Map<String, IPv4> resolvedHosts = new HashMap<>() {{
+        put("htcdn1.wmupd.com", IPv4.fromIPv4("218.98.31.229"));
+        put("htcdn2.wmupd.com", IPv4.fromIPv4("112.86.135.244"));
+        put("htydhd.wmupd.com", IPv4.fromIPv4("218.98.31.231"));
+        put("pmpcdn1.wmupd.com", IPv4.fromIPv4("116.148.164.57"));
+    }};
 
-    public static boolean setHostsFile() {
-        for (int i = 0; i < 3; ++i) {
-            boolean b = Utils.modifyHostsFile(lines -> {
-                var ls = new ArrayList<>(lines.stream().filter(s -> !s.trim().endsWith(hostsFileSuffixComment)).toList());
-                for (var h : hostsToAdd) {
-                    ls.add("127.0.0.1\t" + h + hostsFileSuffixComment);
+    public static boolean checkLock() {
+        var block = new BlockCallback<Boolean, NoException>();
+        FXUtils.runOnFX(() -> block.succeeded(Utils.checkLock("multi")));
+        return block.block();
+    }
+
+    public static boolean resolveHosts() {
+        for (var host : resolvedHosts.keySet()) {
+            InetAddress[] addrs;
+            try {
+                addrs = InetAddress.getAllByName(host);
+            } catch (UnknownHostException ignore) {
+                Logger.warn(LogType.ALERT, STR."failed to resolve \{host}, using previous value \{resolvedHosts.get(host)}");
+                continue;
+            }
+            if (addrs.length == 0) {
+                Logger.warn(LogType.ALERT, STR."failed to resolve \{host}, using previous value \{resolvedHosts.get(host)}");
+                continue;
+            }
+            var updated = false;
+            for (var h : addrs) {
+                if (h instanceof Inet4Address) {
+                    var v4 = IPv4.fromIPv4(h.getAddress());
+                    if (v4.bytes.get(0) == 127) {
+                        continue;
+                    }
+                    resolvedHosts.put(host, v4);
+                    Logger.alert(STR."ip for \{host} updated to \{v4.formatToIPString()}");
+                    updated = true;
+                    break;
                 }
-                return ls;
-            });
-            if (b) return true;
+            }
+            if (!updated) {
+                Logger.warn(LogType.ALERT, STR."unable to retrieve ipv4 for \{host}, using previous value \{resolvedHosts.get(host)}");
+            }
         }
-        return false;
+        return true;
     }
 
     public static boolean unsetHostsFile() {
@@ -47,20 +80,17 @@ public class MultiHottaInstanceFlow {
         return false;
     }
 
-    public static void makeLink(String advLocation, String normalClientLocation) throws IOException {
-        var pb = new ProcessBuilder();
-        pb.command("cmd.exe", "/c", "mklink /d " + new SimpleString(advLocation).stringify() + " " + new SimpleString(normalClientLocation).stringify());
-        Process process = pb.start();
+    public static void makeLink(String advLocation, String normalClientLocation) throws Exception {
+        io.vproxy.base.util.Utils.ExecuteResult res;
         try {
-            process.waitFor(1, TimeUnit.SECONDS);
-        } catch (InterruptedException ignore) {
+            res = io.vproxy.base.util.Utils.execute(STR."""
+            mklink /d \{new SimpleString(advLocation).stringify()} \{new SimpleString(normalClientLocation).stringify()}
+            """.trim(), 1000, true);
+        } catch (Exception e) {
+            throw new Exception(STR."creating directory link failed: \{io.vproxy.base.util.Utils.formatErr(e)}");
         }
-        if (process.isAlive()) {
-            throw new IOException("creating directory link timeout");
-        }
-        int code = process.exitValue();
-        if (code != 0) {
-            throw new IOException("creating directory link failed: " + code);
+        if (res.exitCode != 0) {
+            throw new IOException("creating directory link failed: " + res.exitCode);
         }
     }
 
@@ -110,19 +140,13 @@ public class MultiHottaInstanceFlow {
         return dir;
     }
 
-    public static String readClientVersion(String location) throws Exception {
+    public static void setClientVersion(String location, String version) throws Exception {
         var dir = Path.of(location, "Client", "WindowsNoEditor", "Hotta", "Binaries", "Win64");
         if (!dir.toFile().exists()) {
             throw new IOException(dir + " does not exist");
         }
         var path = Path.of(dir.toString(), "Win_pc_version.txt");
-        if (!path.toFile().exists()) {
-            var dummyVersion = "114.514.1919810";
-            IOUtils.writeFileWithBackup(path.toString(), dummyVersion);
-            return dummyVersion;
-        } else {
-            return Files.readString(path);
-        }
+        IOUtils.writeFileWithBackup(path.toString(), version);
     }
 
     public static void replaceUserDataDir(String advLocation, String onlineLocation) throws IOException {
@@ -135,5 +159,18 @@ public class MultiHottaInstanceFlow {
             }
         }
         IOUtils.copyDirectory(Path.of(onlineLocation, "WmGpLaunch", "UserData"), advPath);
+    }
+
+    public static void flushDNS() {
+        io.vproxy.base.util.Utils.ExecuteResult res;
+        try {
+            res = io.vproxy.base.util.Utils.execute("ipconfig /flushdns", true);
+        } catch (Exception e) {
+            Logger.warn(LogType.ALERT, "flushing dns failed", e);
+            return;
+        }
+        if (res.exitCode != 0) {
+            Logger.warn(LogType.ALERT, STR."flushing dns failed \{res}");
+        }
     }
 }

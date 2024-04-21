@@ -26,6 +26,7 @@ public class Feed {
 
     public final SimpleObjectProperty<Boolean> lockMacroPane = new SimpleObjectProperty<>();
     public final SimpleObjectProperty<Boolean> lockFishingPane = new SimpleObjectProperty<>();
+    public final SimpleObjectProperty<Boolean> lockMultiPane = new SimpleObjectProperty<>();
 
     public final SimpleObjectProperty<ZonedDateTime> feedTime = new SimpleObjectProperty<>();
 }
