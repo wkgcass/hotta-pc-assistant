@@ -419,7 +419,7 @@ public class WelcomeScene extends AbstractMainScene {
             downloadBtn.setOnAction(e -> {
                 var url = Feed.get().pmpDownloadUrl.get();
                 if (url == null) {
-                    url = "https://pmpcdn1.wmupd.com/pmp/client/PMP_1.0.7.0125.exe";
+                    url = "https://htapk.wmupd.com/webops/ht/HT_1.1.0.0830.exe";
                 }
                 try {
                     Desktop.getDesktop().browse(new URL(url).toURI());
