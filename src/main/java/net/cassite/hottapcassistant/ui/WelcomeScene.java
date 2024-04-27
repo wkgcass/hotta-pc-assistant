@@ -713,6 +713,14 @@ public class WelcomeScene extends AbstractMainScene {
                 return;
             }
         }
+        final String hottadir = "Hotta";
+        for (char c = 'C'; c <= 'Z'; ++c) {
+            File f = new File(c + ":\\" + hottadir + "\\gameLauncher.exe");
+            if (f.isFile()) {
+                selectGameLocationInput.setText(f.getParentFile().getAbsolutePath());
+                return;
+            }
+        }
         if (alert) {
             SimpleAlert.showAndWait(Alert.AlertType.WARNING, I18n.get().autoSearchFailed());
         }
