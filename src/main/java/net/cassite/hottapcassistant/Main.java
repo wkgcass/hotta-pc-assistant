@@ -40,7 +40,6 @@ import net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow;
 import net.cassite.hottapcassistant.ui.Terminate;
 import net.cassite.hottapcassistant.ui.UIEntry;
 import net.cassite.hottapcassistant.util.Consts;
-import net.cassite.hottapcassistant.util.GlobalValues;
 import net.cassite.hottapcassistant.util.Version;
 
 import java.util.ArrayList;
@@ -151,7 +150,7 @@ public class Main extends Application {
         Runnable endCall = null;
         try {
             //noinspection DataFlowIssue
-            var media = new Media(Main.class.getResource("/video/nanyin_card.mp4").toExternalForm());
+            var media = new Media(Main.class.getResource("/video/Luosilin.mp4").toExternalForm());
             var player = new MediaPlayer(media);
             var viewer = new MediaView(player);
             player.setMute(true);

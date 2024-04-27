@@ -166,7 +166,8 @@ public class UIEntry {
             stage.getRootSceneGroup().show(menuScene, VSceneShowMethod.FROM_LEFT);
         });
 
-        var transparentMenuBtn = new TransparentFusionImageButton(ImageManager.get().load("/images/icon/menu.png")) {{
+        // FIXME: the button should be the inverse color of the background image
+        var transparentMenuBtn = new TransparentFusionImageButton(ImageManager.get().load("/images/icon/menu.png:white")) {{
             setPrefWidth(menuBtn.getPrefWidth());
             setPrefHeight(menuBtn.getPrefHeight());
             getImageView().setFitHeight(menuBtn.getImageView().getFitHeight());
@@ -379,7 +380,7 @@ public class UIEntry {
     private void updateRootImage() {
         var bg = Feed.get().introBg.get();
         if (bg == null) {
-            bg = ImageManager.get().load("images/bg/bg4.jpg");
+            bg = ImageManager.get().load("images/bg/bg5.jpg");
         }
         setRootImageBg(bg);
     }
