@@ -145,7 +145,7 @@ public class GlobalValues {
     private static boolean checkSavedPath() {
         if (savedPath.get() == null) {
             SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().savedPathNotSet());
-            return false;
+            return true;
         }
         var f = new File(savedPath.get());
         if (!f.isDirectory()) {

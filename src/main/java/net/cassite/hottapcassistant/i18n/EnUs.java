@@ -309,7 +309,7 @@ public class EnUs extends I18n {
 
     @Override
     public String savedPathNotSet() {
-        return "Game config file path is not set";
+        return "Game config file path is not set, unable to auto switch CN/Global config files";
     }
 
     @Override

@@ -307,7 +307,7 @@ public class ZhCn extends I18n {
 
     @Override
     public String savedPathNotSet() {
-        return "游戏配置文件路径没有设置";
+        return "游戏配置文件路径没有设置，无法自动切换国服与国际服游戏配置文件";
     }
 
     @Override
