@@ -1430,7 +1430,6 @@ public class EnUs extends I18n {
             case "server" -> "Starting proxy server";
             case "hijack" -> "Hijacking DNS requests";
             case "flush-dns" -> "Flushing DNS cache";
-            case "launch" -> "Launch";
             default -> step;
         };
     }

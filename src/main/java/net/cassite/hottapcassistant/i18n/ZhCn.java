@@ -1570,7 +1570,6 @@ public class ZhCn extends I18n {
             case "server" -> "启动代理服务器";
             case "hijack" -> "启动DNS劫持";
             case "flush-dns" -> "清空DNS缓存";
-            case "launch" -> "启动";
             default -> step;
         };
     }

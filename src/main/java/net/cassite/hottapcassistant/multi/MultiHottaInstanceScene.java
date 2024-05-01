@@ -62,6 +62,8 @@ public class MultiHottaInstanceScene extends ToolScene {
     private final TextField onlineVersionInput;
     private final CheckBox isHandlingAdvCheckBox;
     private int disableTipsVersion;
+    private final FusionButton launchOnlineModButton;
+    private final FusionButton launchBetaButton;
 
     public MultiHottaInstanceScene(MultiHottaInstance tool) {
         this.tool = tool;
@@ -81,10 +83,11 @@ public class MultiHottaInstanceScene extends ToolScene {
             setPrefHeight(35);
         }};
         selectBetaLocationButton.setOnAction(e -> selectLocation(selectBetaLocationInput));
-        var launchBetaButton = new FusionButton(I18n.get().multiInstanceSingleLaunchButton()) {{
+        launchBetaButton = new FusionButton(I18n.get().multiInstanceSingleLaunchButton()) {{
             setPrefWidth(48);
             setPrefHeight(35);
         }};
+        launchBetaButton.setDisable(true);
         launchBetaButton.setOnAction(_ -> launchGame(selectBetaLocationInput.getText()));
 
         selectOnlineLocationInput = new TextField() {{
@@ -110,10 +113,11 @@ public class MultiHottaInstanceScene extends ToolScene {
             setPrefHeight(35);
         }};
         selectOnlineModLocationButton.setOnAction(_ -> selectLocation(selectOnlineModLocationInput));
-        var launchOnlineModButton = new FusionButton(I18n.get().multiInstanceSingleLaunchButton()) {{
+        launchOnlineModButton = new FusionButton(I18n.get().multiInstanceSingleLaunchButton()) {{
             setPrefWidth(48);
             setPrefHeight(35);
         }};
+        launchOnlineModButton.setDisable(true);
         launchOnlineModButton.setOnAction(_ -> launchGame(selectOnlineModLocationInput.getText()));
 
         advBranchInput = new TextField() {{
@@ -443,9 +447,6 @@ public class MultiHottaInstanceScene extends ToolScene {
         }));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("flush-dns"),
             MultiHottaInstanceFlow::flushDNS));
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("launch"), () ->
-            launchGame(config.onlineModPath != null ? config.onlineModPath : config.betaPath)
-        ));
         var loadingStage = new LoadingStage(I18n.get().toolName("multi-hotta-instance"));
         loadingStage.setItems(items);
         loadingStage.setInterval(120);
@@ -464,6 +465,8 @@ public class MultiHottaInstanceScene extends ToolScene {
                 return;
             }
 
+            launchBetaButton.setDisable(false);
+            launchOnlineModButton.setDisable(false);
             tool.save(config);
 
             final int CURRENT_TIPS_VERSION = 4;
@@ -528,9 +531,9 @@ public class MultiHottaInstanceScene extends ToolScene {
         return true;
     }
 
-    private boolean launchGame(String path) {
-        if (path == null) {
-            return false; // do nothing
+    private void launchGame(String path) {
+        if (path == null || path.isBlank()) {
+            return; // do nothing
         }
         try {
             Desktop.getDesktop().open(
@@ -539,10 +542,7 @@ public class MultiHottaInstanceScene extends ToolScene {
             Logger.error(LogType.SYS_ERROR, "failed launching game", e);
             FXUtils.runOnFX(() ->
                 SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed()));
-            return false;
         }
-        MiscUtils.threadSleep(1_000);
-        return true;
     }
 
     private boolean doMkLink(MultiHottaInstanceConfig config, String dst) {
