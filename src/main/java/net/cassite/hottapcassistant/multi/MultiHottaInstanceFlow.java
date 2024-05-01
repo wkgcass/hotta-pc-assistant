@@ -8,7 +8,6 @@ import io.vproxy.commons.util.IOUtils;
 import io.vproxy.vfd.IPv4;
 import io.vproxy.vfx.util.FXUtils;
 import net.cassite.hottapcassistant.util.Utils;
-import vjson.simple.SimpleString;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -17,6 +16,8 @@ import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+
+import static io.vproxy.base.util.Utils.escapePath;
 
 public class MultiHottaInstanceFlow {
     public static final String DEFAULT_RES_VERSION = "114.514";
@@ -84,7 +85,7 @@ public class MultiHottaInstanceFlow {
         io.vproxy.base.util.Utils.ExecuteResult res;
         try {
             res = io.vproxy.base.util.Utils.execute(STR."""
-            mklink /d \{new SimpleString(advLocation).stringify()} \{new SimpleString(normalClientLocation).stringify()}
+            mklink /d \{escapePath(advLocation)} \{escapePath(normalClientLocation)}
             """.trim(), 1000, true);
         } catch (Exception e) {
             throw new Exception(STR."creating directory link failed: \{io.vproxy.base.util.Utils.formatErr(e)}");
@@ -158,7 +159,10 @@ public class MultiHottaInstanceFlow {
                 throw new IOException("failed deleting UserData directory: " + advPath);
             }
         }
-        IOUtils.copyDirectory(Path.of(onlineLocation, "WmGpLaunch", "UserData"), advPath);
+        IOUtils.copyDirectory(Path.of(onlineLocation, "WmGpLaunch", "UserData"), advPath, p -> {
+            var s = p.toAbsolutePath().toString();
+            return s.endsWith(".log");
+        });
     }
 
     public static void flushDNS() {
