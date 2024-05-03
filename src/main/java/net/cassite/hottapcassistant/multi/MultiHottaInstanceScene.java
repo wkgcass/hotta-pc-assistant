@@ -76,7 +76,6 @@ public class MultiHottaInstanceScene extends ToolScene {
         selectBetaLocationInput = new TextField() {{
             FontManager.get().setFont(this);
         }};
-        selectBetaLocationInput.setEditable(false);
         selectBetaLocationInput.setPrefWidth(450);
         var selectBetaLocationButton = new FusionButton(I18n.get().selectButton()) {{
             setPrefWidth(48);
@@ -384,17 +383,21 @@ public class MultiHottaInstanceScene extends ToolScene {
                 doWriteResListXml(config.onlineModPath, config)
             ));
         }
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("config.xml"), () ->
-            doWriteConfigXml(config.betaPath, config)
-        ));
+        if (config.betaPath != null) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("config.xml"), () ->
+                doWriteConfigXml(config.betaPath, config)
+            ));
+        }
         if (config.onlineModPath != null) {
             items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("config.xml-2"), () ->
                 doWriteConfigXml(config.onlineModPath, config)
             ));
         }
-        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("Client"), () ->
-            doMkLink(config, config.betaPath)
-        ));
+        if (config.betaPath != null) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("Client"), () ->
+                doMkLink(config, config.betaPath)
+            ));
+        }
         if (config.onlineModPath != null) {
             items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("Client2"), () ->
                 doMkLink(config, config.onlineModPath)
