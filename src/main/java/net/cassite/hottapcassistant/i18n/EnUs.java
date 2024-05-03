@@ -1414,6 +1414,11 @@ public class EnUs extends I18n {
     }
 
     @Override
+    public String multiInstanceNoModPath() {
+        return "Online mod game path is not configured, unable to launch";
+    }
+
+    @Override
     public String multiInstanceLaunchStep(String step) {
         return switch (step) {
             case "lock" -> "Function lock checking";
@@ -1430,6 +1435,7 @@ public class EnUs extends I18n {
             case "server" -> "Starting proxy server";
             case "hijack" -> "Hijacking DNS requests";
             case "flush-dns" -> "Flushing DNS cache";
+            case "launch-mod" -> "Starting mod launcher";
             default -> step;
         };
     }

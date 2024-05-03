@@ -37,6 +37,7 @@ import net.cassite.hottapcassistant.config.TofServerListConfig;
 import net.cassite.hottapcassistant.entity.*;
 import net.cassite.hottapcassistant.feed.Feed;
 import net.cassite.hottapcassistant.i18n.I18n;
+import net.cassite.hottapcassistant.tool.MultiHottaInstance;
 import net.cassite.hottapcassistant.tool.PatchInfoBuilder;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.*;
 
 public class WelcomeScene extends AbstractMainScene {
+    private final Dependencies deps;
     private final CheckBox useCNGameCheckBox = new CheckBox() {{
         FXUtils.disableFocusColor(this);
     }};
@@ -65,7 +67,9 @@ public class WelcomeScene extends AbstractMainScene {
 
     private boolean isAltDown = false;
 
-    public WelcomeScene() {
+    public WelcomeScene(Dependencies deps) {
+        this.deps = deps;
+
         enableAutoContentWidth();
 
         getNode().setBackground(Background.EMPTY);
@@ -432,31 +436,7 @@ public class WelcomeScene extends AbstractMainScene {
 
             var launchBtn = new ImageButton("images/launchgame-btn/launchgame", "png");
             launchBtn.setScale(0.6);
-            launchBtn.setOnAction(e -> {
-                if (!GlobalValues.checkCNGamePath()) {
-                    return;
-                }
-                useCNGameCheckBox.setSelected(true);
-                var promise = PatchInfoBuilder.applyCNPatch(
-                    Path.of(GlobalValues.gamePath.get(), "Client", "WindowsNoEditor", "Hotta", "Content", "PatchPaks"));
-                promise.setHandler((v, err) -> {
-                    if (err != null) {
-                        Logger.error(LogType.FILE_ERROR, "failed applying patch", err);
-                        if (err instanceof LoadingFailure lf) {
-                            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed() + ": " + lf.failedItem.name);
-                        } else {
-                            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed());
-                        }
-                        return;
-                    }
-                    try {
-                        Desktop.getDesktop().open(Path.of(GlobalValues.gamePath.get(), "gameLauncher.exe").toFile());
-                    } catch (Throwable t) {
-                        Logger.error(LogType.SYS_ERROR, "failed launching game", t);
-                        SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
-                    }
-                });
-            });
+            launchBtn.setOnAction(_ -> launchCNServer(isAltDown));
             group.getChildren().add(downloadBtn);
             selectGameLocationInput.textProperty().addListener((ob, old, now) -> {
                 group.getChildren().clear();
@@ -521,6 +501,12 @@ public class WelcomeScene extends AbstractMainScene {
         });
 
         Platform.runLater(this::initLocations);
+    }
+
+    public record Dependencies(
+        ToolBoxScene toolboxScene,
+        Runnable switchToToolbox
+    ) {
     }
 
     @Override
@@ -594,6 +580,41 @@ public class WelcomeScene extends AbstractMainScene {
                 Logger.error(LogType.FILE_ERROR, "trying to update swapped assistant file failed", e);
             }
         }
+    }
+
+    private void launchCNServer(boolean launchMod) {
+        if (!GlobalValues.checkCNGamePath()) {
+            return;
+        }
+        useCNGameCheckBox.setSelected(true);
+        if (!launchMod) {
+            try {
+                Desktop.getDesktop().open(Path.of(GlobalValues.gamePath.get(), "gameLauncher.exe").toFile());
+            } catch (Throwable t) {
+                Logger.error(LogType.SYS_ERROR, "failed launching game", t);
+                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
+            }
+            return;
+        }
+        var promise = PatchInfoBuilder.applyCNPatch(
+            Path.of(GlobalValues.gamePath.get(), "Client", "WindowsNoEditor", "Hotta", "Content", "PatchPaks"));
+        promise.setHandler((_, err) -> {
+            if (err != null) {
+                Logger.error(LogType.FILE_ERROR, "failed applying patch", err);
+                if (err instanceof LoadingFailure lf) {
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed() + ": " + lf.failedItem.name);
+                } else {
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed());
+                }
+                return;
+            }
+            deps.switchToToolbox().run();
+            FXUtils.runDelay(350, () -> {
+                var tool = (MultiHottaInstance) deps.toolboxScene().launch(t -> t instanceof MultiHottaInstance);
+                assert tool != null;
+                tool.launchMod();
+            });
+        });
     }
 
     private void launchGlobalServer(boolean showHostsHack) {

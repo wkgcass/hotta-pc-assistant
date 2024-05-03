@@ -45,4 +45,11 @@ public class MultiHottaInstance extends AbstractTool implements Tool {
             s.terminate();
         }
     }
+
+    public void launchMod() {
+        var s = (MultiHottaInstanceScene) scene;
+        if (s != null) {
+            s.launch(true);
+        }
+    }
 }

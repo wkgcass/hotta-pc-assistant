@@ -760,6 +760,7 @@ public class ZhCn extends I18n {
             CD指示器的恢复图标：Play button icons created by Roundicons - Flaticon
             聊天消息辅助图标：Wired icons created by Vectorslab - Flaticon
             幻塔多开图标：Ui icons created by Graphics Plazza - Flaticon
+            多开启动按钮：On-off icons created by IYAHICON - Flaticon
             状态指示器图标：Conclusion icons created by Kiranshastry - Flaticon
             聊天消息监听器: Chat box icons created by Pixel perfect - Flaticon
             消息图标：Info icons created by Plastic Donut - Flaticon
@@ -771,6 +772,7 @@ public class ZhCn extends I18n {
             3. vertx: Eclipse Public License
             4. vfx: MIT License
             5. jna: LGPL 2.1
+            6. Divert: LGPL 3
             """;
     }
 
@@ -1554,6 +1556,11 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String multiInstanceNoModPath() {
+        return "正式服Mod路径没有配置，无法启动";
+    }
+
+    @Override
     public String multiInstanceLaunchStep(String step) {
         return switch (step) {
             case "lock" -> "功能锁定检查";
@@ -1570,6 +1577,7 @@ public class ZhCn extends I18n {
             case "server" -> "启动代理服务器";
             case "hijack" -> "启动DNS劫持";
             case "flush-dns" -> "清空DNS缓存";
+            case "launch-mod" -> "启动mod启动器";
             default -> step;
         };
     }

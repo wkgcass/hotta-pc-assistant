@@ -4,6 +4,8 @@ import io.vproxy.base.util.LogType;
 import io.vproxy.base.util.Logger;
 import io.vproxy.base.util.callback.Callback;
 import io.vproxy.commons.util.IOUtils;
+import io.vproxy.vfx.animation.AnimationGraphBuilder;
+import io.vproxy.vfx.animation.AnimationNode;
 import io.vproxy.vfx.control.dialog.VDialog;
 import io.vproxy.vfx.control.dialog.VDialogButton;
 import io.vproxy.vfx.manager.font.FontManager;
@@ -20,6 +22,7 @@ import io.vproxy.vfx.ui.loading.LoadingStage;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
 import io.vproxy.vfx.util.MiscUtils;
+import io.vproxy.vfx.util.algebradata.DoubleData;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -64,6 +67,7 @@ public class MultiHottaInstanceScene extends ToolScene {
     private int disableTipsVersion;
     private final FusionButton launchOnlineModButton;
     private final FusionButton launchBetaButton;
+    private final ImageButton launchBtn;
 
     public MultiHottaInstanceScene(MultiHottaInstance tool) {
         this.tool = tool;
@@ -144,8 +148,8 @@ public class MultiHottaInstanceScene extends ToolScene {
             setSelected(true);
         }};
 
-        var launchBtn = new ImageButton("images/launchgame-btn/launchgame", "png") {{
-            setScale(0.7);
+        launchBtn = new ImageButton("images/launch-btn/launch", "png") {{
+            setScale(0.2);
         }};
         launchBtn.setOnAction(e -> launch());
 
@@ -334,18 +338,23 @@ public class MultiHottaInstanceScene extends ToolScene {
         return config;
     }
 
-    /*
-     * will take the following steps:
-     * 1. check client path, make link if not exists
-     * 2. modify hosts file, add proxy rules
-     * 3. launch proxy server
-     * 4. launch beta game
-     */
-    private synchronized void launch() {
+    public void launch(boolean launchMod) {
+        _launch(launchMod);
+    }
+
+    private void launch() {
+        _launch(false);
+    }
+
+    private synchronized void _launch(boolean launchMod) {
         var config = buildConfig();
         var configErr = config.configValidation();
         if (configErr != null) {
             SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().multiInstanceInvalidFieldAlert(configErr));
+            return;
+        }
+        if (config.onlineModPath == null && launchMod) {
+            SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().multiInstanceNoModPath());
             return;
         }
         var items = new ArrayList<LoadingItem>();
@@ -450,6 +459,12 @@ public class MultiHottaInstanceScene extends ToolScene {
         }));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("flush-dns"),
             MultiHottaInstanceFlow::flushDNS));
+
+        if (launchMod) {
+            items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("launch-mod"), () ->
+                launchGame(config.onlineModPath)));
+        }
+
         var loadingStage = new LoadingStage(I18n.get().toolName("multi-hotta-instance"));
         loadingStage.setItems(items);
         loadingStage.setInterval(120);
@@ -470,6 +485,15 @@ public class MultiHottaInstanceScene extends ToolScene {
 
             launchBetaButton.setDisable(false);
             launchOnlineModButton.setDisable(false);
+            launchBtn.setMouseTransparent(true);
+            {
+                var begin = new AnimationNode<>("begin", new DoubleData(1));
+                var end = new AnimationNode<>("end", new DoubleData(0));
+                var g = AnimationGraphBuilder.simpleTwoNodeGraph(begin, end, 500)
+                    .setApply((_, _, data) -> launchBtn.setOpacity(data.value))
+                    .build(begin);
+                g.play(end);
+            }
             tool.save(config);
 
             final int CURRENT_TIPS_VERSION = 4;

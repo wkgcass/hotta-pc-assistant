@@ -41,8 +41,16 @@ public class UIEntry {
 
     public UIEntry(VStage stage) {
         this.stage = stage;
+        var toolboxScene = new ToolBoxScene(stage.getSceneGroup()) {
+            @Override
+            public OverrideHelper getOverrideHelper() {
+                return new OverrideHelperImpl(this);
+            }
+        };
         mainScenes = Arrays.asList(
-            new WelcomeScene() {
+            new WelcomeScene(new WelcomeScene.Dependencies(
+                toolboxScene, () -> showScene(5)
+            )) {
                 @Override
                 public OverrideHelper getOverrideHelper() {
                     return new OverrideHelperImpl(this);
@@ -72,18 +80,7 @@ public class UIEntry {
                     return new OverrideHelperImpl(this);
                 }
             },
-//            new CoolDownScene(stage.getSceneGroup()) {
-//                @Override
-//                public OverrideHelper getOverrideHelper() {
-//                    return new OverrideHelperImpl(this);
-//                }
-//            },
-            new ToolBoxScene(stage.getSceneGroup()) {
-                @Override
-                public OverrideHelper getOverrideHelper() {
-                    return new OverrideHelperImpl(this);
-                }
-            },
+            toolboxScene,
             new XBoxScene(stage.getSceneGroup()) {
                 @Override
                 public OverrideHelper getOverrideHelper() {

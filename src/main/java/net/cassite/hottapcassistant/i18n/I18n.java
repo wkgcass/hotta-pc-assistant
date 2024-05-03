@@ -542,6 +542,8 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String multiInstanceInvalidFieldAlert(String field);
 
+    public abstract String multiInstanceNoModPath();
+
     public abstract String multiInstanceLaunchStep(String step);
 
     public abstract String multiInstanceFailedSettingClientVersion();

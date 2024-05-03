@@ -27,7 +27,10 @@ import net.cassite.hottapcassistant.tool.*;
 import net.cassite.hottapcassistant.util.GlobalValues;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ToolBoxScene extends AbstractMainScene implements Terminate {
@@ -41,7 +44,7 @@ public class ToolBoxScene extends AbstractMainScene implements Terminate {
         add(PatchManager::new);
     }};
     private static final int colsPerLine = 6;
-    private final List<Tool> toolInstances = new ArrayList<>();
+    private final Map<Tool, Runnable> toolInstances = new LinkedHashMap<>();
     private final VSceneGroup sceneGroup;
 
     public ToolBoxScene(VSceneGroup sceneGroup) {
@@ -66,7 +69,6 @@ public class ToolBoxScene extends AbstractMainScene implements Terminate {
         var i = 0;
         for (var tool : tools) {
             var t = tool.get();
-            toolInstances.add(t);
 
             var icon = t.getIcon();
             var name = t.getName();
@@ -85,6 +87,8 @@ public class ToolBoxScene extends AbstractMainScene implements Terminate {
             runningDot.setVisible(false);
             runningDot.setLayoutX(80);
             runningDot.setLayoutY(20);
+            Runnable launchFunc = () -> openTool(t, runningDot);
+            toolInstances.put(t, launchFunc);
 
             var vbox = new VBox();
             vbox.setAlignment(Pos.CENTER);
@@ -97,7 +101,7 @@ public class ToolBoxScene extends AbstractMainScene implements Terminate {
                 label
             );
 
-            vbox.setOnMouseClicked(e -> openTool(t, runningDot));
+            vbox.setOnMouseClicked(_ -> launchFunc.run());
             vbox.setCursor(Cursor.HAND);
 
             grid.add(new FusionPane(false, vbox).getContentPane(), i % colsPerLine, i / colsPerLine);
@@ -136,9 +140,21 @@ public class ToolBoxScene extends AbstractMainScene implements Terminate {
         StatusManager.get().updateStatus(new Status(tool.getName(), StatusComponent.TOOL, StatusEnum.RUNNING));
     }
 
+    public Tool launch(Predicate<Tool> selectTool) {
+        for (var entry : toolInstances.entrySet()) {
+            var t = entry.getKey();
+            var f = entry.getValue();
+            if (selectTool.test(t)) {
+                f.run();
+                return t;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void terminate() {
-        for (var t : toolInstances) {
+        for (var t : toolInstances.keySet()) {
             t.terminate();
         }
     }
