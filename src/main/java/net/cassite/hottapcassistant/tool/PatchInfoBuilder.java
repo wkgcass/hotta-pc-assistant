@@ -173,7 +173,6 @@ public class PatchInfoBuilder {
         var pakDirPath = Path.of(basedir.toString(), "HottaPCAssistantPatchPaks");
 
         var loadingStage = new LoadingStage(I18n.get().applyPatchLoadingStageTitle());
-        loadingStage.setInterval(50);
         var progressItems = new ArrayList<LoadingItem>();
         {
             progressItems.add(new LoadingItem(1, I18n.get().applyPatchLoadingPreparePatchDirectory(), () -> ensureDir(pakDirPath)));
@@ -204,6 +203,9 @@ public class PatchInfoBuilder {
             ));
         }
         loadingStage.setItems(progressItems);
+        if (progressItems.size() < 25) {
+            loadingStage.setInterval(50);
+        }
         loadingStage.load(new Callback<>() {
             @Override
             protected void onSucceeded(Void unused) {
