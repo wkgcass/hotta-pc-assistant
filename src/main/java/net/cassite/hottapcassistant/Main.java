@@ -219,6 +219,8 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        FXUtils.generalInitialization(args);
+
         Theme.setTheme(new DarkTheme() {
             @Override
             public FontProvider fontProvider() {
