@@ -161,7 +161,10 @@ public class MultiHottaInstanceFlow {
         }
         IOUtils.copyDirectory(Path.of(onlineLocation, "WmGpLaunch", "UserData"), advPath, p -> {
             var s = p.toAbsolutePath().toString();
-            return s.endsWith(".log");
+            if (s.contains("\\PatcherSDK\\tmp\\")) {
+                return true;
+            }
+            return s.endsWith(".log") || s.endsWith(".png");
         });
     }
 
