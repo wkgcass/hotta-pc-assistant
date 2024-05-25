@@ -436,7 +436,10 @@ public class WelcomeScene extends AbstractMainScene {
 
             var launchBtn = new ImageButton("images/launchgame-btn/launchgame", "png");
             launchBtn.setScale(0.6);
-            launchBtn.setOnAction(_ -> launchCNServer(isAltDown));
+            launchBtn.setOnAction(_ -> {
+                launchCNServer(isAltDown);
+                isAltDown = false;
+            });
             group.getChildren().add(downloadBtn);
             selectGameLocationInput.textProperty().addListener((ob, old, now) -> {
                 group.getChildren().clear();
@@ -477,7 +480,10 @@ public class WelcomeScene extends AbstractMainScene {
 
             var launchBtn = new ImageButton("images/global-launch-btn/launch", "png");
             launchBtn.setScale(0.5);
-            launchBtn.setOnAction(e -> launchGlobalServer(isAltDown));
+            launchBtn.setOnAction(_ -> {
+                launchGlobalServer(isAltDown);
+                isAltDown = false;
+            });
             group.getChildren().add(downloadBtn);
             selectGlobalServerGameLocationInput.textProperty().addListener((ob, old, now) -> {
                 group.getChildren().clear();
@@ -587,15 +593,6 @@ public class WelcomeScene extends AbstractMainScene {
             return;
         }
         useCNGameCheckBox.setSelected(true);
-        if (!launchMod) {
-            try {
-                Desktop.getDesktop().open(Path.of(GlobalValues.gamePath.get(), "gameLauncher.exe").toFile());
-            } catch (Throwable t) {
-                Logger.error(LogType.SYS_ERROR, "failed launching game", t);
-                SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
-            }
-            return;
-        }
         var promise = PatchInfoBuilder.applyCNPatch(
             Path.of(GlobalValues.gamePath.get(), "Client", "WindowsNoEditor", "Hotta", "Content", "PatchPaks"));
         promise.setHandler((_, err) -> {
@@ -605,6 +602,15 @@ public class WelcomeScene extends AbstractMainScene {
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed() + ": " + lf.failedItem.name);
                 } else {
                     SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().applyPatchFailed());
+                }
+                return;
+            }
+            if (!launchMod) {
+                try {
+                    Desktop.getDesktop().open(Path.of(GlobalValues.gamePath.get(), "gameLauncher.exe").toFile());
+                } catch (Throwable t) {
+                    Logger.error(LogType.SYS_ERROR, "failed launching game", t);
+                    SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().launchGameFailed());
                 }
                 return;
             }

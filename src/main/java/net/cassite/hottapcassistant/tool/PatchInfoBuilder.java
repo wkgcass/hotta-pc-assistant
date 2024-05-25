@@ -14,7 +14,10 @@ import net.cassite.hottapcassistant.i18n.I18n;
 import vjson.JSON;
 import vjson.deserializer.rule.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -269,15 +272,29 @@ public class PatchInfoBuilder {
     }
 
     private static boolean ensureDir(Path pakDirPath) {
+        Path tmpDir;
+        try {
+            tmpDir = Files.createTempDirectory("HottaPCAssistantPatchPaks");
+        } catch (IOException e) {
+            Logger.error(LogType.FILE_ERROR, "failed to create tmp dir for patches");
+            return false;
+        }
         var f = pakDirPath.toFile();
-        if (f.exists()) {
+        if (f.exists()) { // ignore error if not deleted
             IOUtils.deleteDirectory(f);
+            //noinspection ResultOfMethodCallIgnored
+            f.delete();
         }
-        var ok = f.mkdirs();
-        if (!ok) {
-            Logger.error(LogType.FILE_ERROR, "failed to mkdirs: " + f);
+        try {
+            var res = Utils.execute(STR."mklink /d \{Utils.escapePath(pakDirPath)} \{Utils.escapePath(tmpDir)}", true);
+            if (res.exitCode != 0) {
+                Logger.error(LogType.FILE_ERROR, STR."failed to mklink from \{tmpDir} to \{pakDirPath}: \{res.exitCode}\nstdout:\n\{res.stdout}\nstderr:\n\{res.stderr}");
+            }
+        } catch (Exception e) {
+            Logger.error(LogType.FILE_ERROR, STR."failed to mklink from \{tmpDir} to \{pakDirPath}", e);
+            return false;
         }
-        return ok;
+        return true;
     }
 
     private static boolean copyFile(File src, Path dest) {
