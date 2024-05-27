@@ -282,13 +282,14 @@ public class PatchInfoBuilder {
         var f = pakDirPath.toFile();
         if (f.exists()) { // ignore error if not deleted
             IOUtils.deleteDirectory(f);
-            //noinspection ResultOfMethodCallIgnored
-            f.delete();
         }
+        //noinspection ResultOfMethodCallIgnored
+        f.delete();
         try {
             var res = Utils.execute(STR."mklink /d \{Utils.escapePath(pakDirPath)} \{Utils.escapePath(tmpDir)}", true);
             if (res.exitCode != 0) {
                 Logger.error(LogType.FILE_ERROR, STR."failed to mklink from \{tmpDir} to \{pakDirPath}: \{res.exitCode}\nstdout:\n\{res.stdout}\nstderr:\n\{res.stderr}");
+                return false;
             }
         } catch (Exception e) {
             Logger.error(LogType.FILE_ERROR, STR."failed to mklink from \{tmpDir} to \{pakDirPath}", e);
