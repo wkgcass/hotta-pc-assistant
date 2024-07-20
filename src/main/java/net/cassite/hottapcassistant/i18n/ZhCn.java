@@ -1577,6 +1577,7 @@ public class ZhCn extends I18n {
             case "server" -> "启动代理服务器";
             case "hijack" -> "启动DNS劫持";
             case "flush-dns" -> "清空DNS缓存";
+            case "occupy-files" -> "占用游戏文件";
             case "launch-mod" -> "启动mod启动器";
             default -> step;
         };

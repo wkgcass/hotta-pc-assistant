@@ -9,6 +9,8 @@ import io.vproxy.vfd.IPv4;
 import io.vproxy.vfx.util.FXUtils;
 import net.cassite.hottapcassistant.util.Utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -16,6 +18,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static io.vproxy.base.util.Utils.escapePath;
 
@@ -178,6 +181,42 @@ public class MultiHottaInstanceFlow {
         }
         if (res.exitCode != 0) {
             Logger.warn(LogType.ALERT, STR."flushing dns failed \{res}");
+        }
+    }
+
+    public static void occupyFiles(Set<FileInputStream> occupiedFiles, MultiHottaInstanceConfig config) {
+        var root = Path.of(config.onlinePath).toFile();
+        occupyDir(occupiedFiles, root);
+    }
+
+    private static void occupyDir(Set<FileInputStream> occupiedFiles, File dir) {
+        if (!dir.exists() || !dir.isDirectory()) {
+            return;
+        }
+        var files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (var f : files) {
+            if (f.isFile()) {
+                occupyFile(occupiedFiles, f);
+            } else {
+                occupyDir(occupiedFiles, f);
+            }
+        }
+    }
+
+    private static void occupyFile(Set<FileInputStream> occupiedFiles, File file) {
+        if (!file.exists() || !file.isFile()) {
+            return;
+        }
+        try {
+            var fis = new FileInputStream(file);
+            //noinspection ResultOfMethodCallIgnored
+            fis.read(); // make sure it's occupied
+            occupiedFiles.add(fis);
+        } catch (IOException e) {
+            Logger.error(LogType.FILE_ERROR, "failed to occupy " + file.getAbsoluteFile(), e);
         }
     }
 }

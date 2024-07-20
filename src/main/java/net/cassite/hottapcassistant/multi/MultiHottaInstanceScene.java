@@ -42,19 +42,20 @@ import net.cassite.hottapcassistant.util.GlobalValues;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 
 import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.DEFAULT_RES_SUB_VERSION;
+import static net.cassite.hottapcassistant.multi.MultiHottaInstanceFlow.occupyFiles;
 
 public class MultiHottaInstanceScene extends ToolScene {
     private final MultiHottaInstance tool;
     private HottaLauncherProxyServer proxyServer = null;
     private DNSHijacker dnsHijacker = null;
+    private final Set<FileInputStream> occupiedFiles = new HashSet<>();
 
     private final TextField selectBetaLocationInput;
     private final TextField selectOnlineLocationInput;
@@ -459,6 +460,9 @@ public class MultiHottaInstanceScene extends ToolScene {
         }));
         items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("flush-dns"),
             MultiHottaInstanceFlow::flushDNS));
+        items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("occupy-files"), () -> {
+            MultiHottaInstanceFlow.occupyFiles(occupiedFiles, config);
+        }));
 
         if (launchMod) {
             items.add(new LoadingItem(1, I18n.get().multiInstanceLaunchStep("launch-mod"), () ->
@@ -613,6 +617,13 @@ public class MultiHottaInstanceScene extends ToolScene {
         if (dnsHijacker != null) {
             dnsHijacker.destroy();
         }
+        for (var fis : occupiedFiles) {
+            try {
+                fis.close();
+            } catch (IOException ignore) {
+            }
+        }
+        occupiedFiles.clear();
         var ok = MultiHottaInstanceFlow.unsetHostsFile();
         if (!ok) {
             SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().clearHostsFailed());
