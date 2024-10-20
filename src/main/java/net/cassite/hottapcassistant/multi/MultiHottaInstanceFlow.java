@@ -167,6 +167,9 @@ public class MultiHottaInstanceFlow {
             if (s.contains("\\PatcherSDK\\tmp\\")) {
                 return true;
             }
+            if (s.contains("\\cef_cache_")) { // contains GPUCache which would be locked
+                return true;
+            }
             return s.endsWith(".log") || s.endsWith(".png");
         });
     }
