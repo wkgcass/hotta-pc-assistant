@@ -437,7 +437,7 @@ public class WelcomeScene extends AbstractMainScene {
             var launchBtn = new ImageButton("images/launchgame-btn/launchgame", "png");
             launchBtn.setScale(0.6);
             launchBtn.setOnAction(_ -> {
-                launchCNServer(isAltDown);
+                launchCNServer(false);
                 isAltDown = false;
             });
             group.getChildren().add(downloadBtn);

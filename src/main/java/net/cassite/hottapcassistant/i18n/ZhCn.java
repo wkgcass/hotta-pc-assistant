@@ -1819,6 +1819,16 @@ public class ZhCn extends I18n {
     }
 
     @Override
+    public String resetSceneResetWinDivertButton() {
+        return "重置WinDivert";
+    }
+
+    @Override
+    public String resetSceneResetWinDivertSucceeded() {
+        return "重置WinDivert成功";
+    }
+
+    @Override
     public String messageMonitorNicChooserTitle() {
         return "选择监控的网卡";
     }
@@ -1893,6 +1903,7 @@ public class ZhCn extends I18n {
             case GUILD -> "公会";
             case TEAM -> "组队";
             case COOP -> "协力";
+            case PRIVATE -> "私聊";
         };
     }
 
@@ -2254,5 +2265,11 @@ public class ZhCn extends I18n {
     @Override
     public String applyPatchLoadingPrepareSigFile() {
         return "准备签名文件";
+    }
+
+    @Override
+    public String messageMonitorWinPcapHelp() {
+        return "请先在这里下载WinPcap并安装\n" +
+                "https://www.winpcap.org";
     }
 }

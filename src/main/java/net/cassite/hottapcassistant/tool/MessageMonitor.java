@@ -5,6 +5,7 @@ import io.vproxy.base.util.Logger;
 import io.vproxy.base.util.OS;
 import io.vproxy.vfd.IP;
 import io.vproxy.vfx.control.scroll.VScrollPane;
+import io.vproxy.vfx.manager.audio.AudioManager;
 import io.vproxy.vfx.manager.font.FontManager;
 import io.vproxy.vfx.manager.image.ImageManager;
 import io.vproxy.vfx.manager.task.TaskManager;
@@ -17,15 +18,15 @@ import io.vproxy.vfx.ui.scene.VScene;
 import io.vproxy.vfx.ui.wrapper.FusionW;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 import net.cassite.hottapcassistant.i18n.I18n;
 import net.cassite.tofpcap.MessageEvent;
 import net.cassite.tofpcap.MessageType;
@@ -59,7 +60,13 @@ public class MessageMonitor extends AbstractTool implements Tool {
 
     @Override
     protected VScene buildScene() throws Exception {
-        var allDevs = Pcaps.findAllDevs();
+        List<PcapNetworkInterface> allDevs;
+        try {
+            allDevs = Pcaps.findAllDevs();
+        } catch (Exception e) {
+            SimpleAlert.showAndWait(Alert.AlertType.ERROR, I18n.get().messageMonitorWinPcapHelp());
+            throw e;
+        }
         return new S(allDevs);
     }
 
@@ -84,20 +91,19 @@ public class MessageMonitor extends AbstractTool implements Tool {
                 }
             }
         }
-        if (c.serverHost != null && !c.serverHost.isBlank()) {
-            scene.serverHost.setValue(new ServerInfo(c.serverHost));
-        }
         if (c.channels != null) {
             scene.worldChannel.setSelected(false);
             scene.guildChannel.setSelected(false);
             scene.teamChannel.setSelected(false);
             scene.coopChannel.setSelected(false);
+            scene.privChannel.setSelected(false);
             for (var ch : c.channels) {
                 switch (ch) {
                     case WORLD -> scene.worldChannel.setSelected(true);
                     case GUILD -> scene.guildChannel.setSelected(true);
                     case TEAM -> scene.teamChannel.setSelected(true);
                     case COOP -> scene.coopChannel.setSelected(true);
+                    case PRIVATE -> scene.privChannel.setSelected(true);
                 }
             }
         }
@@ -111,14 +117,12 @@ public class MessageMonitor extends AbstractTool implements Tool {
 
     private static class Config implements JSONObject {
         private String nic;
-        private String serverHost;
         private boolean watchAllChannels;
         private List<ChatChannel> channels;
         private List<String> words;
 
         public static final Rule<Config> rule = new ObjectRule<>(Config::new)
             .put("nic", (o, it) -> o.nic = it, StringRule.get())
-            .put("serverHost", (o, it) -> o.serverHost = it, StringRule.get())
             .put("watchAllChannels", (o, it) -> o.watchAllChannels = it, BoolRule.get())
             .put("channels", (o, it) -> o.channels = it,
                 new ArrayRule<ArrayList<ChatChannel>, String>(ArrayList::new, (ls, o) -> ls.add(ChatChannel.valueOf0(o)), StringRule.get()))
@@ -129,7 +133,6 @@ public class MessageMonitor extends AbstractTool implements Tool {
         public JSON.Object toJson() {
             return new ObjectBuilder()
                 .put("nic", nic)
-                .put("serverHost", serverHost)
                 .put("watchAllChannels", watchAllChannels)
                 .putArray("channels", ab -> channels.forEach(o -> ab.add(o.name())))
                 .putArray("words", ab -> words.forEach(ab::add))
@@ -139,23 +142,6 @@ public class MessageMonitor extends AbstractTool implements Tool {
 
     private class S extends ToolScene {
         public final Map<CheckBox, PcapNetworkInterface> ck2netifMappping = new HashMap<>();
-        public final ComboBox<ServerInfo> serverHost = new ComboBox<>() {{
-            setConverter(new StringConverter<>() {
-                @Override
-                public String toString(ServerInfo object) {
-                    return ServerInfo.toDisplayString(object);
-                }
-
-                @Override
-                public ServerInfo fromString(String string) {
-                    if (string.isBlank()) return null;
-                    return new ServerInfo(string);
-                }
-            });
-            setEditable(true);
-            setItems(FXCollections.observableArrayList(serverInfoList));
-            setValue(serverInfoList.get(0));
-        }};
         private final CheckBox allChannel = new CheckBox(I18n.get().messageMonitorChannel(null)) {{
             FXUtils.disableFocusColor(this);
             FontManager.get().setFont(this);
@@ -177,6 +163,11 @@ public class MessageMonitor extends AbstractTool implements Tool {
             setTextFill(Theme.current().normalTextColor());
         }};
         private final CheckBox coopChannel = new CheckBox(I18n.get().messageMonitorChannel(ChatChannel.COOP)) {{
+            FXUtils.disableFocusColor(this);
+            FontManager.get().setFont(this);
+            setTextFill(Theme.current().normalTextColor());
+        }};
+        private final CheckBox privChannel = new CheckBox(I18n.get().messageMonitorChannel(ChatChannel.PRIVATE)) {{
             FXUtils.disableFocusColor(this);
             FontManager.get().setFont(this);
             setTextFill(Theme.current().normalTextColor());
@@ -259,12 +250,6 @@ public class MessageMonitor extends AbstractTool implements Tool {
 
                 var title = new ThemeLabel(I18n.get().messageMonitorServerHostTitle());
                 hbox.getChildren().add(title);
-
-                serverHost.setPrefWidth(300);
-                var wrapper = new FusionW(serverHost);
-                wrapper.getLabel().setAlignment(Pos.TOP_LEFT);
-                FontManager.get().setFont(wrapper.getLabel(), s -> s.setFamily(FontManager.FONT_NAME_JetBrainsMono));
-                hbox.getChildren().add(wrapper);
             }
 
             // channels
@@ -273,9 +258,9 @@ public class MessageMonitor extends AbstractTool implements Tool {
                 hbox.setSpacing(30);
                 root.getChildren().add(hbox);
 
-                hbox.getChildren().addAll(allChannel, worldChannel, guildChannel, teamChannel, coopChannel);
+                hbox.getChildren().addAll(allChannel, worldChannel, guildChannel, teamChannel, coopChannel, privChannel);
 
-                var all = List.of(worldChannel, guildChannel, teamChannel, coopChannel);
+                var all = List.of(worldChannel, guildChannel, teamChannel, coopChannel, privChannel);
                 allChannel.selectedProperty().addListener(ob -> {
                     if (allChannel.isSelected()) {
                         for (var c : all) {
@@ -346,11 +331,6 @@ public class MessageMonitor extends AbstractTool implements Tool {
                 SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().messageMonitorNoNetifSelectedAlert());
                 return;
             }
-            var serverHost = ServerInfo.toIPString(this.serverHost.getValue());
-            if (!IP.isIpLiteral(serverHost)) {
-                SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().messageMonitorInvalidServerHostAlert(serverHost));
-                return;
-            }
             var words = Arrays.stream(monitoringWords.getText().split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
             if (words.isEmpty()) {
                 SimpleAlert.showAndWait(Alert.AlertType.INFORMATION, I18n.get().messageMonitorEmptyWordsListAlert());
@@ -359,7 +339,6 @@ public class MessageMonitor extends AbstractTool implements Tool {
 
             var conf = new Config();
             conf.nic = netif.getName();
-            conf.serverHost = serverHost;
             conf.watchAllChannels = allChannel.isSelected();
             conf.channels = new ArrayList<>();
             {
@@ -367,11 +346,12 @@ public class MessageMonitor extends AbstractTool implements Tool {
                 if (guildChannel.isSelected()) conf.channels.add(ChatChannel.GUILD);
                 if (teamChannel.isSelected()) conf.channels.add(ChatChannel.TEAM);
                 if (coopChannel.isSelected()) conf.channels.add(ChatChannel.COOP);
+                if (privChannel.isSelected()) conf.channels.add(ChatChannel.PRIVATE);
             }
             conf.words = words;
             MessageMonitor.this.save(conf);
 
-            cap = new TofPcap(netif, IP.from(serverHost));
+            cap = new TofPcap(netif);
             cap.addListener(MessageType.CHAT, e -> handleEvent(e, conf));
 
             resetButtons(true);
@@ -408,7 +388,7 @@ public class MessageMonitor extends AbstractTool implements Tool {
 
             var msg = chat.message;
             for (var w : conf.words) {
-                if (msg.contains(w)) {
+                if (w.equals("*") || msg.contains(w)) {
                     FXUtils.runOnFX(() -> doNotify(chat));
                     break;
                 }
@@ -416,6 +396,9 @@ public class MessageMonitor extends AbstractTool implements Tool {
         }
 
         private void doNotify(ChatMessage chat) {
+            var audio = AudioManager.get().loadAudio("/audio/alert.wav");
+            audio.setVolume(0.6);
+            audio.play();
             Notifications.create()
                 .darkStyle()
                 .position(OS.isWindows() ? Pos.BOTTOM_RIGHT : Pos.TOP_RIGHT)
@@ -445,511 +428,4 @@ public class MessageMonitor extends AbstractTool implements Tool {
             });
         }
     }
-
-    private static class ServerInfo {
-        public String name;
-        public String ip;
-        private String text;
-
-        public ServerInfo() {
-        }
-
-        public ServerInfo(String text) {
-            text = text.trim();
-            this.text = text;
-            var idx = text.indexOf("(");
-            if (idx != -1) {
-                var a = text.substring(0, idx).trim();
-                var b = text.substring(idx);
-                if (IP.isIpLiteral(a)) {
-                    ip = a;
-                }
-                if (b.endsWith(")")) {
-                    name = b.substring(1, b.length() - 1).trim();
-                }
-            }
-        }
-
-        public static final Rule<ServerInfo> rule = new ObjectRule<>(ServerInfo::new)
-            .put("name", (o, it) -> o.name = it, StringRule.get())
-            .put("ip", (o, it) -> o.ip = it, StringRule.get());
-
-        public static String toIPString(ServerInfo value) {
-            if (value == null) return "";
-            if (value.ip != null) return value.ip;
-            if (value.text != null) return value.text;
-            if (value.name != null) return value.name;
-            return "";
-        }
-
-        public static String toDisplayString(ServerInfo value) {
-            if (value.ip != null && value.name != null)
-                return value.ip + "(" + value.name + ")";
-            if (value.ip != null)
-                return value.ip;
-            if (value.text != null)
-                return value.text;
-            if (value.name != null)
-                return "(" + value.name + ")";
-            return "";
-        }
-    }
-
-    private static final String serversJson = """
-        [
-            {
-                "name":"离州",
-                "ip":"39.106.8.2"
-            },
-            {
-                "name":"白月破晓",
-                "ip":"101.200.45.104"
-            },
-            {
-                "name":"千镜",
-                "ip":"123.56.86.19"
-            },
-            {
-                "name":"银岸",
-                "ip":"123.56.86.19"
-            },
-            {
-                "name":"迷城",
-                "ip":"101.200.45.104"
-            },
-            {
-                "name":"月影",
-                "ip":"101.200.45.104"
-            },
-            {
-                "name":"雾泽",
-                "ip":"47.93.87.105"
-            },
-            {
-                "name":"溟海",
-                "ip":"47.93.156.58"
-            },
-            {
-                "name":"幽岩",
-                "ip":"47.93.80.150"
-            },
-            {
-                "name":"茵纳斯",
-                "ip":"101.201.211.109"
-            },
-            {
-                "name":"星岛HT-01",
-                "ip":"59.110.113.76"
-            },
-            {
-                "name":"星岛HT-02",
-                "ip":"39.96.163.203"
-            },
-            {
-                "name":"星岛HT-03",
-                "ip":"39.96.163.203"
-            },
-            {
-                "name":"星岛HT-04",
-                "ip":"39.96.163.203"
-            },
-            {
-                "name":"星岛HT-05",
-                "ip":"39.96.163.203"
-            },
-            {
-                "name":"星岛HT-06",
-                "ip":"39.96.163.203"
-            },
-            {
-                "name":"星岛HT-07",
-                "ip":"39.96.163.203"
-            },
-            {
-                "name":"星岛HT-08",
-                "ip":"39.96.163.203"
-            },
-            {
-                "name":"星岛HT-09",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-10",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-11",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-12",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-13",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-14",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-15",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-16",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-17",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-18",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-19",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-20",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-21",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-22",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-23",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-24",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"星岛HT-25",
-                "ip":"123.56.149.221"
-            },
-            {
-                "name":"班吉斯HT-01",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-02",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-03",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-04",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-05",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-06",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-07",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-08",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-09",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-10",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-11",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-12",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-13",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-14",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-15",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-16",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-17",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-18",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-19",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-20",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-21",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-22",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-23",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-24",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"班吉斯HT-25",
-                "ip":"101.200.234.225"
-            },
-            {
-                "name":"纳维亚HT-01",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-02",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-03",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-04",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-05",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-06",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-07",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-08",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-09",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-10",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-11",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-12",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-13",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-14",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-15",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-16",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-17",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-18",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-19",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-20",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-21",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-22",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-23",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-24",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"纳维亚HT-25",
-                "ip":"39.105.120.152"
-            },
-            {
-                "name":"克罗恩HT-01",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"克罗恩HT-02",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"克罗恩HT-03",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"克罗恩HT-04",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"克罗恩HT-05",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"克罗恩HT-06",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"克罗恩HT-07",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"克罗恩HT-08",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-01",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-02",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-03",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-04",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-05",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-06",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-07",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-08",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-09",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-10",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-11",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-12",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-13",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-14",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-15",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-16",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-17",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-18",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-19",
-                "ip":"123.57.217.236"
-            },
-            {
-                "name":"海嘉德HT-20",
-                "ip":"123.57.217.236"
-            }
-        ]
-        """;
-    private static final List<ServerInfo> serverInfoList = JSON.deserialize(serversJson, JSONObject.buildArrayRule(ServerInfo.rule));
 }

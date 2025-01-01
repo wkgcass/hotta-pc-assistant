@@ -7,6 +7,7 @@ import io.vproxy.vfx.ui.alert.SimpleAlert;
 import io.vproxy.vfx.ui.button.FusionButton;
 import io.vproxy.vfx.ui.wrapper.ThemeLabel;
 import io.vproxy.vfx.util.FXUtils;
+import io.vproxy.windivert.WinDivert;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.VBox;
@@ -34,9 +35,15 @@ public class ResetScene extends AbstractMainScene {
             setPrefHeight(60);
         }};
         resetConfigBtn.setOnAction(e -> resetConfig());
+        var resetWinDivertBtn = new FusionButton(I18n.get().resetSceneResetWinDivertButton()) {{
+            setMaxWidth(120);
+            setPrefHeight(60);
+        }};
+        resetWinDivertBtn.setOnAction(e -> resetWinDivert());
         vbox.getChildren().addAll(
             label,
-            resetConfigBtn
+            resetConfigBtn,
+            resetWinDivertBtn
         );
 
         getContentPane().getChildren().add(vbox);
@@ -101,6 +108,11 @@ public class ResetScene extends AbstractMainScene {
                 }
             }
         }
+    }
+
+    private void resetWinDivert() {
+        WinDivert.unloadForce();
+        SimpleAlert.show(Alert.AlertType.INFORMATION, I18n.get().resetSceneResetWinDivertSucceeded());
     }
 
     @Override

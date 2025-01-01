@@ -150,7 +150,7 @@ public class Main extends Application {
         Runnable endCall = null;
         try {
             //noinspection DataFlowIssue
-            var media = new Media(Main.class.getResource("/video/Huihu.mp4").toExternalForm());
+            var media = new Media(Main.class.getResource("/video/Lk.mp4").toExternalForm());
             var player = new MediaPlayer(media);
             var viewer = new MediaView(player);
             player.setMute(true);

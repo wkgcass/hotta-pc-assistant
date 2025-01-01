@@ -1678,6 +1678,16 @@ public class EnUs extends I18n {
     }
 
     @Override
+    public String resetSceneResetWinDivertButton() {
+        return "Reset WinDivert";
+    }
+
+    @Override
+    public String resetSceneResetWinDivertSucceeded() {
+        return "Reset WinDivert successful";
+    }
+
+    @Override
     public String messageMonitorNicChooserTitle() {
         return "Select the network card to monitor";
     }
@@ -1752,6 +1762,7 @@ public class EnUs extends I18n {
             case GUILD -> "Guild";
             case TEAM -> "Team";
             case COOP -> "Cooperative";
+            case PRIVATE -> "Private";
         };
     }
 
@@ -1888,5 +1899,11 @@ public class EnUs extends I18n {
     @Override
     public String applyPatchLoadingPrepareSigFile() {
         return "Prepare sig file";
+    }
+
+    @Override
+    public String messageMonitorWinPcapHelp() {
+        return "Please download and install WinPcap from here:\n" +
+                "https://www.winpcap.org";
     }
 }

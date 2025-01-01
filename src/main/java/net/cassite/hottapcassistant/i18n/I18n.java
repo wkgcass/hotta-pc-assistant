@@ -636,6 +636,10 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
 
     public abstract String resetSceneResetConfigSucceeded();
 
+    public abstract String resetSceneResetWinDivertButton();
+
+    public abstract String resetSceneResetWinDivertSucceeded();
+
     public abstract String messageMonitorNicChooserTitle();
 
     public abstract String messageMonitorServerHostTitle();
@@ -717,4 +721,6 @@ public abstract class I18n implements io.vproxy.vfx.manager.internal_i18n.Intern
     public abstract String applyPatchLoadingPreparePatchDirectory();
 
     public abstract String applyPatchLoadingPrepareSigFile();
+
+    public abstract String messageMonitorWinPcapHelp();
 }
