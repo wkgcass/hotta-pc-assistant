@@ -377,7 +377,7 @@ public class UIEntry {
     private void updateRootImage() {
         var bg = Feed.get().introBg.get();
         if (bg == null) {
-            bg = ImageManager.get().load("images/bg/bg9.png");
+            bg = ImageManager.get().load("images/bg/bg10.png");
         }
         setRootImageBg(bg);
     }

@@ -1,15 +1,16 @@
 package net.cassite.hottapcassistant.config;
 
 import io.vproxy.base.util.LogType;
-import io.vproxy.vfx.ui.alert.SimpleAlert;
-import io.vproxy.commons.util.IOUtils;
 import io.vproxy.base.util.Logger;
+import io.vproxy.commons.util.IOUtils;
+import io.vproxy.vfx.ui.alert.SimpleAlert;
 import javafx.scene.control.Alert;
 import net.cassite.hottapcassistant.component.setting.Setting;
 import net.cassite.hottapcassistant.component.setting.SettingType;
 import net.cassite.hottapcassistant.entity.GameAssistant;
 import net.cassite.hottapcassistant.i18n.I18n;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,15 +19,17 @@ import java.util.function.Function;
 
 public class SettingConfig {
     public final String settingsPath;
+    public final String fashionSettingsPath;
     public final AssistantConfig assistant;
 
-    private SettingConfig(String settingsPath, AssistantConfig assistant) {
+    private SettingConfig(String settingsPath, String fashionSettingsPath, AssistantConfig assistant) {
         this.settingsPath = settingsPath;
+        this.fashionSettingsPath = fashionSettingsPath;
         this.assistant = assistant;
     }
 
-    public static SettingConfig ofSaved(String settingsPath, AssistantConfig assistant) {
-        return new SettingConfig(settingsPath, assistant);
+    public static SettingConfig ofSaved(String settingsPath, String fashionSettingsPath, AssistantConfig assistant) {
+        return new SettingConfig(settingsPath, fashionSettingsPath, assistant);
     }
 
     private static final LinkedHashMap<String, SettingType> availableSettings = new LinkedHashMap<>() {{
@@ -41,6 +44,7 @@ public class SettingConfig {
         put("ResolutionSizeY", SettingType.INT);
         put("FullscreenMode", SettingType.INT);
         put("bPreferD3D12InGame", SettingType.BOOL);
+        put("FashionGraphicsOptimize", SettingType.INT);
     }};
     private static final List<String> availableSettingsOrder = new ArrayList<>() {{
         addAll(availableSettings.keySet());
@@ -62,6 +66,7 @@ public class SettingConfig {
         List<Setting> settings = new ArrayList<>();
         initSettingsConfig();
         readConfigFrom(settings, settingsPath);
+        readConfigFrom(settings, fashionSettingsPath);
 
         settings.sort((a, b) -> {
             if (availableSettings.containsKey(a.name) && availableSettings.containsKey(b.name)) {
@@ -111,7 +116,7 @@ public class SettingConfig {
             }
         }
         if (gameUserSettingsIndex == -1) {
-            Logger.warn(LogType.INVALID_EXTERNAL_DATA,"cannot find [/Script/QRSL.QRSLGameUserSettings] in " + settingsPath);
+            Logger.warn(LogType.INVALID_EXTERNAL_DATA, "cannot find [/Script/QRSL.QRSLGameUserSettings] in " + settingsPath);
             return;
         }
         GameAssistant gameAssistant;
@@ -164,6 +169,11 @@ public class SettingConfig {
     }
 
     private void readConfigFrom(List<Setting> settings, String path) throws IOException {
+        if (!new File(path).exists()) {
+            Logger.warn(LogType.ALERT, path + " not exists");
+            return;
+        }
+
         var lines = Files.readAllLines(Path.of(path));
         for (int i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
@@ -199,36 +209,57 @@ public class SettingConfig {
 
     public void write(List<Setting> settings) throws Exception {
         Path settingsPath = Path.of(this.settingsPath);
+        Path fashionSettingsPath = Path.of(this.fashionSettingsPath);
         var settingsFile = Files.readAllLines(settingsPath);
+        List<String> fashionFile = new ArrayList<>();
+        if (fashionSettingsPath.toFile().exists()) {
+            fashionFile = Files.readAllLines(fashionSettingsPath);
+        }
 
         int fullscreenMode = 0;
         int resolutionSizeX = 0;
         int resolutionSizeY = 0;
-        boolean modified = false;
+        boolean assistantModified = false;
 
         for (var s : settings) {
             if ("FullscreenMode".equals(s.name)) {
                 fullscreenMode = (int) s.value;
-                modified = true;
+                assistantModified = true;
             } else if ("ResolutionSizeX".equals(s.name)) {
                 resolutionSizeX = (int) s.value;
-                modified = true;
+                assistantModified = true;
             } else if ("ResolutionSizeY".equals(s.name)) {
                 resolutionSizeY = (int) s.value;
-                modified = true;
+                assistantModified = true;
             }
             if (s.lineIndex == -1 || s.source == null) {
                 continue;
             }
+            String targetLine;
             if (s.source.equals(this.settingsPath)) {
                 if (s.lineIndex >= settingsFile.size()) {
                     throw new IOException("settings file has been changed, lines cannot match");
                 }
+                targetLine = settingsFile.get(s.lineIndex);
                 settingsFile.set(s.lineIndex, s.toString());
+            } else if (s.source.equals(this.fashionSettingsPath)) {
+                if (s.lineIndex >= fashionFile.size()) {
+                    throw new IOException("fashion settings file has been changed, lines cannot match");
+                }
+                targetLine = fashionFile.get(s.lineIndex);
+                fashionFile.set(s.lineIndex, s.toString());
+            } else {
+                continue;
+            }
+            if (!targetLine.contains("=") || targetLine.split("=").length != 2 || !targetLine.split("=")[0].trim().equals(s.name)) {
+                throw new IOException("file has been changed: [" + s.source + ":" + (s.lineIndex + 1) + "], file=" + targetLine + ", want to set to " + s);
             }
         }
         IOUtils.writeFileWithBackup(settingsPath.toString(), String.join("\n", settingsFile));
-        if (modified) {
+        if (fashionSettingsPath.toFile().exists()) {
+            IOUtils.writeFileWithBackup(fashionSettingsPath.toString(), String.join("\n", fashionFile));
+        }
+        if (assistantModified) {
             final var fFullscreenMode = fullscreenMode;
             final var fResolutionSizeX = resolutionSizeX;
             final var fResolutionSizeY = resolutionSizeY;

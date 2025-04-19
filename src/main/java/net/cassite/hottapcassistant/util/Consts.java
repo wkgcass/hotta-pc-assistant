@@ -15,7 +15,7 @@ public class Consts {
 
     public static final Set<String> PRELOAD_IMAGE = Set.of(
         "/net/cassite/xboxrelay/ui/res/xbox.png",
-        "/images/bg/bg9.png",
+        "/images/bg/bg10.png",
         "/images/downloadgame-btn/downloadgame-down.png",
         "/images/downloadgame-btn/downloadgame-hover.png",
         "/images/downloadgame-btn/downloadgame-normal.png",
@@ -55,7 +55,7 @@ public class Consts {
     @Deprecated
     public static final String[] ___ALL_IMAGE = new String[]{
         "/net/cassite/xboxrelay/ui/res/xbox.png",
-        "/images/bg/bg9.png",
+        "/images/bg/bg10.png",
         "/images/buff/bee.png",
         "/images/buff/burn-settle.png",
         "/images/buff/charge.png",

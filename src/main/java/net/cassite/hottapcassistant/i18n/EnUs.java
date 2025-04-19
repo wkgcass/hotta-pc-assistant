@@ -283,6 +283,7 @@ public class EnUs extends I18n {
             case "ResolutionSizeY" -> "Resolution Y";
             case "FullscreenMode" -> "Fullscreen Mode [1=Fullscreen|2=Windowed]";
             case "bPreferD3D12InGame" -> "Use DX12";
+            case "FashionGraphicsOptimize" -> "Fashion Uncensored [1=Uncensored|-1=Censored]";
             default -> super.configNameMapping(name);
         };
     }

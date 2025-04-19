@@ -42,7 +42,8 @@ public class GameSettingsScene extends WithConfirmScene {
 
     private SettingConfig getSettingConfig() {
         var settings = Path.of(GlobalValues.savedPath.get(), "Config", "WindowsNoEditor", "GameUserSettings.ini").toString();
-        return SettingConfig.ofSaved(settings, GlobalValues.getGameAssistantConfig());
+        var fashionSettings = Path.of(GlobalValues.savedPath.get(), "FashionGraphicsOptimize.txt").toString();
+        return SettingConfig.ofSaved(settings, fashionSettings, GlobalValues.getGameAssistantConfig());
     }
 
     @Override
