@@ -43,7 +43,7 @@ public class DNSHijacker {
     }
 
     public void start() throws Exception {
-        winDivert = WinDivert.open("outbound && ip && udp.DstPort == 53");
+        winDivert = WinDivert.open("outbound && (ip or ipv6) && udp.DstPort == 53");
         new Thread(this::handle, "dns-hijacker").start();
     }
 
